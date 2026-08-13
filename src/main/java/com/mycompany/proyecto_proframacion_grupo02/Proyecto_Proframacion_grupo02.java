@@ -14,5 +14,6 @@ public class Proyecto_Proframacion_grupo02 {
         System.out.println("Pruebaaxaaa!");
         System.out.println("pruebbss");
         System.out.print("en la pc de mate");
+        System.out.print("rama de sebas");
     }
 }
