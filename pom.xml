@@ -8,6 +8,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>26</maven.compiler.release>
-        <exec.mainClass>com.mycompany.proyecto_proframacion_grupo02.Proyecto_Proframacion_grupo02</exec.mainClass>
+        <exec.mainClass>com.mycompany.proyecto_proframacion_grupo02.proyecto_pda_grupo02</exec.mainClass>
     </properties>
 </project>
