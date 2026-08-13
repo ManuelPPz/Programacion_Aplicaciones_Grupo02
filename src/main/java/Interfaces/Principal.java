@@ -27,6 +27,7 @@ public class Principal extends javax.swing.JFrame {
         jTextField4 = new javax.swing.JTextField();
         jTextField5 = new javax.swing.JTextField();
         ifDocente = new javax.swing.JCheckBox();
+        boxInstituto = new javax.swing.JComboBox<>();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu3 = new javax.swing.JMenu();
@@ -39,7 +40,6 @@ public class Principal extends javax.swing.JFrame {
 
         jInternalFrame1.setVisible(true);
 
-        jTextField1.setText("jTextField1");
         jTextField1.addActionListener(this::jTextField1ActionPerformed);
 
         jLabel1.setText("Nikname");
@@ -52,15 +52,15 @@ public class Principal extends javax.swing.JFrame {
 
         jLabel5.setText("Fecha de Nacimiento");
 
-        jTextField3.setText("jTextField3");
-
-        jTextField4.setText("jTextField4");
-
-        jTextField5.setText("jTextField5");
+        jTextField5.addActionListener(this::jTextField5ActionPerformed);
 
         ifDocente.setText("Docente");
         ifDocente.addChangeListener(this::ifDocenteStateChanged);
         ifDocente.addActionListener(this::ifDocenteActionPerformed);
+
+        boxInstituto.setVisible(false);
+        boxInstituto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        boxInstituto.addActionListener(this::boxInstitutoActionPerformed);
 
         javax.swing.GroupLayout jInternalFrame1Layout = new javax.swing.GroupLayout(jInternalFrame1.getContentPane());
         jInternalFrame1.getContentPane().setLayout(jInternalFrame1Layout);
@@ -89,7 +89,10 @@ public class Principal extends javax.swing.JFrame {
                             .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(ifDocente))
+                    .addGroup(jInternalFrame1Layout.createSequentialGroup()
+                        .addComponent(ifDocente)
+                        .addGap(18, 18, 18)
+                        .addComponent(boxInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(263, Short.MAX_VALUE))
         );
         jInternalFrame1Layout.setVerticalGroup(
@@ -114,7 +117,9 @@ public class Principal extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(ifDocente)
+                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(ifDocente)
+                    .addComponent(boxInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(102, Short.MAX_VALUE))
         );
 
@@ -156,7 +161,7 @@ public class Principal extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(72, 72, 72)
                 .addComponent(jInternalFrame1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(40, Short.MAX_VALUE))
+                .addContainerGap(38, Short.MAX_VALUE))
         );
 
         pack();
@@ -180,9 +185,17 @@ public class Principal extends javax.swing.JFrame {
 
     private void ifDocenteStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_ifDocenteStateChanged
         if(ifDocente.isSelected() == true){
-        
+            boxInstituto.setVisible(true);
         }
     }//GEN-LAST:event_ifDocenteStateChanged
+
+    private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField5ActionPerformed
+
+    private void boxInstitutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boxInstitutoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_boxInstitutoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -210,6 +223,7 @@ public class Principal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> boxInstituto;
     private javax.swing.JCheckBox ifDocente;
     private javax.swing.JInternalFrame jInternalFrame1;
     private javax.swing.JLabel jLabel1;
