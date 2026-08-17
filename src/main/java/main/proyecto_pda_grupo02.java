@@ -9,7 +9,9 @@ public class proyecto_pda_grupo02 {
         // 2. Ejecutamos la interfaz gráfica en el hilo de eventos de Swing
         java.awt.EventQueue.invokeLater(() -> {
             Presentacion vPresentacion = new Presentacion();
+            vPresentacion.setBounds(2, 2, 800, 600);
             vPresentacion.setLocationRelativeTo(null); // Centra la ventana en pantalla
+            vPresentacion.setResizable(false);
             vPresentacion.setVisible(true);            // Muestra la ventana
         });
     }
