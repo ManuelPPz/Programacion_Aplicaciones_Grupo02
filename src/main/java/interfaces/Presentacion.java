@@ -47,6 +47,8 @@ public class Presentacion extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
         jMenu10 = new javax.swing.JMenu();
         CrearProgFormacion = new javax.swing.JMenuItem();
+        jMenuAltaCurso = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
 
         jMenu3.setText("jMenu3");
 
@@ -90,6 +92,15 @@ public class Presentacion extends javax.swing.JFrame {
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Cursos");
+
+        jMenuAltaCurso.setText("Ingresar");
+        jMenuAltaCurso.addActionListener(this::jMenuAltaCursoActionPerformed);
+        jMenu2.add(jMenuAltaCurso);
+
+        jMenuItem2.setText("Consultar");
+        jMenuItem2.addActionListener(this::jMenuItem2ActionPerformed);
+        jMenu2.add(jMenuItem2);
+
         jMenuBar1.add(jMenu2);
 
         jMenu10.setText("Prog Formacion");
@@ -131,9 +142,11 @@ public class Presentacion extends javax.swing.JFrame {
                       (desktopSize.height - frameSize.height) / 2);
     
         // 4. Hacerla visible y traerla al frente
+        
         vAlta.setVisible(true);
         vAlta.toFront();
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
 
     private void CrearProgFormacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CrearProgFormacionActionPerformed
                                               
@@ -154,6 +167,45 @@ public class Presentacion extends javax.swing.JFrame {
     vCrearpf.toFront();                                             
 
     }//GEN-LAST:event_CrearProgFormacionActionPerformed
+
+    private void jMenuAltaCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuAltaCursoActionPerformed
+        AltaCurso vAltaCurso = new AltaCurso();
+    
+        // 2. Agregarla al contenedor principal JDesktopPane
+        // (Asegúrate de que 'jDesktopPane1' sea el nombre de variable de tu JDesktopPane)
+        jDesktopPane1.add(vAltaCurso);
+    
+        // 3. Centrar la ventana dentro del escritorio
+        java.awt.Dimension desktopSize = jDesktopPane1.getSize();
+        java.awt.Dimension frameSize = vAltaCurso.getSize();
+        vAltaCurso.setLocation((desktopSize.width - frameSize.width) / 2, 
+                      (desktopSize.height - frameSize.height) / 2);
+    
+        // 4. Hacerla visible y traerla al frente
+        
+        vAltaCurso.setVisible(true);
+        vAltaCurso.toFront();
+    }//GEN-LAST:event_jMenuAltaCursoActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        ConsultaCurso vConsultaCurso = new ConsultaCurso();
+    
+        // 2. Agregarla al contenedor principal JDesktopPane
+        // (Asegúrate de que 'jDesktopPane1' sea el nombre de variable de tu JDesktopPane)
+        jDesktopPane1.add(vConsultaCurso);
+    
+        // 3. Centrar la ventana dentro del escritorio
+        java.awt.Dimension desktopSize = jDesktopPane1.getSize();
+        java.awt.Dimension frameSize = vConsultaCurso.getSize();
+        vConsultaCurso.setLocation((desktopSize.width - frameSize.width) / 2, 
+                      (desktopSize.height - frameSize.height) / 2);
+    
+        // 4. Hacerla visible y traerla al frente
+        
+        vConsultaCurso.setVisible(true);
+        vConsultaCurso.toFront();
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
 
     /**
      * @param args the command line arguments
@@ -193,11 +245,13 @@ public class Presentacion extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu7;
     private javax.swing.JMenu jMenu8;
     private javax.swing.JMenu jMenu9;
+    private javax.swing.JMenuItem jMenuAltaCurso;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuBar jMenuBar2;
     private javax.swing.JMenuBar jMenuBar3;
     private javax.swing.JMenuBar jMenuBar4;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JPopupMenu jPopupMenu2;
     // End of variables declaration//GEN-END:variables
