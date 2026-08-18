@@ -11,4 +11,20 @@
         <exec.mainClass>com.mycompany.proyecto_proframacion_grupo02.proyecto_pda_grupo02</exec.mainClass>
     </properties>
     <name>proyecto_pda_grupo02</name>
+    <dependencies>
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>9.0.0</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.hibernate.orm</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>6.5.2.Final</version>
+            </dependency>
+    </dependencies>
+    
+    
+            
 </project>

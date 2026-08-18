@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="3.0" xmlns="https://jakarta.ee" 
+             xmlns:xsi="http://w3.org" 
+             xsi:schemaLocation="https://jakarta.ee https://jakarta.ee/persistence_3_0.xsd">
+    
+    <!-- El nombre "ControladorPU" lo usaremos luego en el código Java -->
+    <persistence-unit name="ControladorPU" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        
+        <properties>
+            <!-- Conexión a la Base de Datos (Cambia "proyecto_pda" por el nombre de tu BD) -->
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/edEXT_db?useSSL=false&amp;serverTimezone=UTC"/>
+            <property name="jakarta.persistence.jdbc.user" value="root"/>
+            <property name="jakarta.persistence.jdbc.password" value="ghiuliana"/> <!-- hay qu cambiarlo y crear una nuava -->
+            <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+            
+            <!-- Propiedades de Hibernate -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+            <property name="hibernate.show_sql" value="true"/> 
+            <property name="hibernate.format_sql" value="true"/>
+            
+            
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+        </properties>
+    </persistence-unit>
+</persistence>
