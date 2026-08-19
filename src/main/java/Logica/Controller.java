@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import bdSQL.ConexionBD;
+import java.sql.Connection;
 /**
  *
  * @author mateo
@@ -110,7 +112,26 @@ public class Controller implements IController{
     //MOMENTANEO PONER EN TRUE PARA PROBAR Y DEJAR EN FALSE HASTA QUE SE AGREGE METODO
     @Override
     public boolean ExistePrograma(String nombreProg){
-    return true;
+        //Consulta cuantos Programas tienen ese nombre
+        String sql = "SELECT COUNT(*) FROM Programa_Formacion WHERE nombre = ?";
+        //Abre y cierra la coneccion automaticamente
+        try (Connection con = bdSQL.ConexionBD.getConexion(); java.sql.PreparedStatement ps = con.prepareStatement(sql)){
+           //asigna el nombre a '?'
+            ps.setString(1, nombreProg);
+        //ejecuta la consulta y lee el resultado numerico
+        try(java.sql.ResultSet rs = ps.executeQuery()){
+           if(rs.next()){
+           //devuelve true si es igual
+           return rs.getInt(1) > 0;
+                   }
+           
+        }
+        
+      } catch(java.sql.SQLException e){
+          //imprime mensaje de error si algo falla
+          System.err.println("Error al validar existencia: " + e.getMessage());
+      }
+    return false; //si no existe el nombre
     }
     @Override
     //Se usa para actualizar un programa existente 
