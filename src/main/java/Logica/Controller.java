@@ -131,7 +131,7 @@ public class Controller implements IController{
           //imprime mensaje de error si algo falla
           System.err.println("Error al validar existencia: " + e.getMessage());
       }
-    return false; //si no existe el nombre
+    return false; //si no existe el nombre,,, cambiar a true para probar la otra ventana de crear programa >:)
     }
     @Override
     //Se usa para actualizar un programa existente 

@@ -202,6 +202,7 @@ public class AltaCurso extends javax.swing.JInternalFrame {
             }
             ico.AltaCurso(boxInstituto.getSelectedItem().toString(), fieldNombre.getText(), areaDescripcion.getText(), (int)spinnerDuracion.getValue(), (int)spinnerHoras.getValue(), (int)spinnerCreditos.getValue(), fieldURL.getText(), previas, (Date)spinnerFecha.getValue());
             javax.swing.JOptionPane.showMessageDialog(this, "Curso ingresado con exito!", "System",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            this.dispose();
         }
     }//GEN-LAST:event_buttonAceptarActionPerformed
 

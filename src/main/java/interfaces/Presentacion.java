@@ -44,13 +44,14 @@ public class Presentacion extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
+        mConsultarUsuario = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
-        jMenu10 = new javax.swing.JMenu();
-        CrearProgFormacion = new javax.swing.JMenuItem();
         jMenuAltaCurso = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenu10 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
+        jMenu11 = new javax.swing.JMenu();
+        CrearProgFormacion = new javax.swing.JMenuItem();
 
         jMenu3.setText("jMenu3");
 
@@ -91,6 +92,10 @@ public class Presentacion extends javax.swing.JFrame {
         jMenuItem1.addActionListener(this::jMenuItem1ActionPerformed);
         jMenu1.add(jMenuItem1);
 
+        mConsultarUsuario.setText("Consultar Usuario");
+        mConsultarUsuario.addActionListener(this::mConsultarUsuarioActionPerformed);
+        jMenu1.add(mConsultarUsuario);
+
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Cursos");
@@ -113,13 +118,13 @@ public class Presentacion extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu2);
 
-        jMenu10.setText("Prog Formacion");
+        jMenu11.setText("Prog Formacion");
 
         CrearProgFormacion.setText("Crear");
         CrearProgFormacion.addActionListener(this::CrearProgFormacionActionPerformed);
-        jMenu10.add(CrearProgFormacion);
+        jMenu11.add(CrearProgFormacion);
 
-        jMenuBar1.add(jMenu10);
+        jMenuBar1.add(jMenu11);
 
         setJMenuBar(jMenuBar1);
 
@@ -235,6 +240,17 @@ public class Presentacion extends javax.swing.JFrame {
         vAltaEdicionCurso.toFront();
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
+    private void mConsultarUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mConsultarUsuarioActionPerformed
+       ConsultaUsuario vConsultaUsuario = new ConsultaUsuario();
+        jDesktopPane1.add(vConsultaUsuario);
+         java.awt.Dimension desktopSize = jDesktopPane1.getSize();
+        java.awt.Dimension frameSize = vConsultaUsuario.getSize();
+        vConsultaUsuario.setLocation((desktopSize.width - frameSize.width) / 2, 
+                      (desktopSize.height - frameSize.height) / 2);
+        vConsultaUsuario.setVisible(true);
+        vConsultaUsuario.toFront();
+    }//GEN-LAST:event_mConsultarUsuarioActionPerformed
+
 
     /**
      * @param args the command line arguments
@@ -266,6 +282,7 @@ public class Presentacion extends javax.swing.JFrame {
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu10;
+    private javax.swing.JMenu jMenu11;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
@@ -284,5 +301,6 @@ public class Presentacion extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JPopupMenu jPopupMenu2;
+    private javax.swing.JMenuItem mConsultarUsuario;
     // End of variables declaration//GEN-END:variables
 }
