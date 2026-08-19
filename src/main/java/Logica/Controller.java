@@ -106,6 +106,18 @@ public class Controller implements IController{
     public void ConsultaProgramaFormacion(String nomPrograma){
         
     }
+    
+    //MOMENTANEO PONER EN TRUE PARA PROBAR Y DEJAR EN FALSE HASTA QUE SE AGREGE METODO
+    @Override
+    public boolean ExistePrograma(String nombreProg){
+    return true;
+    }
+    @Override
+    //Se usa para actualizar un programa existente 
+    public void ActualizarPrograma(String nombreProg, String descripcionProg, Date fInicio, Date fFin){
+    
+    }
+    
     //Alta Instituto
     @Override
     public void AltaInstituto(String nomInstituto){

@@ -56,5 +56,8 @@ public interface IController {
     public abstract List<String> ListarCursos();
     //Devolver lista de cursos x instituto
     public abstract List<String> ListarCursos(String nomInstituto);
+    //verifica existencia de programa
+    public abstract boolean ExistePrograma(String nombreProg);
+    public abstract void ActualizarPrograma(String nombreProg, String descripcionProg, Date fInicio, Date fFin);
     
 }

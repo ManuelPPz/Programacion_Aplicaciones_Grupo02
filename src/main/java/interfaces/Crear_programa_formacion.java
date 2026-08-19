@@ -3,17 +3,21 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
  */
 package interfaces;
-
+import Logica.Fabric;
+import Logica.IController;
 /**
  *
  * @author manuelpalumbo
  */
 public class Crear_programa_formacion extends javax.swing.JInternalFrame {
-
+    IController ico;
     /**
      * Creates new form Crear_programa_formacion
      */
     public Crear_programa_formacion() {
+        Fabric f = Fabric.GetInstance();
+        ico = f.GetIController();
+        
         initComponents();
         this.setClosable(true);    
         this.setIconifiable(true); 
@@ -72,7 +76,7 @@ public class Crear_programa_formacion extends javax.swing.JInternalFrame {
 
         jLabel5.setText("Fecha de Finalizacion");
 
-        jButton1.setText("OK");
+        jButton1.setText("Aceptar");
         jButton1.addActionListener(this::jButton1ActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -152,11 +156,35 @@ public class Crear_programa_formacion extends javax.swing.JInternalFrame {
             "Campos Inválidos", 
             javax.swing.JOptionPane.ERROR_MESSAGE
         );
-        
     }else{
-       javax.swing.JOptionPane.showMessageDialog(this, "¡Programa de formación creado con éxito!", "Éxito", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            boolean existe = ico.ExistePrograma(nombreProg);
+            if(existe){
+            int respuesta = javax.swing.JOptionPane.showConfirmDialog(
+            this, 
+            "El programa '" + nombreProg + "' ya existe. ¿Deseas modificar sus datos?", 
+            "Programa Existente", 
+            javax.swing.JOptionPane.YES_NO_OPTION,
+            javax.swing.JOptionPane.QUESTION_MESSAGE
+        );
+            
+            if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
+            // El usuario quiere modificarlo
+            ico.ActualizarPrograma(nombreProg, descripcionProg, fechaInicio, fechaFin);
+            javax.swing.JOptionPane.showMessageDialog(this, "Programa actualizado con éxito.");
+            this.dispose();
+          
+            }else {
+            // El usuario canceló la operación
+            javax.swing.JOptionPane.showMessageDialog(this, "Operación cancelada.");
+            this.dispose();
+            }
+        }else{
+                javax.swing.JOptionPane.showMessageDialog(this, "¡Programa de formación creado con éxito!", "Éxito", javax.swing.JOptionPane.INFORMATION_MESSAGE);
        this.dispose();
+            }
         }
+        
+
         
         
     }//GEN-LAST:event_jButton1ActionPerformed
