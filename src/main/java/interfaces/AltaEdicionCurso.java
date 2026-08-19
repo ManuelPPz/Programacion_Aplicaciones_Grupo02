@@ -3,17 +3,22 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
  */
 package interfaces;
-
+import java.util.List;
+import java.util.ArrayList;
+import Logica.Fabric;
+import Logica.IController;
 /**
  *
  * @author mateo
  */
 public class AltaEdicionCurso extends javax.swing.JInternalFrame {
-
+    IController ico;
     /**
      * Creates new form AltaEdicionCurso
      */
     public AltaEdicionCurso() {
+        Fabric f = Fabric.GetInstance();
+        ico = f.GetIController();
         initComponents();
         spinnerCupo.setVisible(false);
     }
@@ -28,8 +33,6 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         jLabel10 = new javax.swing.JLabel();
-        boxCursos = new javax.swing.JComboBox<>();
-        comboInstituto = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         fieldNombre = new javax.swing.JTextField();
@@ -45,21 +48,20 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
         spinDateIni1 = new javax.swing.JSpinner();
         btnAceptar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
+        boxInstituto = new javax.swing.JComboBox<>();
+        boxCursos = new javax.swing.JComboBox<>();
 
         setClosable(true);
+        setIconifiable(true);
         setMaximizable(true);
         setResizable(true);
+        setTitle("Alta Edicion Curso");
+        setToolTipText("");
         setPreferredSize(new java.awt.Dimension(366, 400));
 
         jLabel10.setBackground(new java.awt.Color(255, 255, 255));
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel10.setText("Cursos*");
-
-        boxCursos.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        boxCursos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SIN DATOS", "CURE", "UTEC", "UM", "UDELAR" }));
-
-        comboInstituto.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        comboInstituto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SIN DATOS", "CURE", "UTEC", "UM", "UDELAR" }));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel1.setText("Instituto*");
@@ -106,6 +108,18 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
         btnCancelar.setText("Cancelar");
         btnCancelar.addActionListener(this::btnCancelarActionPerformed);
 
+        boxInstituto.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        boxInstituto.addActionListener(this::boxInstitutoActionPerformed);
+
+        boxCursos.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        boxCursos.addActionListener(this::boxCursosActionPerformed);
+        List<String> auxListCursos = ico.ListarCursos();
+        boxCursos.insertItemAt("SIN DATOS", 0);
+        for(int i = 0;i<auxListCursos.size();i++){
+            boxCursos.insertItemAt(auxListCursos.get(i), i+1);
+        }
+        boxInstituto.setSelectedIndex(0);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -120,40 +134,38 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
                         .addComponent(btnAceptar)
                         .addGap(3, 3, 3))
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(boxDocentes, 0, 227, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel15)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(spinDateIni1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(boxDocentes, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(checkCupo)
-                                .addGap(18, 18, 18)
-                                .addComponent(spinnerCupo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(comboInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(boxCursos, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel11)
-                                .addGap(5, 5, 5)
-                                .addComponent(fieldNombre))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel12)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(spinDateIni, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel14)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(spinDateFin, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(checkCupo)
+                            .addGap(18, 18, 18)
+                            .addComponent(spinnerCupo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabel1)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(boxInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(boxCursos, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabel11)
+                            .addGap(5, 5, 5)
+                            .addComponent(fieldNombre))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabel12)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(spinDateIni, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jLabel14)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(spinDateFin, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(19, 19, 19))
         );
         layout.setVerticalGroup(
@@ -161,12 +173,12 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(35, 35, 35)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(comboInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(boxInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(boxCursos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(boxCursos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -196,6 +208,13 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
                 .addGap(73, 73, 73))
         );
 
+        List<String> auxListIns = ico.ListarInstitutos();
+        boxInstituto.insertItemAt("SIN DATOS", 0);
+        for(int i = 0;i<auxListIns.size();i++){
+            boxInstituto.insertItemAt(auxListIns.get(i), i+1);
+        }
+        boxInstituto.setSelectedIndex(0);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -218,7 +237,7 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
         
     }//GEN-LAST:event_btnAceptarActionPerformed
-
+    
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         // Simplemente cierra la ventana interna sin cerrar el programa
         this.dispose();
@@ -228,14 +247,31 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
         spinnerCupo.setVisible(checkCupo.isSelected());
     }//GEN-LAST:event_checkCupoStateChanged
 
+    private void boxInstitutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boxInstitutoActionPerformed
+        if(boxInstituto.getSelectedIndex()!=0){
+            List<String> auxListCur = ico.ListarCursos((String) boxInstituto.getSelectedItem());
+            boxCursos.insertItemAt("SIN DATOS", 0);
+            for(int i = 0;i<auxListCur.size();i++){
+                boxCursos.insertItemAt(auxListCur.get(i), i+1);
+            }
+            boxCursos.setSelectedIndex(0);
+        }
+
+    }//GEN-LAST:event_boxInstitutoActionPerformed
+
+    private void boxCursosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boxCursosActionPerformed
+        
+
+    }//GEN-LAST:event_boxCursosActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> boxCursos;
     private javax.swing.JComboBox<String> boxDocentes;
+    private javax.swing.JComboBox<String> boxInstituto;
     private javax.swing.JButton btnAceptar;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JCheckBox checkCupo;
-    private javax.swing.JComboBox<String> comboInstituto;
     private javax.swing.JTextField fieldNombre;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;

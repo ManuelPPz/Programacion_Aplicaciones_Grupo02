@@ -186,11 +186,10 @@ public class Presentacion extends javax.swing.JFrame {
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         AltaEdicionCurso vAltaEdicionCurso = new AltaEdicionCurso();
-    
         // 2. Agregarla al contenedor principal JDesktopPane
         // (Asegúrate de que 'jDesktopPane1' sea el nombre de variable de tu JDesktopPane)
         jDesktopPane1.add(vAltaEdicionCurso);
-    
+        
         // 3. Centrar la ventana dentro del escritorio
         java.awt.Dimension desktopSize = jDesktopPane1.getSize();
         java.awt.Dimension frameSize = vAltaEdicionCurso.getSize();

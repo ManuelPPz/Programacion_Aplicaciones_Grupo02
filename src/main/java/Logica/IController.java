@@ -56,5 +56,7 @@ public interface IController {
     public abstract List<String> ListarCursos();
     //Devolver lista de cursos x instituto
     public abstract List<String> ListarCursos(String nomInstituto);
+    //Devolver lista de docentes
+    public abstract List<String> ListarDocentes();
     
 }

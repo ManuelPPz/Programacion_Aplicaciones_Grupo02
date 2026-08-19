@@ -130,7 +130,7 @@ public class Controller implements IController{
     public List<String> ListarInstitutos(){
         //Falta realizar
         /*Posible solucion:
-        List<String> listReturn = ManejadorInstituto.GetNameMyCursos();
+        List<String> listReturn = ManejadorInstituto.GetNamesMyCursos();
         */
         
         List<String> listReturn = new ArrayList();
@@ -145,7 +145,7 @@ public class Controller implements IController{
     public List<String> ListarCursos(){
         //Falta realizar
         /*Posible solucion:
-        List<String> listReturn = ManjeadorCurso.GetNameMyCursos();
+        List<String> listReturn = ManjeadorCurso.GetNamesMyCursos();
         */
         List<String> listReturn = new ArrayList();
         listReturn.add("Prog. Avanzada");
@@ -158,11 +158,23 @@ public class Controller implements IController{
     public List<String> ListarCursos(String nomInstituto){
         //Falta Realizar
         /*Posible solucion:
-        List<String> listReturn = ManjeadorCurso.GetNameMyCursos(nomInstituto);
+        List<String> listReturn = ManjeadorCurso.GetNamesMyCursos(nomInstituto);
         */
         List<String> listReturn = new ArrayList();
         listReturn.add("Prog. Aplicaciones");
         listReturn.add("ADI");
+        return listReturn;
+    }
+    
+    @Override
+    public List<String> ListarDocentes(){
+        //Falta Realizar
+        /*Posible solucion:
+        List<String> listReturn = ManjeadorDocente.GetNamesMyDocentes(nomInstituto);
+        */
+        List<String> listReturn = new ArrayList();
+        listReturn.add("Juan Taque");
+        listReturn.add("Gualberto Hernandez");
         return listReturn;
     }
     
