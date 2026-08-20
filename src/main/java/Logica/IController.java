@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import DTsClasses.DTCurso;
+import DTsClasses.DTProgramaForm;
 /**
  *
  * @author mateo
@@ -42,7 +43,7 @@ public interface IController {
     public abstract void AgregarCursoAProgramas(String nomPrograma, String nomCurso);
     //Consulta Programa de Formacion
     //Se modificara al crear el tipo de dato ProgramaFormacion retornando el tipo de dato "ProgramaFormacion"
-    public abstract void ConsultaProgramaFormacion(String nomPrograma);
+    public abstract DTProgramaForm ConsultaProgramaFormacion(String nomPrograma);
     //Alta Instituto
     public abstract void AltaInstituto(String nomInstituto);
     

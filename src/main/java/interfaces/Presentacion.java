@@ -52,6 +52,8 @@ public class Presentacion extends javax.swing.JFrame {
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenu11 = new javax.swing.JMenu();
         CrearProgFormacion = new javax.swing.JMenuItem();
+        jMenuItem5 = new javax.swing.JMenuItem();
+        jMenuItem6 = new javax.swing.JMenuItem();
         jMenu12 = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
 
@@ -125,6 +127,14 @@ public class Presentacion extends javax.swing.JFrame {
         CrearProgFormacion.setText("Crear");
         CrearProgFormacion.addActionListener(this::CrearProgFormacionActionPerformed);
         jMenu11.add(CrearProgFormacion);
+
+        jMenuItem5.setText("Agregar Curso");
+        jMenuItem5.addActionListener(this::jMenuItem5ActionPerformed);
+        jMenu11.add(jMenuItem5);
+
+        jMenuItem6.setText("Consultar");
+        jMenuItem6.addActionListener(this::jMenuItem6ActionPerformed);
+        jMenu11.add(jMenuItem6);
 
         jMenuBar1.add(jMenu11);
 
@@ -273,6 +283,29 @@ public class Presentacion extends javax.swing.JFrame {
       
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
+    private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
+      
+        AgregarCursoProgramaForm vAgCurProgForm = new AgregarCursoProgramaForm();
+        jDesktopPane1.add(vAgCurProgForm);
+         java.awt.Dimension desktopSize = jDesktopPane1.getSize();
+        java.awt.Dimension frameSize = vAgCurProgForm.getSize();
+        vAgCurProgForm.setLocation((desktopSize.width - frameSize.width) / 2, 
+                      (desktopSize.height - frameSize.height) / 2);
+        vAgCurProgForm.setVisible(true);
+        vAgCurProgForm.toFront();
+    }//GEN-LAST:event_jMenuItem5ActionPerformed
+
+    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+  /* ConsultarProgForm vConProgForm = new ConsultarProgForm();
+   jDesktopPane1.add(vConProgForm);
+         java.awt.Dimension desktopSize = jDesktopPane1.getSize();
+        java.awt.Dimension frameSize = vConProgForm.getSize();
+        vConProgForm.setLocation((desktopSize.width - frameSize.width) / 2, 
+                      (desktopSize.height - frameSize.height) / 2);
+        vConProgForm.setVisible(true);
+        vConProgForm.toFront();*/
+    }//GEN-LAST:event_jMenuItem6ActionPerformed
+
 
     /**
      * @param args the command line arguments
@@ -323,6 +356,8 @@ public class Presentacion extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JPopupMenu jPopupMenu2;
     private javax.swing.JMenuItem mConsultarUsuario;

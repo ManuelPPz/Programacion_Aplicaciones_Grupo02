@@ -4,6 +4,7 @@
  */
 package Logica;
 import DTsClasses.DTCurso;
+import DTsClasses.DTProgramaForm;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import bdSQL.ConexionBD;
 import java.sql.Connection;
+import DTsClasses.Vigencia;
 /**
  *
  * @author mateo
@@ -105,8 +107,56 @@ public class Controller implements IController{
     //Consulta Programa de Formacion
     //Se modificara al crear el tipo de dato ProgramaFormacion retornando el tipo de dato "ProgramaFormacion"
     @Override
-    public void ConsultaProgramaFormacion(String nomPrograma){
-        
+    public DTProgramaForm ConsultaProgramaFormacion(String nomPrograma){
+    // 1. Listas auxiliares con sintaxis diamantes limpia (<>)
+    List<String> auxListPrev = new ArrayList<>();
+    auxListPrev.add("COE");
+    auxListPrev.add("ADI");
+    
+    List<String> auxListEdi = new ArrayList<>();
+    auxListEdi.add("Edi. 2026");
+    
+    List<String> auxListProg = new ArrayList<>();
+    auxListProg.add(nomPrograma);
+    
+    // 2. Fechas auxiliares
+    Date auxFecha;
+    Date auxFechaFin;
+    try {
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+        auxFecha = formato.parse("18/08/2021");
+        auxFechaFin = formato.parse("31/12/2026");
+    } catch (ParseException e) {
+        auxFecha = new Date();
+        auxFechaFin = new Date();
+    }
+    
+    // 3. Objetos de prueba DTCurso
+    DTCurso curso1 = new DTCurso("CURE", "Programación 1", "Curso de introducción", 1, 3, 15, "ev.utec.com", auxFecha, auxListPrev, auxListEdi, auxListProg);
+    DTCurso curso2 = new DTCurso("CURE", "Bases de Datos", "Curso de SQL", 1, 4, 12, "ev.utec.com", auxFecha, auxListPrev, auxListEdi, auxListProg);
+    
+    List<DTCurso> auxListCursos = new ArrayList<>();
+    auxListCursos.add(curso1);
+    auxListCursos.add(curso2);
+    
+    // 4. Instanciar Vigencia y el DTProgramaForm final
+    Vigencia auxVigencia = new Vigencia(auxFecha, auxFechaFin);
+    DTProgramaForm auxDTProg = new DTProgramaForm(nomPrograma, "Descripción del programa " + nomPrograma, auxVigencia, auxListCursos);
+    // Implementación real futura:
+    /*
+    ManejadorProgramaFormacion mp = ManejadorProgramaFormacion.getInstance();
+    ProgramaFormacion p = mp.buscarPrograma(nomPrograma);
+    
+    List<DTCurso> listDTCursos = new ArrayList<>();
+    for (Curso c : p.getListaCursos()) {
+        listDTCursos.add(new DTCurso(c.getInstituto().getNombre(), c.getNombre(), ...));
+    }
+    
+    DTProgramaForm auxDTProg = new DTProgramaForm(p.getNombre(), p.getDescripcion(), p.getVigencia(), listDTCursos);
+    return auxDTProg;
+    */
+    
+    return auxDTProg;
     }
     
     //MOMENTANEO PONER EN TRUE PARA PROBAR Y DEJAR EN FALSE HASTA QUE SE AGREGE METODO
