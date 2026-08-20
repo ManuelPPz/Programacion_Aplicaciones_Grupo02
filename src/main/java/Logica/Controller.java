@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
+
+import java.io.File;
+import javax.swing.ImageIcon;
 /**
  *
  * @author mateo
@@ -18,8 +21,17 @@ public class Controller implements IController{
     }
     //Alta Usuario
     @Override
-    public void AgregarUsuario(String nickname, String nombre, String apellido, String correo, Date fechaNac, boolean docente, String instituto){
-    }   //Consultar Usuario, la funcion deberia devolver el tipo de dato usuario
+    public void AltaUsuario(String nickname, String nombre, String apellido, String correo, Date fechaNac, boolean docente, String instituto, ImageIcon fotoPerfil){
+        /*
+        Posible solucion
+        if(docente==true){
+            Instituto i = ManejadorInstituto.BuscarInstituto(insituto);
+        }
+        Usuario u = new Usuario(nickname, nombre, apellido, correo, fechaNac, docente, i);
+        ManejadorUsuario.Add(c);
+        */
+    }   
+    //Consultar Usuario, la funcion deberia devolver el tipo de dato usuario
     //Se modificara al crear el tipo de dato usuario retornando el tipo de dato "Usuario"
     @Override
     public void ConsultarUsuario(String nickname){
@@ -75,8 +87,12 @@ public class Controller implements IController{
     //La coleccion de docentes sera añadida cuando se cree el tipo de dato "Docente"
     //El tipo de dato FechaType sera añadido cuando se cree el tipo de dato "FechaType" o alguno con nombre parecido
     @Override
-    public void AltaEdicionCurso(String nomCurso, String nomEdicion/*, FechaType (dia incio, dia final)*/,int cupo/*Collection<Usuario> docentes*/){
-        
+    public void AltaEdicionCurso(String nomCurso, String nomEdicion,Date fInicio, Date fFin,int cupo, List<String> Docentes, Date fAlta){
+        /*
+        Posible solucion
+        EdicionCurso eC = new EdicionCurso(nomCurso,nomEdicion,fInicio,fFin,cupo,Docentes, fAlta);
+        ManejadorEdiones.Add(eC);
+        */
     }
     //Consulta Edicion Curso
     //Se modificara al crear el tipo de dato EdicionCurso retornando el tipo de dato "EdicionCurso"
@@ -123,6 +139,17 @@ public class Controller implements IController{
         return c!=null;
         */
         return nombre.equals("PA");
+    }
+    
+    //Verificar si existe edicion de curso con el nombre
+    @Override
+    public boolean VerificarEdicionCurso(String nombre){
+        //Falta realizar
+        /*Posible solucion
+        EdicionCurso eC = ManjeadorEdiciones.BuscarEdicion(nombre);
+        return eC!=null;
+        */
+        return nombre.equals("Edi. 2026");
     }
     
     //Devoolver lista de insitutos

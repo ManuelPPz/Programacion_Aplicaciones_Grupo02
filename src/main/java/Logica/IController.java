@@ -7,13 +7,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import DTsClasses.DTCurso;
+
+import java.io.File;
+import javax.swing.ImageIcon;
 /**
  *
  * @author mateo
  */
 public interface IController {
     //Alta Usuario
-    public abstract void AgregarUsuario(String nickname, String nombre, String apellido, String correo, Date fechaNac, boolean docente, String instituto);
+    public abstract void AltaUsuario(String nickname, String nombre, String apellido, String correo, Date fechaNac, boolean docente, String instituto, ImageIcon fotoPerfil);
     //Consultar Usuario, la funcion deberia devolver el tipo de dato usuario
     //Se modificara al crear el tipo de dato usuario retornando el tipo de dato "Usuario"
     public abstract void ConsultarUsuario(String nickname);
@@ -29,7 +32,7 @@ public interface IController {
     //Alta Edicion Curso
     //La coleccion de docentes sera añadida cuando se cree el tipo de dato "Docente"
     //El tipo de dato FechaType sera añadido cuando se cree el tipo de dato "FechaType" o alguno con nombre parecido
-    public abstract void AltaEdicionCurso(String nomCurso, String nomEdicion/*, FechaType (dia incio, dia final)*/,int cupo/*Collection<Usuario> docentes*/);
+    public abstract void AltaEdicionCurso(String nomCurso, String nomEdicion,Date fInicio, Date fFin,int cupo, List<String> Docentes, Date fAlta);
     //Consulta Edicion Curso
     //Se modificara al crear el tipo de dato EdicionCurso retornando el tipo de dato "EdicionCurso"
     public abstract void ConsultaEdicionCurso(String nomEdicion);
@@ -50,6 +53,8 @@ public interface IController {
     //Otras Funciones
     //Verificar existencia de curso
     public abstract boolean VerificarCurso(String nombre);
+    //Verificar existencia de edicion de curso
+    public abstract boolean VerificarEdicionCurso(String nombre);
     //Devoolver lista de insitutos
     public abstract List<String> ListarInstitutos();
     //Dovelver lista de cursos

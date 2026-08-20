@@ -4,20 +4,32 @@
  */
 package interfaces;
 
+import Logica.IController;
+import Logica.Fabric;
+
+
 import java.io.File;
 import javax.swing.JFileChooser;
 import java.util.Date;
 import java.util.Calendar;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import java.io.File;
+import javax.swing.ImageIcon;
 /**
  *
  * @author sebas
  */
 public class AltaUsuario extends javax.swing.JInternalFrame {
-
+    public IController ico;
     /**
      * Creates new form AltaUsuario
      */
     public AltaUsuario() {
+        Fabric f = Fabric.GetInstance();
+        ico = f.GetIController();
         initComponents();
         
         // Ocultar la etiqueta y el combo box de Instituto al cargar la ventana
@@ -66,151 +78,99 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
         setMaximizable(true);
         setResizable(true);
         setTitle("Alta de Usuario");
+        getContentPane().setLayout(null);
 
         jLabel1.setText("Nickname:");
+        getContentPane().add(jLabel1);
+        jLabel1.setBounds(36, 53, 70, 16);
 
         jLabel2.setText("Nombre:");
+        getContentPane().add(jLabel2);
+        jLabel2.setBounds(36, 84, 70, 16);
 
         jLabel3.setText("Apellido:");
+        getContentPane().add(jLabel3);
+        jLabel3.setBounds(36, 109, 70, 16);
 
         jLabel4.setText("Email:");
+        getContentPane().add(jLabel4);
+        jLabel4.setBounds(36, 137, 60, 16);
 
         txtNickname.addActionListener(this::txtNicknameActionPerformed);
+        getContentPane().add(txtNickname);
+        txtNickname.setBounds(183, 53, 154, 22);
 
         txtNombre.addActionListener(this::txtNombreActionPerformed);
+        getContentPane().add(txtNombre);
+        txtNombre.setBounds(183, 81, 154, 22);
 
         txtApellido.addActionListener(this::txtApellidoActionPerformed);
+        getContentPane().add(txtApellido);
+        txtApellido.setBounds(183, 109, 154, 22);
 
         txtEmail.addActionListener(this::txtEmailActionPerformed);
+        getContentPane().add(txtEmail);
+        txtEmail.setBounds(183, 137, 154, 22);
 
         btnAceptar.setText("Aceptar");
         btnAceptar.addActionListener(this::btnAceptarActionPerformed);
+        getContentPane().add(btnAceptar);
+        btnAceptar.setBounds(250, 350, 90, 23);
 
         btnCancelar.setForeground(new java.awt.Color(255, 102, 102));
         btnCancelar.setText("Cancelar");
         btnCancelar.addActionListener(this::btnCancelarActionPerformed);
+        getContentPane().add(btnCancelar);
+        btnCancelar.setBounds(150, 350, 90, 23);
 
         jLabel5.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 0, 255));
         jLabel5.setText("Ingrese datos de usuario:");
+        getContentPane().add(jLabel5);
+        jLabel5.setBounds(19, 17, 160, 18);
 
         jLabel6.setText("Tipo de usuario:");
+        getContentPane().add(jLabel6);
+        jLabel6.setBounds(30, 210, 100, 20);
 
         comboTipoUsuario.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar...", "Estudiante", "Docente" }));
         comboTipoUsuario.addActionListener(this::comboTipoUsuarioActionPerformed);
+        getContentPane().add(comboTipoUsuario);
+        comboTipoUsuario.setBounds(180, 210, 151, 22);
 
         jLabel10.setText("Fecha de Nacimiento:");
+        getContentPane().add(jLabel10);
+        jLabel10.setBounds(30, 180, 130, 20);
 
-        comboInstituto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar...", "FING", "CLAEH", "UCU", "UTEC" }));
+        List<String> auxListIns = ico.ListarInstitutos();
+        comboInstituto.insertItemAt("Seleccionar...", 0);
+        for(int i = 0;i<auxListIns.size();i++){
+            comboInstituto.insertItemAt(auxListIns.get(i), i+1);
+        }
+        comboInstituto.setSelectedIndex(0);
         comboInstituto.addActionListener(this::comboInstitutoActionPerformed);
+        getContentPane().add(comboInstituto);
+        comboInstituto.setBounds(180, 240, 151, 22);
 
         lblInstituto.setText("Instituto");
+        getContentPane().add(lblInstituto);
+        lblInstituto.setBounds(30, 240, 100, 20);
+        getContentPane().add(fieldPath);
+        fieldPath.setBounds(140, 270, 161, 22);
 
         jLabel11.setText("Imagen");
+        getContentPane().add(jLabel11);
+        jLabel11.setBounds(30, 270, 100, 20);
 
         buttonChooser.setText("...");
         buttonChooser.addActionListener(this::buttonChooserActionPerformed);
+        getContentPane().add(buttonChooser);
+        buttonChooser.setBounds(310, 270, 23, 23);
 
         spinnerDate.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
         spinnerDate.setEditor(new javax.swing.JSpinner.DateEditor(spinnerDate, "dd/MM/yyyy"));
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(176, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(comboInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(10, 10, 10))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(txtNickname, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(spinnerDate, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(comboTipoUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(10, 10, 10))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(19, 19, 19)
-                                .addComponent(jLabel5))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(36, 36, 36)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel10)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addComponent(jLabel6)
-                                    .addComponent(lblInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(fieldPath, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(buttonChooser)))))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnCancelar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnAceptar)
-                .addGap(18, 18, 18))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(17, 17, 17)
-                .addComponent(jLabel5)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(txtNickname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel10)
-                    .addComponent(spinnerDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6)
-                    .addComponent(comboTipoUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblInstituto)
-                    .addComponent(comboInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel11)
-                    .addComponent(fieldPath)
-                    .addComponent(buttonChooser))
-                .addGap(38, 38, 38)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnCancelar)
-                    .addComponent(btnAceptar))
-                .addGap(0, 8, Short.MAX_VALUE))
-        );
+        getContentPane().add(spinnerDate);
+        spinnerDate.setBounds(183, 177, 144, 22);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -284,15 +244,13 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
         cal.set(anio, mes - 1, dia);
         Date fechaNacimiento = cale.getTime();
 
+        String instituto = (String)comboInstituto.getSelectedItem();
+        String ruta  = fieldPath.getText();
+        ImageIcon icon = new ImageIcon(ruta);
         if ("Docente".equalsIgnoreCase(tipoUsuario)) {
-            String instituto = (String) comboInstituto.getSelectedItem();
-            /* AQUÍ INVOCARÁS A TU LÓGICA:
-               controladorUsuario.altaDocente(nickname, nombre, apellido, email, fechaNacimiento, instituto);
-            */
+            ico.AltaUsuario(nickname, nombre, apellido, nombre, fechaNacimiento, true, instituto, icon);
         } else {
-            /* AQUÍ INVOCARÁS A TU LÓGICA:
-               controladorUsuario.altaEstudiante(nickname, nombre, apellido, email, fechaNacimiento);
-            */
+            ico.AltaUsuario(nickname, nombre, apellido, nombre, fechaNacimiento, false, instituto, icon);
         }
 
         // Mensaje de éxito
@@ -344,12 +302,6 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
         if(resultado == JFileChooser.APPROVE_OPTION){
             File archivo = chooser.getSelectedFile();
             fieldPath.setText(archivo.getAbsolutePath());
-            /*
-            Este bloque se usara cuando halla que mostrar la imagen del usuario en una label
-            Requerimientos: import java.awt.Image;
-            ImageIcon icon = new ImageIcon(archivo.getAbsolutePath());
-            Image imgEscalada = icon.getImage().getScaledInstance(labelIcon.getWidth(), labelIcon.getHeight(), Image.SCALE_SMOOTH);
-            labelIcon.setIcon(new ImageIcon(imgEscalada));*/
         }
     }//GEN-LAST:event_buttonChooserActionPerformed
 

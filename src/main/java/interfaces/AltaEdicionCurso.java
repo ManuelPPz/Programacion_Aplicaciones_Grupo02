@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ArrayList;
 import Logica.Fabric;
 import Logica.IController;
+import java.util.Date;
 /**
  *
  * @author mateo
@@ -21,6 +22,7 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
         ico = f.GetIController();
         initComponents();
         spinnerCupo.setVisible(false);
+        labelNombreRepetido.setVisible(false);
     }
 
     /**
@@ -45,11 +47,12 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
         boxDocentes = new javax.swing.JComboBox<>();
         jLabel13 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
-        spinDateIni1 = new javax.swing.JSpinner();
+        spinDateAlta = new javax.swing.JSpinner();
         btnAceptar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
         boxInstituto = new javax.swing.JComboBox<>();
         boxCursos = new javax.swing.JComboBox<>();
+        labelNombreRepetido = new javax.swing.JLabel();
 
         setClosable(true);
         setIconifiable(true);
@@ -58,186 +61,184 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
         setTitle("Alta Edicion Curso");
         setToolTipText("");
         setPreferredSize(new java.awt.Dimension(366, 400));
+        getContentPane().setLayout(null);
 
         jLabel10.setBackground(new java.awt.Color(255, 255, 255));
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel10.setText("Cursos*");
+        getContentPane().add(jLabel10);
+        jLabel10.setBounds(17, 56, 58, 26);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel1.setText("Instituto*");
+        getContentPane().add(jLabel1);
+        jLabel1.setBounds(17, 18, 58, 26);
 
         jLabel11.setBackground(new java.awt.Color(255, 255, 255));
         jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel11.setText("Nombre*");
+        getContentPane().add(jLabel11);
+        jLabel11.setBounds(17, 100, 70, 26);
+
+        fieldNombre.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                fieldNombreFocusLost(evt);
+            }
+        });
+        getContentPane().add(fieldNombre);
+        fieldNombre.setBounds(80, 100, 213, 26);
 
         spinDateIni.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
         spinDateIni.setEditor(new javax.swing.JSpinner.DateEditor(spinDateIni, "dd/MM/yyyy"));
+        getContentPane().add(spinDateIni);
+        spinDateIni.setBounds(63, 166, 97, 26);
 
         jLabel12.setBackground(new java.awt.Color(255, 255, 255));
         jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel12.setText("Inicio*");
+        getContentPane().add(jLabel12);
+        jLabel12.setBounds(17, 165, 50, 26);
 
         spinDateFin.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
         spinDateFin.setEditor(new javax.swing.JSpinner.DateEditor(spinDateFin, "dd/MM/yyyy"));
+        getContentPane().add(spinDateFin);
+        spinDateFin.setBounds(197, 168, 97, 22);
 
         jLabel14.setBackground(new java.awt.Color(255, 255, 255));
         jLabel14.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel14.setText("Fin*");
+        getContentPane().add(jLabel14);
+        jLabel14.setBounds(166, 168, 40, 20);
 
         checkCupo.setText("Cupo Definido");
         checkCupo.addChangeListener(this::checkCupoStateChanged);
+        getContentPane().add(checkCupo);
+        checkCupo.setBounds(17, 211, 120, 20);
+        getContentPane().add(spinnerCupo);
+        spinnerCupo.setBounds(136, 210, 64, 22);
 
-        boxDocentes.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        boxDocentes.insertItemAt("Seleccionar...", 0);
+        List<String> auxListDoc = ico.ListarDocentes();
+
+        for(int i = 0;i<auxListDoc.size();i++){
+            boxDocentes.insertItemAt(auxListDoc.get(i), i+1);
+        }
+        boxDocentes.setSelectedIndex(0);
         boxDocentes.addActionListener(this::boxDocentesActionPerformed);
+        getContentPane().add(boxDocentes);
+        boxDocentes.setBounds(87, 246, 250, 22);
 
         jLabel13.setBackground(new java.awt.Color(255, 255, 255));
         jLabel13.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel13.setText("Docente*");
+        getContentPane().add(jLabel13);
+        jLabel13.setBounds(17, 238, 64, 36);
 
         jLabel15.setBackground(new java.awt.Color(255, 255, 255));
         jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel15.setText("Fecha de publicacion*");
+        getContentPane().add(jLabel15);
+        jLabel15.setBounds(17, 282, 150, 26);
 
-        spinDateIni1.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
-        spinDateIni1.setEditor(new javax.swing.JSpinner.DateEditor(spinDateIni1, "dd/MM/yyyy"));
+        spinDateAlta.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
+        spinDateAlta.setEditor(new javax.swing.JSpinner.DateEditor(spinDateAlta, "dd/MM/yyyy"));
+        getContentPane().add(spinDateAlta);
+        spinDateAlta.setBounds(167, 280, 97, 32);
 
         btnAceptar.setText("Aceptar");
         btnAceptar.addActionListener(this::btnAceptarActionPerformed);
+        getContentPane().add(btnAceptar);
+        btnAceptar.setBounds(250, 330, 90, 23);
 
         btnCancelar.setForeground(new java.awt.Color(255, 102, 102));
         btnCancelar.setText("Cancelar");
         btnCancelar.addActionListener(this::btnCancelarActionPerformed);
+        getContentPane().add(btnCancelar);
+        btnCancelar.setBounds(150, 330, 90, 23);
 
         boxInstituto.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        boxInstituto.addActionListener(this::boxInstitutoActionPerformed);
-
-        boxCursos.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        boxCursos.addActionListener(this::boxCursosActionPerformed);
-        List<String> auxListCursos = ico.ListarCursos();
-        boxCursos.insertItemAt("SIN DATOS", 0);
-        for(int i = 0;i<auxListCursos.size();i++){
-            boxCursos.insertItemAt(auxListCursos.get(i), i+1);
-        }
-        boxInstituto.setSelectedIndex(0);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnCancelar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnAceptar)
-                        .addGap(3, 3, 3))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(boxDocentes, 0, 227, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel15)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(spinDateIni1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(checkCupo)
-                            .addGap(18, 18, 18)
-                            .addComponent(spinnerCupo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(boxInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(boxCursos, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel11)
-                            .addGap(5, 5, 5)
-                            .addComponent(fieldNombre))
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel12)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(spinDateIni, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jLabel14)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(spinDateFin, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(19, 19, 19))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(35, 35, 35)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(boxInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(boxCursos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(fieldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(spinDateIni, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
-                    .addComponent(jLabel14)
-                    .addComponent(spinDateFin))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(checkCupo)
-                    .addComponent(spinnerCupo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(boxDocentes))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(spinDateIni1, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
-                    .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnCancelar)
-                    .addComponent(btnAceptar))
-                .addGap(73, 73, 73))
-        );
-
-        List<String> auxListIns = ico.ListarInstitutos();
         boxInstituto.insertItemAt("SIN DATOS", 0);
+        List<String> auxListIns = ico.ListarInstitutos();
+
         for(int i = 0;i<auxListIns.size();i++){
             boxInstituto.insertItemAt(auxListIns.get(i), i+1);
         }
         boxInstituto.setSelectedIndex(0);
+        boxInstituto.addActionListener(this::boxInstitutoActionPerformed);
+        getContentPane().add(boxInstituto);
+        boxInstituto.setBounds(82, 18, 212, 26);
+
+        boxCursos.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        boxCursos.addActionListener(this::boxCursosActionPerformed);
+        getContentPane().add(boxCursos);
+        boxCursos.setBounds(81, 56, 212, 26);
+
+        labelNombreRepetido.setForeground(new java.awt.Color(255, 0, 0));
+        labelNombreRepetido.setText("Nombre de edicion ya existente");
+        getContentPane().add(labelNombreRepetido);
+        labelNombreRepetido.setBounds(90, 130, 180, 20);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void boxDocentesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boxDocentesActionPerformed
         String auxString = boxDocentes.getSelectedItem().toString();
-        if(auxString.contains("✓")){
-            String auxSubString = auxString.substring(2);
-            int auxInt = boxDocentes.getSelectedIndex();
-            boxDocentes.removeItemAt(auxInt);
-            boxDocentes.insertItemAt(auxSubString, auxInt);
-        }else{
-            auxString = "✓ " + auxString;
-            int auxInt = boxDocentes.getSelectedIndex();
-            boxDocentes.removeItemAt(auxInt);
-            boxDocentes.insertItemAt(auxString, auxInt);
-            boxDocentes.setSelectedIndex(auxInt);
+        if(boxDocentes.getSelectedIndex()!=0){
+            if(auxString.contains("✓")){
+                String auxSubString = auxString.substring(2);
+                int auxInt = boxDocentes.getSelectedIndex();
+                boxDocentes.removeItemAt(auxInt);
+                boxDocentes.insertItemAt(auxSubString, auxInt);
+            }else{
+                auxString = "✓ " + auxString;
+                int auxInt = boxDocentes.getSelectedIndex();
+                boxDocentes.removeItemAt(auxInt);
+                boxDocentes.insertItemAt(auxString, auxInt);
+                boxDocentes.setSelectedIndex(auxInt);
+            }
         }
+        
     }//GEN-LAST:event_boxDocentesActionPerformed
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
+        //Llamar a crear edicion de curso
+        if(VerificarDatos()){
+            javax.swing.JOptionPane.showMessageDialog(this, "Algunos campos deben ser completados", "Atencion",javax.swing.JOptionPane.ERROR_MESSAGE);
+        }else{
+            //Logica agregar edicion de curso
+            String auxCurso = (String)boxCursos.getSelectedItem();
+            String auxNombre = fieldNombre.getText();
+            Date auxFIni = (Date)spinDateIni.getValue();
+            Date auxFEnd = (Date)spinDateFin.getValue();
+            
+            List<String> docentes = new ArrayList();
+            int tam = boxDocentes.getItemCount();
+            for(int i = 1;i<tam;i++){
+                String text = (String) boxDocentes.getItemAt(i);
+                if(text.contains("✓")){
+                    String auxSubString = text.substring(2);
+                    docentes.add(auxSubString);
+                }
+            }
+            Date auxFAlta = (Date)spinDateAlta.getValue();
+            if(checkCupo.isSelected()==true){
+                int auxCupo = (int)spinnerCupo.getValue();
+                ico.AltaEdicionCurso(auxCurso, auxNombre, auxFIni, auxFEnd, auxCupo, docentes, auxFAlta);
+            }else{
+                ico.AltaEdicionCurso(auxCurso, auxNombre, auxFIni, auxFEnd, 0, docentes, auxFAlta);
+            }
+            javax.swing.JOptionPane.showMessageDialog(this, "Edicion de Curso ingresada con exito!", "System",javax.swing.JOptionPane.INFORMATION_MESSAGE);
         
+        }
     }//GEN-LAST:event_btnAceptarActionPerformed
-    
+    boolean VerificarDatos(){
+        return boxInstituto.getSelectedIndex()==0 ||
+                boxCursos.getSelectedIndex()==0 ||
+                fieldNombre.getText().isEmpty() ||
+                ico.VerificarEdicionCurso(fieldNombre.getText()) || 
+                boxDocentes.getSelectedIndex()==0;
+                
+    }
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         // Simplemente cierra la ventana interna sin cerrar el programa
         this.dispose();
@@ -264,6 +265,14 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
 
     }//GEN-LAST:event_boxCursosActionPerformed
 
+    private void fieldNombreFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fieldNombreFocusLost
+        if(ico.VerificarEdicionCurso(fieldNombre.getText())){
+            labelNombreRepetido.setVisible(true);
+        }else{
+            labelNombreRepetido.setVisible(false);
+        }
+    }//GEN-LAST:event_fieldNombreFocusLost
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> boxCursos;
@@ -280,9 +289,10 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel labelNombreRepetido;
+    private javax.swing.JSpinner spinDateAlta;
     private javax.swing.JSpinner spinDateFin;
     private javax.swing.JSpinner spinDateIni;
-    private javax.swing.JSpinner spinDateIni1;
     private javax.swing.JSpinner spinnerCupo;
     // End of variables declaration//GEN-END:variables
 }

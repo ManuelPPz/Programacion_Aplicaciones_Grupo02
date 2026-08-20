@@ -130,7 +130,7 @@ public class Presentacion extends javax.swing.JFrame {
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // 1. Crear una instancia de la ventana interna AltaUsuario
         AltaUsuario vAlta = new AltaUsuario();
-    
+        vAlta.setBounds(0, 0, 380, 430);
         // 2. Agregarla al contenedor principal JDesktopPane
         // (Asegúrate de que 'jDesktopPane1' sea el nombre de variable de tu JDesktopPane)
         jDesktopPane1.add(vAlta);
@@ -188,8 +188,7 @@ public class Presentacion extends javax.swing.JFrame {
         AltaEdicionCurso vAltaEdicionCurso = new AltaEdicionCurso();
         // 2. Agregarla al contenedor principal JDesktopPane
         // (Asegúrate de que 'jDesktopPane1' sea el nombre de variable de tu JDesktopPane)
-        jDesktopPane1.add(vAltaEdicionCurso);
-        
+        //vAltaEdicionCurso.setSize(400, 350);
         // 3. Centrar la ventana dentro del escritorio
         java.awt.Dimension desktopSize = jDesktopPane1.getSize();
         java.awt.Dimension frameSize = vAltaEdicionCurso.getSize();
@@ -200,6 +199,8 @@ public class Presentacion extends javax.swing.JFrame {
         
         vAltaEdicionCurso.setVisible(true);
         vAltaEdicionCurso.toFront();
+        jDesktopPane1.add(vAltaEdicionCurso);
+        
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     /**
