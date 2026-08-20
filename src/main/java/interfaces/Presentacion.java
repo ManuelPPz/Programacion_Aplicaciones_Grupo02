@@ -52,6 +52,8 @@ public class Presentacion extends javax.swing.JFrame {
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenu11 = new javax.swing.JMenu();
         CrearProgFormacion = new javax.swing.JMenuItem();
+        jMenu12 = new javax.swing.JMenu();
+        jMenuItem4 = new javax.swing.JMenuItem();
 
         jMenu3.setText("jMenu3");
 
@@ -125,6 +127,14 @@ public class Presentacion extends javax.swing.JFrame {
         jMenu11.add(CrearProgFormacion);
 
         jMenuBar1.add(jMenu11);
+
+        jMenu12.setText("Instituto");
+
+        jMenuItem4.setText("Alta Instituto");
+        jMenuItem4.addActionListener(this::jMenuItem4ActionPerformed);
+        jMenu12.add(jMenuItem4);
+
+        jMenuBar1.add(jMenu12);
 
         setJMenuBar(jMenuBar1);
 
@@ -251,6 +261,18 @@ public class Presentacion extends javax.swing.JFrame {
         vConsultaUsuario.toFront();
     }//GEN-LAST:event_mConsultarUsuarioActionPerformed
 
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+      AltaInstituto vAltaInstituto = new AltaInstituto();
+       jDesktopPane1.add(vAltaInstituto);
+         java.awt.Dimension desktopSize = jDesktopPane1.getSize();
+        java.awt.Dimension frameSize = vAltaInstituto.getSize();
+        vAltaInstituto.setLocation((desktopSize.width - frameSize.width) / 2, 
+                      (desktopSize.height - frameSize.height) / 2);
+        vAltaInstituto.setVisible(true);
+        vAltaInstituto.toFront();
+      
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
+
 
     /**
      * @param args the command line arguments
@@ -283,6 +305,7 @@ public class Presentacion extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu10;
     private javax.swing.JMenu jMenu11;
+    private javax.swing.JMenu jMenu12;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
@@ -299,6 +322,7 @@ public class Presentacion extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JPopupMenu jPopupMenu2;
     private javax.swing.JMenuItem mConsultarUsuario;
