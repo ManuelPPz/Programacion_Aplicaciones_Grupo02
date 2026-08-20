@@ -10,18 +10,18 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.io.Serializable;
 import java.util.Date;
+
 /**
  *
  * @author mateo
  */
 @Entity
-public class Usuario extends UsuarioBase{
-    public Usuario(){
+public class Docente extends UsuarioBase{
+    public Docente(){
         super();
     }
-    public Usuario(String nick, String nombre, String apellido, String correo, Date fNac){
+    public Docente(String nick, String nombre, String apellido, String correo, Date fNac){
         super(nick, nombre, apellido, correo, fNac);
     }
-    
     
 }

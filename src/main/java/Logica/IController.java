@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import DTsClasses.DTCurso;
+import DTsClasses.DTUsuarioBase;
 /**
  *
  * @author mateo
@@ -16,7 +17,7 @@ public interface IController {
     public abstract void AgregarUsuario(String nickname, String nombre, String apellido, String correo, Date fechaNac, boolean docente, String instituto);
     //Consultar Usuario, la funcion deberia devolver el tipo de dato usuario
     //Se modificara al crear el tipo de dato usuario retornando el tipo de dato "Usuario"
-    public abstract void ConsultarUsuario(String nickname);
+    public abstract DTUsuarioBase ConsultarUsuario(String nickname);
     //Modificar Datos Usuario
     public abstract void ModificarUsuario(String nickname, String newNombre, String newApellido, String newCorreo, Date newFechaNac);
     //Alta Curso
