@@ -13,21 +13,36 @@ import java.text.ParseException;
 import bdSQL.ConexionBD;
 import java.sql.Connection;
 import DTsClasses.Vigencia;
+//Imports Manejadores
+import Manejadores.ManejadorUsuario;
+//Imports Clases
+import Classes.UsuarioBase;
+//imports DTs
+import DTsClasses.DTCurso;
+import DTsClasses.DTUsuarioBase;
+
 /**
  *
  * @author mateo
  */
 public class Controller implements IController{
+    ManejadorUsuario manUsuario;
     public Controller(){
+        manUsuario = ManejadorUsuario.GetInstance();
     }
     //Alta Usuario
     @Override
     public void AgregarUsuario(String nickname, String nombre, String apellido, String correo, Date fechaNac, boolean docente, String instituto){
-    }   //Consultar Usuario, la funcion deberia devolver el tipo de dato usuario
+        UsuarioBase auxUsuario = manUsuario.CrearUsuario(nickname, nombre, apellido, correo, docente, fechaNac);
+        manUsuario.Add(auxUsuario);
+    }   
+    //Consultar Usuario, la funcion deberia devolver el tipo de dato usuario
     //Se modificara al crear el tipo de dato usuario retornando el tipo de dato "Usuario"
     @Override
-    public void ConsultarUsuario(String nickname){
-        
+    public DTUsuarioBase ConsultarUsuario(String nickname){
+        UsuarioBase auxUsuario = manUsuario.BuscarUsuario(nickname);
+        DTUsuarioBase auxDT = manUsuario.getDT(auxUsuario);
+        return auxDT;
     }
     //Modificar Datos Usuario
     @Override
