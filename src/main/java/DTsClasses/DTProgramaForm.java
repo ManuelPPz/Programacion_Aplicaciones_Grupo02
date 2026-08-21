@@ -14,9 +14,9 @@ public class DTProgramaForm {
     private String nombre;
     private String descripcion;
     private Vigencia vigenciaPrograma;
-    private List<DTCurso>cursos;
+    private List<String>cursos;
     //constructor
-    public DTProgramaForm(String nomPrograma, String descripcion, Vigencia vigenciaProg, List<DTCurso>cursos){
+    public DTProgramaForm(String nomPrograma, String descripcion, Vigencia vigenciaProg, List<String>cursos){
     this.nombre = nomPrograma;
     this.descripcion = descripcion;
     this.vigenciaPrograma = vigenciaProg;
@@ -36,7 +36,7 @@ public class DTProgramaForm {
         return vigenciaPrograma;
     }
     
-    public List<DTCurso> getCursos(){
+    public List<String> getCursos(){
         return cursos;
     }
     
