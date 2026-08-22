@@ -2,6 +2,8 @@ package main;
 
 // 1. Importamos la clase Presentacion que está en el paquete Interfaces
 import interfaces.Presentacion;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 
 public class proyecto_pda_grupo02 {
 
@@ -13,6 +15,11 @@ public class proyecto_pda_grupo02 {
             vPresentacion.setLocationRelativeTo(null); // Centra la ventana en pantalla
             vPresentacion.setResizable(false);
             vPresentacion.setVisible(true);            // Muestra la ventana
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory("ControladorPU");
+        
+        System.out.println("Tablas verificadas/creadas correctamente.");
+        
+        emf.close();
         });
     }
 }

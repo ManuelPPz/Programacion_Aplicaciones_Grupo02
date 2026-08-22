@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -17,7 +18,8 @@ import java.util.Date;
  *
  * @author mateo
  */
-@MappedSuperclass
+@Entity
+@Table(name = "UsuarioBase")
 public class UsuarioBase implements Serializable {
 
     private static final long serialVersionUID = 1L;
