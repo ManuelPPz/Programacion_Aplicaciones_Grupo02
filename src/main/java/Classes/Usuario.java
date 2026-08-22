@@ -14,6 +14,7 @@ public abstract class Usuario {
     protected String apellido;
     protected String mail;
     protected LocalDate fecha_nacimiento;
+    private String imagenPath;
     
 
     public Usuario(String nick, String nombre, String mail, LocalDate fecha_nacimiento) {

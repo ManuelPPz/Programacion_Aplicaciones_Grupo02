@@ -7,7 +7,7 @@
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>26</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
         <exec.mainClass>com.mycompany.proyecto_proframacion_grupo02.proyecto_pda_grupo02</exec.mainClass>
     </properties>
     <name>proyecto_pda_grupo02</name>
