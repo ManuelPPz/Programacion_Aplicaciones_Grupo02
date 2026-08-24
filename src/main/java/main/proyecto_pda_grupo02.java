@@ -14,5 +14,6 @@ public class proyecto_pda_grupo02 {
             vPresentacion.setResizable(false);
             vPresentacion.setVisible(true);            // Muestra la ventana
         });
+        System.out.print("");
     }
 }
