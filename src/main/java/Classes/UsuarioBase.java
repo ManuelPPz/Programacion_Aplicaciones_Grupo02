@@ -13,6 +13,7 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -35,6 +36,8 @@ public class UsuarioBase implements Serializable {
     private String correo;
     @Column(name="fNac")
     private Date fNac;
+    @Column(name="Imagen")
+    private byte[] image;
 
     public String getNickname() {
         return nickname;
@@ -43,16 +46,18 @@ public class UsuarioBase implements Serializable {
     public String getApellido(){return this.apellido;}
     public String getCorreo(){return this.correo;}
     public Date getFNac(){return this.fNac;}
+    public byte[] getImage(){return this.image;}
     
     public UsuarioBase(){
         
     }
-    public UsuarioBase(String nick, String nom, String apellido, String correo, Date fNac){
+    public UsuarioBase(String nick, String nom, String apellido, String correo, Date fNac,byte[] img){
         this.nickname = nick;
         this.nombre = nom;
         this.apellido = apellido;
         this.correo = correo;
         this.fNac = fNac;
+        this.image = img;
     }
 
     @Override

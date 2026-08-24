@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.io.Serializable;
 import java.util.Date;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -20,8 +21,8 @@ public class Docente extends UsuarioBase{
     public Docente(){
         super();
     }
-    public Docente(String nick, String nombre, String apellido, String correo, Date fNac){
-        super(nick, nombre, apellido, correo, fNac);
+    public Docente(String nick, String nombre, String apellido, String correo, Date fNac, byte[] img){
+        super(nick, nombre, apellido, correo, fNac,img);
     }
     
 }

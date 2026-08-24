@@ -5,13 +5,13 @@
 package DTsClasses;
 
 import java.util.Date;
-
+import javax.swing.ImageIcon;
 /**
  *
  * @author mateo
  */
 public class DTUsuario extends DTUsuarioBase{
-    public DTUsuario(String nickname,String nombre,String apellido,String correo,Date fNac){
-        super(nickname,nombre,apellido,correo,fNac);
+    public DTUsuario(String nickname,String nombre,String apellido,String correo,Date fNac, ImageIcon img){
+        super(nickname,nombre,apellido,correo,fNac,img);
     }
 }

@@ -10,18 +10,18 @@ import java.util.ArrayList;
  *
  * @author mateo
  */
-public class DTCurso {
-    public String instituto;
-    public String nombre;
-    public String descripcion;
-    public int duracion;
-    public int cantHoras;
-    public int cantCreditos;
-    public String URL;
-    public Date fechaAlta;
-    public List<String> listPrevias;
-    public List<String> listEdiCursos;
-    public List<String> listProgCursos;
+public class DTCurso extends DTMaster{
+    private String instituto;
+    private String nombre;
+    private String descripcion;
+    private int duracion;
+    private int cantHoras;
+    private int cantCreditos;
+    private String URL;
+    private Date fechaAlta;
+    private List<String> listPrevias;
+    private List<String> listEdiCursos;
+    private List<String> listProgCursos;
     public DTCurso(String nomInstituto, String nom, String descripcion, int duracion,int cantHoras,int cantCreditos, String URL, Date fecha, List<String> listPrevias, List<String> listEdiCursos, List<String> listProgCursos){
         this.instituto = nomInstituto;
         this.nombre = nom;
@@ -34,6 +34,17 @@ public class DTCurso {
         this.listPrevias = listPrevias;
         this.listEdiCursos = listEdiCursos;
         this.listProgCursos = listProgCursos;
-        
     }
+    public String getInstituto(){return this.instituto;}
+    public String getNombre(){return this.nombre;}
+    public String getDescripcion(){return this.instituto;}
+    public int getDuracion(){return this.duracion;}
+    public int getCantHoras(){return this.cantHoras;}
+    public int getCantCreditos(){return this.cantCreditos;}
+    public String getURL(){return this.URL;}
+    public Date getFechaAlta(){return this.fechaAlta;}
+    public List<String> getPrevias(){return this.listPrevias;}
+    public List<String> getEdiCursos(){return this.listEdiCursos;}
+    public List<String> getProgFormacion(){return this.listProgCursos;}
+    
 }

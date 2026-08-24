@@ -6,18 +6,26 @@ package interfaces;
 
 import java.io.File;
 import javax.swing.JFileChooser;
+import javax.swing.ImageIcon;
 import java.util.Date;
 import java.util.Calendar;
+
+import Logica.Fabric;
+import Logica.IController;
+import java.util.ArrayList;
+import java.util.List;
 /**
  *
  * @author sebas
  */
 public class AltaUsuario extends javax.swing.JInternalFrame {
-
+    IController ico;
     /**
      * Creates new form AltaUsuario
      */
     public AltaUsuario() {
+        Fabric f = Fabric.GetInstance();
+        ico = f.GetIController();
         initComponents();
         
         // Ocultar la etiqueta y el combo box de Instituto al cargar la ventana
@@ -240,11 +248,6 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
 
     // 2. Captura de la Fecha de los Spinners
     Date fecha =(Date) spinnerDate.getValue();
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(fecha);
-    int dia = cal.get(Calendar.DAY_OF_MONTH);
-    int mes = cal.get(Calendar.MONTH)+1;
-    int anio = cal.get(Calendar.YEAR);
 
     // 3. Validación de campos obligatorios de texto
     if (nickname.isEmpty() || email.isEmpty() || nombre.isEmpty() || apellido.isEmpty()) {
@@ -276,23 +279,26 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
             return;
         }
     }
-
+    String imgPath = fieldPath.getText();
+    
     // 6. Proceso de Alta (Paso exitoso)
     try {
         // Armar la fecha
-        Calendar cale = Calendar.getInstance();
-        cal.set(anio, mes - 1, dia);
-        Date fechaNacimiento = cale.getTime();
+       
 
         if ("Docente".equalsIgnoreCase(tipoUsuario)) {
-            String instituto = (String) comboInstituto.getSelectedItem();
-            /* AQUÍ INVOCARÁS A TU LÓGICA:
-               controladorUsuario.altaDocente(nickname, nombre, apellido, email, fechaNacimiento, instituto);
-            */
+            List<String> institutos = new ArrayList();
+            int tam = comboInstituto.getItemCount();
+            for(int i = 1;i<tam;i++){
+                String text = (String) comboInstituto.getItemAt(i);
+                if(text.contains("✓")){
+                    String auxSubString = text.substring(2);
+                    institutos.add(auxSubString);
+                }
+            }
+            ico.AgregarUsuario(nickname, nombre, apellido, email, fecha, true, institutos,imgPath);
         } else {
-            /* AQUÍ INVOCARÁS A TU LÓGICA:
-               controladorUsuario.altaEstudiante(nickname, nombre, apellido, email, fechaNacimiento);
-            */
+            ico.AgregarUsuario(nickname, nombre, apellido, email, fecha, false, null,imgPath);
         }
 
         // Mensaje de éxito
@@ -333,7 +339,21 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_comboTipoUsuarioActionPerformed
 
     private void comboInstitutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboInstitutoActionPerformed
-        
+        if(comboInstituto.getSelectedIndex()!=0){
+                        String auxString = comboInstituto.getSelectedItem().toString();
+                    if(auxString.contains("✓")){
+                        String auxSubString = auxString.substring(2);
+                        int auxInt = comboInstituto.getSelectedIndex();
+                        comboInstituto.removeItemAt(auxInt);
+                        comboInstituto.insertItemAt(auxSubString, auxInt);
+                    }else{
+                        auxString = "✓ " + auxString;
+                        int auxInt = comboInstituto.getSelectedIndex();
+                        comboInstituto.removeItemAt(auxInt);
+                        comboInstituto.insertItemAt(auxString, auxInt);
+                        comboInstituto.setSelectedIndex(auxInt);
+                    }
+                }        
     }//GEN-LAST:event_comboInstitutoActionPerformed
 
     private void buttonChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonChooserActionPerformed

@@ -7,16 +7,21 @@ import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import DTsClasses.DTCurso;
+import DTsClasses.DTInstituto;
+import DTsClasses.DTMaster;
 
 import DTsClasses.DTProgramaForm;
 import DTsClasses.DTUsuarioBase;
+import DTsClasses.EnumDT;
+import javax.swing.ImageIcon;
+
 /**
  *
  * @author mateo
  */
 public interface IController {
     //Alta Usuario
-    public abstract void AgregarUsuario(String nickname, String nombre, String apellido, String correo, Date fechaNac, boolean docente, String instituto);
+    public abstract void AgregarUsuario(String nickname, String nombre, String apellido, String correo, Date fechaNac, boolean docente, List<String> institutos, String imgPath);
     //Consultar Usuario, la funcion deberia devolver el tipo de dato usuario
     //Se modificara al crear el tipo de dato usuario retornando el tipo de dato "Usuario"
     public abstract DTUsuarioBase ConsultarUsuario(String nickname);
@@ -28,7 +33,7 @@ public interface IController {
     public abstract void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso);
     //Consulta Curso
     //Se modificara al crear el tipo de dato curso retornando el tipo de dato "Curso"
-    public abstract DTCurso ConsultaCurso(String nomCurso);
+    public abstract DTMaster ConsultaCurso(String nomCurso);
     //Alta Edicion Curso
     //La coleccion de docentes sera añadida cuando se cree el tipo de dato "Docente"
     //El tipo de dato FechaType sera añadido cuando se cree el tipo de dato "FechaType" o alguno con nombre parecido
@@ -53,14 +58,14 @@ public interface IController {
     //Otras Funciones
     //Verificar existencia de curso
     public abstract boolean VerificarCurso(String nombre);
-    //Devoolver lista de insitutos
-    public abstract List<String> ListarInstitutos();
-    //Dovelver lista de cursos
-    public abstract List<String> ListarCursos();
+    //Devoolver lista completa de DTs
+    public abstract List<DTMaster> ListarClase(EnumDT enumType);
+    
     //Devolver lista de cursos x instituto
-    public abstract List<String> ListarCursos(String nomInstituto);
+    public abstract List<DTMaster> ListarCursos(String nomInstituto);
     //verifica existencia de programa
     public abstract boolean ExistePrograma(String nombreProg);
     public abstract void ActualizarPrograma(String nombreProg, String descripcionProg, Date fInicio, Date fFin);
+    
     
 }

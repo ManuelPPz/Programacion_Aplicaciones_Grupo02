@@ -107,7 +107,7 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="boxInstitutoActionPerformed"/>
       </Events>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="List&lt;String&gt; auxListIns = ico.ListarInstitutos();&#xa;boxInstituto.insertItemAt(&quot;SIN DATOS&quot;, 0);&#xa;for(int i = 0;i&lt;auxListIns.size();i++){&#xa;    boxInstituto.insertItemAt(auxListIns.get(i), i+1);&#xa;}&#xa;boxInstituto.setSelectedIndex(0);"/>
+        <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="List&lt;String&gt; auxListIns = null;&#xa;boxInstituto.insertItemAt(&quot;SIN DATOS&quot;, 0);&#xa;for(int i = 0;i&lt;auxListIns.size();i++){&#xa;    boxInstituto.insertItemAt(auxListIns.get(i), i+1);&#xa;}&#xa;boxInstituto.setSelectedIndex(0);"/>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
       </AuxValues>
       <Constraints>
@@ -193,7 +193,7 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="boxPreviasActionPerformed"/>
       </Events>
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="List&lt;String&gt; auxListCur = ico.ListarCursos();&#xa;boxPrevias.insertItemAt(&quot;SIN DATOS&quot;, 0);&#xa;for(int i = 0;i&lt;auxListCur.size();i++){&#xa;    boxPrevias.insertItemAt(auxListCur.get(i), i+1);&#xa;}&#xa;boxPrevias.setSelectedIndex(0);"/>
+        <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="List&lt;DTMaster&gt; auxListCur = ico.ListarClase(EnumDT.DT_CURSO);&#xa;boxPrevias.insertItemAt(&quot;SIN DATOS&quot;, 0);&#xa;for(int i = 0;i&lt;auxListCur.size();i++){&#xa;    DTCurso auxDT = (DTCurso)auxListCur.get(i);&#xa;    String aux = auxDT.getNombre();&#xa;    boxPrevias.insertItemAt(aux, i+1);&#xa;}&#xa;boxPrevias.setSelectedIndex(0);"/>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
       </AuxValues>
       <Constraints>

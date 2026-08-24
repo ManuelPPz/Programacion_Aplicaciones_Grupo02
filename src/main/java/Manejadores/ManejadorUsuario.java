@@ -9,10 +9,19 @@ import java.util.ArrayList;
 import Classes.Docente;
 import Classes.Usuario;
 import java.util.Date;
+import javax.swing.ImageIcon;
+
+import javax.imageio.ImageIO;
 
 import DTsClasses.DTUsuarioBase;
 import DTsClasses.DTDocente;
 import DTsClasses.DTUsuario;
+import DTsClasses.DTMaster;
+
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 /**
  *
  * @author mateo
@@ -36,15 +45,46 @@ public class ManejadorUsuario {
         return instance;
     }
     
-    public UsuarioBase CrearUsuario(String nick, String nombre, String apellido, String correo, boolean docente,Date fNac/*falta lista de institutos*/){
+    public UsuarioBase CrearUsuario(String nick, String nombre, String apellido, String correo, boolean docente,Date fNac, List<String>institutos, String imgPath) throws IOException{
         UsuarioBase returnUb;
+        byte[] imgByte = null;
+        if(!imgPath.isEmpty()){
+            imgByte = ConvertirImageIconToByte(imgPath);
+        }
+        
         if(docente){
-            returnUb = new Docente(nick, nombre, apellido, correo, fNac/*falta lista de institutos*/);
+            returnUb = new Docente(nick, nombre, apellido, correo,/*falta meter institutos*/ fNac,imgByte);
         }else{
-            returnUb = new Usuario(nick, nombre, apellido, correo, fNac);
+            returnUb = new Usuario(nick, nombre, apellido, correo, fNac,imgByte);
         }
         return returnUb;
     }
+    //Funcion que convierte un ImageIcon en byte para persistencia
+    private byte[] ConvertirImageIconToByte(String imgPath) throws IOException{
+        ImageIcon img = new ImageIcon(imgPath);
+        String formato = "png";
+        if(imgPath.endsWith(".png")){
+            formato = "png";
+        }else if(imgPath.endsWith(".jpg") || imgPath.endsWith(".jpeg")){
+            formato = "png";
+        }
+        BufferedImage bi = new BufferedImage(img.getIconWidth(),img.getIconHeight(),BufferedImage.TYPE_INT_ARGB);
+        Graphics g = bi.createGraphics();
+        img.paintIcon(null,g,0,0);
+        g.dispose();
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bi,formato,baos);
+        byte[] bytes = baos.toByteArray();
+
+        return bytes;
+    }
+    
+    private ImageIcon ConvertirByteToImageIcon(byte[] bytes){
+        return new ImageIcon(bytes);
+    }
+    
+    
     public void Add(UsuarioBase ub){
         misUsuarios.add(ub);
         //Aca se añade a la base de datos
@@ -66,13 +106,26 @@ public class ManejadorUsuario {
     }
     
     public DTUsuarioBase getDT(UsuarioBase ub){
-        if(ub instanceof Docente){
-            DTUsuarioBase auxDT = new DTDocente(ub.getNickname(),ub.getNombre(),ub.getApellido(),ub.getCorreo(),ub.getFNac(),null);
-            return auxDT;
-        }else if(ub instanceof Usuario){
-            
+        DTUsuarioBase auxDT = null;
+        ImageIcon img = null;
+        if(ub.getImage()!=null){
+            img = ConvertirByteToImageIcon(ub.getImage());
         }
-        return null;
+        
+        if(ub instanceof Docente){
+           auxDT = new DTDocente(ub.getNickname(),ub.getNombre(),ub.getApellido(),ub.getCorreo(),ub.getFNac(),null,img);
+        }else if(ub instanceof Usuario){
+           auxDT = new DTUsuario(ub.getNickname(),ub.getNombre(),ub.getApellido(),ub.getCorreo(),ub.getFNac(),img);
+        }
+        return auxDT;
+    }
+    public List<DTMaster> getDTList(){
+        List<DTMaster> auxList = new ArrayList();
+        for(int i = 0;i<misUsuarios.size();i++){
+            DTMaster dt = getDT(misUsuarios.get(i));
+            auxList.add(dt);
+        }
+        return auxList;
     }
     
 }

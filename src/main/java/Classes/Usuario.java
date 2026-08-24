@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.io.Serializable;
 import java.util.Date;
+import javax.swing.ImageIcon;
 /**
  *
  * @author mateo
@@ -19,8 +20,8 @@ public class Usuario extends UsuarioBase{
     public Usuario(){
         super();
     }
-    public Usuario(String nick, String nombre, String apellido, String correo, Date fNac){
-        super(nick, nombre, apellido, correo, fNac);
+    public Usuario(String nick, String nombre, String apellido, String correo, Date fNac,byte[] img){
+        super(nick, nombre, apellido, correo, fNac,img);
     }
     
     

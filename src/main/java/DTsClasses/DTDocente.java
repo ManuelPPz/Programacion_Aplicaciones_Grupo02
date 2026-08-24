@@ -7,6 +7,7 @@ package DTsClasses;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -15,8 +16,8 @@ import java.util.List;
 public class DTDocente extends DTUsuarioBase{
     List<String> institutos = new ArrayList();
     
-    public DTDocente(String nickname,String nombre,String apellido,String correo,Date fNac, List<String> institutos){
-        super(nickname,nombre,apellido,correo,fNac);
+    public DTDocente(String nickname,String nombre,String apellido,String correo,Date fNac, List<String> institutos, ImageIcon img){
+        super(nickname,nombre,apellido,correo,fNac,img);
         this.institutos = institutos;
     }
 }

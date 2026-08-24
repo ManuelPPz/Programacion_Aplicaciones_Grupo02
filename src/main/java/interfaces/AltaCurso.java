@@ -8,6 +8,9 @@ import Logica.Fabric;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
+import DTsClasses.DTMaster;
+import DTsClasses.DTCurso;
+import DTsClasses.EnumDT;
 /**
  *
  * @author sebas
@@ -99,7 +102,7 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         boxInstituto.addActionListener(this::boxInstitutoActionPerformed);
         getContentPane().add(boxInstituto);
         boxInstituto.setBounds(99, 23, 254, 22);
-        List<String> auxListIns = ico.ListarInstitutos();
+        List<String> auxListIns = null;
         boxInstituto.insertItemAt("SIN DATOS", 0);
         for(int i = 0;i<auxListIns.size();i++){
             boxInstituto.insertItemAt(auxListIns.get(i), i+1);
@@ -134,10 +137,12 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         boxPrevias.addActionListener(this::boxPreviasActionPerformed);
         getContentPane().add(boxPrevias);
         boxPrevias.setBounds(127, 346, 144, 22);
-        List<String> auxListCur = ico.ListarCursos();
+        List<DTMaster> auxListCur = ico.ListarClase(EnumDT.DT_CURSO);
         boxPrevias.insertItemAt("SIN DATOS", 0);
         for(int i = 0;i<auxListCur.size();i++){
-            boxPrevias.insertItemAt(auxListCur.get(i), i+1);
+            DTCurso auxDT = (DTCurso)auxListCur.get(i);
+            String aux = auxDT.getNombre();
+            boxPrevias.insertItemAt(aux, i+1);
         }
         boxPrevias.setSelectedIndex(0);
 

@@ -13,6 +13,7 @@ import java.text.ParseException;
 import bdSQL.ConexionBD;
 import java.sql.Connection;
 import DTsClasses.Vigencia;
+import javax.swing.ImageIcon;
 //Imports Manejadores
 import Manejadores.ManejadorUsuario;
 //Imports Clases
@@ -20,6 +21,13 @@ import Classes.UsuarioBase;
 //imports DTs
 import DTsClasses.DTCurso;
 import DTsClasses.DTUsuarioBase;
+//Se debe quitar despues de probar consulta usuario
+import DTsClasses.DTDocente;
+import DTsClasses.DTInstituto;
+import DTsClasses.DTUsuario;
+import java.io.IOException;
+import DTsClasses.DTMaster;
+import DTsClasses.EnumDT;
 
 /**
  *
@@ -32,8 +40,13 @@ public class Controller implements IController{
     }
     //Alta Usuario
     @Override
-    public void AgregarUsuario(String nickname, String nombre, String apellido, String correo, Date fechaNac, boolean docente, String instituto){
-        UsuarioBase auxUsuario = manUsuario.CrearUsuario(nickname, nombre, apellido, correo, docente, fechaNac);
+    public void AgregarUsuario(String nickname, String nombre, String apellido, String correo, Date fechaNac, boolean docente, List<String> institutos, String imgPath){
+        UsuarioBase auxUsuario = null;
+        try {
+            auxUsuario = manUsuario.CrearUsuario(nickname, nombre, apellido, correo, docente, fechaNac, institutos, imgPath);
+        } catch (IOException ex) {
+            System.out.print("Ocurrio un error en el sistema");
+        }
         manUsuario.Add(auxUsuario);
     }   
     //Consultar Usuario, la funcion deberia devolver el tipo de dato usuario
@@ -61,34 +74,37 @@ public class Controller implements IController{
     //Consulta Curso
     //Se modificara al crear el tipo de dato curso retornando el tipo de dato "Curso"
     @Override
-    public DTCurso ConsultaCurso(String nomCurso){
-        List<String> auxListPrev = new ArrayList();
-        auxListPrev.add("COE");
-        auxListPrev.add("ADI");
-        
-        List<String> auxListEdi = new ArrayList();
-        auxListEdi.add("Edi. 2026");
-        auxListEdi.add("Edi. 2027");
-        
-        List<String> auxListProg = new ArrayList();
-        auxListProg.add("Prog. Ado.");
-        
-        
-        Date auxFecha;
-        try{
-            SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-            auxFecha = formato.parse("18/08/2021");
-        }catch(ParseException e){
-            auxFecha = new Date();
+    public DTMaster ConsultaCurso(String nomCurso){
+        if("Prog. de Aplicaciones".equals(nomCurso)){
+            List<String> auxListPrev = new ArrayList();
+            auxListPrev.add("COE");
+            auxListPrev.add("ADI");
+
+            List<String> auxListEdi = new ArrayList();
+            auxListEdi.add("Edi. 2026");
+            auxListEdi.add("Edi. 2027");
+
+            List<String> auxListProg = new ArrayList();
+            auxListProg.add("Prog. Ado.");
+
+
+            Date auxFecha;
+            try{
+                SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+                auxFecha = formato.parse("18/08/2021");
+            }catch(ParseException e){
+                auxFecha = new Date();
+            }
+            DTMaster auxDTCurso = new DTCurso("CURE",nomCurso,"Es un curso",1,3,15,"https://ev1.utec.edu.uy/moodle/course/view.php?id=17424",auxFecha,auxListPrev,auxListEdi,auxListProg);
+            //Falta implementar buscar un curso
+            /*Posible solucion:
+            Curso c = ManejadorCurso.BuscarCurso(nomCurso);
+            DTCurso auxDTCurso = new DTCurso(c.miInstituto.nombre,c.nombre,c.descripcion,c.duracion,c.cantHoras,c.cantCreditos,c.URL,c.fechaAlta,c.listPrevias,c.listEdiciones,c.listProgramas);
+            return auxDTCurso;
+            */
+            return auxDTCurso;
         }
-        DTCurso auxDTCurso = new DTCurso("CURE",nomCurso,"Es un curso",1,3,15,"ev.Utec.com",auxFecha,auxListPrev,auxListEdi,auxListProg);
-        //Falta implementar buscar un curso
-        /*Posible solucion:
-        Curso c = ManejadorCurso.BuscarCurso(nomCurso);
-        DTCurso auxDTCurso = new DTCurso(c.miInstituto.nombre,c.nombre,c.descripcion,c.duracion,c.cantHoras,c.cantCreditos,c.URL,c.fechaAlta,c.listPrevias,c.listEdiciones,c.listProgramas);
-        return auxDTCurso;
-        */
-        return auxDTCurso;
+        return null;
     }
     //Alta Edicion Curso
     //La coleccion de docentes sera añadida cuando se cree el tipo de dato "Docente"
@@ -190,45 +206,51 @@ public class Controller implements IController{
         return nombre.equals("PA");
     }
     
-    //Devoolver lista de insitutos
+    //Devoolver lista completa de DTs
+    //Lista que no requiere de ninguna condicion
     @Override
-    public List<String> ListarInstitutos(){
+    public List<DTMaster> ListarClase(EnumDT enumType){
         //Falta realizar
         /*Posible solucion:
         List<String> listReturn = ManejadorInstituto.GetNameMyCursos();
         */
+        List<DTMaster> listReturn = new ArrayList();
+        if(enumType==EnumDT.DT_INSTITUTO){
+            listReturn.add(new DTInstituto("CURE"));
+            listReturn.add(new DTInstituto("ORT"));
+            listReturn.add(new DTInstituto("UDELAR"));
+            listReturn.add(new DTInstituto("UM"));
+            return listReturn;
+        }else if(enumType==EnumDT.DT_CURSO){
+            //Falta realizar
+            /*Posible solucion:
+            List<String> listReturn = ManjeadorCurso.GetNameMyCursos();
+            */
+            listReturn.add(new DTCurso("CURE", "Prog. de Aplicaciones", "Java, UI, Netbeans y mas", 4,40,16, "https://ev1.utec.edu.uy/moodle/course/view.php?id=17424", new Date(), null, null, null));
+            listReturn.add(new DTCurso("CURE", "Prog. de Avanzada", "C++", 5,40,20, "https://ev1.utec.edu.uy/moodle/course/view.php?id=17424", new Date(), null, null, null));
+            listReturn.add(new DTCurso("CURE", "COE", "Aburrida", 2,5,3, "https://ev1.utec.edu.uy/moodle/course/view.php?id=17424", new Date(), null, null, null));
+            listReturn.add(new DTCurso("CURE", "ADI", "Solo Caffa", 6,41,16, "https://ev1.utec.edu.uy/moodle/course/view.php?id=17424", new Date(), null, null, null));
+        }else if(enumType==EnumDT.DT_USUARIO){
+            listReturn = manUsuario.getDTList();
+        }
         
-        List<String> listReturn = new ArrayList();
-        listReturn.add("CURE");
-        listReturn.add("UDELAR");
-        listReturn.add("UM");
-        listReturn.add("ORT");
         return listReturn;
     }
-    //Dovelver lista de cursos
+    
     @Override
-    public List<String> ListarCursos(){
-        //Falta realizar
-        /*Posible solucion:
-        List<String> listReturn = ManjeadorCurso.GetNameMyCursos();
-        */
-        List<String> listReturn = new ArrayList();
-        listReturn.add("Prog. Avanzada");
-        listReturn.add("Prog. Aplicaciones");
-        listReturn.add("COE");
-        listReturn.add("ADI");
-        return listReturn;
-    }
-    @Override
-    public List<String> ListarCursos(String nomInstituto){
+    public List<DTMaster> ListarCursos(String nomInstituto){
         //Falta Realizar
         /*Posible solucion:
-        List<String> listReturn = ManjeadorCurso.GetNameMyCursos(nomInstituto);
-        */
-        List<String> listReturn = new ArrayList();
-        listReturn.add("Prog. Aplicaciones");
-        listReturn.add("ADI");
-        return listReturn;
+            List<String> listReturn = ManjeadorCurso.GetNameMyCursos(nomInstituto);
+            *//*
+            if(!"CURE".equals(nomInstituto)){
+                return null;
+            }
+            */
+            List<DTMaster> listReturn = new ArrayList();
+            listReturn.add(new DTCurso("CURE", "Prog. de Aplicaciones", "Java, UI, Netbeans y mas", 4,40,16, "https://ev1.utec.edu.uy/moodle/course/view.php?id=17424", new Date(), null, null, null));
+            listReturn.add(new DTCurso("CURE", "ING. De Software", "La da gatto", 4,44,20, "https://ev1.utec.edu.uy/moodle/course/view.php?id=17419", new Date(), null, null, null));
+            return listReturn;
     }
     
 }
