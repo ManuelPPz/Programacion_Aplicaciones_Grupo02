@@ -4,13 +4,7 @@
  */
 package Classes;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import javax.swing.ImageIcon;
@@ -20,6 +14,7 @@ import javax.swing.ImageIcon;
  * @author mateo
  */
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "UsuarioBase")
 public class UsuarioBase implements Serializable {
 
@@ -48,9 +43,7 @@ public class UsuarioBase implements Serializable {
     public Date getFNac(){return this.fNac;}
     public byte[] getImage(){return this.image;}
     
-    public UsuarioBase(){
-        
-    }
+    public UsuarioBase(){}
     public UsuarioBase(String nick, String nom, String apellido, String correo, Date fNac,byte[] img){
         this.nickname = nick;
         this.nombre = nom;
@@ -60,6 +53,15 @@ public class UsuarioBase implements Serializable {
         this.image = img;
     }
 
+    public void ModificarMisDatos(String nom, String apellido, String correo, Date fNac,byte[] img){
+        this.nombre = nom;
+        this.apellido = apellido;
+        this.correo = correo;
+        this.fNac = fNac;
+        this.image = img;
+    }
+    
+    
     @Override
     public int hashCode() {
         int hash = 0;

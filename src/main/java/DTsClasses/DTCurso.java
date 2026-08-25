@@ -15,14 +15,14 @@ public class DTCurso extends DTMaster{
     private String nombre;
     private String descripcion;
     private int duracion;
-    private int cantHoras;
+    private float cantHoras;
     private int cantCreditos;
     private String URL;
     private Date fechaAlta;
     private List<String> listPrevias;
     private List<String> listEdiCursos;
     private List<String> listProgCursos;
-    public DTCurso(String nomInstituto, String nom, String descripcion, int duracion,int cantHoras,int cantCreditos, String URL, Date fecha, List<String> listPrevias, List<String> listEdiCursos, List<String> listProgCursos){
+    public DTCurso(String nomInstituto, String nom, String descripcion, int duracion,float cantHoras,int cantCreditos, String URL, Date fecha, List<String> listPrevias, List<String> listEdiCursos, List<String> listProgCursos){
         this.instituto = nomInstituto;
         this.nombre = nom;
         this.descripcion = descripcion;
@@ -37,9 +37,9 @@ public class DTCurso extends DTMaster{
     }
     public String getInstituto(){return this.instituto;}
     public String getNombre(){return this.nombre;}
-    public String getDescripcion(){return this.instituto;}
+    public String getDescripcion(){return this.descripcion;}
     public int getDuracion(){return this.duracion;}
-    public int getCantHoras(){return this.cantHoras;}
+    public float getCantHoras(){return this.cantHoras;}
     public int getCantCreditos(){return this.cantCreditos;}
     public String getURL(){return this.URL;}
     public Date getFechaAlta(){return this.fechaAlta;}

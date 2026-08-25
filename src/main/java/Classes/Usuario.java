@@ -24,5 +24,8 @@ public class Usuario extends UsuarioBase{
         super(nick, nombre, apellido, correo, fNac,img);
     }
     
-    
+    @Override
+    public void ModificarMisDatos(String nom, String apellido, String correo, Date fNac,byte[] img){
+        super.ModificarMisDatos(nom, apellido, correo, fNac, img);
+    }
 }

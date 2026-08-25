@@ -26,14 +26,14 @@ public interface IController {
     //Se modificara al crear el tipo de dato usuario retornando el tipo de dato "Usuario"
     public abstract DTUsuarioBase ConsultarUsuario(String nickname);
     //Modificar Datos Usuario
-    public abstract void ModificarUsuario(String nickname, String newNombre, String newApellido, String newCorreo, Date newFechaNac);
+    public abstract void ModificarUsuario(String nickname, String newNombre, String newApellido, String newCorreo,boolean docente, Date newFechaNac, List<String> institutos, String imgPath);
     //Alta Curso
     //La fecha del curso se toma dentro de la funcion
     //Preguntar al profe si los cursos previos son el tipo de dato o un int
     public abstract void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso);
     //Consulta Curso
     //Se modificara al crear el tipo de dato curso retornando el tipo de dato "Curso"
-    public abstract DTMaster ConsultaCurso(String nomCurso);
+    public abstract DTMaster ConsultaCurso(String nomCurso,String ins);
     //Alta Edicion Curso
     //La coleccion de docentes sera añadida cuando se cree el tipo de dato "Docente"
     //El tipo de dato FechaType sera añadido cuando se cree el tipo de dato "FechaType" o alguno con nombre parecido
@@ -57,7 +57,9 @@ public interface IController {
     
     //Otras Funciones
     //Verificar existencia de curso
-    public abstract boolean VerificarCurso(String nombre);
+    public abstract boolean VerificarCurso(String nombre,String institut);
+    //Verificar existencia de instituto
+    public abstract boolean VerificarInstituto(String instituto);
     //Devoolver lista completa de DTs
     public abstract List<DTMaster> ListarClase(EnumDT enumType);
     

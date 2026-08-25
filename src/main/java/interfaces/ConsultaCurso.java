@@ -8,16 +8,16 @@ package interfaces;
 import DTsClasses.DTCurso;
 import DTsClasses.DTInstituto;
 import DTsClasses.DTMaster;
+import DTsClasses.EnumDT;
+
 import Logica.IController;
 import Logica.Fabric;
+
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.table.DefaultTableModel;
-import DTsClasses.EnumDT;
-import java.awt.Color;
 
-import interfaces.MiniInterfazDeConsultaCurso;
-import java.util.Date;
+import javax.swing.table.DefaultTableModel;
+
 import java.text.SimpleDateFormat;
 
 //Librerias para saber si el texto esta cambiando
@@ -40,10 +40,12 @@ public class ConsultaCurso extends javax.swing.JInternalFrame {
         initComponents();
         
         List<DTMaster> listInstituto = ico.ListarClase(EnumDT.DT_INSTITUTO);
+        if(!listInstituto.isEmpty()){
+            listInstituto = OrdenarLista(listInstituto);
+            IniciarRows(listInstituto);
+            IniciarTable(EnumDT.DT_INSTITUTO);
+        }
         
-        listInstituto = OrdenarLista(listInstituto);
-        IniciarRows(listInstituto);
-        IniciarTable(EnumDT.DT_INSTITUTO);
     }
 
     private void IniciarRows(List<DTMaster> list){
@@ -105,13 +107,14 @@ public class ConsultaCurso extends javax.swing.JInternalFrame {
         } 
     }
     
-    private void MostrarDatos(String nombre){
-        DTMaster dt = ico.ConsultaCurso(nombre);
+    private void MostrarDatos(String nombre,String instituto){
+        DTMaster dt = ico.ConsultaCurso(nombre,instituto);
         MiniInterfazDeConsultaCurso micc = new MiniInterfazDeConsultaCurso();
         this.getDesktopPane().add(micc);
         micc.setTitle("(Info) "+nombre);
         micc.setVisible(true);
         micc.toFront();
+        
         micc.ColocarDatos(dt);
         
     }
@@ -162,11 +165,15 @@ public class ConsultaCurso extends javax.swing.JInternalFrame {
                     String objNick = (String)tableInstitutos.getValueAt(fila, 0);
 
                     List<DTMaster> listCurso = ico.ListarCursos(objNick);
-
-                    listCurso = OrdenarLista(listCurso);
-                    IniciarRows(listCurso);
-                    if("".equals(fieldCurso.getText())){
-                        FiltrarCursos();
+                    if(!listCurso.isEmpty()){
+                        listCurso = OrdenarLista(listCurso);
+                        IniciarRows(listCurso);
+                        if("".equals(fieldCurso.getText())){
+                            FiltrarCursos();
+                        }
+                    }else{
+                        DefaultTableModel modelo = (DefaultTableModel) tableCursos.getModel();
+                        modelo.setRowCount(0);
                     }
 
                 }
@@ -213,10 +220,12 @@ public class ConsultaCurso extends javax.swing.JInternalFrame {
         tableCursos.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 int fila = tableCursos.getSelectedRow();
+                int filaIns = tableInstitutos.getSelectedRow();
                 if (fila != -1) {
                     //Logica de mostrar curso
                     String nombre = (String)tableCursos.getValueAt(fila, 0);
-                    MostrarDatos(nombre);
+                    String objNick = (String)tableInstitutos.getValueAt(filaIns, 0);
+                    MostrarDatos(nombre,objNick);
                 }
             }
         });

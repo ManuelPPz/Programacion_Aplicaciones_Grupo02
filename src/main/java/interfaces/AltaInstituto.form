@@ -105,9 +105,6 @@
           <Color blue="ff" green="0" red="0" type="rgb"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Ingrese los datos del Instituto:"/>
-        <Property name="size" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[44, 19]"/>
-        </Property>
       </Properties>
     </Component>
   </SubComponents>
