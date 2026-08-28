@@ -176,7 +176,7 @@ public class Controller implements IController{
     @Override
     public boolean ExistePrograma(String nombreProg){
         //Consulta cuantos Programas tienen ese nombre
-        String sql = "SELECT COUNT(*) FROM Programa_Formacion WHERE nombre = ?";
+        String sql = "SELECT COUNT(*) FROM ProgramaFormacion WHERE nombre = ?";
         //Abre y cierra la coneccion automaticamente
         try (Connection con = bdSQL.ConexionBD.getConexion(); java.sql.PreparedStatement ps = con.prepareStatement(sql)){
            //asigna el nombre a '?'
