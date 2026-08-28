@@ -45,7 +45,7 @@ public interface IController {
     public abstract void InscripcionAEdicionCurso(String nomCurso, String nickname);
     //Crear Programa de Formacion
     //El tipo de dato FechaType sera añadido cuando se cree el tipo de dato "FechaType" o alguno con nombre parecido
-    public abstract void CrearProgramasDeFormacion(String nomPrograma, String descripcion/*, FechaType (dia incio, dia final)*/);
+    public abstract void CrearProgramasDeFormacion(DTProgramaForm dt)throws Exception;
     //Agregar programa
     public abstract void AgregarCursoAProgramas(String nomPrograma, String nomCurso);
     //Consulta Programa de Formacion

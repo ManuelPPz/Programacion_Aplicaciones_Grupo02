@@ -8,13 +8,17 @@
 
         <!-- REGISTRA AQUÍ TODAS TUS ENTIDADES Y CLASES PADRE -->
         <class>Classes.UsuarioBase</class>
+        <class>Classes.Instituto</class>
+        <class>Classes.Curso</class>
+        <class>Classes.Docente</class>
+        <class>Classes.Usuario</class>
         <!-- Agrega aquí otras entidades si tienes, por ejemplo: -->
         <!-- <class>Classes.Estudiante</class> -->
 
         <properties>
             <!-- Conexión a Base de Datos -->
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/edEXT_db?useSSL=false&amp;serverTimezone=UTC"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/edEXT_db?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC"/>
             <property name="jakarta.persistence.jdbc.user" value="root"/>
             <property name="jakarta.persistence.jdbc.password" value="ghiuliana"/>
 

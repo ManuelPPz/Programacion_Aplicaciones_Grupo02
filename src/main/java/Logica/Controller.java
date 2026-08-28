@@ -19,6 +19,7 @@ import Manejadores.*;
 import Classes.UsuarioBase;
 import Classes.Curso;
 import Classes.Instituto;
+import Classes.ProgramaFormacion;
 //Imports DTs
 import DTsClasses.DTCurso;
 import DTsClasses.DTUsuarioBase;
@@ -134,9 +135,15 @@ public class Controller implements IController{
     }
     //Crear Programa de Formacion
     //El tipo de dato FechaType sera añadido cuando se cree el tipo de dato "FechaType" o alguno con nombre parecido
-    @Override
-    public void CrearProgramasDeFormacion(String nomPrograma, String descripcion/*, FechaType (dia incio, dia final)*/){
+    public void CrearProgramasDeFormacion(DTProgramaForm dt) throws Exception{
+       //Convertir el DT en una entidad de jpa
+        ProgramaFormacion pf = new ProgramaFormacion();
+        pf.setNombre(dt.getNombre());
+        pf.setDescripcion(dt.getDescripcion());
+        pf.setVigenciaPrograma(dt.getVigenciaProg());
         
+        //guardar a traves del manejador
+        ManejadorProgramaForm.getInstance().agregarPrograma(pf);
     }
     //Agregar programa
     @Override
@@ -187,7 +194,7 @@ public class Controller implements IController{
           //imprime mensaje de error si algo falla
           System.err.println("Error al validar existencia: " + e.getMessage());
       }
-    return true; //si no existe el nombre,,, cambiar a true para probar la otra ventana de crear programa >:)
+    return false; //si no existe el nombre,,, cambiar a true para probar la otra ventana de crear programa >:)
     }
     @Override
     //Se usa para actualizar un programa existente 
