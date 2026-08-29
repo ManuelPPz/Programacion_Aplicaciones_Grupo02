@@ -16,6 +16,7 @@ import java.net.URISyntaxException;
 
 import Logica.Fabric;
 import Logica.IController;
+import java.util.ArrayList;
 /**
  *
  * @author mateo
@@ -25,43 +26,66 @@ public class MiniInterfazDeConsultaCurso extends javax.swing.JInternalFrame {
     DefaultListModel<String> modeloListEdiCurso;
     DefaultListModel<String> modeloListProgCurso;
     String URL;
-    
-    
+    String institutoNom;
+    DTCurso dtc = null;
     
     public MiniInterfazDeConsultaCurso() {
         Fabric f = Fabric.GetInstance();
         ico = f.GetIController();
         initComponents();
+        
     }
-    public void ColocarDatos(DTMaster dtCurso){
-        DTCurso dt = (DTCurso)dtCurso;
-        areaDescripcion.setText(dt.getDescripcion());
-        textDuracion.setText(String.valueOf(dt.getDuracion()));
-        textCantHoras.setText(String.valueOf(dt.getCantHoras()));
-        textCantCreditos.setText(String.valueOf(dt.getCantCreditos()));
-        URL = dt.getURL();
+    public void ColocarDatos(DTMaster dtCurso){dtc = (DTCurso)dtCurso;
+        dtc = (DTCurso)dtCurso;
+        institutoNom = dtc.getInstituto();
+        areaDescripcion.setText(dtc.getDescripcion());
+        textDuracion.setText(String.valueOf(dtc.getDuracion()));
+        textCantHoras.setText(String.valueOf(dtc.getCantHoras()));
+        textCantCreditos.setText(String.valueOf(dtc.getCantCreditos()));
+        URL = dtc.getURL();
         String linkText = "<html><a href=''>"+URL + "</a></html>";
         textURL.setText(linkText);
+        LLenarTablasYListas();
         
-        int tamEdiCurso = dt.getEdiCursos().size();
-        for(int i =0;i<tamEdiCurso;i++){
-            modeloListEdiCurso.addElement(dt.getEdiCursos().get(i));
+        
+        
+        
+        
+        
+        
+    }
+    private void LLenarTablasYListas(){
+        if(dtc!=null){
+            List<String>listEdi = dtc.getEdiCursos();
+            if(listEdi!=null){
+                int tamEdiCurso = listEdi.size();
+                for(int i =0;i<tamEdiCurso;i++){
+                    modeloListEdiCurso.addElement(dtc.getEdiCursos().get(i));
+                }
+            }
+            List<String>listPro = dtc.getProgFormacion();
+            if(listPro!=null){
+                int tamProgCurso = dtc.getProgFormacion().size();
+                for(int i =0;i<tamProgCurso;i++){
+                    modeloListProgCurso.addElement(dtc.getProgFormacion().get(i));
+                }
+            }
+
+            List<String> listStr = dtc.getPrevias();
+            if(listStr!=null){
+                int tamListPrevias = listStr.size();
+                DefaultTableModel modelo = (DefaultTableModel) tablePrevias.getModel();
+                for(int i=0;i<tamListPrevias;i++){
+                    String str = listStr.get(i);
+                    Object[] obj = {str};
+                    modelo.addRow(obj);
+                }
+            }
+        }else{
+            System.out.println("Esto esta null");
         }
         
-        int tamProgCurso = dt.getProgFormacion().size();
-        for(int i =0;i<tamProgCurso;i++){
-            modeloListProgCurso.addElement(dt.getProgFormacion().get(i));
-        }
         
-        
-        List<String> listStr = dt.getPrevias();
-        int tamListPrevias = listStr.size();
-        DefaultTableModel modelo = (DefaultTableModel) tablePrevias.getModel();
-        for(int i=0;i<tamListPrevias;i++){
-            String str = listStr.get(i);
-            Object[] obj = {str};
-            modelo.addRow(obj);
-        }
     }
             
     /**
@@ -93,9 +117,9 @@ public class MiniInterfazDeConsultaCurso extends javax.swing.JInternalFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         listProgFormacion = new javax.swing.JList<>();
         jLabel10 = new javax.swing.JLabel();
-        jScrollPane6 = new javax.swing.JScrollPane();
-        tablePrevias = new javax.swing.JTable();
         textURL = new javax.swing.JLabel();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        tablePrevias = new javax.swing.JTable();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -159,7 +183,6 @@ public class MiniInterfazDeConsultaCurso extends javax.swing.JInternalFrame {
         textDuracion.setBackground(new java.awt.Color(255, 255, 255));
         textDuracion.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         textDuracion.setFocusable(false);
-        textDuracion.addActionListener(this::textDuracionActionPerformed);
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel5.setText("Cant. Horas:");
@@ -168,7 +191,6 @@ public class MiniInterfazDeConsultaCurso extends javax.swing.JInternalFrame {
         textCantHoras.setBackground(new java.awt.Color(255, 255, 255));
         textCantHoras.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         textCantHoras.setFocusable(false);
-        textCantHoras.addActionListener(this::textCantHorasActionPerformed);
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel6.setText("Cant. Creditos:");
@@ -177,7 +199,6 @@ public class MiniInterfazDeConsultaCurso extends javax.swing.JInternalFrame {
         textCantCreditos.setBackground(new java.awt.Color(255, 255, 255));
         textCantCreditos.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         textCantCreditos.setFocusable(false);
-        textCantCreditos.addActionListener(this::textCantCreditosActionPerformed);
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel7.setText("URL:");
@@ -199,6 +220,13 @@ public class MiniInterfazDeConsultaCurso extends javax.swing.JInternalFrame {
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel10.setText("Programas de Formacion");
+
+        textURL.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        textURL.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                textURLMouseClicked(evt);
+            }
+        });
 
         tablePrevias.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -229,7 +257,7 @@ public class MiniInterfazDeConsultaCurso extends javax.swing.JInternalFrame {
                 if (fila != -1) {
                     //Logica de mostrar curso
                     String nombre = (String)tablePrevias.getValueAt(fila, 0);
-                    DTMaster dt = ico.ConsultaCurso(nombre);
+                    DTMaster dt = ico.ConsultaCurso(nombre,institutoNom);
                     MiniInterfazDeConsultaCurso micc = new MiniInterfazDeConsultaCurso();
                     this.getDesktopPane().add(micc);
                     micc.setTitle("(Info) "+nombre);
@@ -248,17 +276,10 @@ public class MiniInterfazDeConsultaCurso extends javax.swing.JInternalFrame {
                 }
             }
         });
-        jScrollPane6.setViewportView(tablePrevias);
+        jScrollPane7.setViewportView(tablePrevias);
         if (tablePrevias.getColumnModel().getColumnCount() > 0) {
             tablePrevias.getColumnModel().getColumn(0).setResizable(false);
         }
-
-        textURL.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        textURL.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                textURLMouseClicked(evt);
-            }
-        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -267,46 +288,42 @@ public class MiniInterfazDeConsultaCurso extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(textURL, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(textURL, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(51, 51, 51)
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(textCantCreditos, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGap(6, 6, 6)
-                                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(jLabel1)
+                                        .addComponent(jLabel5)
+                                        .addGap(27, 27, 27))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addComponent(jLabel4)
+                                        .addGap(44, 44, 44)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(textDuracion, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(textCantHoras, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(51, 51, 51)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel6)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(textCantCreditos, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jLabel5)
-                                                .addGap(27, 27, 27))
-                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                                .addComponent(jLabel4)
-                                                .addGap(44, 44, 44)))
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(textDuracion, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(textCantHoras, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                        .addContainerGap(31, Short.MAX_VALUE))))
+                                .addGap(6, 6, 6)
+                                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -332,9 +349,9 @@ public class MiniInterfazDeConsultaCurso extends javax.swing.JInternalFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
                     .addComponent(textURL, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(17, 17, 17)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -344,23 +361,11 @@ public class MiniInterfazDeConsultaCurso extends javax.swing.JInternalFrame {
                         .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(32, Short.MAX_VALUE))
+                .addContainerGap(29, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void textDuracionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textDuracionActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_textDuracionActionPerformed
-
-    private void textCantHorasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textCantHorasActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_textCantHorasActionPerformed
-
-    private void textCantCreditosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textCantCreditosActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_textCantCreditosActionPerformed
 
     private void listEdiCursosValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listEdiCursosValueChanged
         //Logica ventana de consulta de edicion de curso
@@ -403,7 +408,7 @@ public class MiniInterfazDeConsultaCurso extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
     private javax.swing.JList<String> listEdiCursos;

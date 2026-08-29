@@ -4,25 +4,33 @@
  */
 package Classes;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.ImageIcon;
-
+import java.util.List;
 /**
  *
  * @author mateo
  */
 @Entity
 public class Docente extends UsuarioBase{
+    @ManyToMany(mappedBy="misDocentes")
+    private List<Instituto> misInstitutos;
     public Docente(){
         super();
+        misInstitutos = new ArrayList();
     }
-    public Docente(String nick, String nombre, String apellido, String correo, Date fNac, byte[] img){
+    public Docente(String nick, String nombre, String apellido, String correo, Date fNac, byte[] img, List<Instituto> institutos){
         super(nick, nombre, apellido, correo, fNac,img);
+        this.misInstitutos = institutos;
+    }
+    
+    
+    public void ModificarMisDatos(String nom, String apellido, String correo, Date fNac,byte[] img, List<Instituto> institutos){
+        super.ModificarMisDatos(nom, apellido, correo, fNac, img);
+        this.misInstitutos = institutos;
     }
     
 }

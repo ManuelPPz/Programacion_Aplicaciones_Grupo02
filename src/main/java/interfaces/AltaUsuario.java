@@ -14,6 +14,10 @@ import Logica.Fabric;
 import Logica.IController;
 import java.util.ArrayList;
 import java.util.List;
+
+import DTsClasses.DTMaster;
+import DTsClasses.DTInstituto;
+import DTsClasses.EnumDT;
 /**
  *
  * @author sebas
@@ -109,8 +113,15 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
 
         jLabel10.setText("Fecha de Nacimiento:");
 
-        comboInstituto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar...", "FING", "CLAEH", "UCU", "UTEC" }));
         comboInstituto.addActionListener(this::comboInstitutoActionPerformed);
+        List<DTMaster> auxListIns = ico.ListarClase(EnumDT.DT_INSTITUTO);
+
+        comboInstituto.insertItemAt("Seleccionar...", 0);
+        for(int i = 0;i<auxListIns.size();i++){
+            DTInstituto dt = (DTInstituto)auxListIns.get(i);
+            comboInstituto.insertItemAt(dt.getNombre(), i+1);
+        }
+        comboInstituto.setSelectedIndex(0);
 
         lblInstituto.setText("Instituto");
 
@@ -131,9 +142,6 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap(176, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(comboInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(10, 10, 10))
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -141,7 +149,9 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
                                 .addComponent(txtNickname, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(spinnerDate, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(comboTipoUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(comboInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(comboTipoUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(10, 10, 10))))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

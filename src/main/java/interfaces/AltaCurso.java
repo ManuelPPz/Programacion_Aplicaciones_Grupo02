@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.ArrayList;
 import DTsClasses.DTMaster;
 import DTsClasses.DTCurso;
+import DTsClasses.DTInstituto;
 import DTsClasses.EnumDT;
 /**
  *
@@ -26,7 +27,6 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         Fabric f = Fabric.GetInstance();
         ico = f.GetIController();
         initComponents();
-        labelErrorName.setVisible(false);
         
        
     }
@@ -58,7 +58,6 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         spinnerHoras = new javax.swing.JSpinner();
         jLabel5 = new javax.swing.JLabel();
         spinnerCreditos = new javax.swing.JSpinner();
-        labelErrorName = new javax.swing.JLabel();
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
@@ -102,10 +101,12 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         boxInstituto.addActionListener(this::boxInstitutoActionPerformed);
         getContentPane().add(boxInstituto);
         boxInstituto.setBounds(99, 23, 254, 22);
-        List<String> auxListIns = null;
+        List<DTMaster> auxListIns = ico.ListarClase(EnumDT.DT_INSTITUTO);
+
         boxInstituto.insertItemAt("SIN DATOS", 0);
         for(int i = 0;i<auxListIns.size();i++){
-            boxInstituto.insertItemAt(auxListIns.get(i), i+1);
+            DTInstituto dt = (DTInstituto)auxListIns.get(i);
+            boxInstituto.insertItemAt(dt.getNombre(), i+1);
         }
         boxInstituto.setSelectedIndex(0);
 
@@ -135,16 +136,9 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         jLabel14.setBounds(14, 349, 107, 16);
 
         boxPrevias.addActionListener(this::boxPreviasActionPerformed);
+        RellenarPrevias();
         getContentPane().add(boxPrevias);
         boxPrevias.setBounds(127, 346, 144, 22);
-        List<DTMaster> auxListCur = ico.ListarClase(EnumDT.DT_CURSO);
-        boxPrevias.insertItemAt("SIN DATOS", 0);
-        for(int i = 0;i<auxListCur.size();i++){
-            DTCurso auxDT = (DTCurso)auxListCur.get(i);
-            String aux = auxDT.getNombre();
-            boxPrevias.insertItemAt(aux, i+1);
-        }
-        boxPrevias.setSelectedIndex(0);
 
         buttonAceptar.setText("Aceptar");
         buttonAceptar.addActionListener(this::buttonAceptarActionPerformed);
@@ -174,12 +168,6 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         getContentPane().add(spinnerCreditos);
         spinnerCreditos.setBounds(340, 220, 48, 38);
 
-        labelErrorName.setBackground(new java.awt.Color(255, 51, 102));
-        labelErrorName.setForeground(new java.awt.Color(255, 0, 0));
-        labelErrorName.setText("Nombre de curso ya existente");
-        getContentPane().add(labelErrorName);
-        labelErrorName.setBounds(147, 79, 180, 16);
-
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -205,16 +193,36 @@ public class AltaCurso extends javax.swing.JInternalFrame {
                     previas.add(auxSubString);
                 }
             }
-            ico.AltaCurso(boxInstituto.getSelectedItem().toString(), fieldNombre.getText(), areaDescripcion.getText(), (int)spinnerDuracion.getValue(), (int)spinnerHoras.getValue(), (int)spinnerCreditos.getValue(), fieldURL.getText(), previas, (Date)spinnerFecha.getValue());
-            javax.swing.JOptionPane.showMessageDialog(this, "Curso ingresado con exito!", "System",javax.swing.JOptionPane.INFORMATION_MESSAGE);
-            this.dispose();
+            if(ico.VerificarCurso(fieldNombre.getText(),boxInstituto.getSelectedItem().toString()) ){
+                int respuesta = javax.swing.JOptionPane.showConfirmDialog(
+                this, 
+                "El programa '" + fieldNombre.getText() + "' ya existe. ¿Deseas modificar sus datos?", 
+                "Programa Existente", 
+                javax.swing.JOptionPane.YES_NO_OPTION,
+                javax.swing.JOptionPane.QUESTION_MESSAGE);
+                if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
+                    // El usuario quiere modificarlo
+                    System.out.println(areaDescripcion.getText());
+                    ico.AltaCurso(boxInstituto.getSelectedItem().toString(), fieldNombre.getText(), areaDescripcion.getText(), (int)spinnerDuracion.getValue(), (int)spinnerHoras.getValue(), (int)spinnerCreditos.getValue(), fieldURL.getText(), previas, (Date)spinnerFecha.getValue());
+
+                    javax.swing.JOptionPane.showMessageDialog(this, "Programa actualizado con éxito.");
+                    this.dispose();
+                }else {
+                    // El usuario canceló la operación
+                    this.dispose();
+                }
+            }else{
+                ico.AltaCurso(boxInstituto.getSelectedItem().toString(), fieldNombre.getText(), areaDescripcion.getText(), (int)spinnerDuracion.getValue(), (int)spinnerHoras.getValue(), (int)spinnerCreditos.getValue(), fieldURL.getText(), previas, (Date)spinnerFecha.getValue());
+                javax.swing.JOptionPane.showMessageDialog(this, "Curso ingresado con exito!", "System",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                this.dispose();
+            }
+            
         }
     }//GEN-LAST:event_buttonAceptarActionPerformed
 
     boolean VerificarDatos(){
         return boxInstituto.getSelectedIndex()==0 ||
                 fieldNombre.getText().isEmpty() ||
-                ico.VerificarCurso(fieldNombre.getText()) ||
                 areaDescripcion.getText().isEmpty() || 
                 (int) spinnerDuracion.getValue()==0 || 
                 (int) spinnerHoras.getValue()==0 || 
@@ -246,7 +254,10 @@ public class AltaCurso extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_boxPreviasActionPerformed
 
     private void boxInstitutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boxInstitutoActionPerformed
-        // TODO add your handling code here:
+        if(boxInstituto.getSelectedIndex()!=0){
+            RellenarPrevias();
+        }
+
     }//GEN-LAST:event_boxInstitutoActionPerformed
 
     private void fieldNombreFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fieldNombreFocusGained
@@ -254,13 +265,21 @@ public class AltaCurso extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_fieldNombreFocusGained
 
     private void fieldNombreFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fieldNombreFocusLost
-        if(ico.VerificarCurso(fieldNombre.getText())){
-            labelErrorName.setVisible(true);
-        }else{
-            labelErrorName.setVisible(false);
-        }
-    }//GEN-LAST:event_fieldNombreFocusLost
 
+    }//GEN-LAST:event_fieldNombreFocusLost
+    public void RellenarPrevias(){
+        boxPrevias.removeAllItems();
+        List<DTMaster> auxListCur = ico.ListarCursos(boxInstituto.getSelectedItem().toString());
+        if(!auxListCur.isEmpty()){
+            boxPrevias.insertItemAt("SIN DATOS", 0);
+            for(int i = 0;i<auxListCur.size();i++){
+                DTCurso auxDT = (DTCurso)auxListCur.get(i);
+                String aux = auxDT.getNombre();
+                boxPrevias.insertItemAt(aux, i+1);
+            }
+            boxPrevias.setSelectedIndex(0);
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea areaDescripcion;
@@ -282,7 +301,6 @@ public class AltaCurso extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JLabel labelErrorName;
     private javax.swing.JSpinner spinnerCreditos;
     private javax.swing.JSpinner spinnerDuracion;
     private javax.swing.JSpinner spinnerFecha;

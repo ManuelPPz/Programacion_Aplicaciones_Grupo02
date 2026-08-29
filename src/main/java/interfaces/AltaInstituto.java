@@ -3,17 +3,20 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
  */
 package interfaces;
-
+import Logica.IController;
+import Logica.Fabric;
 /**
  *
  * @author sebas
  */
 public class AltaInstituto extends javax.swing.JInternalFrame {
-
+    IController ico;
     /**
      * Creates new form AltaInstituto
      */
     public AltaInstituto() {
+        Fabric f = Fabric.GetInstance();
+        ico = f.GetIController();
         initComponents();
     }
 
@@ -111,13 +114,17 @@ public class AltaInstituto extends javax.swing.JInternalFrame {
             "Atención", 
             javax.swing.JOptionPane.WARNING_MESSAGE);
         return;
+    }else if(ico.VerificarInstituto(nombreInst)){
+        javax.swing.JOptionPane.showMessageDialog(this, 
+            "Nombre de Instituto ya existente", 
+            "Atención", 
+            javax.swing.JOptionPane.WARNING_MESSAGE);
+        return;
     }
 
     // 3. Proceso de Alta en la Lógica del Sistema
     try {
-        /* AQUÍ INVOCARÁS A TU CONTROLADOR:
-           controladorInstituto.altaInstituto(nombreInst);
-        */
+        ico.AltaInstituto(nombreInst);
 
         // Confirmación de éxito
         javax.swing.JOptionPane.showMessageDialog(this, 
