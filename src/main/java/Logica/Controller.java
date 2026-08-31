@@ -43,7 +43,7 @@ public class Controller implements IController{
     }
     //Alta Usuario
     @Override
-    public void AgregarUsuario(String nickname, String nombre, String apellido, String correo, Date fechaNac, boolean docente, List<String> institutos, String imgPath){
+    public void AgregarUsuario(String nickname, String nombre, String apellido, String correo, Date fechaNac, boolean docente, List<String> institutos, String imgPath)throws Exception {
         UsuarioBase auxUsuario = null;
         List<Instituto> auxInstituto = new ArrayList();
         if(institutos!=null){
@@ -204,7 +204,7 @@ public class Controller implements IController{
     
     //Alta Instituto
     @Override
-    public void AltaInstituto(String nomInstituto){
+    public void AltaInstituto(String nomInstituto)throws Exception{
         Instituto i = manInstituto.CreaInstituto(nomInstituto);
         manInstituto.Add(i);
     }

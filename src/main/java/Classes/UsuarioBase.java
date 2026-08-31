@@ -31,12 +31,10 @@ public class UsuarioBase implements Serializable {
     private String correo;
     @Column(name="fNac")
     private Date fNac;
-    @Column(name="Imagen")
+    @Column(name="Imagen", columnDefinition = "BLOB")
     private byte[] image;
 
-    public String getNickname() {
-        return nickname;
-    }
+    public String getNickname() {return nickname;}
     public String getNombre(){return this.nombre;}
     public String getApellido(){return this.apellido;}
     public String getCorreo(){return this.correo;}

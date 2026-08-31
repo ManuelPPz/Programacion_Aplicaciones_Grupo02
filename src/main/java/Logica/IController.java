@@ -21,7 +21,7 @@ import javax.swing.ImageIcon;
  */
 public interface IController {
     //Alta Usuario
-    public abstract void AgregarUsuario(String nickname, String nombre, String apellido, String correo, Date fechaNac, boolean docente, List<String> institutos, String imgPath);
+    public abstract void AgregarUsuario(String nickname, String nombre, String apellido, String correo, Date fechaNac, boolean docente, List<String> institutos, String imgPath)throws Exception;
     //Consultar Usuario, la funcion deberia devolver el tipo de dato usuario
     //Se modificara al crear el tipo de dato usuario retornando el tipo de dato "Usuario"
     public abstract DTUsuarioBase ConsultarUsuario(String nickname);
@@ -52,7 +52,7 @@ public interface IController {
     //Se modificara al crear el tipo de dato ProgramaFormacion retornando el tipo de dato "ProgramaFormacion"
     public abstract DTProgramaForm ConsultaProgramaFormacion(String nomPrograma);
     //Alta Instituto
-    public abstract void AltaInstituto(String nomInstituto);
+    public abstract void AltaInstituto(String nomInstituto)throws Exception;
     
     
     //Otras Funciones

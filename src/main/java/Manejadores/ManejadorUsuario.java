@@ -20,6 +20,9 @@ import DTsClasses.DTUsuarioBase;
 import DTsClasses.DTDocente;
 import DTsClasses.DTUsuario;
 import DTsClasses.DTMaster;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -30,7 +33,7 @@ import java.io.IOException;
  * @author mateo
  */
 public class ManejadorUsuario {
-    
+     private EntityManagerFactory emf = Persistence.createEntityManagerFactory("ControladorPU");
     List<UsuarioBase> misUsuarios;
     
     
@@ -85,10 +88,24 @@ public class ManejadorUsuario {
     }
     
     
-    public void Add(UsuarioBase ub){
+    public void Add(UsuarioBase ub)throws Exception{
         misUsuarios.add(ub);
         //Aca se añade a la base de datos
+            EntityManager em = emf.createEntityManager();
+        try{
+            em.getTransaction().begin();
+            em.persist(ub); //Insertar objeto en la bd
+            em.getTransaction().commit();
+        } catch (Exception e){
+            if(em.getTransaction().isActive()){
+                em.getTransaction().rollback();
+            }
+            throw new Exception("Error al guardar el programa" + e.getMessage());
+        }finally{
+            em.close();
+        }
     }
+    
 
     public UsuarioBase BuscarUsuario(String nickname){
         for(int i = 0;i<misUsuarios.size();i++){
@@ -159,5 +176,5 @@ public class ManejadorUsuario {
     private ImageIcon ConvertirByteToImageIcon(byte[] bytes){
         return new ImageIcon(bytes);
     }
-    
+
 }

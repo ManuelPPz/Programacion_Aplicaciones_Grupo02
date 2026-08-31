@@ -15,6 +15,8 @@ import java.util.List;
  * @author mateo
  */
 @Entity
+@Table(name = "Docente")
+@PrimaryKeyJoinColumn(name = "nickname")
 public class Docente extends UsuarioBase{
     @ManyToMany(mappedBy="misDocentes")
     private List<Instituto> misInstitutos;

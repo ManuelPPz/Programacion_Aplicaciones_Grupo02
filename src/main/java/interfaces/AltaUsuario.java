@@ -17,7 +17,9 @@ import java.util.List;
 
 import DTsClasses.DTMaster;
 import DTsClasses.DTInstituto;
+import DTsClasses.DTUsuarioBase;
 import DTsClasses.EnumDT;
+import Manejadores.ManejadorUsuario;
 /**
  *
  * @author sebas
@@ -255,6 +257,8 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
     String nombre = txtNombre.getText().trim();
     String apellido = txtApellido.getText().trim();
     String email = txtEmail.getText().trim();
+    
+    
 
     // 2. Captura de la Fecha de los Spinners
     Date fecha =(Date) spinnerDate.getValue();
@@ -290,7 +294,6 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
         }
     }
     String imgPath = fieldPath.getText();
-    
     // 6. Proceso de Alta (Paso exitoso)
     try {
         // Armar la fecha
@@ -306,7 +309,7 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
                     institutos.add(auxSubString);
                 }
             }
-            ico.AgregarUsuario(nickname, nombre, apellido, email, fecha, true, institutos,imgPath);
+            ico.AgregarUsuario(nickname, nombre, apellido, email, fecha, true, institutos,imgPath);          
         } else {
             ico.AgregarUsuario(nickname, nombre, apellido, email, fecha, false, null,imgPath);
         }
