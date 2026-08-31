@@ -180,44 +180,50 @@ public class AltaCurso extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_fieldURLActionPerformed
 
     private void buttonAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAceptarActionPerformed
-        //Logica de boton aceptar
-        if(VerificarDatos()){
-            javax.swing.JOptionPane.showMessageDialog(this, "Algunos campos deben ser completados", "Atencion",javax.swing.JOptionPane.ERROR_MESSAGE);
-        }else{
-            List<String> previas = new ArrayList();
+//Logica de boton aceptar
+    if (VerificarDatos()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Algunos campos deben ser completados", "Atencion", javax.swing.JOptionPane.ERROR_MESSAGE);
+    } else {
+        try {
+            List<String> previas = new ArrayList<>();
             int tam = boxPrevias.getItemCount();
-            for(int i = 1;i<tam;i++){
+            for (int i = 1; i < tam; i++) {
                 String text = (String) boxPrevias.getItemAt(i);
-                if(text.contains("✓")){
+                if (text.contains("✓")) {
                     String auxSubString = text.substring(2);
                     previas.add(auxSubString);
                 }
             }
-            if(ico.VerificarCurso(fieldNombre.getText(),boxInstituto.getSelectedItem().toString()) ){
+
+            if (ico.VerificarCurso(fieldNombre.getText(), boxInstituto.getSelectedItem().toString())) {
                 int respuesta = javax.swing.JOptionPane.showConfirmDialog(
-                this, 
-                "El programa '" + fieldNombre.getText() + "' ya existe. ¿Deseas modificar sus datos?", 
-                "Programa Existente", 
-                javax.swing.JOptionPane.YES_NO_OPTION,
-                javax.swing.JOptionPane.QUESTION_MESSAGE);
+                        this,
+                        "El programa '" + fieldNombre.getText() + "' ya existe. ¿Deseas modificar sus datos?",
+                        "Programa Existente",
+                        javax.swing.JOptionPane.YES_NO_OPTION,
+                        javax.swing.JOptionPane.QUESTION_MESSAGE);
+
                 if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
                     // El usuario quiere modificarlo
                     System.out.println(areaDescripcion.getText());
-                    ico.AltaCurso(boxInstituto.getSelectedItem().toString(), fieldNombre.getText(), areaDescripcion.getText(), (int)spinnerDuracion.getValue(), (int)spinnerHoras.getValue(), (int)spinnerCreditos.getValue(), fieldURL.getText(), previas, (Date)spinnerFecha.getValue());
+                    ico.AltaCurso(boxInstituto.getSelectedItem().toString(), fieldNombre.getText(), areaDescripcion.getText(), (int) spinnerDuracion.getValue(), (int) spinnerHoras.getValue(), (int) spinnerCreditos.getValue(), fieldURL.getText(), previas, (Date) spinnerFecha.getValue());
 
                     javax.swing.JOptionPane.showMessageDialog(this, "Programa actualizado con éxito.");
                     this.dispose();
-                }else {
+                } else {
                     // El usuario canceló la operación
                     this.dispose();
                 }
-            }else{
-                ico.AltaCurso(boxInstituto.getSelectedItem().toString(), fieldNombre.getText(), areaDescripcion.getText(), (int)spinnerDuracion.getValue(), (int)spinnerHoras.getValue(), (int)spinnerCreditos.getValue(), fieldURL.getText(), previas, (Date)spinnerFecha.getValue());
-                javax.swing.JOptionPane.showMessageDialog(this, "Curso ingresado con exito!", "System",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                ico.AltaCurso(boxInstituto.getSelectedItem().toString(), fieldNombre.getText(), areaDescripcion.getText(), (int) spinnerDuracion.getValue(), (int) spinnerHoras.getValue(), (int) spinnerCreditos.getValue(), fieldURL.getText(), previas, (Date) spinnerFecha.getValue());
+                javax.swing.JOptionPane.showMessageDialog(this, "Curso ingresado con exito!", "System", javax.swing.JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
             }
-            
+
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Error al procesar el curso: " + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
+    }
     }//GEN-LAST:event_buttonAceptarActionPerformed
 
     boolean VerificarDatos(){

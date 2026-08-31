@@ -30,7 +30,7 @@ public interface IController {
     //Alta Curso
     //La fecha del curso se toma dentro de la funcion
     //Preguntar al profe si los cursos previos son el tipo de dato o un int
-    public abstract void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso);
+    public abstract void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso)throws Exception;
     //Consulta Curso
     //Se modificara al crear el tipo de dato curso retornando el tipo de dato "Curso"
     public abstract DTMaster ConsultaCurso(String nomCurso,String ins);

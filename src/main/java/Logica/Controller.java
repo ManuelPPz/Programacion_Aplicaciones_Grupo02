@@ -90,7 +90,7 @@ public class Controller implements IController{
     }
     //Alta Curso
     @Override
-    public void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso){
+    public void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso)throws Exception{
         Curso auxC = manCursos.BuscarCurso(nombre,nomInstituto);
         if(auxC==null){
             Instituto ins = new Instituto();

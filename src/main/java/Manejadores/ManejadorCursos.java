@@ -9,13 +9,17 @@ import Classes.Curso;
 import Classes.Instituto;
 import DTsClasses.DTCurso;
 import DTsClasses.DTMaster;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.TypedQuery;
 import java.util.Date;
 /**
  *
  * @author mateo
  */
 public class ManejadorCursos {
-    
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("ControladorPU");
     List<Curso> misCursos;
     
     //=================Codigo de Singleton=================
@@ -27,13 +31,24 @@ public class ManejadorCursos {
         return instance;
         
     }
-    private ManejadorCursos(){  
-        misCursos = new ArrayList();
+    private ManejadorCursos() {
+        misCursos = new ArrayList<>();
+        CargarDeBaseDeDatos(); // Carga la lista en memoria al instanciar el Singleton
     }
     //=======================================================
     private void CargarDeBaseDeDatos(){
-        //Aca cargas misUsuarios con lo que esta en la base de datos
+      EntityManager em = getEntityManager();
+    try {
+        // 'LEFT JOIN FETCH c.previas' trae los cursos y sus previas asociadas en una sola consulta
+        TypedQuery<Curso> query = em.createQuery("SELECT DISTINCT c FROM Curso c LEFT JOIN FETCH c.previas", Curso.class);
+        misCursos = query.getResultList();
+    } catch (Exception e) {
+        System.err.println("Error al cargar cursos desde la BD: " + e.getMessage());
+        misCursos = new ArrayList<>();
+    } finally {
+        em.close();
     }
+   }
     
     public Curso CrearCurso(Instituto instituto,String nombre,String descripcion,int duracion,float cantHoras,int cantCreditos,String URL,Date fAlta,List<String>previas){
         Curso returnCurso;
@@ -59,9 +74,22 @@ public class ManejadorCursos {
     
     
     
-    public void Add(Curso c){
+    public void Add(Curso c) throws Exception{
         misCursos.add(c);
         //Aca se añade a la base de datos
+            EntityManager em = emf.createEntityManager();
+        try{
+            em.getTransaction().begin();
+            em.persist(c); //Insertar objeto en la bd
+            em.getTransaction().commit();
+        } catch (Exception e){
+            if(em.getTransaction().isActive()){
+                em.getTransaction().rollback();
+            }
+            throw new Exception("Error al guardar el programa" + e.getMessage());
+        }finally{
+            em.close();
+        }
     }
     
     public Curso BuscarCurso(String nombre,String instituto){
@@ -110,6 +138,10 @@ public class ManejadorCursos {
         }
         return auxList;
     }
+
+   private EntityManager getEntityManager() {
+    return emf.createEntityManager();
+}
     
     
     

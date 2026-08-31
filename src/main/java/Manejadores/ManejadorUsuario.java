@@ -33,7 +33,7 @@ import java.io.IOException;
  * @author mateo
  */
 public class ManejadorUsuario {
-     private EntityManagerFactory emf = Persistence.createEntityManagerFactory("ControladorPU");
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("ControladorPU");
     List<UsuarioBase> misUsuarios;
     
     
