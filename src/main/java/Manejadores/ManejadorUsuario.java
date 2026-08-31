@@ -23,6 +23,7 @@ import DTsClasses.DTMaster;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import jakarta.persistence.TypedQuery;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -45,13 +46,32 @@ public class ManejadorUsuario {
         }
         return instance;
     }
-    private ManejadorUsuario(){
-        misUsuarios = new ArrayList();
+    private ManejadorUsuario() {
+        misUsuarios = new ArrayList<>();
+        CargarDeBaseDeDatos(); // Carga automática al iniciar la instancia Singleton
     }
     //======================================================
     
     private void CargarDeBaseDeDatos(){
         //Aca cargas misUsuarios con lo que esta en la base de datos
+        EntityManager em = getEntityManager();
+        try {
+            // Trae todos los usuarios base (tanto Estudiantes/Usuario como Docentes)
+            TypedQuery<UsuarioBase> query = em.createQuery(
+                "SELECT DISTINCT u FROM UsuarioBase u LEFT JOIN FETCH u.institutos", UsuarioBase.class);
+            misUsuarios = query.getResultList();
+        } catch (Exception e) {
+            // Si la consulta con JOIN falla por ser un tipo simple, hacemos la consulta fallback
+            try {
+                TypedQuery<UsuarioBase> querySimple = em.createQuery("SELECT u FROM UsuarioBase u", UsuarioBase.class);
+                misUsuarios = querySimple.getResultList();
+            } catch (Exception ex) {
+                System.err.println("Error al cargar usuarios desde la BD: " + ex.getMessage());
+                misUsuarios = new ArrayList<>();
+            }
+        } finally {
+            em.close();
+        }
     }
     
     
@@ -177,4 +197,7 @@ public class ManejadorUsuario {
         return new ImageIcon(bytes);
     }
 
+     private EntityManager getEntityManager() {
+    return emf.createEntityManager();
+}
 }
