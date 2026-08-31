@@ -39,7 +39,8 @@ public class Curso implements Serializable {
     @ManyToMany
     @JoinTable(name = "Previa",joinColumns = @JoinColumn(name="Nombre"),inverseJoinColumns = @JoinColumn(name="Previa_Nombre"))
     private List<Curso> previas;
-    //List<String/EdicionCurso> ediCursos;
+    @OneToMany(mappedBy="miCurso")
+    private List<EdicionCurso> misEdiciones;
     //List<String/ProgFormacion> progFormacion;
     
     
@@ -52,12 +53,12 @@ public class Curso implements Serializable {
     public String getURL(){return URL;}
     public Date getFAlta(){return fAlta;}
     public List<Curso> getPrevias(){return previas;}
-    //public List<String/EdicionCurso> getEdiciones{return ediCursos;}
+    public List<EdicionCurso> getEdiciones(){return misEdiciones;}
     //public List<String/ProgFormacion> getProgramas{return progFormacion;}
     public Curso(){
         
     }
-    public Curso(Instituto instituto,String nombre,String descripcion,int duracion,float cantHoras,int cantCreditos,String URL,Date fAlta,List<Curso>previas){
+    public Curso(Instituto instituto,String nombre,String descripcion,int duracion,float cantHoras,int cantCreditos,String URL,Date fAlta,List<Curso>previas/*, List<EdicionCurso>ediciones*/){
         this.miInstituto = instituto;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -67,6 +68,7 @@ public class Curso implements Serializable {
         this.URL = URL;
         this.fAlta = fAlta;
         this.previas=previas;
+        /*this.misEdiciones = ediciones*/
     }
 
     

@@ -152,8 +152,13 @@ public class ManejadorUsuario {
             img = ConvertirByteToImageIcon(ub.getImage());
         }
         
-        if(ub instanceof Docente){
-           auxDT = new DTDocente(ub.getNickname(),ub.getNombre(),ub.getApellido(),ub.getCorreo(),ub.getFNac(),null,img);
+        if(ub instanceof Docente docente){
+           List<Instituto> auxList = docente.getInstitutos();
+           List<String> auxStr = new ArrayList();
+           for(int i = 0;i<auxList.size();i++){
+               auxStr.add(auxList.get(i).getNombre());
+           }
+           auxDT = new DTDocente(ub.getNickname(),ub.getNombre(),ub.getApellido(),ub.getCorreo(),ub.getFNac(),auxStr,img);
         }else if(ub instanceof Usuario){
            auxDT = new DTUsuario(ub.getNickname(),ub.getNombre(),ub.getApellido(),ub.getCorreo(),ub.getFNac(),img);
         }
@@ -164,6 +169,30 @@ public class ManejadorUsuario {
         for(int i = 0;i<misUsuarios.size();i++){
             DTMaster dt = getDT(misUsuarios.get(i));
             auxList.add(dt);
+        }
+        return auxList;
+    }
+    public List<DTMaster> getDTList(String instituto){
+        
+        List<DTMaster> auxList = new ArrayList();
+        for(int i = 0;i<misUsuarios.size();i++){
+            DTMaster dt = getDT(misUsuarios.get(i));
+            if(dt instanceof DTDocente auxDT){
+                List<String> auxIns = auxDT.getInstitutos();
+                if(auxIns!=null){
+                    System.out.println("En manejador no vacio");
+                    System.out.println("isntituto es: " +instituto);
+                    if(auxIns.contains(instituto)){
+                        System.out.println("En manejador contiene");
+                        auxList.add(dt);
+                    } else {
+                        System.out.println("En manejador no contiene");
+                    }
+                }else{
+                    System.out.println("En manejador vacio");
+                }
+                
+            }
         }
         return auxList;
     }

@@ -18,10 +18,13 @@ import Manejadores.*;
 //Imports Clases
 import Classes.UsuarioBase;
 import Classes.Curso;
+import Classes.Docente;
 import Classes.Instituto;
 import Classes.ProgramaFormacion;
+import Classes.EdicionCurso;
 //Imports DTs
 import DTsClasses.DTCurso;
+import DTsClasses.DTEdicionCurso;
 import DTsClasses.DTUsuarioBase;
 import DTsClasses.DTInstituto;
 import DTsClasses.DTMaster;
@@ -36,10 +39,12 @@ public class Controller implements IController{
     ManejadorUsuario manUsuario;
     ManejadorCursos manCursos;
     ManejadorInstituto manInstituto;
+    ManejadorEdicionCurso manEdicion;
     public Controller(){
         manUsuario = ManejadorUsuario.GetInstance();
         manCursos = ManejadorCursos.GetInstance();
         manInstituto = ManejadorInstituto.GetInstance();
+        manEdicion = ManejadorEdicionCurso.GetInstance();
     }
     //Alta Usuario
     @Override
@@ -90,8 +95,8 @@ public class Controller implements IController{
     }
     //Alta Curso
     @Override
-    public void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso)throws Exception{
-        Curso auxC = manCursos.BuscarCurso(nombre,nomInstituto);
+    public void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso) throws Exception{
+        Curso auxC = manCursos.BuscarCurso(nombre);
         if(auxC==null){
             Instituto ins = new Instituto();
             ins.setNombre(nomInstituto);
@@ -106,9 +111,9 @@ public class Controller implements IController{
     }
     //Consulta Curso
     @Override
-    public DTMaster ConsultaCurso(String nomCurso,String ins){
+    public DTMaster ConsultaCurso(String nomCurso){
         
-        Curso c = manCursos.BuscarCurso(nomCurso,ins);
+        Curso c = manCursos.BuscarCurso(nomCurso);
         if(c!=null){
             DTCurso auxDT = manCursos.getDT(c);
             return auxDT;
@@ -119,14 +124,26 @@ public class Controller implements IController{
     //La coleccion de docentes sera añadida cuando se cree el tipo de dato "Docente"
     //El tipo de dato FechaType sera añadido cuando se cree el tipo de dato "FechaType" o alguno con nombre parecido
     @Override
-    public void AltaEdicionCurso(String nomCurso, String nomEdicion/*, FechaType (dia incio, dia final)*/,int cupo/*Collection<Usuario> docentes*/){
-        
+    public void AltaEdicionCurso(String instituto, String nomCurso, String nomEdicion,Date fInicio, Date fFin,int cupo, List<String>docentes, Date fAlta){
+        Instituto ins = manInstituto.BuscarInstituto(instituto);
+        Curso c = manCursos.BuscarCurso(nomCurso);
+        EdicionCurso ec = manEdicion.CrearEdicion(ins, c, nomEdicion, fInicio, fFin, cupo, fAlta);
+        manEdicion.Add(ec);
+        for(int i = 0;i<docentes.size();i++){
+            UsuarioBase ub = manUsuario.BuscarUsuario(docentes.get(i));
+            manEdicion.AddUsuario(ec, ub);
+        }
     }
     //Consulta Edicion Curso
     //Se modificara al crear el tipo de dato EdicionCurso retornando el tipo de dato "EdicionCurso"
     @Override
-    public void ConsultaEdicionCurso(String nomEdicion){
-        
+    public DTMaster ConsultaEdicionCurso(String nomEdicion){
+        EdicionCurso ec = manEdicion.BuscarEdicion(nomEdicion);
+        if(ec!=null){
+            DTEdicionCurso auxDT = manEdicion.getDT(ec);
+            return auxDT;
+        }
+        return null; 
     }
     //Inscripcion a Edicion Curso
     @Override
@@ -213,13 +230,19 @@ public class Controller implements IController{
     //Otras Funciones
     //Verificar si existe curso con el nombre
     @Override
-    public boolean VerificarCurso(String nombre,String instituto){
-        Curso c = manCursos.BuscarCurso(nombre,instituto);
+    public boolean VerificarCurso(String nombre){
+        Curso c = manCursos.BuscarCurso(nombre);
         return c!=null;
     }
+    @Override
     public boolean VerificarInstituto(String instituto){
         Instituto i = manInstituto.BuscarInstituto(instituto);
         return i!=null;
+    }
+    @Override
+    public boolean VerificarEdicion(String nombre){
+        EdicionCurso ec = manEdicion.BuscarEdicion(nombre);
+        return ec!=null;
     }
     
     //Devoolver lista completa de DTs
@@ -240,8 +263,18 @@ public class Controller implements IController{
     
     @Override
     public List<DTMaster> ListarCursos(String nomInstituto){
-            List<DTMaster> listReturn = manCursos.getDTLIst(nomInstituto);
-            return listReturn;
+        List<DTMaster> listReturn = manCursos.getDTLIst(nomInstituto);
+        return listReturn;
+    }
+    @Override
+    public List<DTMaster>ListarEdiciones(String nomCurso){
+        List<DTMaster> listReturn = manEdicion.getDTLIst(nomCurso);
+        return listReturn;
+    }
+    @Override
+    public List<DTMaster>ListarDocentes(String nomInstituto){
+        List<DTMaster> listReturn = manUsuario.getDTList(nomInstituto);
+        return listReturn;
     }
     
 }

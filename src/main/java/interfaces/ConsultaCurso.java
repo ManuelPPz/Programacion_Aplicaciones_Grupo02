@@ -108,7 +108,7 @@ public class ConsultaCurso extends javax.swing.JInternalFrame {
     }
     
     private void MostrarDatos(String nombre,String instituto){
-        DTMaster dt = ico.ConsultaCurso(nombre,instituto);
+        DTMaster dt = ico.ConsultaCurso(nombre);
         MiniInterfazDeConsultaCurso micc = new MiniInterfazDeConsultaCurso();
         this.getDesktopPane().add(micc);
         micc.setTitle("(Info) "+nombre);

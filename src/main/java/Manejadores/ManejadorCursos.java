@@ -54,7 +54,7 @@ public class ManejadorCursos {
         Curso returnCurso;
         List<Curso> auxPrevias = new ArrayList();
         for(int i= 0;i<previas.size();i++){
-            auxPrevias.add(BuscarCurso(previas.get(i),instituto.getNombre()));
+            auxPrevias.add(BuscarCurso(previas.get(i)));
         }
         returnCurso = new Curso(instituto,nombre,descripcion,duracion,cantHoras,cantCreditos,URL,fAlta,auxPrevias);
         return returnCurso;
@@ -62,8 +62,7 @@ public class ManejadorCursos {
     public void ModificarCurso(Curso c,String descripcion,int duracion,float cantHoras,int cantCreditos,String URL,Date fAlta,List<String>previas){
         List<Curso> auxPrevias = new ArrayList();
         for(int i= 0;i<previas.size();i++){
-            String ins = c.getInstituto().getNombre();
-            auxPrevias.add(BuscarCurso(previas.get(i),ins));
+            auxPrevias.add(BuscarCurso(previas.get(i)));
         }
         c.ModificarMisDatos(descripcion, duracion, cantHoras, cantCreditos, URL, fAlta,auxPrevias);
     }
@@ -92,11 +91,10 @@ public class ManejadorCursos {
         }
     }
     
-    public Curso BuscarCurso(String nombre,String instituto){
+    public Curso BuscarCurso(String nombre){
         for(int i = 0;i<misCursos.size();i++){
             Curso c = misCursos.get(i);
-            Instituto in = c.getInstituto();
-            if(c.getNombre().equals(nombre) && in.getNombre().equals(instituto)){
+            if(c.getNombre().equals(nombre)){
                 return c;
             }
         }
@@ -115,8 +113,6 @@ public class ManejadorCursos {
             auxPreviasStr.add(auxPrevias.get(i).getNombre());
         }
         auxDT = new DTCurso(ins,c.getNombre(),c.getDescripcion(),c.getDuracion(),c.getCantHoras(),c.getCantCreditos(),c.getURL(),c.getFAlta(),auxPreviasStr,null,null);
-        System.out.println("en getdt auxdt: "+auxDT.getDescripcion());
-        System.out.println("en getdt c: "+c.getDescripcion());
         return auxDT;
     }
     public List<DTMaster> getDTList(){

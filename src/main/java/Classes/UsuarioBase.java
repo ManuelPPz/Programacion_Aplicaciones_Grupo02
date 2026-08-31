@@ -7,6 +7,7 @@ package Classes;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import javax.swing.ImageIcon;
 
 /**
@@ -33,6 +34,8 @@ public class UsuarioBase implements Serializable {
     private Date fNac;
     @Column(name="Imagen", columnDefinition = "BLOB")
     private byte[] image;
+    @ManyToMany(mappedBy="misUsuarios")
+    private List<EdicionCurso> misEdiciones;//Si es estudiante seran sus inscripciones y si es un docente las ediciones que dicta
 
     public String getNickname() {return nickname;}
     public String getNombre(){return this.nombre;}
@@ -40,6 +43,7 @@ public class UsuarioBase implements Serializable {
     public String getCorreo(){return this.correo;}
     public Date getFNac(){return this.fNac;}
     public byte[] getImage(){return this.image;}
+    public List<EdicionCurso> getEdiciones(){return this.misEdiciones;}
     
     public UsuarioBase(){}
     public UsuarioBase(String nick, String nom, String apellido, String correo, Date fNac,byte[] img){
@@ -59,6 +63,9 @@ public class UsuarioBase implements Serializable {
         this.image = img;
     }
     
+    public void AddEdicionCurso(EdicionCurso ec){
+        misEdiciones.add(ec);
+    }
     
     @Override
     public int hashCode() {

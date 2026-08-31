@@ -9,5 +9,5 @@ package DTsClasses;
  * @author mateo
  */
 public enum EnumDT {
-    DT_INSTITUTO,DT_CURSO,DT_USUARIO
+    DT_INSTITUTO,DT_CURSO,DT_USUARIO, DT_EDICION
 }

@@ -26,7 +26,6 @@ public class MiniInterfazDeConsultaCurso extends javax.swing.JInternalFrame {
     DefaultListModel<String> modeloListEdiCurso;
     DefaultListModel<String> modeloListProgCurso;
     String URL;
-    String institutoNom;
     DTCurso dtc = null;
     
     public MiniInterfazDeConsultaCurso() {
@@ -37,7 +36,6 @@ public class MiniInterfazDeConsultaCurso extends javax.swing.JInternalFrame {
     }
     public void ColocarDatos(DTMaster dtCurso){dtc = (DTCurso)dtCurso;
         dtc = (DTCurso)dtCurso;
-        institutoNom = dtc.getInstituto();
         areaDescripcion.setText(dtc.getDescripcion());
         textDuracion.setText(String.valueOf(dtc.getDuracion()));
         textCantHoras.setText(String.valueOf(dtc.getCantHoras()));
@@ -257,7 +255,7 @@ public class MiniInterfazDeConsultaCurso extends javax.swing.JInternalFrame {
                 if (fila != -1) {
                     //Logica de mostrar curso
                     String nombre = (String)tablePrevias.getValueAt(fila, 0);
-                    DTMaster dt = ico.ConsultaCurso(nombre,institutoNom);
+                    DTMaster dt = ico.ConsultaCurso(nombre);
                     MiniInterfazDeConsultaCurso micc = new MiniInterfazDeConsultaCurso();
                     this.getDesktopPane().add(micc);
                     micc.setTitle("(Info) "+nombre);
