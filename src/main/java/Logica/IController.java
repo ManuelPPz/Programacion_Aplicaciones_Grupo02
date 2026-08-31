@@ -33,14 +33,12 @@ public interface IController {
     public abstract void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso);
     //Consulta Curso
     //Se modificara al crear el tipo de dato curso retornando el tipo de dato "Curso"
-    public abstract DTMaster ConsultaCurso(String nomCurso,String ins);
+    public abstract DTMaster ConsultaCurso(String nomCurso);
     //Alta Edicion Curso
-    //La coleccion de docentes sera añadida cuando se cree el tipo de dato "Docente"
-    //El tipo de dato FechaType sera añadido cuando se cree el tipo de dato "FechaType" o alguno con nombre parecido
-    public abstract void AltaEdicionCurso(String nomCurso, String nomEdicion/*, FechaType (dia incio, dia final)*/,int cupo/*Collection<Usuario> docentes*/);
+    public abstract void AltaEdicionCurso(String instituto, String nomCurso, String nomEdicion,Date fInicio, Date fFin,int cupo, List<String>docentes, Date fAlta);
     //Consulta Edicion Curso
     //Se modificara al crear el tipo de dato EdicionCurso retornando el tipo de dato "EdicionCurso"
-    public abstract void ConsultaEdicionCurso(String nomEdicion);
+    public abstract DTMaster ConsultaEdicionCurso(String nomEdicion);
     //Inscripcion a Edicion Curso
     public abstract void InscripcionAEdicionCurso(String nomCurso, String nickname);
     //Crear Programa de Formacion
@@ -56,15 +54,22 @@ public interface IController {
     
     
     //Otras Funciones
+    
     //Verificar existencia de curso
-    public abstract boolean VerificarCurso(String nombre,String institut);
+    public abstract boolean VerificarCurso(String nombre);
     //Verificar existencia de instituto
     public abstract boolean VerificarInstituto(String instituto);
+    //Verificar existencia de edicion de curso
+    public abstract boolean VerificarEdicion(String nombre);
     //Devoolver lista completa de DTs
     public abstract List<DTMaster> ListarClase(EnumDT enumType);
     
     //Devolver lista de cursos x instituto
     public abstract List<DTMaster> ListarCursos(String nomInstituto);
+    //Devolver lista de ediciones x curso
+    public abstract List<DTMaster>ListarEdiciones(String nomCurso);
+    //Devolver lista de docentes x instituto
+    public abstract List<DTMaster>ListarDocentes(String nomInstituto);
     //verifica existencia de programa
     public abstract boolean ExistePrograma(String nombreProg);
     public abstract void ActualizarPrograma(String nombreProg, String descripcionProg, Date fInicio, Date fFin);

@@ -193,7 +193,7 @@ public class AltaCurso extends javax.swing.JInternalFrame {
                     previas.add(auxSubString);
                 }
             }
-            if(ico.VerificarCurso(fieldNombre.getText(),boxInstituto.getSelectedItem().toString()) ){
+            if(ico.VerificarCurso(fieldNombre.getText()) ){
                 int respuesta = javax.swing.JOptionPane.showConfirmDialog(
                 this, 
                 "El programa '" + fieldNombre.getText() + "' ya existe. ¿Deseas modificar sus datos?", 

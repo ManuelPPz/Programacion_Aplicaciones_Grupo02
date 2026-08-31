@@ -27,10 +27,12 @@ public class Docente extends UsuarioBase{
         this.misInstitutos = institutos;
     }
     
-    
     public void ModificarMisDatos(String nom, String apellido, String correo, Date fNac,byte[] img, List<Instituto> institutos){
         super.ModificarMisDatos(nom, apellido, correo, fNac, img);
         this.misInstitutos = institutos;
+    }
+    public List<Instituto> getInstitutos(){
+        return this.misInstitutos;
     }
     
 }
