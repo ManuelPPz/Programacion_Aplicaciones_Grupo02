@@ -10,6 +10,7 @@ import Logica.IController;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 /**
@@ -38,31 +39,25 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
     }
     
     
-    private void LlenarTablas(){
-        List<DTMaster> auxList = ico.ListarDocentes(instituto);
-        if(auxList.isEmpty()){
-            System.out.println("Esta vacio");
-        }
-        List<String> listStr = new ArrayList();
-        for(DTMaster dt : auxList){
-            if(dt instanceof DTDocente dTDocente){
-                listStr.add(dTDocente.getNombre());
+private void LlenarTablas() {
+    DefaultTableModel modelo = (DefaultTableModel) tableDocentes.getModel();
+    modelo.setRowCount(0); // Limpiar filas previas
+
+    List<DTMaster> auxList = ico.ListarDocentes(instituto);
+
+    if (auxList != null && !auxList.isEmpty()) {
+        for (DTMaster dt : auxList) {
+            if (dt instanceof DTDocente dTDocente) {
+                // Muestra Nickname - Nombre completo
+                String etiqueta = dTDocente.getNickname() + " (" + dTDocente.getNombre() + ")";
+                Object[] fila = new Object[]{ etiqueta, Boolean.FALSE };
+                modelo.addRow(fila);
             }
         }
-        if(!listStr.isEmpty()){
-            int tamListPrevias = listStr.size();
-            DefaultTableModel modelo = (DefaultTableModel) tableDocentes.getModel();
-            for(int i=0;i<tamListPrevias;i++){
-                String str = listStr.get(i);
-                Object[] obj = {str, false};
-                modelo.addRow(obj);
-            }
-        }else{
-            System.out.println("Esta vacio");
-        }
-        
-        
+    } else {
+        System.out.println("No se encontraron docentes para el instituto: " + instituto);
     }
+}
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -262,26 +257,31 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_checkCupoStateChanged
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
-        String nombre = nombreField.getText();
-        Date fIni = (Date)spinDateIni.getValue();
-        Date fFin = (Date)spinDateFin.getValue();
-        boolean auxCheckCupo = checkCupo.isSelected();
-        int auxCupo = 0;
-        if(auxCheckCupo){
-            auxCupo = (int)spinnerCupo.getValue();
+      String nombre = nombreField.getText();
+    Date fIni = (Date) spinDateIni.getValue();
+    Date fFin = (Date) spinDateFin.getValue();
+    boolean auxCheckCupo = checkCupo.isSelected();
+    int auxCupo = auxCheckCupo ? (int) spinnerCupo.getValue() : 0;
+    Date fPub = (Date) spinDatePub.getValue();
+
+    List<String> auxDocentes = new ArrayList<>();
+    
+    for (int i = 0; i < tableDocentes.getRowCount(); i++) {
+        Object isSelected = tableDocentes.getValueAt(i, 1);
+        if (isSelected != null && (Boolean) isSelected) {
+            String docenteNick = (String) tableDocentes.getValueAt(i, 0);
+            auxDocentes.add(docenteNick);
         }
-        Date fPub = (Date)spinDatePub.getValue();
-        List<String> auxDocentes = new ArrayList();
-        //DefaultTableModel modelo = (DefaultTableModel) tableDocentes.getModel();
-        for(int i = 0;i<tableDocentes.getRowCount();i++){
-            Boolean auxBool = (Boolean)tableDocentes.getValueAt(i, 1);
-            if(auxBool){
-                String auxObj = (String)tableDocentes.getValueAt(i, 0);
-                auxDocentes.add(auxObj);
-            }
-            
-        }
+    }
+
+    try {
         ico.AltaEdicionCurso(instituto, curso, nombre, fIni, fFin, auxCupo, auxDocentes, fPub);
+        JOptionPane.showMessageDialog(this, "Edición dada de alta con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        this.dispose();
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnAceptarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed

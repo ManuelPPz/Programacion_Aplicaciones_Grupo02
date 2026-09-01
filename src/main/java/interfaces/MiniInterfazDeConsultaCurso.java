@@ -53,37 +53,43 @@ public class MiniInterfazDeConsultaCurso extends javax.swing.JInternalFrame {
         
     }
     private void LLenarTablasYListas(){
-        if(dtc!=null){
-            List<String>listEdi = dtc.getEdiCursos();
-            if(listEdi!=null){
-                int tamEdiCurso = listEdi.size();
-                for(int i =0;i<tamEdiCurso;i++){
-                    modeloListEdiCurso.addElement(dtc.getEdiCursos().get(i));
-                }
-            }
-            List<String>listPro = dtc.getProgFormacion();
-            if(listPro!=null){
-                int tamProgCurso = dtc.getProgFormacion().size();
-                for(int i =0;i<tamProgCurso;i++){
-                    modeloListProgCurso.addElement(dtc.getProgFormacion().get(i));
+if (dtc != null) {
+
+            // 1. Cargar Ediciones de Curso
+            if (modeloListEdiCurso != null) {
+                modeloListEdiCurso.clear(); // Limpiamos elementos previos
+                List<String> listEdi = dtc.getEdiCursos();
+                if (listEdi != null) {
+                    for (String ed : listEdi) {
+                        modeloListEdiCurso.addElement(ed);
+                    }
                 }
             }
 
-            List<String> listStr = dtc.getPrevias();
-            if(listStr!=null){
-                int tamListPrevias = listStr.size();
-                DefaultTableModel modelo = (DefaultTableModel) tablePrevias.getModel();
-                for(int i=0;i<tamListPrevias;i++){
-                    String str = listStr.get(i);
-                    Object[] obj = {str};
-                    modelo.addRow(obj);
+            // 2. Cargar Programas de Formación
+            if (modeloListProgCurso != null) {
+                modeloListProgCurso.clear();
+                List<String> listPro = dtc.getProgFormacion();
+                if (listPro != null) {
+                    for (String prog : listPro) {
+                        modeloListProgCurso.addElement(prog);
+                    }
                 }
             }
-        }else{
-            System.out.println("Esto esta null");
+
+            // 3. Cargar Cursos Previos
+            DefaultTableModel modeloPrevias = (DefaultTableModel) tablePrevias.getModel();
+            modeloPrevias.setRowCount(0); // Limpiamos la tabla antes de cargar
+            List<String> listStr = dtc.getPrevias();
+            if (listStr != null) {
+                for (String previa : listStr) {
+                    modeloPrevias.addRow(new Object[]{previa});
+                }
+            }
+
+        } else {
+            System.out.println("El DTCurso proporcionado es null.");
         }
-        
-        
     }
             
     /**

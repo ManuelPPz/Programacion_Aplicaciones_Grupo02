@@ -1,11 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Manejadores;
+
 import java.util.List;
 import java.util.ArrayList;
 import Classes.Curso;
+import Classes.EdicionCurso; // <-- Asegúrate de importar EdicionCurso
 import Classes.Instituto;
 import DTsClasses.DTCurso;
 import DTsClasses.DTMaster;
@@ -14,10 +12,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.TypedQuery;
 import java.util.Date;
-/**
- *
- * @author mateo
- */
+
 public class ManejadorCursos {
     private EntityManagerFactory emf = Persistence.createEntityManagerFactory("ControladorPU");
     List<Curso> misCursos;
@@ -29,70 +24,86 @@ public class ManejadorCursos {
             instance = new ManejadorCursos();
         }
         return instance;
-        
     }
+    
     private ManejadorCursos() {
         misCursos = new ArrayList<>();
-        CargarDeBaseDeDatos(); // Carga la lista en memoria al instanciar el Singleton
+        CargarDeBaseDeDatos();
     }
     //=======================================================
-    private void CargarDeBaseDeDatos(){
-      EntityManager em = getEntityManager();
+    
+    public void CargarDeBaseDeDatos() {
+    EntityManager em = emf.createEntityManager();
     try {
-        // 'LEFT JOIN FETCH c.previas' trae los cursos y sus previas asociadas en una sola consulta
-        TypedQuery<Curso> query = em.createQuery("SELECT DISTINCT c FROM Curso c LEFT JOIN FETCH c.previas", Curso.class);
-        misCursos = query.getResultList();
+        em.getTransaction().begin();
+
+        // PASO 1: Cargar todos los cursos haciendo FETCH de la colección 'misEdiciones'
+        List<Curso> resultados = em.createQuery(
+            "SELECT DISTINCT c FROM Curso c LEFT JOIN FETCH c.misEdiciones", Curso.class
+        ).getResultList();
+
+        // PASO 2: En la misma sesión, hacer FETCH de la colección 'previas' para los mismos cursos
+        // Esto inicializa las previas en memoria sin lanzar la MultipleBagFetchException
+        if (!resultados.isEmpty()) {
+            resultados = em.createQuery(
+                "SELECT DISTINCT c FROM Curso c LEFT JOIN FETCH c.previas WHERE c IN :cursos", Curso.class
+            ).setParameter("cursos", resultados)
+             .getResultList();
+        }
+
+        em.getTransaction().commit();
+
+        // Guardar la lista de cursos obtenida
+        this.misCursos = resultados;
+
     } catch (Exception e) {
-        System.err.println("Error al cargar cursos desde la BD: " + e.getMessage());
-        misCursos = new ArrayList<>();
+        if (em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+        }
+        System.out.println("Error al cargar cursos desde la BD: " + e.getMessage());
+        e.printStackTrace();
     } finally {
         em.close();
     }
-   }
+}
     
-    public Curso CrearCurso(Instituto instituto,String nombre,String descripcion,int duracion,float cantHoras,int cantCreditos,String URL,Date fAlta,List<String>previas){
+    public Curso CrearCurso(Instituto instituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<String> previas){
         Curso returnCurso;
-        List<Curso> auxPrevias = new ArrayList();
-        for(int i= 0;i<previas.size();i++){
+        List<Curso> auxPrevias = new ArrayList<>();
+        for(int i= 0; i<previas.size(); i++){
             auxPrevias.add(BuscarCurso(previas.get(i)));
         }
-        returnCurso = new Curso(instituto,nombre,descripcion,duracion,cantHoras,cantCreditos,URL,fAlta,auxPrevias);
+        returnCurso = new Curso(instituto, nombre, descripcion, duracion, cantHoras, cantCreditos, URL, fAlta, auxPrevias);
         return returnCurso;
     }
-    public void ModificarCurso(Curso c,String descripcion,int duracion,float cantHoras,int cantCreditos,String URL,Date fAlta,List<String>previas){
-        List<Curso> auxPrevias = new ArrayList();
-        for(int i= 0;i<previas.size();i++){
+
+    public void ModificarCurso(Curso c, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<String> previas){
+        List<Curso> auxPrevias = new ArrayList<>();
+        for(int i= 0; i<previas.size(); i++){
             auxPrevias.add(BuscarCurso(previas.get(i)));
         }
-        c.ModificarMisDatos(descripcion, duracion, cantHoras, cantCreditos, URL, fAlta,auxPrevias);
+        c.ModificarMisDatos(descripcion, duracion, cantHoras, cantCreditos, URL, fAlta, auxPrevias);
     }
-    
-    
-    
-    
-    
-    
     
     public void Add(Curso c) throws Exception{
         misCursos.add(c);
-        //Aca se añade a la base de datos
-            EntityManager em = emf.createEntityManager();
+        EntityManager em = emf.createEntityManager();
         try{
             em.getTransaction().begin();
-            em.persist(c); //Insertar objeto en la bd
+            em.persist(c);
             em.getTransaction().commit();
         } catch (Exception e){
             if(em.getTransaction().isActive()){
                 em.getTransaction().rollback();
             }
-            throw new Exception("Error al guardar el programa" + e.getMessage());
-        }finally{
+            throw new Exception("Error al guardar el curso: " + e.getMessage());
+        } finally{
             em.close();
         }
     }
     
     public Curso BuscarCurso(String nombre){
-        for(int i = 0;i<misCursos.size();i++){
+        for(int i = 0; i<misCursos.size(); i++){
             Curso c = misCursos.get(i);
             if(c.getNombre().equals(nombre)){
                 return c;
@@ -101,33 +112,62 @@ public class ManejadorCursos {
         return null;
     }
 
-    
-    
-    
     public DTCurso getDT(Curso c){
-        DTCurso auxDT;
-        String ins = c.getInstituto().getNombre();
-        List<Curso>auxPrevias = c.getPrevias();
-        List<String> auxPreviasStr = new ArrayList();
-        for(int i=0;i<auxPrevias.size();i++){
-            auxPreviasStr.add(auxPrevias.get(i).getNombre());
+        String ins = (c.getInstituto() != null) ? c.getInstituto().getNombre() : "";
+        
+        // 1. Convertir Previas
+        List<Curso> auxPrevias = c.getPrevias();
+        List<String> auxPreviasStr = new ArrayList<>();
+        if (auxPrevias != null) {
+            for(Curso previa : auxPrevias){
+                auxPreviasStr.add(previa.getNombre());
+            }
         }
-        auxDT = new DTCurso(ins,c.getNombre(),c.getDescripcion(),c.getDuracion(),c.getCantHoras(),c.getCantCreditos(),c.getURL(),c.getFAlta(),auxPreviasStr,null,null);
-        return auxDT;
+
+        // CORRECCIÓN 2: Mapear la lista de Ediciones de EdicionCurso -> String
+        List<EdicionCurso> auxEdiciones = c.getEdiciones();
+        List<String> auxEdicionesStr = new ArrayList<>();
+        if (auxEdiciones != null) {
+            for(EdicionCurso edicion : auxEdiciones){
+                if (edicion != null) {
+                    auxEdicionesStr.add(edicion.getNombre()); // O el método que devuelva el nombre/identificador
+                }
+            }
+        }
+
+        // List de programas (vacía por ahora si no la usas)
+        List<String> auxProgramasStr = new ArrayList<>();
+
+        // CORRECCIÓN 3: Reemplazar los 'null' por la lista procesada 'auxEdicionesStr'
+        return new DTCurso(
+            ins,
+            c.getNombre(),
+            c.getDescripcion(),
+            c.getDuracion(),
+            c.getCantHoras(),
+            c.getCantCreditos(),
+            c.getURL(),
+            c.getFAlta(),
+            auxPreviasStr,
+            auxEdicionesStr,  // <-- Pasa las ediciones mapeadas
+            auxProgramasStr   // <-- Pasa la lista de programas
+        );
     }
+
     public List<DTMaster> getDTList(){
-        List<DTMaster> auxList = new ArrayList();
-        for(int i = 0;i<misCursos.size();i++){
+        List<DTMaster> auxList = new ArrayList<>();
+        for(int i = 0; i<misCursos.size(); i++){
             DTMaster dt = getDT(misCursos.get(i));
             auxList.add(dt);
         }
         return auxList;
     }
+
     public List<DTMaster> getDTLIst(String instituto){
-        List<DTMaster> auxList = new ArrayList();
-        for(int i = 0;i<misCursos.size();i++){
+        List<DTMaster> auxList = new ArrayList<>();
+        for(int i = 0; i<misCursos.size(); i++){
             Curso c = misCursos.get(i);
-            if(c.getInstituto().getNombre().equals(instituto)){
+            if(c.getInstituto() != null && c.getInstituto().getNombre().equals(instituto)){
                 DTMaster dt = getDT(c);
                 auxList.add(dt);
             }
@@ -135,10 +175,7 @@ public class ManejadorCursos {
         return auxList;
     }
 
-   private EntityManager getEntityManager() {
-    return emf.createEntityManager();
-}
-    
-    
-    
+    private EntityManager getEntityManager() {
+        return emf.createEntityManager();
+    }
 }

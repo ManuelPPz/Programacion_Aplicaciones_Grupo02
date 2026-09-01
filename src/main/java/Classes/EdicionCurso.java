@@ -15,6 +15,7 @@ import java.util.List;
  * @author mateo
  */
 @Entity
+@Table(name = "EdicionCurso")
 public class EdicionCurso implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -27,15 +28,26 @@ public class EdicionCurso implements Serializable {
     @ManyToOne
     @JoinColumn(name="Curso")
     private Curso miCurso;
+    @Temporal(TemporalType.DATE) 
     @Column(name="F. Inicio")
     private Date fInicio;
+    @Temporal(TemporalType.DATE) 
     @Column(name="F. Fin")
     private Date fFin;
     @Column(name="Cupo")
     private int cupo;
-    @ManyToMany
+    
+   // Se especifica FetchType.EAGER para evitar LazyInitializationException 
+    // y CascadeType.ALL para persistir cambios en la relacion
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+        name = "Edicion_Usuario",
+        joinColumns = @JoinColumn(name = "Edicion_Nombre"),
+        inverseJoinColumns = @JoinColumn(name = "Usuario_Nickname")
+    )
     private List<UsuarioBase> misUsuarios;
-    @Column(name="F. Alta")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "F_Alta")
     private Date fAlta;
     
     public String getNombre(){return nombre;}
@@ -47,6 +59,8 @@ public class EdicionCurso implements Serializable {
     public List<UsuarioBase> getMisUsuarios() {return misUsuarios;}
     public Date getFAlta() {return fAlta;}
 
+    public EdicionCurso() { this.misUsuarios = new ArrayList<>();}
+    
     public EdicionCurso(String nombre, Instituto miInstituto, Curso miCurso, Date fInicio, Date fFin, int cupo, Date fAlta) {
         this.nombre = nombre;
         this.miInstituto = miInstituto;
@@ -55,10 +69,13 @@ public class EdicionCurso implements Serializable {
         this.fFin = fFin;
         this.cupo = cupo;
         this.fAlta = fAlta;
-        misUsuarios = new ArrayList();
+        misUsuarios = new ArrayList<>();
     }
     
     public void AddUsuarios(UsuarioBase ub){
+        if (this.misUsuarios == null) {
+            this.misUsuarios = new ArrayList<>();
+        }
         misUsuarios.add(ub);
     }
     public void setNombre(String nombre) {

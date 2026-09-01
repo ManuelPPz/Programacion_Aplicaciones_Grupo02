@@ -6,6 +6,7 @@ package Classes;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 /**
  *
@@ -15,48 +16,74 @@ import java.util.List;
 public class Instituto implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    
     @Id
     private String nombre;
-    @ManyToMany
-    @JoinTable(name="Ins_Doc",joinColumns=@JoinColumn(name="Instituto"),inverseJoinColumns=@JoinColumn(name="Docente"))
-    List<Docente> misDocentes;
-    
+
+    // Cambios clave: FetchType.EAGER para cargar la relación automáticamente
+    // e inicializar la colección = new ArrayList<>()
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "Ins_Doc",
+        joinColumns = @JoinColumn(name = "Instituto"),
+        inverseJoinColumns = @JoinColumn(name = "Docente")
+    )
+    private List<Docente> misDocentes = new ArrayList<>();
+
     //==============Constructores=========================
-    public Instituto(){
-        
+    public Instituto() {
+        this.misDocentes = new ArrayList<>();
     }
-    public Instituto(String nombre){
+
+    public Instituto(String nombre) {
         this.nombre = nombre;
+        this.misDocentes = new ArrayList<>();
     }
     //====================================================
-    //===============Geters===============================
+
+    //===============Getters y Setters====================
     public String getNombre() {
         return nombre;
     }
-    public List<Docente> getDocentes(){
-        return this.misDocentes;
-    }
-    //====================================================
-    //===============Seters===============================
-    public void setDocentes(List<Docente>docentes){
-        this.misDocentes=docentes;
-    }
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
+
+    public List<Docente> getDocentes() {
+        if (this.misDocentes == null) {
+            this.misDocentes = new ArrayList<>();
+        }
+        return this.misDocentes;
+    }
+
+    public void setDocentes(List<Docente> docentes) {
+        this.misDocentes = (docentes != null) ? docentes : new ArrayList<>();
+    }
+
+    //===============Método Auxiliar=======================
+    // Permite agregar docentes de forma bidireccional y segura
+    public void addDocente(Docente doc) {
+        if (doc != null) {
+            if (this.misDocentes == null) {
+                this.misDocentes = new ArrayList<>();
+            }
+            if (!this.misDocentes.contains(doc)) {
+                this.misDocentes.add(doc);
+            }
+        }
+    }
     //====================================================
-    
-    
+
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (nombre!= null ? nombre.hashCode() : 0);
+        hash += (nombre != null ? nombre.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Instituto)) {
             return false;
         }
@@ -71,5 +98,4 @@ public class Instituto implements Serializable {
     public String toString() {
         return "Classes.Instituto[ id=" + nombre + " ]";
     }
-    
 }

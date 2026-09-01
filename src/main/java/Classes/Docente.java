@@ -17,24 +17,42 @@ import java.util.List;
 @Entity
 @Table(name = "Docente")
 @PrimaryKeyJoinColumn(name = "nickname")
-public class Docente extends UsuarioBase{
-    @ManyToMany(mappedBy="misDocentes")
+public class Docente extends UsuarioBase {
+
+    @ManyToMany(mappedBy = "misDocentes", fetch = FetchType.EAGER)
     private List<Instituto> misInstitutos;
-    public Docente(){
+
+    public Docente() {
         super();
-        misInstitutos = new ArrayList();
+        misInstitutos = new ArrayList<>();
     }
-    public Docente(String nick, String nombre, String apellido, String correo, Date fNac, byte[] img, List<Instituto> institutos){
-        super(nick, nombre, apellido, correo, fNac,img);
-        this.misInstitutos = institutos;
+
+    public Docente(String nick, String nombre, String apellido, String correo, Date fNac, byte[] img, List<Instituto> institutos) {
+        super(nick, nombre, apellido, correo, fNac, img);
+        this.setInstitutos(institutos);
     }
-    
-    public void ModificarMisDatos(String nom, String apellido, String correo, Date fNac,byte[] img, List<Instituto> institutos){
+
+    public void ModificarMisDatos(String nom, String apellido, String correo, Date fNac, byte[] img, List<Instituto> institutos) {
         super.ModificarMisDatos(nom, apellido, correo, fNac, img);
-        this.misInstitutos = institutos;
+        this.setInstitutos(institutos);
     }
-    public List<Instituto> getInstitutos(){
+
+    public void setInstitutos(List<Instituto> institutos) {
+        this.misInstitutos = (institutos != null) ? institutos : new ArrayList<>();
+        
+        // Sincronización bidireccional:
+        // Como 'Instituto' es el dueño de la relación (posee la tabla de unión),
+        // debemos agregar este docente a la lista del instituto obligatoriamente.
+        if (institutos != null) {
+            for (Instituto inst : institutos) {
+                if (inst.getDocentes() != null && !inst.getDocentes().contains(this)) {
+                    inst.getDocentes().add(this);
+                }
+            }
+        }
+    }
+
+    public List<Instituto> getInstitutos() {
         return this.misInstitutos;
     }
-    
 }

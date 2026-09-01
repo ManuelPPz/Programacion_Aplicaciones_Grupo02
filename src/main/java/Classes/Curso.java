@@ -6,6 +6,7 @@ package Classes;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class Curso implements Serializable {
     @JoinTable(name = "Previa",joinColumns = @JoinColumn(name="Nombre"),inverseJoinColumns = @JoinColumn(name="Previa_Nombre"))
     private List<Curso> previas;
     @OneToMany(mappedBy="miCurso")
-    private List<EdicionCurso> misEdiciones;
+    private List<EdicionCurso> misEdiciones = new ArrayList<>();
     //List<String/ProgFormacion> progFormacion;
     
     

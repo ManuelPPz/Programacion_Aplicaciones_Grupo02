@@ -35,7 +35,7 @@ public interface IController {
     //Se modificara al crear el tipo de dato curso retornando el tipo de dato "Curso"
     public abstract DTMaster ConsultaCurso(String nomCurso);
     //Alta Edicion Curso
-    public abstract void AltaEdicionCurso(String instituto, String nomCurso, String nomEdicion,Date fInicio, Date fFin,int cupo, List<String>docentes, Date fAlta);
+    public abstract void AltaEdicionCurso(String instituto, String nomCurso, String nomEdicion,Date fInicio, Date fFin,int cupo, List<String>docentes, Date fAlta)throws Exception;
     //Consulta Edicion Curso
     //Se modificara al crear el tipo de dato EdicionCurso retornando el tipo de dato "EdicionCurso"
     public abstract DTMaster ConsultaEdicionCurso(String nomEdicion);

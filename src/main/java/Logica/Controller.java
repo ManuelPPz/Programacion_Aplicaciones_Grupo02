@@ -123,15 +123,38 @@ public class Controller implements IController{
     //Alta Edicion Curso
     //La coleccion de docentes sera añadida cuando se cree el tipo de dato "Docente"
     //El tipo de dato FechaType sera añadido cuando se cree el tipo de dato "FechaType" o alguno con nombre parecido
+    // Alta Edicion Curso
     @Override
-    public void AltaEdicionCurso(String instituto, String nomCurso, String nomEdicion,Date fInicio, Date fFin,int cupo, List<String>docentes, Date fAlta){
+    public void AltaEdicionCurso(String instituto, String nomCurso, String nomEdicion, Date fInicio, Date fFin, int cupo, List<String> docentes, Date fAlta) throws Exception {
         Instituto ins = manInstituto.BuscarInstituto(instituto);
         Curso c = manCursos.BuscarCurso(nomCurso);
+        
+        // 1. Crear la entidad Edición
         EdicionCurso ec = manEdicion.CrearEdicion(ins, c, nomEdicion, fInicio, fFin, cupo, fAlta);
+        
+        // 2. Guardar la edición en su manejador / BD
         manEdicion.Add(ec);
-        for(int i = 0;i<docentes.size();i++){
-            UsuarioBase ub = manUsuario.BuscarUsuario(docentes.get(i));
-            manEdicion.AddUsuario(ec, ub);
+        
+        // ==================== CORRECCIÓN AQUÍ ====================
+        // 3. Vincular en memoria la nueva Edición al Curso padre
+        if (c != null) {
+            // Si la lista de ediciones en el Curso es null, la inicializamos
+            if (c.getEdiciones() == null) {
+                // Si la propiedad misEdiciones es privada o no tiene setter, 
+                // asegúrate de que esté inicializada en el constructor de la clase Curso.
+            }
+            c.getEdiciones().add(ec);
+        }
+        // =========================================================
+
+        // 4. Asociar docentes a la edición
+        if (docentes != null) {
+            for (int i = 0; i < docentes.size(); i++) {
+                UsuarioBase ub = manUsuario.BuscarUsuario(docentes.get(i));
+                if (ub != null) {
+                    manEdicion.AddUsuario(ec, ub);
+                }
+            }
         }
     }
     //Consulta Edicion Curso

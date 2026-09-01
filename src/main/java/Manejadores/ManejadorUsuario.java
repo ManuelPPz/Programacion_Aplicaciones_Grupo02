@@ -1,8 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Manejadores;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -13,220 +10,243 @@ import Classes.UsuarioBase;
 
 import java.util.Date;
 import javax.swing.ImageIcon;
-
 import javax.imageio.ImageIO;
 
 import DTsClasses.DTUsuarioBase;
 import DTsClasses.DTDocente;
 import DTsClasses.DTUsuario;
 import DTsClasses.DTMaster;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-import jakarta.persistence.TypedQuery;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
 /**
- *
  * @author mateo
  */
 public class ManejadorUsuario {
+
     private EntityManagerFactory emf = Persistence.createEntityManagerFactory("ControladorPU");
-    List<UsuarioBase> misUsuarios;
-    
-    
-    //=================Codigo de Singleton=================
+    private List<UsuarioBase> misUsuarios;
+
+    // ================= Singleton =================
     private static ManejadorUsuario instance;
-    public static ManejadorUsuario GetInstance(){
-        if(instance==null){
+
+    public static ManejadorUsuario GetInstance() {
+        if (instance == null) {
             instance = new ManejadorUsuario();
         }
         return instance;
     }
+
     private ManejadorUsuario() {
         misUsuarios = new ArrayList<>();
-        CargarDeBaseDeDatos(); // Carga automática al iniciar la instancia Singleton
+        CargarDeBaseDeDatos();
     }
-    //======================================================
-    
-    private void CargarDeBaseDeDatos(){
-        //Aca cargas misUsuarios con lo que esta en la base de datos
+    // =============================================
+
+    // CORRECCIÓN: Carga polimórfica que garantiza traer los institutos de los docentes
+    public void CargarDeBaseDeDatos() {
         EntityManager em = getEntityManager();
         try {
-            // Trae todos los usuarios base (tanto Estudiantes/Usuario como Docentes)
-            TypedQuery<UsuarioBase> query = em.createQuery(
-                "SELECT DISTINCT u FROM UsuarioBase u LEFT JOIN FETCH u.institutos", UsuarioBase.class);
-            misUsuarios = query.getResultList();
-        } catch (Exception e) {
-            // Si la consulta con JOIN falla por ser un tipo simple, hacemos la consulta fallback
-            try {
-                TypedQuery<UsuarioBase> querySimple = em.createQuery("SELECT u FROM UsuarioBase u", UsuarioBase.class);
-                misUsuarios = querySimple.getResultList();
-            } catch (Exception ex) {
-                System.err.println("Error al cargar usuarios desde la BD: " + ex.getMessage());
-                misUsuarios = new ArrayList<>();
-            }
+            misUsuarios.clear();
+
+            // 1. Cargar docentes forzando la hidratación de sus institutos
+            List<Docente> docentes = em.createQuery(
+                "SELECT DISTINCT d FROM Docente d LEFT JOIN FETCH d.misInstitutos", Docente.class
+            ).getResultList();
+
+            // 2. Cargar estudiantes
+            List<Usuario> estudiantes = em.createQuery(
+                "SELECT u FROM Usuario u", Usuario.class
+            ).getResultList();
+
+            misUsuarios.addAll(docentes);
+            misUsuarios.addAll(estudiantes);
         } finally {
             em.close();
         }
     }
-    
-    
-    public UsuarioBase CrearUsuario(String nick, String nombre, String apellido, String correo, boolean docente,Date fNac, List<Instituto>institutos, String imgPath) throws IOException{
+
+    public UsuarioBase CrearUsuario(String nick, String nombre, String apellido, String correo, boolean docente, Date fNac, List<Instituto> institutos, String imgPath) throws IOException {
         UsuarioBase returnUb;
         byte[] imgByte = null;
-        if(!imgPath.isEmpty()){
+        if (imgPath != null && !imgPath.trim().isEmpty()) {
             imgByte = ConvertirImageIconToByte(imgPath);
         }
-        
-        if(docente){
-            returnUb = new Docente(nick, nombre, apellido, correo, fNac,imgByte, institutos);
-        }else{
-            returnUb = new Usuario(nick, nombre, apellido, correo, fNac,imgByte);
+
+        if (docente) {
+            returnUb = new Docente(nick, nombre, apellido, correo, fNac, imgByte, institutos);
+        } else {
+            returnUb = new Usuario(nick, nombre, apellido, correo, fNac, imgByte);
         }
         return returnUb;
     }
-    
-    
-    public void ModificarDatosUsuario(String nick, String nombre, String apellido, String correo, boolean docente,Date fNac, List<Instituto>institutos, String imgPath) throws IOException{
+
+    public void ModificarDatosUsuario(String nick, String nombre, String apellido, String correo, boolean docente, Date fNac, List<Instituto> institutos, String imgPath) throws IOException {
         byte[] imgByte = null;
-        if(!imgPath.isEmpty()){
+        if (imgPath != null && !imgPath.trim().isEmpty()) {
             imgByte = ConvertirImageIconToByte(imgPath);
         }
-        
-        UsuarioBase ubModificar;
-        if(docente){
-            Docente d = (Docente)BuscarUsuario(nick);
-            d.ModificarMisDatos(nombre, apellido, correo, fNac, imgByte,institutos);
-        }else{
-            Usuario u = (Usuario)BuscarUsuario(nick);
-            u.ModificarMisDatos(nombre, apellido, correo, fNac, imgByte);
+
+        UsuarioBase ub = BuscarUsuario(nick);
+        if (ub != null) {
+            if (docente && ub instanceof Docente d) {
+                d.ModificarMisDatos(nombre, apellido, correo, fNac, imgByte, institutos);
+            } else if (ub instanceof Usuario u) {
+                u.ModificarMisDatos(nombre, apellido, correo, fNac, imgByte);
+            }
         }
     }
-    
-    
-    public void Add(UsuarioBase ub)throws Exception{
-        misUsuarios.add(ub);
-        //Aca se añade a la base de datos
-            EntityManager em = emf.createEntityManager();
-        try{
+
+    // CORRECCIÓN: Persiste el usuario y, si es Docente, guarda las filas en la tabla Ins_Doc
+    public void Add(UsuarioBase ub) throws Exception {
+        EntityManager em = getEntityManager();
+        try {
             em.getTransaction().begin();
-            em.persist(ub); //Insertar objeto en la bd
+            em.persist(ub); // Persiste el Usuario/Docente
+
+            // Si es un Docente, debemos actualizar los institutos para que JPA guarde en Ins_Doc
+            if (ub instanceof Docente d && d.getInstitutos() != null) {
+                for (Instituto inst : d.getInstitutos()) {
+                    Instituto instMerged = em.find(Instituto.class, inst.getNombre());
+                    if (instMerged != null) {
+                        if (!instMerged.getDocentes().contains(d)) {
+                            instMerged.getDocentes().add(d);
+                        }
+                        em.merge(instMerged); // Ejecuta el INSERT en Ins_Doc
+                    }
+                }
+            }
+
             em.getTransaction().commit();
-        } catch (Exception e){
-            if(em.getTransaction().isActive()){
+            misUsuarios.add(ub); // Agregamos a la lista en memoria si la BD tuvo éxito
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw new Exception("Error al guardar el programa" + e.getMessage());
-        }finally{
+            throw new Exception("Error al guardar el usuario: " + e.getMessage());
+        } finally {
             em.close();
         }
     }
-    
 
-    public UsuarioBase BuscarUsuario(String nickname){
-        for(int i = 0;i<misUsuarios.size();i++){
-            if(misUsuarios.get(i).getNickname().equals(nickname)){
-                return misUsuarios.get(i);
+    public UsuarioBase BuscarUsuario(String nickname) {
+        if (nickname == null) return null;
+        for (UsuarioBase ub : misUsuarios) {
+            if (ub.getNickname().equalsIgnoreCase(nickname.trim())) {
+                return ub;
             }
         }
         return null;
     }
-    
-    
-    
-    /*public List<String> MisUsuarios(){
-        List<String> auxList = new ArrayList();
-        for(int i = 0;i<misUsuarios.size();i++){
-            auxList.add(misUsuarios.get(i).getNickname());
-        }
-        return auxList;
-    }*/
-    public DTUsuarioBase getDT(UsuarioBase ub){
-        DTUsuarioBase auxDT = null;
+
+    public DTUsuarioBase getDT(UsuarioBase ub) {
+        if (ub == null) return null;
+
         ImageIcon img = null;
-        if(ub.getImage()!=null){
+        if (ub.getImage() != null && ub.getImage().length > 0) {
             img = ConvertirByteToImageIcon(ub.getImage());
         }
-        
-        if(ub instanceof Docente docente){
-           List<Instituto> auxList = docente.getInstitutos();
-           List<String> auxStr = new ArrayList();
-           for(int i = 0;i<auxList.size();i++){
-               auxStr.add(auxList.get(i).getNombre());
-           }
-           auxDT = new DTDocente(ub.getNickname(),ub.getNombre(),ub.getApellido(),ub.getCorreo(),ub.getFNac(),auxStr,img);
-        }else if(ub instanceof Usuario){
-           auxDT = new DTUsuario(ub.getNickname(),ub.getNombre(),ub.getApellido(),ub.getCorreo(),ub.getFNac(),img);
+
+        if (ub instanceof Docente docente) {
+            List<String> auxStr = new ArrayList<>();
+            if (docente.getInstitutos() != null) {
+                for (Instituto inst : docente.getInstitutos()) {
+                    if (inst != null && inst.getNombre() != null) {
+                        auxStr.add(inst.getNombre());
+                    }
+                }
+            }
+            return new DTDocente(
+                ub.getNickname(),
+                ub.getNombre(),
+                ub.getApellido(),
+                ub.getCorreo(),
+                ub.getFNac(),
+                auxStr,
+                img
+            );
+        } else {
+            return new DTUsuario(
+                ub.getNickname(),
+                ub.getNombre(),
+                ub.getApellido(),
+                ub.getCorreo(),
+                ub.getFNac(),
+                img
+            );
         }
-        return auxDT;
     }
-    public List<DTMaster> getDTList(){
-        List<DTMaster> auxList = new ArrayList();
-        for(int i = 0;i<misUsuarios.size();i++){
-            DTMaster dt = getDT(misUsuarios.get(i));
-            auxList.add(dt);
+
+    public List<DTMaster> getDTList() {
+        List<DTMaster> auxList = new ArrayList<>();
+        for (UsuarioBase ub : misUsuarios) {
+            auxList.add(getDT(ub));
         }
         return auxList;
     }
-    public List<DTMaster> getDTList(String instituto){
-        
-        List<DTMaster> auxList = new ArrayList();
-        for(int i = 0;i<misUsuarios.size();i++){
-            DTMaster dt = getDT(misUsuarios.get(i));
-            if(dt instanceof DTDocente auxDT){
+
+    public List<DTMaster> getDTList(String instituto) {
+        List<DTMaster> auxList = new ArrayList<>();
+
+        if (instituto == null || instituto.trim().isEmpty()) {
+            return auxList;
+        }
+
+        String instBuscado = instituto.trim();
+
+        for (UsuarioBase ub : misUsuarios) {
+            DTMaster dt = getDT(ub);
+
+            if (dt instanceof DTDocente auxDT) {
                 List<String> auxIns = auxDT.getInstitutos();
-                if(auxIns!=null){
-                    System.out.println("En manejador no vacio");
-                    System.out.println("isntituto es: " +instituto);
-                    if(auxIns.contains(instituto)){
-                        System.out.println("En manejador contiene");
-                        auxList.add(dt);
-                    } else {
-                        System.out.println("En manejador no contiene");
+
+                if (auxIns != null) {
+                    for (String nomInst : auxIns) {
+                        if (nomInst != null && nomInst.trim().equalsIgnoreCase(instBuscado)) {
+                            auxList.add(dt);
+                            break;
+                        }
                     }
-                }else{
-                    System.out.println("En manejador vacio");
                 }
-                
             }
         }
+
         return auxList;
     }
-    
-    
-    
-    
-    
-    //Funcion que convierte un ImageIcon en byte para persistencia
-    private byte[] ConvertirImageIconToByte(String imgPath) throws IOException{
+
+    private byte[] ConvertirImageIconToByte(String imgPath) throws IOException {
         ImageIcon img = new ImageIcon(imgPath);
         String formato = "png";
-        if(imgPath.endsWith(".png")){
-            formato = "png";
-        }else if(imgPath.endsWith(".jpg") || imgPath.endsWith(".jpeg")){
-            formato = "png";
+        if (imgPath.endsWith(".jpg") || imgPath.endsWith(".jpeg")) {
+            formato = "jpg";
         }
-        BufferedImage bi = new BufferedImage(img.getIconWidth(),img.getIconHeight(),BufferedImage.TYPE_INT_ARGB);
-        Graphics g = bi.createGraphics();
-        img.paintIcon(null,g,0,0);
-        g.dispose();
-        
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(bi,formato,baos);
-        byte[] bytes = baos.toByteArray();
 
-        return bytes;
+        BufferedImage bi = new BufferedImage(
+            Math.max(1, img.getIconWidth()), 
+            Math.max(1, img.getIconHeight()), 
+            BufferedImage.TYPE_INT_ARGB
+        );
+        Graphics g = bi.createGraphics();
+        img.paintIcon(null, g, 0, 0);
+        g.dispose();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bi, formato, baos);
+        return baos.toByteArray();
     }
-    
-    private ImageIcon ConvertirByteToImageIcon(byte[] bytes){
+
+    private ImageIcon ConvertirByteToImageIcon(byte[] bytes) {
         return new ImageIcon(bytes);
     }
 
-     private EntityManager getEntityManager() {
-    return emf.createEntityManager();
-}
+    private EntityManager getEntityManager() {
+        return emf.createEntityManager();
+    }
 }
