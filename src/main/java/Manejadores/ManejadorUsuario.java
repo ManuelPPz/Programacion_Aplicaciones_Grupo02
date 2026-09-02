@@ -229,26 +229,18 @@ public class ManejadorUsuario {
         }
     }
 
-    private byte[] ConvertirImageIconToByte(String imgPath) throws IOException {
-        ImageIcon img = new ImageIcon(imgPath);
-        String formato = "png";
-        if (imgPath.endsWith(".jpg") || imgPath.endsWith(".jpeg")) {
-            formato = "jpg";
-        }
-
-        BufferedImage bi = new BufferedImage(
-            Math.max(1, img.getIconWidth()), 
-            Math.max(1, img.getIconHeight()), 
-            BufferedImage.TYPE_INT_ARGB
-        );
-        Graphics g = bi.createGraphics();
-        img.paintIcon(null, g, 0, 0);
-        g.dispose();
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(bi, formato, baos);
-        return baos.toByteArray();
+private byte[] ConvertirImageIconToByte(String imgPath) throws IOException {
+    if (imgPath == null || imgPath.trim().isEmpty()) {
+        return null;
     }
+    
+    java.io.File archivo = new java.io.File(imgPath);
+    if (archivo.exists() && archivo.isFile()) {
+        return java.nio.file.Files.readAllBytes(archivo.toPath());
+    }
+    
+    return null;
+}
 
     private ImageIcon ConvertirByteToImageIcon(byte[] bytes) {
         return new ImageIcon(bytes);

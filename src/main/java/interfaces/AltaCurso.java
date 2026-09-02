@@ -22,7 +22,7 @@ import javax.swing.table.TableRowSorter;
 
 /**
  *
- * @author sebas
+ * @author sebas xD
  */
 public class AltaCurso extends javax.swing.JInternalFrame {
 
