@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Manejadores;
+import Classes.Curso;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -161,8 +162,16 @@ public class ManejadorUsuario {
     }
     
     
-    
-    
+    public void AddCurso(UsuarioBase ub, Curso c){
+        if(ub instanceof Docente docente){
+            docente.AddCurso(c);
+        }
+    }
+    public void RemoveCurso(UsuarioBase ub, Curso c){
+        if(ub instanceof Docente docente){
+            docente.RemoveCurso(c);
+        }
+    }
     
     //Funcion que convierte un ImageIcon en byte para persistencia
     private byte[] ConvertirImageIconToByte(String imgPath) throws IOException{

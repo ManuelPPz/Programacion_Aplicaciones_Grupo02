@@ -21,6 +21,8 @@ import Classes.Curso;
 import Classes.Docente;
 import Classes.Instituto;
 import Classes.EdicionCurso;
+import Classes.Usuario;
+import Classes.ProgramaDeFormacion;
 //Imports DTs
 import DTsClasses.DTCurso;
 import DTsClasses.DTEdicionCurso;
@@ -39,11 +41,13 @@ public class Controller implements IController{
     ManejadorCursos manCursos;
     ManejadorInstituto manInstituto;
     ManejadorEdicionCurso manEdicion;
+    ManejadorProgramasDeFormacion manProgramas;
     public Controller(){
         manUsuario = ManejadorUsuario.GetInstance();
         manCursos = ManejadorCursos.GetInstance();
         manInstituto = ManejadorInstituto.GetInstance();
         manEdicion = ManejadorEdicionCurso.GetInstance();
+        manProgramas = ManejadorProgramasDeFormacion.GetInstance();
     }
     //Alta Usuario
     @Override
@@ -84,8 +88,6 @@ public class Controller implements IController{
                 auxInstituto.add(manInstituto.BuscarInstituto(institutos.get(i)));
             }
         }
-        
-        
         try {
             manUsuario.ModificarDatosUsuario(nickname, newNombre, newApellido, newCorreo, true, newFechaNac, auxInstituto, imgPath);
         } catch (IOException ex) {
@@ -94,17 +96,19 @@ public class Controller implements IController{
     }
     //Alta Curso
     @Override
-    public void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso){
+    public void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso, String docente){
         Curso auxC = manCursos.BuscarCurso(nombre);
+        UsuarioBase auxUb = manUsuario.BuscarUsuario(docente);
         if(auxC==null){
             Instituto ins = new Instituto();
             ins.setNombre(nomInstituto);
-            Curso c = manCursos.CrearCurso(ins, nombre, descripcion, duracion, cantHoras, cantCreditos, URL, fechaIngreso,previas);
+            Curso c = manCursos.CrearCurso(ins, nombre, descripcion, duracion, cantHoras, cantCreditos, URL, fechaIngreso,previas, auxUb);
+            
             manCursos.Add(c);
-            System.out.println("alta curso c: "+c.getDescripcion());
-            System.out.println("alta curso desc: "+descripcion);
         }else{
-            manCursos.ModificarCurso(auxC, descripcion, duracion, cantHoras, cantCreditos, URL, fechaIngreso,previas);
+            manUsuario.RemoveCurso(auxC.getMiDocente(), auxC);
+            manUsuario.AddCurso(auxUb, auxC);
+            manCursos.ModificarCurso(auxC, descripcion, duracion, cantHoras, cantCreditos, URL, fechaIngreso,previas, auxUb);
         }
         
     }
@@ -120,21 +124,41 @@ public class Controller implements IController{
         return null;        
     }
     //Alta Edicion Curso
-    //La coleccion de docentes sera añadida cuando se cree el tipo de dato "Docente"
-    //El tipo de dato FechaType sera añadido cuando se cree el tipo de dato "FechaType" o alguno con nombre parecido
     @Override
     public void AltaEdicionCurso(String instituto, String nomCurso, String nomEdicion,Date fInicio, Date fFin,int cupo, List<String>docentes, Date fAlta){
         Instituto ins = manInstituto.BuscarInstituto(instituto);
         Curso c = manCursos.BuscarCurso(nomCurso);
-        EdicionCurso ec = manEdicion.CrearEdicion(ins, c, nomEdicion, fInicio, fFin, cupo, fAlta);
-        manEdicion.Add(ec);
-        for(int i = 0;i<docentes.size();i++){
-            UsuarioBase ub = manUsuario.BuscarUsuario(docentes.get(i));
-            manEdicion.AddUsuario(ec, ub);
+        EdicionCurso auxEc = manEdicion.BuscarEdicion(nomEdicion);
+        if(auxEc==null){
+            EdicionCurso ec = manEdicion.CrearEdicion(ins, c, nomEdicion, fInicio, fFin, cupo, fAlta);
+            manEdicion.Add(ec);
+            for(int i = 0;i<docentes.size();i++){
+                UsuarioBase ub = manUsuario.BuscarUsuario(docentes.get(i));
+                manEdicion.AddUsuario(ec, ub);
+            }
+        }else{
+            List<UsuarioBase> auxList = auxEc.getMisUsuarios();
+            List<UsuarioBase> newList = new ArrayList();
+            Boolean repetir = true;
+            int index = 0;
+            int indexDocente = 0;
+            while(repetir){
+                UsuarioBase ub = auxList.get(index);
+                if(ub instanceof Usuario){
+                    newList.add(ub);
+                }else{
+                    String auxStr = docentes.get(indexDocente);
+                    UsuarioBase auxD = manUsuario.BuscarUsuario(auxStr);
+                    newList.add(auxD);
+                    indexDocente++;
+                }
+                index++;
+            }
+            manEdicion.ModificarDatos(nomEdicion, fInicio, fFin, cupo, fAlta, newList);
         }
+        
     }
     //Consulta Edicion Curso
-    //Se modificara al crear el tipo de dato EdicionCurso retornando el tipo de dato "EdicionCurso"
     @Override
     public DTMaster ConsultaEdicionCurso(String nomEdicion){
         EdicionCurso ec = manEdicion.BuscarEdicion(nomEdicion);
@@ -150,21 +174,30 @@ public class Controller implements IController{
         
     }
     //Crear Programa de Formacion
-    //El tipo de dato FechaType sera añadido cuando se cree el tipo de dato "FechaType" o alguno con nombre parecido
     @Override
-    public void CrearProgramasDeFormacion(String nomPrograma, String descripcion/*, FechaType (dia incio, dia final)*/){
-        
+    public void CrearProgramasDeFormacion(String nomPrograma, String descripcion, Date fInicio, Date fFin,Date fAlta){
+        ProgramaDeFormacion auxProg = manProgramas.BuscarPrograma(nomPrograma);
+        Vigencia v = new Vigencia(fInicio, fFin);
+        if(auxProg==null){
+            ProgramaDeFormacion pdf = manProgramas.CrearPrograma(nomPrograma, descripcion, v, fAlta);
+            manProgramas.Add(pdf);
+        }else{
+            manProgramas.ModificarDatos(nomPrograma, descripcion, v, fAlta);
+        }
     }
-    //Agregar programa
+    //Agregar Curso/s a programas de formacion
     @Override
-    public void AgregarCursoAProgramas(String nomPrograma, String nomCurso){
-        
+    public void AgregarCursoAProgramas(String nomPrograma, List<String> cursos){
+        ProgramaDeFormacion pdf = manProgramas.BuscarPrograma(nomPrograma);
+        for(int i = 0;i<cursos.size();i++){
+            Curso c = manCursos.BuscarCurso(cursos.get(i));
+            manProgramas.AddCurso(pdf, c);
+        }
     }
     //Consulta Programa de Formacion
-    //Se modificara al crear el tipo de dato ProgramaFormacion retornando el tipo de dato "ProgramaFormacion"
     @Override
     public DTProgramaForm ConsultaProgramaFormacion(String nomPrograma){
-        DTProgramaForm d = new DTProgramaForm("h", "o", null, null);
+//        DTProgramaForm d = new DTProgramaForm("h", "o", null, null);
     // Implementación real futura:
     /*
     ManejadorProgramaFormacion mp = ManejadorProgramaFormacion.getInstance();
@@ -179,38 +212,9 @@ public class Controller implements IController{
     return auxDTProg;
     */
     
-    return d;
+    return null;
     }
     
-    //MOMENTANEO PONER EN TRUE PARA PROBAR Y DEJAR EN FALSE HASTA QUE SE AGREGE METODO
-    @Override
-    public boolean ExistePrograma(String nombreProg){
-        //Consulta cuantos Programas tienen ese nombre
-        String sql = "SELECT COUNT(*) FROM Programa_Formacion WHERE nombre = ?";
-        //Abre y cierra la coneccion automaticamente
-        try (Connection con = bdSQL.ConexionBD.getConexion(); java.sql.PreparedStatement ps = con.prepareStatement(sql)){
-           //asigna el nombre a '?'
-            ps.setString(1, nombreProg);
-        //ejecuta la consulta y lee el resultado numerico
-        try(java.sql.ResultSet rs = ps.executeQuery()){
-           if(rs.next()){
-           //devuelve true si es igual
-           return rs.getInt(1) > 0;
-                   }
-           
-        }
-        
-      } catch(java.sql.SQLException e){
-          //imprime mensaje de error si algo falla
-          System.err.println("Error al validar existencia: " + e.getMessage());
-      }
-    return true; //si no existe el nombre,,, cambiar a true para probar la otra ventana de crear programa >:)
-    }
-    @Override
-    //Se usa para actualizar un programa existente 
-    public void ActualizarPrograma(String nombreProg, String descripcionProg, Date fInicio, Date fFin){
-    
-    }
     
     //Alta Instituto
     @Override
@@ -237,6 +241,11 @@ public class Controller implements IController{
         EdicionCurso ec = manEdicion.BuscarEdicion(nombre);
         return ec!=null;
     }
+    @Override
+    public boolean VerificarPrograma(String nombre){
+        ProgramaDeFormacion pdf = manProgramas.BuscarPrograma(nombre);
+        return pdf!=null;
+    }
     
     //Devoolver lista completa de DTs
     //Lista que no requiere de ninguna condicion
@@ -249,6 +258,8 @@ public class Controller implements IController{
             listReturn = manCursos.getDTList();
         }else if(enumType==EnumDT.DT_USUARIO){
             listReturn = manUsuario.getDTList();
+        }else if(enumType==EnumDT.DT_PROGRAMA){
+            listReturn = manProgramas.getDTList();
         }
         
         return listReturn;

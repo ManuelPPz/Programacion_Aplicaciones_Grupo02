@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ArrayList;
 import Classes.Curso;
 import Classes.Instituto;
+import Classes.UsuarioBase;
 import DTsClasses.DTCurso;
 import DTsClasses.DTMaster;
 import java.util.Date;
@@ -35,21 +36,21 @@ public class ManejadorCursos {
         //Aca cargas misUsuarios con lo que esta en la base de datos
     }
     
-    public Curso CrearCurso(Instituto instituto,String nombre,String descripcion,int duracion,float cantHoras,int cantCreditos,String URL,Date fAlta,List<String>previas){
+    public Curso CrearCurso(Instituto instituto,String nombre,String descripcion,int duracion,float cantHoras,int cantCreditos,String URL,Date fAlta,List<String>previas, UsuarioBase ub){
         Curso returnCurso;
         List<Curso> auxPrevias = new ArrayList();
         for(int i= 0;i<previas.size();i++){
             auxPrevias.add(BuscarCurso(previas.get(i)));
         }
-        returnCurso = new Curso(instituto,nombre,descripcion,duracion,cantHoras,cantCreditos,URL,fAlta,auxPrevias);
+        returnCurso = new Curso(instituto,nombre,descripcion,duracion,cantHoras,cantCreditos,URL,fAlta,auxPrevias,ub);
         return returnCurso;
     }
-    public void ModificarCurso(Curso c,String descripcion,int duracion,float cantHoras,int cantCreditos,String URL,Date fAlta,List<String>previas){
+    public void ModificarCurso(Curso c,String descripcion,int duracion,float cantHoras,int cantCreditos,String URL,Date fAlta,List<String>previas, UsuarioBase ub){
         List<Curso> auxPrevias = new ArrayList();
         for(int i= 0;i<previas.size();i++){
             auxPrevias.add(BuscarCurso(previas.get(i)));
         }
-        c.ModificarMisDatos(descripcion, duracion, cantHoras, cantCreditos, URL, fAlta,auxPrevias);
+        c.ModificarMisDatos(descripcion, duracion, cantHoras, cantCreditos, URL, fAlta,auxPrevias,ub);
     }
     
     

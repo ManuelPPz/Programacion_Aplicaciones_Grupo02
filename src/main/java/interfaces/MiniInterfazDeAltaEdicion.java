@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
  */
 package interfaces;
+import DTsClasses.DTCurso;
 import DTsClasses.DTDocente;
 import DTsClasses.DTMaster;
 import Logica.Fabric;
@@ -10,6 +11,7 @@ import Logica.IController;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.swing.SpinnerDateModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 /**
@@ -34,6 +36,16 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
         this.curso = curso;
         fieldInstituto.setText(instituto);
         fieldCurso.setText(curso);
+        
+        DTCurso auxDt = (DTCurso)ico.ConsultaCurso(curso);
+        SpinnerDateModel modelo =(SpinnerDateModel)spinDatePub.getModel();
+        modelo.setStart(auxDt.getFechaAlta());
+        modelo.setValue(auxDt.getFechaAlta());
+        
+        SpinnerDateModel modeloIni =(SpinnerDateModel)spinDateIni.getModel();
+        modeloIni.setStart((Date)spinDatePub.getValue());
+        modeloIni.setValue((Date)spinDatePub.getValue());
+            
         LlenarTablas();
     }
     
@@ -97,14 +109,15 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
 
         jLabel6.setText("Nombre*");
 
-        spinDateIni.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
+        spinDateIni.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1788277564604L), null, null, java.util.Calendar.DAY_OF_MONTH));
         spinDateIni.setEditor(new javax.swing.JSpinner.DateEditor(spinDateIni, "dd/MM/yyyy"));
+        spinDateIni.addChangeListener(this::spinDateIniStateChanged);
 
         jLabel12.setBackground(new java.awt.Color(255, 255, 255));
         jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel12.setText("Inicio*");
 
-        spinDateFin.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
+        spinDateFin.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1788277549513L), null, null, java.util.Calendar.DAY_OF_MONTH));
         spinDateFin.setEditor(new javax.swing.JSpinner.DateEditor(spinDateFin, "dd/MM/yyyy"));
 
         jLabel14.setBackground(new java.awt.Color(255, 255, 255));
@@ -147,8 +160,9 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
         jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel15.setText("Fecha de publicacion*");
 
-        spinDatePub.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
+        spinDatePub.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1788277588408L), null, new java.util.Date(1788277588408L), java.util.Calendar.DAY_OF_MONTH));
         spinDatePub.setEditor(new javax.swing.JSpinner.DateEditor(spinDatePub, "dd/MM/yyyy"));
+        spinDatePub.addChangeListener(this::spinDatePubStateChanged);
 
         btnAceptar.setText("Aceptar");
         btnAceptar.addActionListener(this::btnAceptarActionPerformed);
@@ -262,26 +276,52 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_checkCupoStateChanged
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
-        String nombre = nombreField.getText();
-        Date fIni = (Date)spinDateIni.getValue();
-        Date fFin = (Date)spinDateFin.getValue();
-        boolean auxCheckCupo = checkCupo.isSelected();
-        int auxCupo = 0;
-        if(auxCheckCupo){
-            auxCupo = (int)spinnerCupo.getValue();
-        }
-        Date fPub = (Date)spinDatePub.getValue();
-        List<String> auxDocentes = new ArrayList();
-        //DefaultTableModel modelo = (DefaultTableModel) tableDocentes.getModel();
-        for(int i = 0;i<tableDocentes.getRowCount();i++){
-            Boolean auxBool = (Boolean)tableDocentes.getValueAt(i, 1);
-            if(auxBool){
-                String auxObj = (String)tableDocentes.getValueAt(i, 0);
-                auxDocentes.add(auxObj);
+        if(VerificarDatos()){
+            javax.swing.JOptionPane.showMessageDialog(this, "Algunos campos deben ser completados", "Atencion",javax.swing.JOptionPane.ERROR_MESSAGE);
+        }else{
+            String nombre = nombreField.getText();
+            Date fIni = (Date)spinDateIni.getValue();
+            Date fFin = (Date)spinDateFin.getValue();
+            boolean auxCheckCupo = checkCupo.isSelected();
+            int auxCupo = 0;
+            if(auxCheckCupo){
+                auxCupo = (int)spinnerCupo.getValue();
+            }
+            Date fPub = (Date)spinDatePub.getValue();
+            List<String> auxDocentes = new ArrayList();
+            //DefaultTableModel modelo = (DefaultTableModel) tableDocentes.getModel();
+            for(int i = 0;i<tableDocentes.getRowCount();i++){
+                Boolean auxBool = (Boolean)tableDocentes.getValueAt(i, 1);
+                if(auxBool){
+                    String auxObj = (String)tableDocentes.getValueAt(i, 0);
+                    auxDocentes.add(auxObj);
+                }
+
+            }
+            if(ico.VerificarEdicion(nombre)){
+                int respuesta = javax.swing.JOptionPane.showConfirmDialog(
+                this, 
+                "El programa '" + nombreField.getText() + "' ya existe. ¿Deseas modificar sus datos?", 
+                "Programa Existente", 
+                javax.swing.JOptionPane.YES_NO_OPTION,
+                javax.swing.JOptionPane.QUESTION_MESSAGE);
+                if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
+                    // El usuario quiere modificarlo
+                    ico.AltaEdicionCurso(instituto, curso, nombre, fIni, fFin, auxCupo, auxDocentes, fPub);
+
+                    javax.swing.JOptionPane.showMessageDialog(this, "Programa actualizado con éxito.");
+                    this.dispose();
+                }else {
+                    // El usuario canceló la operación
+                    this.dispose();
+                }
+            }else{
+                ico.AltaEdicionCurso(instituto, curso, nombre, fIni, fFin, auxCupo, auxDocentes, fPub);
+                this.dispose();
             }
             
         }
-        ico.AltaEdicionCurso(instituto, curso, nombre, fIni, fFin, auxCupo, auxDocentes, fPub);
+        
     }//GEN-LAST:event_btnAceptarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
@@ -289,6 +329,45 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
         this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
+    private void spinDateIniStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spinDateIniStateChanged
+        Date fInicio = (Date)spinDateIni.getValue();
+        Date fFin = (Date)spinDateFin.getValue();
+        SpinnerDateModel modelo =(SpinnerDateModel)spinDateFin.getModel();
+            modelo.setStart((Date)spinDateIni.getValue());
+        if(fInicio.after(fFin)){
+            modelo.setValue((Date)spinDateIni.getValue());
+        }
+        
+        
+    }//GEN-LAST:event_spinDateIniStateChanged
+
+    private void spinDatePubStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spinDatePubStateChanged
+        Date fAlta = (Date)spinDatePub.getValue();
+        Date fInicio = (Date)spinDateIni.getValue();
+        SpinnerDateModel modelo =(SpinnerDateModel)spinDateIni.getModel();
+        modelo.setStart((Date)spinDatePub.getValue());
+        if(fAlta.after(fInicio)){
+            modelo.setValue((Date)spinDatePub.getValue());
+        }
+    }//GEN-LAST:event_spinDatePubStateChanged
+    boolean VerificarDatos(){
+        Date fecha1 = (Date)spinDateIni.getValue();
+        Date fecha2 = (Date)spinDateFin.getValue();
+        Date fechaPub = (Date)spinDatePub.getValue();
+        Boolean auxBool = false;
+        for(int i = 0;i<tableDocentes.getRowCount();i++){
+            auxBool = (Boolean)tableDocentes.getValueAt(i, 1);
+            if(auxBool){
+                break;
+            }
+            
+        }
+        return nombreField.getText().isEmpty() ||
+                fecha1.after(fecha2) ||
+                !auxBool ||
+                fechaPub.after(fecha1);
+                
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAceptar;

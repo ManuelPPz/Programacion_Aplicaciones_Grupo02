@@ -160,12 +160,15 @@
     <Component class="javax.swing.JSpinner" name="spinDateIni">
       <Properties>
         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-          <SpinnerModel initial="now" maximum="now" stepSize="5" type="date"/>
+          <SpinnerModel initial="1788277564604" stepSize="5" type="date"/>
         </Property>
         <Property name="editor" type="javax.swing.JComponent" editor="org.netbeans.modules.form.editors.SpinnerEditorEditor">
           <SpinnerEditor format="dd/MM/yyyy" type="1"/>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="spinDateIniStateChanged"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel12">
       <Properties>
@@ -181,7 +184,7 @@
     <Component class="javax.swing.JSpinner" name="spinDateFin">
       <Properties>
         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-          <SpinnerModel initial="now" maximum="now" stepSize="5" type="date"/>
+          <SpinnerModel initial="1788277549513" stepSize="5" type="date"/>
         </Property>
         <Property name="editor" type="javax.swing.JComponent" editor="org.netbeans.modules.form.editors.SpinnerEditorEditor">
           <SpinnerEditor format="dd/MM/yyyy" type="1"/>
@@ -259,12 +262,15 @@
     <Component class="javax.swing.JSpinner" name="spinDatePub">
       <Properties>
         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-          <SpinnerModel initial="now" maximum="now" stepSize="5" type="date"/>
+          <SpinnerModel initial="1788277588408" maximum="1788277588408" stepSize="5" type="date"/>
         </Property>
         <Property name="editor" type="javax.swing.JComponent" editor="org.netbeans.modules.form.editors.SpinnerEditorEditor">
           <SpinnerEditor format="dd/MM/yyyy" type="1"/>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="spinDatePubStateChanged"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnAceptar">
       <Properties>

@@ -6,6 +6,7 @@ package Classes;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -41,7 +42,11 @@ public class Curso implements Serializable {
     private List<Curso> previas;
     @OneToMany(mappedBy="miCurso")
     private List<EdicionCurso> misEdiciones;
-    //List<String/ProgFormacion> progFormacion;
+    @ManyToMany
+    List<ProgramaDeFormacion> misProgramas;
+    @ManyToOne
+    @JoinColumn(name="Nombre_Doc")
+    private Docente miDocente;
     
     
     public Instituto getInstituto() {return miInstituto;}
@@ -54,11 +59,11 @@ public class Curso implements Serializable {
     public Date getFAlta(){return fAlta;}
     public List<Curso> getPrevias(){return previas;}
     public List<EdicionCurso> getEdiciones(){return misEdiciones;}
-    //public List<String/ProgFormacion> getProgramas{return progFormacion;}
+    public List<ProgramaDeFormacion> getProgramas(){return this.misProgramas;}
     public Curso(){
         
     }
-    public Curso(Instituto instituto,String nombre,String descripcion,int duracion,float cantHoras,int cantCreditos,String URL,Date fAlta,List<Curso>previas/*, List<EdicionCurso>ediciones*/){
+    public Curso(Instituto instituto,String nombre,String descripcion,int duracion,float cantHoras,int cantCreditos,String URL,Date fAlta,List<Curso>previas, UsuarioBase ub){
         this.miInstituto = instituto;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -68,11 +73,13 @@ public class Curso implements Serializable {
         this.URL = URL;
         this.fAlta = fAlta;
         this.previas=previas;
-        /*this.misEdiciones = ediciones*/
+        this.miDocente = (Docente)ub;
+        this.misProgramas = new ArrayList();
+        this.misEdiciones = new ArrayList();
     }
 
     
-    public void ModificarMisDatos(String descripcion,int duracion,float cantHoras,int cantCreditos,String URL,Date fAlta,List<Curso>previas){
+    public void ModificarMisDatos(String descripcion,int duracion,float cantHoras,int cantCreditos,String URL,Date fAlta,List<Curso>previas, UsuarioBase ub){
         this.descripcion = descripcion;
         this.duracion = duracion;
         this.cantHoras = cantHoras;
@@ -80,11 +87,29 @@ public class Curso implements Serializable {
         this.URL = URL;
         this.fAlta = fAlta;
         this.previas = previas;
+        this.miDocente = (Docente)ub;
     }
+    public void AddEdicion(EdicionCurso ec){
+        this.misEdiciones.add(ec);
+    }
+    public void RemoveEdicion(EdicionCurso ec){
+        this.misEdiciones.remove(ec);
+    }
+    
+    public void AddPrograma(ProgramaDeFormacion pdf){
+        this.misProgramas.add(pdf);
+    }
+    public void RemovePrograma(ProgramaDeFormacion pdf){
+        this.misProgramas.remove(pdf);
+    }
+    
     
     
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+    public Docente getMiDocente(){
+        return this.miDocente;
     }
 
     @Override

@@ -13,9 +13,11 @@ import Logica.IController;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.RowFilter;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 /**
  *
  * @author mateo
@@ -96,64 +98,28 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
     }
     private void FiltrarInstitutos(){
         //Para filtrar los institutos
-        if(fieldInstituto.getText().isEmpty()){
-            IniciarTable(EnumDT.DT_INSTITUTO);
-        }else{
-            DefaultTableModel modelo = (DefaultTableModel) tableInstitutos.getModel();
-            modelo.setRowCount(0);
+        DefaultTableModel modelo = (DefaultTableModel)tableInstitutos.getModel();
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelo);
+        tableInstitutos.setRowSorter(sorter);
         
-            for(int i = 0;i<rowsIns.size();i++){
-
-                Object[] auxFila = (Object[]) rowsIns.get(i);
-
-                String auxTextField = (String) auxFila[0];
-                String inputField = fieldInstituto.getText();              
-
-
-
-                if(auxTextField.toLowerCase().contains(inputField.toLowerCase()) && !auxTextField.toLowerCase().startsWith(inputField)){
-
-                    modelo.addRow(auxFila);
-
-                }
-
-                else if(auxTextField.toLowerCase().startsWith(inputField.toLowerCase())){
-
-                    modelo.insertRow(0, auxFila);
-
-                }
-            }
+        String texto = fieldInstituto.getText();
+        if (texto.trim().length() == 0) {
+            sorter.setRowFilter(null);
+        } else {
+            sorter.setRowFilter(RowFilter.regexFilter("(?i)" + texto, 0));
         }
     }
     private void FiltrarCursos(){
         //Para filtrar los cursos
-        if(fieldCurso.getText().isEmpty()){
-            IniciarTable(EnumDT.DT_CURSO);
-        }else{
-            DefaultTableModel modelo = (DefaultTableModel) tableCursos.getModel();
-            modelo.setRowCount(0);
+        DefaultTableModel modelo = (DefaultTableModel)tableCursos.getModel();
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelo);
+        tableCursos.setRowSorter(sorter);
         
-            for(int i = 0;i<rowsCurso.size();i++){
-
-                Object[] auxFila = (Object[]) rowsCurso.get(i);
-
-                String auxTextField = (String) auxFila[0];
-                String inputField = fieldCurso.getText();              
-
-
-
-                if(auxTextField.toLowerCase().contains(inputField.toLowerCase()) && !auxTextField.toLowerCase().startsWith(inputField)){
-
-                    modelo.addRow(auxFila);
-
-                }
-
-                else if(auxTextField.toLowerCase().startsWith(inputField.toLowerCase())){
-
-                    modelo.insertRow(0, auxFila);
-
-                }
-            }
+        String texto = fieldCurso.getText();
+        if (texto.trim().length() == 0) {
+            sorter.setRowFilter(null);
+        } else {
+            sorter.setRowFilter(RowFilter.regexFilter("(?i)" + texto, 0));
         }
     }
     private void MostrarDatos(String nombre, String instituto){
@@ -213,9 +179,8 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
                     if(!listCurso.isEmpty()){
                         listCurso = OrdenarLista(listCurso);
                         IniciarRows(listCurso);
-                        if("".equals(fieldCurso.getText())){
-                            FiltrarCursos();
-                        }
+                        IniciarTable(EnumDT.DT_CURSO);
+                        FiltrarCursos();
                     }else{
                         DefaultTableModel modelo = (DefaultTableModel) tableCursos.getModel();
                         modelo.setRowCount(0);

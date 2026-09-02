@@ -58,6 +58,15 @@ public class EdicionCurso implements Serializable {
         misUsuarios = new ArrayList();
     }
     
+    public void ModificarDatos(Date fInicio, Date fFin, int cupo, Date fAlta, List<UsuarioBase> newUsuarios){
+        this.fInicio = fInicio;
+        this.fFin = fFin;
+        this.cupo = cupo;
+        this.fAlta = fAlta;
+        this.misUsuarios = newUsuarios;
+    }
+    
+    
     public void AddUsuarios(UsuarioBase ub){
         misUsuarios.add(ub);
     }

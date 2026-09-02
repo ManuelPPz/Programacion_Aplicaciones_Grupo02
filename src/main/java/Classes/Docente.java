@@ -18,6 +18,8 @@ import java.util.List;
 public class Docente extends UsuarioBase{
     @ManyToMany(mappedBy="misDocentes")
     private List<Instituto> misInstitutos;
+    @OneToMany(mappedBy="miDocente")
+    private List<Curso> misCursos;
     public Docente(){
         super();
         misInstitutos = new ArrayList();
@@ -33,6 +35,15 @@ public class Docente extends UsuarioBase{
     }
     public List<Instituto> getInstitutos(){
         return this.misInstitutos;
+    }
+    public void AddCurso(Curso c){
+        misCursos.add(c);
+    }
+    public void RemoveCurso(Curso c){
+        misCursos.remove(c);
+    }
+    public List<Curso> getCursos(){
+        return this.misCursos;
     }
     
 }

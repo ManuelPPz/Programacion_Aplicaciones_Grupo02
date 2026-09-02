@@ -32,6 +32,10 @@ public class ManejadorEdicionCurso {
         returnEdicion = new EdicionCurso(nombre, instituto,curso,fInicio,fFin,cupo,fAlta);
         return returnEdicion;
     }
+    public void ModificarDatos(String nombre,Date fInicio,Date fFin, int cupo, Date fAlta,List<UsuarioBase> misUsuarios){
+        EdicionCurso ec = BuscarEdicion(nombre);
+        ec.ModificarDatos(fInicio, fFin, cupo, fAlta, misUsuarios);
+    }
     public void Add(EdicionCurso ec){
         misEdiciones.add(ec);
         //Aca se añade a la base de datos
