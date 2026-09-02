@@ -5,41 +5,45 @@
 package DTsClasses;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  *
  * @author manuelpalumbo
  */
-public class DTProgramaForm {
+public class DTProgramaForm extends DTMaster {
     private String nombre;
     private String descripcion;
     private Vigencia vigenciaPrograma;
-    private List<String>cursos;
-    //constructor
-    public DTProgramaForm(String nomPrograma, String descripcion, Vigencia vigenciaProg, List<String>cursos){
-    this.nombre = nomPrograma;
-    this.descripcion = descripcion;
-    this.vigenciaPrograma = vigenciaProg;
-    this.cursos = cursos;
+    private List<String> cursos;
+    private Date fechaAlta;
     
+    // constructor
+    public DTProgramaForm(String nomPrograma, String descripcion, Vigencia vigenciaProg, List<String> cursos, Date fechaAlta) {
+        this.nombre = nomPrograma;
+        this.descripcion = descripcion;
+        this.vigenciaPrograma = vigenciaProg;
+        this.cursos = cursos;
+        this.fechaAlta = fechaAlta;
     }
     
-    public String getNombre(){
+    public String getNombre() {
         return nombre;
     }
     
-    public String getDescripcion(){
+    public String getDescripcion() {
         return descripcion;
     }
     
-    public Vigencia getVigenciaProg(){
+    public Vigencia getVigenciaProg() {
         return vigenciaPrograma;
     }
     
-    public List<String> getCursos(){
+    public List<String> getCursos() {
         return cursos;
     }
     
-    
+    public Date getFechaAlta() {
+        return fechaAlta;
+    }
 }
-

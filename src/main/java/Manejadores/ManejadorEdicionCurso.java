@@ -19,6 +19,7 @@ public class ManejadorEdicionCurso {
 
     private EntityManagerFactory emf = Persistence.createEntityManagerFactory("ControladorPU");
     List<EdicionCurso> misEdiciones;
+    
     //=================Codigo de Singleton=================
     private static ManejadorEdicionCurso instance;    
     public static ManejadorEdicionCurso GetInstance(){
@@ -28,34 +29,43 @@ public class ManejadorEdicionCurso {
         return instance;
         
     }
+    
     private ManejadorEdicionCurso(){  
-        misEdiciones = new ArrayList();
+        misEdiciones = new ArrayList<>();
         CargarDeBaseDeDatos();
     }
     //=======================================================
+    
     private void CargarDeBaseDeDatos(){
         //Aca cargas misUsuarios con lo que esta en la base de datos
         EntityManager em = getEntityManager();
-    try {
-        // Consulta JPQL para seleccionar todas las ediciones de curso de la BD
-        TypedQuery<EdicionCurso> query = em.createQuery("SELECT e FROM EdicionCurso e", EdicionCurso.class);
-        misEdiciones = query.getResultList();
-    } catch (Exception e) {
-        System.err.println("Error al cargar las ediciones desde la BD: " + e.getMessage());
-        misEdiciones = new ArrayList<>(); // Inicializa vacía si falla la carga
-    } finally {
-        em.close(); // cerrar el EntityManager
+        try {
+            // Consulta JPQL para seleccionar todas las ediciones de curso de la BD
+            TypedQuery<EdicionCurso> query = em.createQuery("SELECT e FROM EdicionCurso e", EdicionCurso.class);
+            misEdiciones = query.getResultList();
+        } catch (Exception e) {
+            System.err.println("Error al cargar las ediciones desde la BD: " + e.getMessage());
+            misEdiciones = new ArrayList<>(); // Inicializa vacía si falla la carga
+        } finally {
+            em.close(); // cerrar el EntityManager
+        }
     }
-    }
+    
     public EdicionCurso CrearEdicion(Instituto instituto, Curso curso, String nombre, Date fInicio,Date fFin, int cupo, Date fAlta){
         EdicionCurso returnEdicion;
         returnEdicion = new EdicionCurso(nombre, instituto,curso,fInicio,fFin,cupo,fAlta);
         return returnEdicion;
     }
+    
+    public void ModificarDatos(String nombre,Date fInicio,Date fFin, int cupo, Date fAlta,List<UsuarioBase> misUsuarios){
+        EdicionCurso ec = BuscarEdicion(nombre);
+        ec.ModificarDatos(fInicio, fFin, cupo, fAlta, misUsuarios);
+    }
+    
     public void Add(EdicionCurso ec) throws Exception{
         misEdiciones.add(ec);
         //Aca se añade a la base de datos
-            EntityManager em = emf.createEntityManager();
+        EntityManager em = emf.createEntityManager();
         try{
             em.getTransaction().begin();
             em.persist(ec); //Insertar objeto en la bd
@@ -64,7 +74,7 @@ public class ManejadorEdicionCurso {
             if(em.getTransaction().isActive()){
                 em.getTransaction().rollback();
             }
-            throw new Exception("Error al guardar el programa" + e.getMessage());
+            throw new Exception("Error al guardar el programa: " + e.getMessage());
         }finally{
             em.close();
         }
@@ -79,6 +89,7 @@ public class ManejadorEdicionCurso {
         }
         return null;
     }
+    
     public void AddUsuario(EdicionCurso ec, UsuarioBase ub){
         ec.AddUsuarios(ub);
     }
@@ -88,7 +99,7 @@ public class ManejadorEdicionCurso {
         String ins = ec.getInstituto().getNombre();
         String cur = ec.getCurso().getNombre();
         List<UsuarioBase>auxUsuarios = ec.getMisUsuarios();
-        List<String> auxDocentes = new ArrayList();
+        List<String> auxDocentes = new ArrayList<>();
         for(int i=0;i<auxUsuarios.size();i++){
             UsuarioBase ub = auxUsuarios.get(i);
             if(ub instanceof Docente d){
@@ -101,7 +112,7 @@ public class ManejadorEdicionCurso {
     }
     
     public List<DTMaster> getDTLIst(String curso){
-        List<DTMaster> auxList = new ArrayList();
+        List<DTMaster> auxList = new ArrayList<>();
         for(int i = 0;i<misEdiciones.size();i++){
             EdicionCurso ec = misEdiciones.get(i);
             if(ec.getCurso().getNombre().equals(curso)){
@@ -113,6 +124,6 @@ public class ManejadorEdicionCurso {
     }
     
     private EntityManager getEntityManager() {
-    return emf.createEntityManager();
+        return emf.createEntityManager();
     }
 }

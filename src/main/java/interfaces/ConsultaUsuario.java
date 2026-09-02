@@ -15,9 +15,11 @@ import java.util.ArrayList;
 import DTsClasses.DTUsuario;
 import DTsClasses.DTMaster;
 import DTsClasses.EnumDT;
+import javax.swing.RowFilter;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -205,37 +207,16 @@ public class ConsultaUsuario extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     private void FiltrarUsuarios(){
-        if(fieldBusqueda.getText().isEmpty()){
-            IniciarTable();
-        }else{
-            //Index==0 quiere decir buscar por nickname
-            //Index==1 quiere decir buscar por correo
-            DefaultTableModel modelo = (DefaultTableModel) tableUsuario.getModel();
-            modelo.setRowCount(0);
+        int valorPorCualBuscar = boxTipoBusqueda.getSelectedIndex();
+        DefaultTableModel modelo = (DefaultTableModel)tableUsuario.getModel();
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelo);
+        tableUsuario.setRowSorter(sorter);
         
-            for(int i = 0;i<rows.size();i++){
-
-                Object[] auxFila = (Object[]) rows.get(i);
-
-                int valorPorCualBuscar = boxTipoBusqueda.getSelectedIndex();
-                String auxTextField = (String) auxFila[valorPorCualBuscar];
-                String inputField = fieldBusqueda.getText();              
-
-
-
-                if(auxTextField.toLowerCase().contains(inputField.toLowerCase()) && !auxTextField.toLowerCase().startsWith(inputField)){
-
-                    modelo.addRow(auxFila);
-
-                }
-
-                else if(auxTextField.toLowerCase().startsWith(inputField.toLowerCase())){
-
-                    modelo.insertRow(0, auxFila);
-
-                }
-
-            }
+        String texto = fieldBusqueda.getText();
+        if (texto.trim().length() == 0) {
+            sorter.setRowFilter(null);
+        } else {
+            sorter.setRowFilter(RowFilter.regexFilter("(?i)" + texto, valorPorCualBuscar));
         }
     }
 

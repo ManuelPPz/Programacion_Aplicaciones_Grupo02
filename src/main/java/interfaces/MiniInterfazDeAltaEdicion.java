@@ -3,6 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
  */
 package interfaces;
+
+import DTsClasses.DTCurso;
 import DTsClasses.DTDocente;
 import DTsClasses.DTMaster;
 import Logica.Fabric;
@@ -11,8 +13,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.SpinnerDateModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+
 /**
  *
  * @author mateo
@@ -35,31 +39,42 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
         this.curso = curso;
         fieldInstituto.setText(instituto);
         fieldCurso.setText(curso);
+        
+        DTCurso auxDt = (DTCurso)ico.ConsultaCurso(curso);
+        SpinnerDateModel modelo =(SpinnerDateModel)spinDatePub.getModel();
+        modelo.setStart(auxDt.getFechaAlta());
+        modelo.setValue(auxDt.getFechaAlta());
+        
+        SpinnerDateModel modeloIni =(SpinnerDateModel)spinDateIni.getModel();
+        modeloIni.setStart((Date)spinDatePub.getValue());
+        modeloIni.setValue((Date)spinDatePub.getValue());
+            
         LlenarTablas();
     }
     
     
-private void LlenarTablas() {
-    DefaultTableModel modelo = (DefaultTableModel) tableDocentes.getModel();
-    modelo.setRowCount(0); // Limpiar filas previas
+    private void LlenarTablas() {
+        DefaultTableModel modelo = (DefaultTableModel) tableDocentes.getModel();
+        modelo.setRowCount(0); // Limpiar filas previas
 
-    List<DTMaster> auxList = ico.ListarDocentes(instituto);
+        List<DTMaster> auxList = ico.ListarDocentes(instituto);
 
-    if (auxList != null && !auxList.isEmpty()) {
-        for (DTMaster dt : auxList) {
-            if (dt instanceof DTDocente dTDocente) {
-                // Muestra Nickname - Nombre completo
-                String etiqueta = dTDocente.getNickname() + " (" + dTDocente.getNombre() + ")";
-                Object[] fila = new Object[]{ etiqueta, Boolean.FALSE };
-                modelo.addRow(fila);
+        if (auxList != null && !auxList.isEmpty()) {
+            for (DTMaster dt : auxList) {
+                if (dt instanceof DTDocente dTDocente) {
+                    // Muestra Nickname - Nombre completo
+                    String etiqueta = dTDocente.getNickname() + " (" + dTDocente.getNombre() + ")";
+                    Object[] fila = new Object[]{ etiqueta, Boolean.FALSE };
+                    modelo.addRow(fila);
+                }
             }
+        } else {
+            System.out.println("No se encontraron docentes para el instituto: " + instituto);
         }
-    } else {
-        System.out.println("No se encontraron docentes para el instituto: " + instituto);
     }
-}
+    
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
         jLabel5 = new javax.swing.JLabel();
@@ -92,14 +107,15 @@ private void LlenarTablas() {
 
         jLabel6.setText("Nombre*");
 
-        spinDateIni.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
+        spinDateIni.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1788277564604L), null, null, java.util.Calendar.DAY_OF_MONTH));
         spinDateIni.setEditor(new javax.swing.JSpinner.DateEditor(spinDateIni, "dd/MM/yyyy"));
+        spinDateIni.addChangeListener(this::spinDateIniStateChanged);
 
         jLabel12.setBackground(new java.awt.Color(255, 255, 255));
         jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel12.setText("Inicio*");
 
-        spinDateFin.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
+        spinDateFin.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1788277549513L), null, null, java.util.Calendar.DAY_OF_MONTH));
         spinDateFin.setEditor(new javax.swing.JSpinner.DateEditor(spinDateFin, "dd/MM/yyyy"));
 
         jLabel14.setBackground(new java.awt.Color(255, 255, 255));
@@ -142,8 +158,9 @@ private void LlenarTablas() {
         jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel15.setText("Fecha de publicacion*");
 
-        spinDatePub.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
+        spinDatePub.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1788277588408L), null, new java.util.Date(1788277588408L), java.util.Calendar.DAY_OF_MONTH));
         spinDatePub.setEditor(new javax.swing.JSpinner.DateEditor(spinDatePub, "dd/MM/yyyy"));
+        spinDatePub.addChangeListener(this::spinDatePubStateChanged);
 
         btnAceptar.setText("Aceptar");
         btnAceptar.addActionListener(this::btnAceptarActionPerformed);
@@ -250,47 +267,108 @@ private void LlenarTablas() {
         );
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>                        
 
-    private void checkCupoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_checkCupoStateChanged
+    private void checkCupoStateChanged(javax.swing.event.ChangeEvent evt) {                                       
         spinnerCupo.setVisible(checkCupo.isSelected());
-    }//GEN-LAST:event_checkCupoStateChanged
+    }                                      
 
-    private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
-      String nombre = nombreField.getText();
-    Date fIni = (Date) spinDateIni.getValue();
-    Date fFin = (Date) spinDateFin.getValue();
-    boolean auxCheckCupo = checkCupo.isSelected();
-    int auxCupo = auxCheckCupo ? (int) spinnerCupo.getValue() : 0;
-    Date fPub = (Date) spinDatePub.getValue();
-
-    List<String> auxDocentes = new ArrayList<>();
-    
-    for (int i = 0; i < tableDocentes.getRowCount(); i++) {
-        Object isSelected = tableDocentes.getValueAt(i, 1);
-        if (isSelected != null && (Boolean) isSelected) {
-            String docenteNick = (String) tableDocentes.getValueAt(i, 0);
-            auxDocentes.add(docenteNick);
+    private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {                                           
+        if(VerificarDatos()){
+            JOptionPane.showMessageDialog(this, "Algunos campos deben ser completados o son inválidos", "Atencion", JOptionPane.ERROR_MESSAGE);
+            return;
         }
-    }
+        
+        String nombre = nombreField.getText();
+        Date fIni = (Date) spinDateIni.getValue();
+        Date fFin = (Date) spinDateFin.getValue();
+        boolean auxCheckCupo = checkCupo.isSelected();
+        int auxCupo = auxCheckCupo ? (int) spinnerCupo.getValue() : 0;
+        Date fPub = (Date) spinDatePub.getValue();
 
-    try {
-        ico.AltaEdicionCurso(instituto, curso, nombre, fIni, fFin, auxCupo, auxDocentes, fPub);
-        JOptionPane.showMessageDialog(this, "Edición dada de alta con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        this.dispose();
-    } catch (Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-    }
-    }//GEN-LAST:event_btnAceptarActionPerformed
+        List<String> auxDocentes = new ArrayList<>();
+        
+        for (int i = 0; i < tableDocentes.getRowCount(); i++) {
+            Object isSelected = tableDocentes.getValueAt(i, 1);
+            if (isSelected != null && (Boolean) isSelected) {
+                String docenteNick = (String) tableDocentes.getValueAt(i, 0);
+                auxDocentes.add(docenteNick);
+            }
+        }
 
-    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        try {
+            if (ico.VerificarEdicion(nombre)) {
+                int respuesta = JOptionPane.showConfirmDialog(
+                    this, 
+                    "La edición '" + nombre + "' ya existe. ¿Deseas modificar sus datos?", 
+                    "Edición Existente", 
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE
+                );
+                
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    ico.AltaEdicionCurso(instituto, curso, nombre, fIni, fFin, auxCupo, auxDocentes, fPub);
+                    JOptionPane.showMessageDialog(this, "Edición actualizada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    this.dispose();
+                }
+            } else {
+                ico.AltaEdicionCurso(instituto, curso, nombre, fIni, fFin, auxCupo, auxDocentes, fPub);
+                JOptionPane.showMessageDialog(this, "Edición dada de alta con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                this.dispose();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }                                          
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {                                            
         // Simplemente cierra la ventana interna sin cerrar el programa
         this.dispose();
-    }//GEN-LAST:event_btnCancelarActionPerformed
+    }                                           
 
+    private void spinDateIniStateChanged(javax.swing.event.ChangeEvent evt) {                                         
+        Date fInicio = (Date)spinDateIni.getValue();
+        Date fFin = (Date)spinDateFin.getValue();
+        SpinnerDateModel modelo =(SpinnerDateModel)spinDateFin.getModel();
+            modelo.setStart((Date)spinDateIni.getValue());
+        if(fInicio.after(fFin)){
+            modelo.setValue((Date)spinDateIni.getValue());
+        }
+        
+        
+    }                                        
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private void spinDatePubStateChanged(javax.swing.event.ChangeEvent evt) {                                         
+        Date fAlta = (Date)spinDatePub.getValue();
+        Date fInicio = (Date)spinDateIni.getValue();
+        SpinnerDateModel modelo =(SpinnerDateModel)spinDateIni.getModel();
+        modelo.setStart((Date)spinDatePub.getValue());
+        if(fAlta.after(fInicio)){
+            modelo.setValue((Date)spinDatePub.getValue());
+        }
+    }                                        
+    
+    boolean VerificarDatos(){
+        Date fecha1 = (Date)spinDateIni.getValue();
+        Date fecha2 = (Date)spinDateFin.getValue();
+        Date fechaPub = (Date)spinDatePub.getValue();
+        Boolean auxBool = false;
+        for(int i = 0;i<tableDocentes.getRowCount();i++){
+            auxBool = (Boolean)tableDocentes.getValueAt(i, 1);
+            if(auxBool){
+                break;
+            }
+            
+        }
+        return nombreField.getText().isEmpty() ||
+                fecha1.after(fecha2) ||
+                !auxBool ||
+                fechaPub.after(fecha1);
+                
+    }
+
+    // Variables declaration - do not modify                     
     private javax.swing.JButton btnAceptar;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JCheckBox checkCupo;
@@ -310,5 +388,5 @@ private void LlenarTablas() {
     private javax.swing.JSpinner spinDatePub;
     private javax.swing.JSpinner spinnerCupo;
     private javax.swing.JTable tableDocentes;
-    // End of variables declaration//GEN-END:variables
+    // End of variables declaration                   
 }

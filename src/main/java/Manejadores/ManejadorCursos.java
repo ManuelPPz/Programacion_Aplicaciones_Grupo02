@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import Classes.Curso;
 import Classes.EdicionCurso; // <-- Asegúrate de importar EdicionCurso
 import Classes.Instituto;
+import Classes.UsuarioBase;
 import DTsClasses.DTCurso;
 import DTsClasses.DTMaster;
 import jakarta.persistence.EntityManager;
@@ -33,56 +34,56 @@ public class ManejadorCursos {
     //=======================================================
     
     public void CargarDeBaseDeDatos() {
-    EntityManager em = emf.createEntityManager();
-    try {
-        em.getTransaction().begin();
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
 
-        // PASO 1: Cargar todos los cursos haciendo FETCH de la colección 'misEdiciones'
-        List<Curso> resultados = em.createQuery(
-            "SELECT DISTINCT c FROM Curso c LEFT JOIN FETCH c.misEdiciones", Curso.class
-        ).getResultList();
+            // PASO 1: Cargar todos los cursos haciendo FETCH de la colección 'misEdiciones'
+            List<Curso> resultados = em.createQuery(
+                "SELECT DISTINCT c FROM Curso c LEFT JOIN FETCH c.misEdiciones", Curso.class
+            ).getResultList();
 
-        // PASO 2: En la misma sesión, hacer FETCH de la colección 'previas' para los mismos cursos
-        // Esto inicializa las previas en memoria sin lanzar la MultipleBagFetchException
-        if (!resultados.isEmpty()) {
-            resultados = em.createQuery(
-                "SELECT DISTINCT c FROM Curso c LEFT JOIN FETCH c.previas WHERE c IN :cursos", Curso.class
-            ).setParameter("cursos", resultados)
-             .getResultList();
+            // PASO 2: En la misma sesión, hacer FETCH de la colección 'previas' para los mismos cursos
+            // Esto inicializa las previas en memoria sin lanzar la MultipleBagFetchException
+            if (!resultados.isEmpty()) {
+                resultados = em.createQuery(
+                    "SELECT DISTINCT c FROM Curso c LEFT JOIN FETCH c.previas WHERE c IN :cursos", Curso.class
+                ).setParameter("cursos", resultados)
+                 .getResultList();
+            }
+
+            em.getTransaction().commit();
+
+            // Guardar la lista de cursos obtenida
+            this.misCursos = resultados;
+
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            System.out.println("Error al cargar cursos desde la BD: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            em.close();
         }
-
-        em.getTransaction().commit();
-
-        // Guardar la lista de cursos obtenida
-        this.misCursos = resultados;
-
-    } catch (Exception e) {
-        if (em.getTransaction().isActive()) {
-            em.getTransaction().rollback();
-        }
-        System.out.println("Error al cargar cursos desde la BD: " + e.getMessage());
-        e.printStackTrace();
-    } finally {
-        em.close();
     }
-}
     
-    public Curso CrearCurso(Instituto instituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<String> previas){
+    public Curso CrearCurso(Instituto instituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<String> previas, UsuarioBase ub){
         Curso returnCurso;
         List<Curso> auxPrevias = new ArrayList<>();
         for(int i= 0; i<previas.size(); i++){
             auxPrevias.add(BuscarCurso(previas.get(i)));
         }
-        returnCurso = new Curso(instituto, nombre, descripcion, duracion, cantHoras, cantCreditos, URL, fAlta, auxPrevias);
+        returnCurso = new Curso(instituto, nombre, descripcion, duracion, cantHoras, cantCreditos, URL, fAlta, auxPrevias, ub);
         return returnCurso;
     }
 
-    public void ModificarCurso(Curso c, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<String> previas){
+    public void ModificarCurso(Curso c, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<String> previas, UsuarioBase ub){
         List<Curso> auxPrevias = new ArrayList<>();
         for(int i= 0; i<previas.size(); i++){
             auxPrevias.add(BuscarCurso(previas.get(i)));
         }
-        c.ModificarMisDatos(descripcion, duracion, cantHoras, cantCreditos, URL, fAlta, auxPrevias);
+        c.ModificarMisDatos(descripcion, duracion, cantHoras, cantCreditos, URL, fAlta, auxPrevias, ub);
     }
     
     public void Add(Curso c) throws Exception{

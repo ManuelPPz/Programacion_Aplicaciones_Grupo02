@@ -4,11 +4,8 @@
  */
 package interfaces;
 
-import DTsClasses.DTProgramaForm;
-import DTsClasses.Vigencia;
 import Logica.Fabric;
 import Logica.IController;
-import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -43,16 +40,19 @@ public class Crear_programa_formacion extends javax.swing.JInternalFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        txtNombreProg = new javax.swing.JTextField();
+        fieldNombre = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        txtDescripcionPorg = new javax.swing.JTextArea();
-        fechaIni = new javax.swing.JSpinner();
+        areaDescripcion = new javax.swing.JTextArea();
+        spinFInicio = new javax.swing.JSpinner();
         jLabel4 = new javax.swing.JLabel();
-        Fechafin = new javax.swing.JSpinner();
+        spinFFin = new javax.swing.JSpinner();
         jLabel5 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        spinFAlta = new javax.swing.JSpinner();
+        jLabel6 = new javax.swing.JLabel();
 
+        setClosable(true);
         setTitle("Crear Programa de Formacion");
 
         jLabel1.setText("Nombre Programa");
@@ -61,63 +61,73 @@ public class Crear_programa_formacion extends javax.swing.JInternalFrame {
         jLabel2.setForeground(new java.awt.Color(0, 0, 255));
         jLabel2.setText("Ingrese datos del Programa");
 
-        txtNombreProg.addActionListener(this::txtNombreProgActionPerformed);
+        fieldNombre.addActionListener(this::fieldNombreActionPerformed);
 
         jLabel3.setText("Descripcion");
 
-        txtDescripcionPorg.setColumns(20);
-        txtDescripcionPorg.setLineWrap(true);
-        txtDescripcionPorg.setRows(5);
-        txtDescripcionPorg.setWrapStyleWord(true);
-        jScrollPane1.setViewportView(txtDescripcionPorg);
+        areaDescripcion.setColumns(20);
+        areaDescripcion.setLineWrap(true);
+        areaDescripcion.setRows(5);
+        areaDescripcion.setWrapStyleWord(true);
+        jScrollPane1.setViewportView(areaDescripcion);
 
-        fechaIni.setModel(new javax.swing.SpinnerDateModel(new Date(), new Date(), null, java.util.Calendar.DAY_OF_MONTH));
-        fechaIni.setToolTipText("");
-        fechaIni.setEditor(new javax.swing.JSpinner.DateEditor(fechaIni, "dd/MM/yyyy"));
+        spinFInicio.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), new java.util.Date(), null, java.util.Calendar.DAY_OF_MONTH));
+        spinFInicio.setToolTipText("");
+        spinFInicio.setEditor(new javax.swing.JSpinner.DateEditor(spinFInicio, "dd/MM/yyyy"));
 
         jLabel4.setText("Fecha de inicio");
 
-        Fechafin.setModel(new javax.swing.SpinnerDateModel(new Date(), new Date(), null, java.util.Calendar.DAY_OF_MONTH));
-        Fechafin.setToolTipText("");
-        Fechafin.setEditor(new javax.swing.JSpinner.DateEditor(Fechafin, "dd/MM/yyyy"));
+        spinFFin.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), new java.util.Date(), null, java.util.Calendar.DAY_OF_MONTH));
+        spinFFin.setToolTipText("");
+        spinFFin.setEditor(new javax.swing.JSpinner.DateEditor(spinFFin, "dd/MM/yyyy"));
 
         jLabel5.setText("Fecha de Finalizacion");
 
         jButton1.setText("Aceptar");
         jButton1.addActionListener(this::jButton1ActionPerformed);
 
+        spinFAlta.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
+        spinFAlta.setToolTipText("");
+        spinFAlta.setEditor(new javax.swing.JSpinner.DateEditor(spinFAlta, "dd/MM/yyyy"));
+
+        jLabel6.setText("Fecha de Alta");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtNombreProg, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(111, 111, 111)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jButton1)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel2)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel5)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(Fechafin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel4)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(fechaIni, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addContainerGap(55, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton1))))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel2)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel1)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(fieldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(spinFInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                .addComponent(spinFAlta)
+                                                .addComponent(spinFFin)))))
+                                .addGap(87, 87, 87))
+                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -126,35 +136,41 @@ public class Crear_programa_formacion extends javax.swing.JInternalFrame {
                 .addGap(6, 6, 6)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(txtNombreProg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(fieldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(fechaIni, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(spinFInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(Fechafin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(spinFFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(spinFAlta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6))
+                .addGap(18, 18, 18)
+                .addComponent(jButton1)
+                .addContainerGap(18, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>                        
 
-    private void txtNombreProgActionPerformed(java.awt.event.ActionEvent evt) {                                               
+    private void fieldNombreActionPerformed(java.awt.event.ActionEvent evt) {                                            
         // TODO add your handling code here:
-    }                                              
+    }                                           
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
-        String nombreProg = txtNombreProg.getText().trim();
-        String descripcionProg = txtDescripcionPorg.getText().trim();
-        Date fechaInicio = (Date) fechaIni.getValue();
-        Date fechaFin = (Date) Fechafin.getValue();
+        String nombreProg = fieldNombre.getText().trim();
+        String descripcionProg = areaDescripcion.getText().trim();
+        Date fechaInicio = (Date) spinFInicio.getValue();
+        Date fechaFin = (Date) spinFFin.getValue();
+        Date fAlta  = (Date)spinFAlta.getValue();
         
         if (nombreProg.isEmpty() || descripcionProg.isEmpty()) {
             javax.swing.JOptionPane.showMessageDialog(
@@ -163,12 +179,21 @@ public class Crear_programa_formacion extends javax.swing.JInternalFrame {
                 "Campos Inválidos", 
                 javax.swing.JOptionPane.ERROR_MESSAGE
             );
-            return; // Se agrega return para no continuar con la ejecución
+            return;
         }
-        
+
+        if (VerificarDatos()) {
+            javax.swing.JOptionPane.showMessageDialog(
+                this, 
+                "Error: Datos incoherentes en las fechas", 
+                "Campos Inválidos", 
+                javax.swing.JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
         try {
-            boolean existe = ico.ExistePrograma(nombreProg);
-            if (existe) {
+            if (ico.VerificarPrograma(nombreProg)) {
                 int respuesta = javax.swing.JOptionPane.showConfirmDialog(
                     this, 
                     "El programa '" + nombreProg + "' ya existe. ¿Deseas modificar sus datos?", 
@@ -176,20 +201,19 @@ public class Crear_programa_formacion extends javax.swing.JInternalFrame {
                     javax.swing.JOptionPane.YES_NO_OPTION,
                     javax.swing.JOptionPane.QUESTION_MESSAGE
                 );
+            
                 if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
-                    ico.ActualizarPrograma(nombreProg, descripcionProg, fechaInicio, fechaFin);
+                    // El usuario quiere modificarlo
+                    ico.CrearProgramasDeFormacion(nombreProg, descripcionProg, fechaInicio, fechaFin, fAlta);
                     javax.swing.JOptionPane.showMessageDialog(this, "Programa actualizado con éxito.", "Éxito", javax.swing.JOptionPane.INFORMATION_MESSAGE);
                     this.dispose();
                 } else {
+                    // El usuario canceló la operación
                     javax.swing.JOptionPane.showMessageDialog(this, "Operación cancelada.");
                     this.dispose();
                 }
             } else {
-                Vigencia vigencia = new Vigencia(fechaInicio, fechaFin);
-                DTProgramaForm dt = new DTProgramaForm(nombreProg, descripcionProg, vigencia, new ArrayList<>());
-                
-                ico.CrearProgramasDeFormacion(dt);
-                
+                ico.CrearProgramasDeFormacion(nombreProg, descripcionProg, fechaInicio, fechaFin, fAlta);
                 javax.swing.JOptionPane.showMessageDialog(this, "¡Programa de formación creado con éxito!", "Éxito", javax.swing.JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
             }
@@ -202,18 +226,28 @@ public class Crear_programa_formacion extends javax.swing.JInternalFrame {
             );
         }
     }                                        
+    
+    private boolean VerificarDatos() {
+        Date fecha1 = (Date)spinFInicio.getValue();
+        Date fecha2 = (Date)spinFFin.getValue();
+        Date fechaAlta = (Date)spinFAlta.getValue();
+        
+        return fecha1.after(fecha2) || fechaAlta.after(fecha1);
+    }
 
     // Variables declaration - do not modify                     
-    private javax.swing.JSpinner Fechafin;
-    private javax.swing.JSpinner fechaIni;
+    private javax.swing.JTextArea areaDescripcion;
+    private javax.swing.JTextField fieldNombre;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea txtDescripcionPorg;
-    private javax.swing.JTextField txtNombreProg;
-    // End of variables declaration                     
+    private javax.swing.JSpinner spinFAlta;
+    private javax.swing.JSpinner spinFFin;
+    private javax.swing.JSpinner spinFInicio;
+    // End of variables declaration                   
 }

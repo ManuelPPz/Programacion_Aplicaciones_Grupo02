@@ -1,5 +1,6 @@
 package Manejadores;
 
+import Classes.Curso;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -221,6 +222,19 @@ public class ManejadorUsuario {
         return auxList;
     }
 
+    public void AddCurso(UsuarioBase ub, Curso c){
+        if(ub instanceof Docente docente){
+            docente.AddCurso(c);
+        }
+    }
+
+    public void RemoveCurso(UsuarioBase ub, Curso c){
+        if(ub instanceof Docente docente){
+            docente.RemoveCurso(c);
+        }
+    }
+
+    //Funcion que convierte un ImageIcon en byte para persistencia
     private byte[] ConvertirImageIconToByte(String imgPath) throws IOException {
         ImageIcon img = new ImageIcon(imgPath);
         String formato = "png";
