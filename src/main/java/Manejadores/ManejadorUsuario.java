@@ -19,8 +19,7 @@ import DTsClasses.DTUsuario;
 import DTsClasses.DTMaster;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
+import util.JPAUtil; // Import de la utilería centralizada
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -32,7 +31,6 @@ import java.io.IOException;
  */
 public class ManejadorUsuario {
 
-    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("ControladorPU");
     private List<UsuarioBase> misUsuarios;
 
     // ================= Singleton =================
@@ -51,7 +49,6 @@ public class ManejadorUsuario {
     }
     // =============================================
 
-    // CORRECCIÓN: Carga polimórfica que garantiza traer los institutos de los docentes
     public void CargarDeBaseDeDatos() {
         EntityManager em = getEntityManager();
         try {
@@ -105,14 +102,12 @@ public class ManejadorUsuario {
         }
     }
 
-    // CORRECCIÓN: Persiste el usuario y, si es Docente, guarda las filas en la tabla Ins_Doc
     public void Add(UsuarioBase ub) throws Exception {
         EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
             em.persist(ub); // Persiste el Usuario/Docente
 
-            // Si es un Docente, debemos actualizar los institutos para que JPA guarde en Ins_Doc
             if (ub instanceof Docente d && d.getInstitutos() != null) {
                 for (Instituto inst : d.getInstitutos()) {
                     Instituto instMerged = em.find(Instituto.class, inst.getNombre());
@@ -120,13 +115,13 @@ public class ManejadorUsuario {
                         if (!instMerged.getDocentes().contains(d)) {
                             instMerged.getDocentes().add(d);
                         }
-                        em.merge(instMerged); // Ejecuta el INSERT en Ins_Doc
+                        em.merge(instMerged);
                     }
                 }
             }
 
             em.getTransaction().commit();
-            misUsuarios.add(ub); // Agregamos a la lista en memoria si la BD tuvo éxito
+            misUsuarios.add(ub);
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -234,7 +229,6 @@ public class ManejadorUsuario {
         }
     }
 
-    //Funcion que convierte un ImageIcon en byte para persistencia
     private byte[] ConvertirImageIconToByte(String imgPath) throws IOException {
         ImageIcon img = new ImageIcon(imgPath);
         String formato = "png";
@@ -261,6 +255,6 @@ public class ManejadorUsuario {
     }
 
     private EntityManager getEntityManager() {
-        return emf.createEntityManager();
+        return JPAUtil.getEntityManager();
     }
 }

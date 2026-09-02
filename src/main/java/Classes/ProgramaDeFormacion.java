@@ -37,6 +37,8 @@ public class ProgramaDeFormacion implements Serializable {
         inverseJoinColumns = @JoinColumn(name = "curso_nombre")
     )
     private List<Curso> cursos;
+    // Requerido por JPA/Hibernate
+public ProgramaDeFormacion() {}
 
     public ProgramaDeFormacion(String nombre, String descripcion, Vigencia vigenciaPrograma, Date fAlta) {
         this.nombre = nombre;

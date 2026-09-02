@@ -1,4 +1,5 @@
 package Manejadores;
+
 import Classes.EdicionCurso;
 import Classes.Instituto;
 import Classes.Curso;
@@ -10,24 +11,20 @@ import java.util.List;
 import DTsClasses.DTEdicionCurso;
 import DTsClasses.DTMaster;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import jakarta.persistence.TypedQuery;
-
+import util.JPAUtil; // Import de la utilería centralizada
 
 public class ManejadorEdicionCurso {
 
-    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("ControladorPU");
-    List<EdicionCurso> misEdiciones;
+    private List<EdicionCurso> misEdiciones;
     
     //=================Codigo de Singleton=================
     private static ManejadorEdicionCurso instance;    
     public static ManejadorEdicionCurso GetInstance(){
-        if(instance==null){
+        if(instance == null){
             instance = new ManejadorEdicionCurso();
         }
         return instance;
-        
     }
     
     private ManejadorEdicionCurso(){  
@@ -37,51 +34,50 @@ public class ManejadorEdicionCurso {
     //=======================================================
     
     private void CargarDeBaseDeDatos(){
-        //Aca cargas misUsuarios con lo que esta en la base de datos
-        EntityManager em = getEntityManager();
+        EntityManager em = JPAUtil.getEntityManager();
         try {
-            // Consulta JPQL para seleccionar todas las ediciones de curso de la BD
             TypedQuery<EdicionCurso> query = em.createQuery("SELECT e FROM EdicionCurso e", EdicionCurso.class);
             misEdiciones = query.getResultList();
         } catch (Exception e) {
             System.err.println("Error al cargar las ediciones desde la BD: " + e.getMessage());
-            misEdiciones = new ArrayList<>(); // Inicializa vacía si falla la carga
+            misEdiciones = new ArrayList<>();
         } finally {
-            em.close(); // cerrar el EntityManager
+            em.close();
         }
     }
     
-    public EdicionCurso CrearEdicion(Instituto instituto, Curso curso, String nombre, Date fInicio,Date fFin, int cupo, Date fAlta){
+    public EdicionCurso CrearEdicion(Instituto instituto, Curso curso, String nombre, Date fInicio, Date fFin, int cupo, Date fAlta){
         EdicionCurso returnEdicion;
-        returnEdicion = new EdicionCurso(nombre, instituto,curso,fInicio,fFin,cupo,fAlta);
+        returnEdicion = new EdicionCurso(nombre, instituto, curso, fInicio, fFin, cupo, fAlta);
         return returnEdicion;
     }
     
-    public void ModificarDatos(String nombre,Date fInicio,Date fFin, int cupo, Date fAlta,List<UsuarioBase> misUsuarios){
+    public void ModificarDatos(String nombre, Date fInicio, Date fFin, int cupo, Date fAlta, List<UsuarioBase> misUsuarios){
         EdicionCurso ec = BuscarEdicion(nombre);
-        ec.ModificarDatos(fInicio, fFin, cupo, fAlta, misUsuarios);
+        if (ec != null) {
+            ec.ModificarDatos(fInicio, fFin, cupo, fAlta, misUsuarios);
+        }
     }
     
     public void Add(EdicionCurso ec) throws Exception{
         misEdiciones.add(ec);
-        //Aca se añade a la base de datos
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = JPAUtil.getEntityManager();
         try{
             em.getTransaction().begin();
-            em.persist(ec); //Insertar objeto en la bd
+            em.persist(ec);
             em.getTransaction().commit();
         } catch (Exception e){
             if(em.getTransaction().isActive()){
                 em.getTransaction().rollback();
             }
-            throw new Exception("Error al guardar el programa: " + e.getMessage());
-        }finally{
+            throw new Exception("Error al guardar la edición de curso: " + e.getMessage());
+        } finally{
             em.close();
         }
     }
     
     public EdicionCurso BuscarEdicion(String nombre){
-        for(int i = 0;i<misEdiciones.size();i++){
+        for(int i = 0; i < misEdiciones.size(); i++){
             EdicionCurso ec = misEdiciones.get(i);
             if(ec.getNombre().equals(nombre)){
                 return ec;
@@ -96,26 +92,27 @@ public class ManejadorEdicionCurso {
     
     public DTEdicionCurso getDT(EdicionCurso ec){
         DTEdicionCurso auxDT;
-        String ins = ec.getInstituto().getNombre();
-        String cur = ec.getCurso().getNombre();
-        List<UsuarioBase>auxUsuarios = ec.getMisUsuarios();
+        String ins = (ec.getInstituto() != null) ? ec.getInstituto().getNombre() : "";
+        String cur = (ec.getCurso() != null) ? ec.getCurso().getNombre() : "";
+        List<UsuarioBase> auxUsuarios = ec.getMisUsuarios();
         List<String> auxDocentes = new ArrayList<>();
-        for(int i=0;i<auxUsuarios.size();i++){
-            UsuarioBase ub = auxUsuarios.get(i);
-            if(ub instanceof Docente d){
-                auxDocentes.add(d.getNombre());
+        if (auxUsuarios != null) {
+            for(int i = 0; i < auxUsuarios.size(); i++){
+                UsuarioBase ub = auxUsuarios.get(i);
+                if(ub instanceof Docente d){
+                    auxDocentes.add(d.getNombre());
+                }
             }
-            
         }
-        auxDT = new DTEdicionCurso(ins,cur,ec.getNombre(),ec.getFInicio(),ec.getFFin(), ec.getCupo(),auxDocentes,ec.getFAlta());
+        auxDT = new DTEdicionCurso(ins, cur, ec.getNombre(), ec.getFInicio(), ec.getFFin(), ec.getCupo(), auxDocentes, ec.getFAlta());
         return auxDT;
     }
     
     public List<DTMaster> getDTLIst(String curso){
         List<DTMaster> auxList = new ArrayList<>();
-        for(int i = 0;i<misEdiciones.size();i++){
+        for(int i = 0; i < misEdiciones.size(); i++){
             EdicionCurso ec = misEdiciones.get(i);
-            if(ec.getCurso().getNombre().equals(curso)){
+            if(ec.getCurso() != null && ec.getCurso().getNombre().equals(curso)){
                 DTMaster dt = getDT(ec);
                 auxList.add(dt);
             }
@@ -124,6 +121,6 @@ public class ManejadorEdicionCurso {
     }
     
     private EntityManager getEntityManager() {
-        return emf.createEntityManager();
+        return JPAUtil.getEntityManager();
     }
 }

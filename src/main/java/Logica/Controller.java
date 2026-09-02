@@ -20,7 +20,6 @@ import Classes.UsuarioBase;
 import Classes.Curso;
 import Classes.Docente;
 import Classes.Instituto;
-import Classes.ProgramaFormacion;
 import Classes.EdicionCurso;
 import Classes.Usuario;
 import Classes.ProgramaDeFormacion;

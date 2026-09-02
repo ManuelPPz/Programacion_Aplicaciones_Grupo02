@@ -1,66 +1,57 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Manejadores;
+
 import java.util.List;
 import java.util.ArrayList;
 import Classes.Instituto;
 import DTsClasses.DTMaster;
 import DTsClasses.DTInstituto;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import jakarta.persistence.TypedQuery;
-/**
- *
- * @author mateo
- */
+import util.JPAUtil; // Import de la utilería centralizada
+
 public class ManejadorInstituto {
-    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("ControladorPU");
-    List<Instituto> misInstitutos;
+    private List<Instituto> misInstitutos;
     private static ManejadorInstituto instance;
-    public ManejadorInstituto(){
-        misInstitutos = new ArrayList();
+
+    // Constructora privada para respetar el patrón Singleton
+    private ManejadorInstituto(){
         misInstitutos = obtenerTodosLosInstitutos();
     }
+
     public static ManejadorInstituto GetInstance(){
-        if(instance==null){
+        if(instance == null){
             instance = new ManejadorInstituto();
         }
         return instance;
     }
-    
+
     private EntityManager getEntityManager() {
-        return emf.createEntityManager();
+        return JPAUtil.getEntityManager();
     }
-    
-    
-    
+
     public Instituto CreaInstituto(String instituto){
         return new Instituto(instituto);
     }
-    
+
     public void Add(Instituto c) throws Exception{
         misInstitutos.add(c);
-        //Aca se añade a la base de datos
-            EntityManager em = emf.createEntityManager();
+        EntityManager em = JPAUtil.getEntityManager();
         try{
             em.getTransaction().begin();
-            em.persist(c); //Insertar objeto en la bd
+            em.persist(c);
             em.getTransaction().commit();
         } catch (Exception e){
             if(em.getTransaction().isActive()){
                 em.getTransaction().rollback();
             }
-            throw new Exception("Error al guardar el programa" + e.getMessage());
-        }finally{
+            throw new Exception("Error al guardar el instituto: " + e.getMessage());
+        } finally{
             em.close();
         }
     }
-    
+
     public Instituto BuscarInstituto(String instituto){
-        for(int i = 0;i<misInstitutos.size();i++){
+        for(int i = 0; i < misInstitutos.size(); i++){
             Instituto in = misInstitutos.get(i);
             if(in.getNombre().equals(instituto)){
                 return in;
@@ -69,24 +60,22 @@ public class ManejadorInstituto {
         return null;
     }
 
-    
-    
-    
     public DTInstituto getDT(Instituto in){
-        DTInstituto auxDT;
-        auxDT = new DTInstituto(in.getNombre());
-        return auxDT;
+        if (in == null) return null;
+        return new DTInstituto(in.getNombre());
     }
+
     public List<DTMaster> getDTList(){
-        List<DTMaster> auxList = new ArrayList();
-        for(int i = 0;i<misInstitutos.size();i++){
+        List<DTMaster> auxList = new ArrayList<>();
+        for(int i = 0; i < misInstitutos.size(); i++){
             DTMaster dt = getDT(misInstitutos.get(i));
             auxList.add(dt);
         }
         return auxList;
     }
+
     public List<Instituto> obtenerTodosLosInstitutos() {
-        EntityManager em = getEntityManager();
+        EntityManager em = JPAUtil.getEntityManager();
         try {
             TypedQuery<Instituto> query = em.createQuery("SELECT i FROM Instituto i", Instituto.class);
             return query.getResultList();

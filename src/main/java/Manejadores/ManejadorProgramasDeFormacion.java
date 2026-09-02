@@ -1,80 +1,84 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Manejadores;
+
 import Classes.Curso;
 import Classes.ProgramaDeFormacion;
 import DTsClasses.DTMaster;
 import DTsClasses.DTProgramaForm;
 import DTsClasses.Vigencia;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import util.JPAUtil; // Import de la utilería centralizada
 
-/**
- *
- * @author mateo
- */
 public class ManejadorProgramasDeFormacion {
-    List<ProgramaDeFormacion> misProgramas;
-    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("ControladorPU");
+    private List<ProgramaDeFormacion> misProgramas;
     
     //=================Codigo de Singleton=================
     private static ManejadorProgramasDeFormacion instance;    
     
     public static ManejadorProgramasDeFormacion GetInstance(){
-        if(instance==null){
+        if(instance == null){
             instance = new ManejadorProgramasDeFormacion();
         }
         return instance;
-        
     }
+    
     private ManejadorProgramasDeFormacion(){  
         misProgramas = new ArrayList<>();
+        CargarDeBaseDeDatos();
     }
     //=======================================================
     
     private void CargarDeBaseDeDatos(){
-        //Aca cargas misUsuarios con lo que esta en la base de datos
+        EntityManager em = JPAUtil.getEntityManager();
+      try {
+        misProgramas.clear();
+        
+        // Carga los programas de formación forzando la hidratación de sus cursos
+        List<ProgramaDeFormacion> programas = em.createQuery(
+            "SELECT DISTINCT p FROM ProgramaDeFormacion p LEFT JOIN FETCH p.cursos", 
+            ProgramaDeFormacion.class
+        ).getResultList();
+
+        misProgramas.addAll(programas);
+    } finally {
+        em.close();
+    }
     }
     
-    public ProgramaDeFormacion CrearPrograma(String nombre,String descripcion,Vigencia vigencia, Date fAlta){
-        ProgramaDeFormacion auxPDF;
-        auxPDF = new ProgramaDeFormacion(nombre,descripcion,vigencia, fAlta);
+    public ProgramaDeFormacion CrearPrograma(String nombre, String descripcion, Vigencia vigencia, Date fAlta){
+        ProgramaDeFormacion auxPDF = new ProgramaDeFormacion(nombre, descripcion, vigencia, fAlta);
         return auxPDF;
     }
     
     public void ModificarDatos(String nombre, String descripcion, Vigencia vigenciaPrograma, Date fAlta){
         ProgramaDeFormacion auxPDF = BuscarPrograma(nombre);
-        auxPDF.ModificarDatos(descripcion, vigenciaPrograma, fAlta);
+        if (auxPDF != null) {
+            auxPDF.ModificarDatos(descripcion, vigenciaPrograma, fAlta);
+        }
     }
     
     public void Add(ProgramaDeFormacion pdf){
         misProgramas.add(pdf);
-        //Agregar tambien a la base de datos
-        EntityManager em = emf.createEntityManager();
-        try{
+        
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
             em.getTransaction().begin();
-            em.persist(pdf); // <-- CORREGIDO: Era pdf, no pf
+            em.persist(pdf);
             em.getTransaction().commit();
-        } catch (Exception e){
-            if(em.getTransaction().isActive()){
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()){
                 em.getTransaction().rollback();
             }
-            // <-- CORREGIDO: Cambiado a RuntimeException para no obligar a declarar 'throws'
             throw new RuntimeException("Error al guardar el programa: " + e.getMessage(), e);
         } finally {
             em.close();
         }
     }
-    // <-- CORREGIDO: Se eliminó la llave "}" extra que había aquí
     
     public ProgramaDeFormacion BuscarPrograma(String nombre){
-        for(int i = 0;i<misProgramas.size();i++){
+        for(int i = 0; i < misProgramas.size(); i++){
             ProgramaDeFormacion ec = misProgramas.get(i);
             if(ec.getNombre().equals(nombre)){
                 return ec;
@@ -88,26 +92,32 @@ public class ManejadorProgramasDeFormacion {
     }
     
     public DTProgramaForm getDT(ProgramaDeFormacion pdf){
-        DTProgramaForm auxDT;
+        if (pdf == null) return null;
+        
         String nom = pdf.getNombre();
         String desc = pdf.getDescripcion();
         Vigencia v = pdf.getVigencia();
         List<Curso> cursos = pdf.getCursos();
         Date fAlta = pdf.getFAlta();
         List<String> auxList = new ArrayList<>();
-        for(int i=0;i<cursos.size();i++){
-            String auxStr = cursos.get(i).getNombre();
-            auxList.add(auxStr);
+        
+        if (cursos != null) {
+            for(int i = 0; i < cursos.size(); i++){
+                if (cursos.get(i) != null) {
+                    auxList.add(cursos.get(i).getNombre());
+                }
+            }
         }
-        auxDT = new DTProgramaForm(nom,desc,v,auxList,fAlta);
-        return auxDT;
+        return new DTProgramaForm(nom, desc, v, auxList, fAlta);
     }
     
     public List<DTMaster> getDTList(){
         List<DTMaster> auxList = new ArrayList<>();
-        for(int i = 0;i<misProgramas.size();i++){
+        for(int i = 0; i < misProgramas.size(); i++){
             DTMaster dt = getDT(misProgramas.get(i));
-            auxList.add(dt);
+            if (dt != null) {
+                auxList.add(dt);
+            }
         }
         return auxList;
     }

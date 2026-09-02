@@ -6,14 +6,14 @@
     <persistence-unit name="ControladorPU" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-        <!-- REGISTRA AQUÍ TODAS TUS ENTIDADES Y CLASES PADRE -->
+        <!-- Registro de todas las entidades -->
         <class>Classes.UsuarioBase</class>
         <class>Classes.Instituto</class>
         <class>Classes.Curso</class>
         <class>Classes.Docente</class>
         <class>Classes.Usuario</class>
-        <!-- Agrega aquí otras entidades si tienes, por ejemplo: -->
-        <!-- <class>Classes.Estudiante</class> -->
+        <class>Classes.EdicionCurso</class>
+        <class>Classes.ProgramaDeFormacion</class>
 
         <properties>
             <!-- Conexión a Base de Datos -->
@@ -22,15 +22,11 @@
             <property name="jakarta.persistence.jdbc.user" value="UserLab"/>
             <property name="jakarta.persistence.jdbc.password" value="userlab"/>
 
-            <!-- Dialecto -->
-            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
-
             <!-- Visualización de consultas SQL en consola -->
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
 
-            <!-- Generación automática de tablas (Propiedad Estándar Jakarta + Hibernate) -->
-            <property name="jakarta.persistence.schema-generation.database.action" value="update"/>
+            <!-- Generación de esquemas (Se mantiene solo la propiedad de Hibernate para evitar ejecuciones dobles) -->
             <property name="hibernate.hbm2ddl.auto" value="update"/>
         </properties>
     </persistence-unit>
