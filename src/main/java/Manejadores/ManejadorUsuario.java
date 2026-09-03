@@ -133,9 +133,9 @@ public class ManejadorUsuario {
     }
 
     public UsuarioBase BuscarUsuario(String nickname) {
-        if (nickname == null) return null;
+        if (nickname==null) return null;
         for (UsuarioBase ub : misUsuarios) {
-            if (ub.getNickname().equalsIgnoreCase(nickname.trim())) {
+            if (nickname.equals(ub.getNickname())) {
                 return ub;
             }
         }

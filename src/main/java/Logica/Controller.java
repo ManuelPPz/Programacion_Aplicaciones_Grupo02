@@ -107,7 +107,7 @@ public class Controller implements IController{
             Instituto ins = new Instituto();
             ins.setNombre(nomInstituto);
             Curso c = manCursos.CrearCurso(ins, nombre, descripcion, duracion, cantHoras, cantCreditos, URL, fechaIngreso,previas, auxUb);
-            
+            manUsuario.AddCurso(auxUb, c);
             manCursos.Add(c);
         }else{
             manUsuario.RemoveCurso(auxC.getMiDocente(), auxC);

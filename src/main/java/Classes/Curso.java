@@ -72,6 +72,7 @@ public class Curso implements Serializable {
     public List<Curso> getPrevias(){return previas;}
     public List<EdicionCurso> getEdiciones(){return misEdiciones;}
     public List<ProgramaDeFormacion> getProgramas(){return this.misProgramas;}
+    public UsuarioBase getDocente(){return this.miDocente;}
     
     public Curso(){
         

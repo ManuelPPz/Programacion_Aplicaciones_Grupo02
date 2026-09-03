@@ -48,7 +48,7 @@ public class AltaCurso extends javax.swing.JInternalFrame {
                 if (i == 0) {
                     rowsDocente = new ArrayList<>();
                 }
-                Object[] row = {dti.getNombre()};
+                Object[] row = {dti.getNickname()};
                 rowsDocente.add(row);
             } else if (dt instanceof DTCurso dti) {
                 if (i == 0) {
