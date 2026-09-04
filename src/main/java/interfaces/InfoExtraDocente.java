@@ -4,6 +4,8 @@
  */
 package interfaces;
 
+import javax.swing.JList;
+
 /**
  *
  * @author mateo
@@ -16,7 +18,15 @@ public class InfoExtraDocente extends javax.swing.JPanel {
     public InfoExtraDocente() {
         initComponents();
     }
-
+    public JList getListCursos(){
+        return this.listCursos;
+    }
+    public JList getListEdiciones(){
+        return this.listEdiciones;
+    }
+    public JList getListProgramas(){
+        return this.listProgramas;
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

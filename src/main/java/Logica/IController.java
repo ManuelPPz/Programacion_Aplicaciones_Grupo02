@@ -48,7 +48,7 @@ public interface IController {
     public abstract DTMaster ConsultaEdicionCurso(String nomEdicion);
     
     //Inscripcion a Edicion Curso
-    public abstract void InscripcionAEdicionCurso(String nomCurso, String nickname);
+    public abstract void InscripcionAEdicionCurso(String nomCurso, String nickname, Date fIns);
     
     //Crear Programa de Formacion
     //El tipo de dato FechaType sera añadido cuando se cree el tipo de dato "FechaType" o alguno con nombre parecido

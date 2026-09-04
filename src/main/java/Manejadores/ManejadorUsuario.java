@@ -5,8 +5,11 @@ import java.util.List;
 import java.util.ArrayList;
 
 import Classes.Docente;
+import Classes.Edi_Usu;
+import Classes.EdicionCurso;
 import Classes.Usuario;
 import Classes.Instituto;
+import Classes.ProgramaDeFormacion;
 import Classes.UsuarioBase;
 
 import java.util.Date;
@@ -159,25 +162,45 @@ public class ManejadorUsuario {
                     }
                 }
             }
-            return new DTDocente(
-                ub.getNickname(),
-                ub.getNombre(),
-                ub.getApellido(),
-                ub.getCorreo(),
-                ub.getFNac(),
-                auxStr,
-                img
-            );
-        } else {
-            return new DTUsuario(
-                ub.getNickname(),
-                ub.getNombre(),
-                ub.getApellido(),
-                ub.getCorreo(),
-                ub.getFNac(),
-                img
-            );
+            List<String> auxCur = new ArrayList<>();
+            List<String> auxProg = new ArrayList<>();
+            if (docente.getCursos() != null) {
+                for (Curso c : docente.getCursos()) {
+                    if (c != null && c.getNombre() != null) {
+                        auxCur.add(c.getNombre());
+                        //Devolver Prog. de Formacion del curso que fue creado el docente
+                        if(c.getDocente().getNickname().equals(docente.getNickname())){
+                            for (ProgramaDeFormacion pg : c.getProgramas()) {
+                                if (pg != null && pg.getNombre() != null) {
+                                    auxProg.add(pg.getNombre());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            List<String> auxEdi = new ArrayList<>();
+            if(docente.getEdiciones()!=null){
+                for(EdicionCurso ec : docente.getEdiciones()){
+                    if(ec!=null && ec.getNombre()!=null){
+                        auxEdi.add(ec.getNombre());
+                    }
+                }
+            }
+            return new DTDocente(ub.getNickname(), ub.getNombre(), ub.getApellido(), ub.getCorreo(),ub.getFNac(),auxStr,img, auxCur, auxEdi, auxProg);
+        }else if(ub instanceof Usuario usuario){
+            List<String> auxEdi = new ArrayList<>();
+            if(usuario.getMisEdiciones()!=null){
+                for(Edi_Usu eu : usuario.getMisEdiciones()){
+                    EdicionCurso ec = eu.getId().getEdicion();
+                    if(ec!=null && ec.getNombre()!=null){
+                        auxEdi.add(ec.getNombre());
+                    }
+                }
+            }
+            return new DTUsuario(ub.getNickname(),ub.getNombre(),ub.getApellido(),ub.getCorreo(),ub.getFNac(),img, auxEdi, new ArrayList());
         }
+        return null;
     }
 
     public List<DTMaster> getDTList() {
@@ -216,7 +239,7 @@ public class ManejadorUsuario {
 
         return auxList;
     }
-
+    /*-----------------------------------Funciones para la lista de cursos del docente--------------------*/
     public void AddCurso(UsuarioBase ub, Curso c){
         if(ub instanceof Docente docente){
             docente.AddCurso(c);
@@ -228,19 +251,34 @@ public class ManejadorUsuario {
             docente.RemoveCurso(c);
         }
     }
+    /*-----------------------------------------------------------------------------------------------------*/
+    /*-----------------------------Funciones para la lista de ediciones de cursos del docente---------------*/
+    public void AddEdicion(UsuarioBase ub, EdicionCurso ec){
+        if(ub instanceof Docente docente){
+            docente.AddEdicion(ec);
+        }
+    }
+    public void RemoveEdicion(UsuarioBase ub, EdicionCurso ec){
+        if(ub instanceof Docente docente){
+            docente.RemoveEdicion(ec);
+        }
+    }
+    public void InscribirUsuarioAEdicion(Edi_Usu eu){
+        eu.getId().getUsuario().AddEdicionCurso(eu);
+    }
+    /*-----------------------------------------------------------------------------------------------------*/
+    private byte[] ConvertirImageIconToByte(String imgPath) throws IOException {
+        if (imgPath == null || imgPath.trim().isEmpty()) {
+            return null;
+        }
 
-private byte[] ConvertirImageIconToByte(String imgPath) throws IOException {
-    if (imgPath == null || imgPath.trim().isEmpty()) {
+        java.io.File archivo = new java.io.File(imgPath);
+        if (archivo.exists() && archivo.isFile()) {
+            return java.nio.file.Files.readAllBytes(archivo.toPath());
+        }
+
         return null;
     }
-    
-    java.io.File archivo = new java.io.File(imgPath);
-    if (archivo.exists() && archivo.isFile()) {
-        return java.nio.file.Files.readAllBytes(archivo.toPath());
-    }
-    
-    return null;
-}
 
     private ImageIcon ConvertirByteToImageIcon(byte[] bytes) {
         return new ImageIcon(bytes);

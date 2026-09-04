@@ -46,14 +46,13 @@ public class ManejadorEdicionCurso {
         }
     }
     
-    public EdicionCurso CrearEdicion(Instituto instituto, Curso curso, String nombre, Date fInicio, Date fFin, int cupo, Date fAlta){
+    public EdicionCurso CrearEdicion(Instituto instituto, Curso curso, String nombre, Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> docentes){
         EdicionCurso returnEdicion;
-        returnEdicion = new EdicionCurso(nombre, instituto, curso, fInicio, fFin, cupo, fAlta);
+        returnEdicion = new EdicionCurso(nombre, instituto, curso, fInicio, fFin, cupo, fAlta,docentes);
         return returnEdicion;
     }
     
-    public void ModificarDatos(String nombre, Date fInicio, Date fFin, int cupo, Date fAlta, List<UsuarioBase> misUsuarios){
-        EdicionCurso ec = BuscarEdicion(nombre);
+    public void ModificarDatos(EdicionCurso ec, Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> misUsuarios){
         if (ec != null) {
             ec.ModificarDatos(fInicio, fFin, cupo, fAlta, misUsuarios);
         }
@@ -86,7 +85,7 @@ public class ManejadorEdicionCurso {
         return null;
     }
     
-    public void AddUsuario(EdicionCurso ec, UsuarioBase ub){
+    public void AddUsuario(EdicionCurso ec, Docente ub){
         ec.AddUsuarios(ub);
     }
     
@@ -94,7 +93,7 @@ public class ManejadorEdicionCurso {
         DTEdicionCurso auxDT;
         String ins = (ec.getInstituto() != null) ? ec.getInstituto().getNombre() : "";
         String cur = (ec.getCurso() != null) ? ec.getCurso().getNombre() : "";
-        List<UsuarioBase> auxUsuarios = ec.getMisUsuarios();
+        List<Docente> auxUsuarios = ec.getMisDocentes();
         List<String> auxDocentes = new ArrayList<>();
         if (auxUsuarios != null) {
             for(int i = 0; i < auxUsuarios.size(); i++){

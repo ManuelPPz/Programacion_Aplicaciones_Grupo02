@@ -138,11 +138,22 @@ public class Controller implements IController{
         
         if(auxEc==null){
             // 1. Crear la entidad Edición
-            EdicionCurso ec = manEdicion.CrearEdicion(ins, c, nomEdicion, fInicio, fFin, cupo, fAlta);
+            List<Docente> auxListDocentes = new ArrayList<>();
+            if (docentes != null) {
+                for(int i = 0; i < docentes.size(); i++){
+                    Docente ub = (Docente)manUsuario.BuscarUsuario(docentes.get(i));
+                    if (ub != null) {
+                        auxListDocentes.add(ub);
+                    }
+                }
+            }
+            EdicionCurso ec = manEdicion.CrearEdicion(ins, c, nomEdicion, fInicio, fFin, cupo, fAlta,auxListDocentes);
             
             // 2. Guardar la edición en su manejador / BD
             manEdicion.Add(ec);
-            
+            for(Docente d : auxListDocentes){
+                    manUsuario.AddEdicion(d, ec);
+                }
             // 3. Vincular en memoria la nueva Edición al Curso padre
             if (c != null) {
                 if (c.getEdiciones() == null) {
@@ -151,37 +162,26 @@ public class Controller implements IController{
                 c.getEdiciones().add(ec);
             }
             
-            // 4. Asociar docentes a la edición
+           
+        }else{
+            List<Docente> auxListDocentes = new ArrayList<>();
             if (docentes != null) {
                 for(int i = 0; i < docentes.size(); i++){
-                    UsuarioBase ub = manUsuario.BuscarUsuario(docentes.get(i));
+                    Docente ub = (Docente)manUsuario.BuscarUsuario(docentes.get(i));
                     if (ub != null) {
-                        manEdicion.AddUsuario(ec, ub);
+                        auxListDocentes.add(ub);
                     }
                 }
             }
-        }else{
-            List<UsuarioBase> auxList = auxEc.getMisUsuarios();
-            List<UsuarioBase> newList = new ArrayList<>();
-            boolean repetir = true;
-            int index = 0;
-            int indexDocente = 0;
-            
-            while(repetir && index < auxList.size()){
-                UsuarioBase ub = auxList.get(index);
-                if(ub instanceof Usuario){
-                    newList.add(ub);
-                }else{
-                    if (indexDocente < docentes.size()) {
-                        String auxStr = docentes.get(indexDocente);
-                        UsuarioBase auxD = manUsuario.BuscarUsuario(auxStr);
-                        if (auxD != null) newList.add(auxD);
-                        indexDocente++;
-                    }
+            if(auxListDocentes!=null){
+                for(Docente d : auxEc.getMisDocentes()){
+                    manUsuario.RemoveEdicion(d, auxEc);
                 }
-                index++;
+                for(Docente d : auxListDocentes){
+                    manUsuario.AddEdicion(d, auxEc);
+                }
             }
-            manEdicion.ModificarDatos(nomEdicion, fInicio, fFin, cupo, fAlta, newList);
+            manEdicion.ModificarDatos(auxEc, fInicio, fFin, cupo, fAlta, auxListDocentes);
         }
         
     }
@@ -199,8 +199,9 @@ public class Controller implements IController{
     
     //Inscripcion a Edicion Curso
     @Override
-    public void InscripcionAEdicionCurso(String nomCurso, String nickname){
-        
+    public void InscripcionAEdicionCurso(String nomCurso, String nickname, Date fIns){
+        Usuario u = (Usuario)manUsuario.BuscarUsuario(nickname);
+        EdicionCurso ec = manEdicion.BuscarEdicion(nomCurso);
     }
     
     //Crear Programa de Formacion (Versión por parámetros sueltos)

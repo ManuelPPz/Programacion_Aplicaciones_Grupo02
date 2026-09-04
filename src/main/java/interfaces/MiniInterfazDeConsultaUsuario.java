@@ -8,7 +8,10 @@ import DTsClasses.DTDocente;
 import DTsClasses.DTUsuario;
 import java.awt.Image;
 import java.text.SimpleDateFormat;
+import java.util.List;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
+import javax.swing.JList;
 import javax.swing.JPanel;
 
 /**
@@ -46,21 +49,54 @@ public class MiniInterfazDeConsultaUsuario extends javax.swing.JInternalFrame {
         
         if(dt instanceof DTDocente){
             InfoExtraDocente ied = new InfoExtraDocente();
+            ColocarDatosEnListas(dt.getProgramas(),ied.getListCursos());
+            ColocarDatosEnListas(dt.getEdiciones(),ied.getListEdiciones());
+            ColocarDatosEnListas(dt.getProgramas(),ied.getListProgramas());
+            
             MostrarPanelInfoExtra(ied);
         }else{
             InfoExtraUsuario ieu = new InfoExtraUsuario();
+            ColocarDatosEnListas(dt.getEdiciones(),ieu.getListEdiciones());
+            ColocarDatosEnListas(dt.getProgramas(),ieu.getListProgramas());
             MostrarPanelInfoExtra(ieu);
             
         }
     }
+    private void ColocarDatosEnListas(List<String> list, JList jList){
+        DefaultListModel<String> modelo = (DefaultListModel<String>) jList.getModel();
+        modelo.clear();
+        List<String> auxList = list;
+        auxList = OrdenarLista(auxList);
+        for(int i =0;i<list.size();i++){
+            modelo.addElement(auxList.get(i));
+        }
+    }
+    
+    private List<String> OrdenarLista(List<String> listaParam){
+        List<String> auxStr = listaParam;
+        for(int i = 0;i<auxStr.size()-1;i++){
+            for(int j = 0;j<auxStr.size()-1;j++){
+                if(auxStr instanceof DTUsuarioBase){
+                    String aux = auxStr.get(j);
+                    String auxJMas = auxStr.get(j+1);
+                    if(aux.toLowerCase().compareTo(auxJMas.toLowerCase()) > 0){
+                        String temp = aux;
+                        auxStr.set(j, auxStr.get(j+1));
+                        auxStr.set(j+1,temp);  
+                    }
+                }
+            }
+        }
+        return auxStr;
+    }
     private void MostrarPanelInfoExtra(JPanel jp){
         int wPanel = panelInfoExtra.getWidth(), hPanel = panelInfoExtra.getHeight(); // Width y Height del panelInfoExtra
         jp.setSize(wPanel, hPanel);
-            jp.setLocation(0, 0);
-            panelInfoExtra.removeAll();
-            panelInfoExtra.add(jp, java.awt.BorderLayout.CENTER);
-            panelInfoExtra.revalidate();
-            panelInfoExtra.repaint();
+        jp.setLocation(0, 0);
+        panelInfoExtra.removeAll();
+        panelInfoExtra.add(jp, java.awt.BorderLayout.CENTER);
+        panelInfoExtra.revalidate();
+        panelInfoExtra.repaint();
     }
     /**
      * This method is called from within the constructor to initialize the form.
