@@ -25,7 +25,11 @@ public class Docente extends UsuarioBase {
     
     @OneToMany(mappedBy="miDocente")
     private List<Curso> misCursos;
-
+    
+    @ManyToMany
+    private List<EdicionCurso> misEdiciones;
+            
+    
     public Docente() {
         super();
         misInstitutos = new ArrayList<>();
@@ -62,16 +66,26 @@ public class Docente extends UsuarioBase {
         return this.misInstitutos;
     }
     
+    
     public void AddCurso(Curso c){
         misCursos.add(c);
     }
-    
     public void RemoveCurso(Curso c){
         misCursos.remove(c);
-    }
-    
+    } 
     public List<Curso> getCursos(){
         return this.misCursos;
+    }
+    
+    
+    public void AddEdicion(EdicionCurso ec){
+        misEdiciones.add(ec);
+    }
+    public void RemoveEdicion(EdicionCurso ec){
+        misEdiciones.remove(ec);
+    }
+    public List<EdicionCurso> getEdiciones(){
+        return this.misEdiciones;
     }
     
 }

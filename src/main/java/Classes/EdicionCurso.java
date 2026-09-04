@@ -39,13 +39,10 @@ public class EdicionCurso implements Serializable {
     
    // Se especifica FetchType.EAGER para evitar LazyInitializationException 
     // y CascadeType.ALL para persistir cambios en la relacion
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(
-        name = "Edicion_Usuario",
-        joinColumns = @JoinColumn(name = "Edicion_Nombre"),
-        inverseJoinColumns = @JoinColumn(name = "Usuario_Nickname")
-    )
-    private List<UsuarioBase> misUsuarios;
+    @OneToMany(mappedBy="id.miEdicion")
+    private List<Edi_Usu> misUsuarios;
+    @ManyToMany(mappedBy="misEdiciones")
+    private List<Docente> misDocentes;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "F_Alta")
     private Date fAlta;
@@ -56,12 +53,12 @@ public class EdicionCurso implements Serializable {
     public Date getFInicio() {return fInicio;}
     public Date getFFin() {return fFin;}
     public int getCupo() {return cupo;}
-    public List<UsuarioBase> getMisUsuarios() {return misUsuarios;}
+    public List<Docente> getMisDocentes() {return misDocentes;}
     public Date getFAlta() {return fAlta;}
 
     public EdicionCurso() { this.misUsuarios = new ArrayList<>();}
     
-    public EdicionCurso(String nombre, Instituto miInstituto, Curso miCurso, Date fInicio, Date fFin, int cupo, Date fAlta) {
+    public EdicionCurso(String nombre, Instituto miInstituto, Curso miCurso, Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> docentes) {
         this.nombre = nombre;
         this.miInstituto = miInstituto;
         this.miCurso = miCurso;
@@ -70,22 +67,25 @@ public class EdicionCurso implements Serializable {
         this.cupo = cupo;
         this.fAlta = fAlta;
         misUsuarios = new ArrayList<>();
+        this.misDocentes = docentes;
     }
     
-    public void ModificarDatos(Date fInicio, Date fFin, int cupo, Date fAlta, List<UsuarioBase> newUsuarios){
+    public void ModificarDatos(Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> newUsuarios){
         this.fInicio = fInicio;
         this.fFin = fFin;
         this.cupo = cupo;
         this.fAlta = fAlta;
-        this.misUsuarios = newUsuarios;
+        this.misDocentes = newUsuarios;
     }
     
-    
-    public void AddUsuarios(UsuarioBase ub){
-        if (this.misUsuarios == null) {
-            this.misUsuarios = new ArrayList<>();
+    public void AddUsuarioInscripto(Edi_Usu eu){
+        misUsuarios.add(eu);
+    }
+    public void AddUsuarios(Docente ub){
+        if (this.misDocentes == null) {
+            this.misDocentes = new ArrayList<>();
         }
-        misUsuarios.add(ub);
+        misDocentes.add(ub);
     }
     public void setNombre(String nombre) {
         this.nombre = nombre;
