@@ -20,7 +20,7 @@ import javax.swing.ImageIcon;
  */
 @Entity
 public class Usuario extends UsuarioBase{
-    @ManyToMany(mappedBy="id.miUsuario")
+    @ManyToMany(mappedBy="miUsuario")
     private List<Edi_Usu> misInscripciones;
     public Usuario(){
         super();

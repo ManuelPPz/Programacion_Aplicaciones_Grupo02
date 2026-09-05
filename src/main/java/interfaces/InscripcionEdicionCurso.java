@@ -9,6 +9,7 @@ import Logica.Fabric;
 import Logica.IController;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 /**
@@ -25,15 +26,20 @@ public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
         ico = f.GetIController();
         initComponents();
         //Tener lista de cursos en la plataforma
-        List<DTMaster> auxInsCur = ico.ListarClase(EnumDT.DT_CURSO);        
-        auxInsCur = OrdenarLista(auxInsCur);
-        IniciarRows(auxInsCur);
-        IniciarTable(EnumDT.DT_CURSO);
+        List<DTMaster> auxInsCur = ico.ListarClase(EnumDT.DT_CURSO);     
+        if(auxInsCur!=null){
+            auxInsCur = OrdenarLista(auxInsCur);
+            IniciarRows(auxInsCur);
+            IniciarTable(EnumDT.DT_CURSO);
+        }
         //Tener lista de usuarios en la plataforma
         List<DTMaster> auxUsuarios = ico.ListarClase(EnumDT.DT_USUARIO);
-        auxUsuarios = OrdenarLista(auxUsuarios);
-        IniciarRows(auxUsuarios);
-        IniciarTable(EnumDT.DT_USUARIO);
+        if(auxUsuarios!=null){
+            auxUsuarios = OrdenarLista(auxUsuarios);
+            IniciarRows(auxUsuarios);
+            IniciarTable(EnumDT.DT_USUARIO);
+        }
+        
         
         
     }
@@ -55,10 +61,15 @@ public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
                 }
                 if(dti instanceof DTEdicionCurso){
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                    String fechaA = sdf.format(dti.getFechaAlta());
-                    String fechaF = sdf.format(dti.getFFin());
-                    Object[] row = {dti.getNombre(),fechaA,fechaF};
-                    rowsEdiciones.add(row);
+                    Date fAlta = dti.getFechaAlta();
+                    String fechaA = sdf.format(fAlta);
+                    Date fFin = dti.getFFin();
+                    String fechaF = sdf.format(fFin);
+                    Date fNow = new Date();
+                    if(fNow.before(fFin)){
+                        Object[] row = {dti.getNombre(),fechaA,fechaF};
+                        rowsEdiciones.add(row);
+                    }                   
                 }
             }else if(dt instanceof DTUsuarioBase dti){
                 if(i==0){
@@ -129,6 +140,11 @@ public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
         }
         
     }
+    private void Inscribir(int filaEdi, int filaUsu){
+        DefaultTableModel modeloEdi = (DefaultTableModel) tableEdiciones.getModel();
+        DefaultTableModel modeloUsu = (DefaultTableModel) tableUsuarios.getModel();
+        ico.InscripcionAEdicionCurso((String)modeloEdi.getValueAt(filaEdi, 0), (String)modeloUsu.getValueAt(filaUsu, 0), (Date)spinDateIns.getValue());
+    }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -141,7 +157,7 @@ public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
         tableUsuarios = new javax.swing.JTable();
         btnAceptar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
-        spinnerDate = new javax.swing.JSpinner();
+        spinDateIns = new javax.swing.JSpinner();
 
         setPreferredSize(new java.awt.Dimension(412, 500));
 
@@ -259,8 +275,8 @@ public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
         btnCancelar.setText("Cancelar");
         btnCancelar.addActionListener(this::btnCancelarActionPerformed);
 
-        spinnerDate.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
-        spinnerDate.setEditor(new javax.swing.JSpinner.DateEditor(spinnerDate, "dd/MM/yyyy"));
+        spinDateIns.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
+        spinDateIns.setEditor(new javax.swing.JSpinner.DateEditor(spinDateIns, "dd/MM/yyyy"));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -277,8 +293,8 @@ public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 352, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 352, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 352, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(spinnerDate, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(27, Short.MAX_VALUE))
+                        .addComponent(spinDateIns, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -290,7 +306,7 @@ public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(spinnerDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(spinDateIns, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAceptar)
@@ -302,7 +318,30 @@ public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
-        
+        int filaCur = tableInsCur.getSelectedRow();
+        int filaEdi = tableEdiciones.getSelectedRow();
+        int filaUsu = tableUsuarios.getSelectedRow();
+        if(filaCur!=-1){
+            if(filaEdi!=-1){
+                if(filaUsu!=-1){
+                    Inscribir(filaEdi,filaUsu);
+                }else{
+                    javax.swing.JOptionPane.showMessageDialog(this, 
+                    "Debe seleccionar un usuario para continuar.", 
+                    "Atención", 
+                    javax.swing.JOptionPane.WARNING_MESSAGE); 
+                }
+            }else{
+                javax.swing.JOptionPane.showMessageDialog(this, 
+                "Debe seleccionar una Edicion de curso para continuar.", 
+                "Atención", 
+                javax.swing.JOptionPane.WARNING_MESSAGE); 
+            }
+        }else{
+            javax.swing.JOptionPane.showMessageDialog(this, 
+                "Debe seleccionar un Curso para continuar.", 
+                "Atención", 
+                javax.swing.JOptionPane.WARNING_MESSAGE);        }
     }//GEN-LAST:event_btnAceptarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
@@ -317,7 +356,7 @@ public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JSpinner spinnerDate;
+    private javax.swing.JSpinner spinDateIns;
     private javax.swing.JTable tableEdiciones;
     private javax.swing.JTable tableInsCur;
     private javax.swing.JTable tableUsuarios;

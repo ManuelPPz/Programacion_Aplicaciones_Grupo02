@@ -50,6 +50,8 @@ public class Presentacion extends javax.swing.JFrame {
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenu10 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItem7 = new javax.swing.JMenuItem();
+        itemMenuInsEdi = new javax.swing.JMenuItem();
         jMenu11 = new javax.swing.JMenu();
         CrearProgFormacion = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
@@ -117,6 +119,14 @@ public class Presentacion extends javax.swing.JFrame {
         jMenuItem3.setText("Ingresar");
         jMenuItem3.addActionListener(this::jMenuItem3ActionPerformed);
         jMenu10.add(jMenuItem3);
+
+        jMenuItem7.setText("Consulta");
+        jMenuItem7.addActionListener(this::jMenuItem7ActionPerformed);
+        jMenu10.add(jMenuItem7);
+
+        itemMenuInsEdi.setText("Inscripcion");
+        itemMenuInsEdi.addActionListener(this::itemMenuInsEdiActionPerformed);
+        jMenu10.add(itemMenuInsEdi);
 
         jMenu2.add(jMenu10);
 
@@ -306,6 +316,21 @@ public class Presentacion extends javax.swing.JFrame {
         vConProgForm.toFront();*/
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
+    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItem7ActionPerformed
+
+    private void itemMenuInsEdiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemMenuInsEdiActionPerformed
+        InscripcionEdicionCurso vInscripcionEdicion = new InscripcionEdicionCurso();
+        jDesktopPane1.add(vInscripcionEdicion);
+         java.awt.Dimension desktopSize = jDesktopPane1.getSize();
+        java.awt.Dimension frameSize = vInscripcionEdicion.getSize();
+        vInscripcionEdicion.setLocation((desktopSize.width - frameSize.width) / 2, 
+                      (desktopSize.height - frameSize.height) / 2);
+        vInscripcionEdicion.setVisible(true);
+        vInscripcionEdicion.toFront();
+    }//GEN-LAST:event_itemMenuInsEdiActionPerformed
+
 
     /**
      * @param args the command line arguments
@@ -334,6 +359,7 @@ public class Presentacion extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem CrearProgFormacion;
+    private javax.swing.JMenuItem itemMenuInsEdi;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu10;
@@ -358,6 +384,7 @@ public class Presentacion extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JPopupMenu jPopupMenu2;
     private javax.swing.JMenuItem mConsultarUsuario;

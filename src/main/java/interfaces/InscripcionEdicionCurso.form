@@ -36,10 +36,10 @@
                       <Component id="jScrollPane1" min="-2" pref="352" max="-2" attributes="0"/>
                       <Component id="jScrollPane2" min="-2" pref="352" max="-2" attributes="0"/>
                       <Component id="jScrollPane3" alignment="0" min="-2" pref="352" max="-2" attributes="0"/>
-                      <Component id="spinnerDate" alignment="0" min="-2" pref="144" max="-2" attributes="0"/>
+                      <Component id="spinDateIns" alignment="0" min="-2" pref="144" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace pref="27" max="32767" attributes="0"/>
+              <EmptySpace pref="15" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -53,7 +53,7 @@
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="jScrollPane3" min="-2" pref="106" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Component id="spinnerDate" min="-2" max="-2" attributes="0"/>
+              <Component id="spinDateIns" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="btnAceptar" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -201,7 +201,7 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCancelarActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JSpinner" name="spinnerDate">
+    <Component class="javax.swing.JSpinner" name="spinDateIns">
       <Properties>
         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
           <SpinnerModel initial="now" maximum="now" stepSize="5" type="date"/>
