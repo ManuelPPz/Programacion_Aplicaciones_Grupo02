@@ -39,7 +39,7 @@ public class EdicionCurso implements Serializable {
     
    // Se especifica FetchType.EAGER para evitar LazyInitializationException 
     // y CascadeType.ALL para persistir cambios en la relacion
-    @OneToMany(mappedBy="miEdicion")
+    @OneToMany(mappedBy="id.miEdicion")
     private List<Edi_Usu> misUsuarios;
     @ManyToMany(mappedBy="misEdiciones")
     private List<Docente> misDocentes;

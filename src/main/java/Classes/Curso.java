@@ -47,38 +47,37 @@ public class Curso implements Serializable {
     private Date fAlta;
     
     @ManyToMany
-    @JoinTable(name = "Previa",joinColumns = @JoinColumn(name="Nombre"),inverseJoinColumns = @JoinColumn(name="Previa_Nombre"))
-    private List<Curso> previas;
+    @JoinTable(name = "Previa", joinColumns = @JoinColumn(name="Nombre"), inverseJoinColumns = @JoinColumn(name="Previa_Nombre"))
+    private List<Curso> previas = new ArrayList<>();
     
     @OneToMany(mappedBy="miCurso")
     private List<EdicionCurso> misEdiciones = new ArrayList<>();
     
-    @ManyToMany
-    private List<ProgramaDeFormacion> misProgramas;
+    // Mapeo bidireccional apuntando al atributo 'cursos' de ProgramaDeFormacion
+    @ManyToMany(mappedBy = "cursos")
+    private List<ProgramaDeFormacion> misProgramas = new ArrayList<>();
     
     @ManyToOne
     @JoinColumn(name="Nombre_Doc")
     private Docente miDocente;
     
+    public Instituto getInstituto() { return miInstituto; }
+    public String getNombre() { return nombre; }
+    public String getDescripcion(){ return descripcion; }
+    public int getDuracion() { return duracion; }
+    public float getCantHoras(){ return cantHoras; }
+    public int getCantCreditos() { return cantCreditos; }
+    public String getURL(){ return URL; }
+    public Date getFAlta(){ return fAlta; }
+    public List<Curso> getPrevias(){ return previas; }
+    public List<EdicionCurso> getEdiciones(){ return misEdiciones; }
+    public List<ProgramaDeFormacion> getProgramas(){ return this.misProgramas; }
+    public UsuarioBase getDocente(){ return this.miDocente; }
     
-    public Instituto getInstituto() {return miInstituto;}
-    public String getNombre() {return nombre;}
-    public String getDescripcion(){return descripcion;}
-    public int getDuracion() {return duracion;}
-    public float getCantHoras(){return cantHoras;}
-    public int getCantCreditos() {return cantCreditos;}
-    public String getURL(){return URL;}
-    public Date getFAlta(){return fAlta;}
-    public List<Curso> getPrevias(){return previas;}
-    public List<EdicionCurso> getEdiciones(){return misEdiciones;}
-    public List<ProgramaDeFormacion> getProgramas(){return this.misProgramas;}
-    public UsuarioBase getDocente(){return this.miDocente;}
-    
-    public Curso(){
-        
+    public Curso() {
     }
     
-    public Curso(Instituto instituto,String nombre,String descripcion,int duracion,float cantHoras,int cantCreditos,String URL,Date fAlta,List<Curso>previas, UsuarioBase ub){
+    public Curso(Instituto instituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<Curso> previas, UsuarioBase ub){
         this.miInstituto = instituto;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -87,14 +86,13 @@ public class Curso implements Serializable {
         this.cantCreditos = cantCreditos;
         this.URL = URL;
         this.fAlta = fAlta;
-        this.previas=previas;
+        this.previas = previas != null ? previas : new ArrayList<>();
         this.miDocente = (Docente)ub;
         this.misProgramas = new ArrayList<>();
         this.misEdiciones = new ArrayList<>();
     }
 
-    
-    public void ModificarMisDatos(String descripcion,int duracion,float cantHoras,int cantCreditos,String URL,Date fAlta,List<Curso>previas, UsuarioBase ub){
+    public void ModificarMisDatos(String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<Curso> previas, UsuarioBase ub){
         this.descripcion = descripcion;
         this.duracion = duracion;
         this.cantHoras = cantHoras;
@@ -106,19 +104,23 @@ public class Curso implements Serializable {
     }
     
     public void AddEdicion(EdicionCurso ec){
+        if (this.misEdiciones == null) this.misEdiciones = new ArrayList<>();
         this.misEdiciones.add(ec);
     }
     
     public void RemoveEdicion(EdicionCurso ec){
-        this.misEdiciones.remove(ec);
+        if (this.misEdiciones != null) this.misEdiciones.remove(ec);
     }
     
     public void AddPrograma(ProgramaDeFormacion pdf){
-        this.misProgramas.add(pdf);
+        if (this.misProgramas == null) this.misProgramas = new ArrayList<>();
+        if (!this.misProgramas.contains(pdf)) {
+            this.misProgramas.add(pdf);
+        }
     }
     
     public void RemovePrograma(ProgramaDeFormacion pdf){
-        this.misProgramas.remove(pdf);
+        if (this.misProgramas != null) this.misProgramas.remove(pdf);
     }
     
     public void setNombre(String nombre) {
@@ -138,7 +140,6 @@ public class Curso implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Curso)) {
             return false;
         }
@@ -153,5 +154,4 @@ public class Curso implements Serializable {
     public String toString() {
         return "Classes.Curso[ nombre=" + nombre + " ]";
     }
-    
 }

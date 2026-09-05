@@ -5,37 +5,45 @@
 package Classes;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import java.io.Serializable;
+import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.swing.ImageIcon;
+
 /**
- *
  * @author mateo
  */
 @Entity
-public class Usuario extends UsuarioBase{
-    @ManyToMany(mappedBy="miUsuario")
-    private List<Edi_Usu> misInscripciones;
-    public Usuario(){
+public class Usuario extends UsuarioBase {
+
+    @OneToMany(mappedBy = "id.miUsuario")
+    private List<Edi_Usu> misInscripciones = new ArrayList<>();
+
+    public Usuario() {
         super();
     }
-    public Usuario(String nick, String nombre, String apellido, String correo, Date fNac,byte[] img){
-        super(nick, nombre, apellido, correo, fNac,img);
+
+    public Usuario(String nick, String nombre, String apellido, String correo, Date fNac, byte[] img) {
+        super(nick, nombre, apellido, correo, fNac, img);
     }
-    
+
     @Override
-    public void ModificarMisDatos(String nom, String apellido, String correo, Date fNac,byte[] img){
+    public void ModificarMisDatos(String nom, String apellido, String correo, Date fNac, byte[] img) {
         super.ModificarMisDatos(nom, apellido, correo, fNac, img);
     }
-    
-    public void AddEdicionCurso(Edi_Usu ec){
+
+    public void AddEdicionCurso(Edi_Usu ec) {
+        if (misInscripciones == null) {
+            misInscripciones = new ArrayList<>();
+        }
         misInscripciones.add(ec);
     }
-    public List<Edi_Usu> getMisEdiciones(){return this.misInscripciones;}
+
+    public List<Edi_Usu> getMisInscripciones() {
+        return this.misInscripciones;
+    }
+
+    public List<Edi_Usu> getMisEdiciones() {
+        return this.misInscripciones;
+    }
 }

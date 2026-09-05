@@ -14,7 +14,6 @@ import Classes.UsuarioBase;
 
 import java.util.Date;
 import javax.swing.ImageIcon;
-import javax.imageio.ImageIO;
 
 import DTsClasses.DTUsuarioBase;
 import DTsClasses.DTDocente;
@@ -22,11 +21,8 @@ import DTsClasses.DTUsuario;
 import DTsClasses.DTMaster;
 
 import jakarta.persistence.EntityManager;
-import util.JPAUtil; // Import de la utilería centralizada
+import util.JPAUtil;
 
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
@@ -57,14 +53,24 @@ public class ManejadorUsuario {
         try {
             misUsuarios.clear();
 
-            // 1. Cargar docentes forzando la hidratación de sus institutos
+            // 1. Cargar los docentes con sus institutos
             List<Docente> docentes = em.createQuery(
                 "SELECT DISTINCT d FROM Docente d LEFT JOIN FETCH d.misInstitutos", Docente.class
             ).getResultList();
 
-            // 2. Cargar estudiantes
+            // 2. Hidratar misCursos y misEdiciones dentro de la sesión activa
+            for (Docente d : docentes) {
+                if (d.getCursos() != null) {
+                    d.getCursos().size();
+                }
+                if (d.getEdiciones() != null) {
+                    d.getEdiciones().size();
+                }
+            }
+
+            // 3. Cargar estudiantes haciendo JOIN FETCH sobre la propiedad 'misInscripciones'
             List<Usuario> estudiantes = em.createQuery(
-                "SELECT u FROM Usuario u", Usuario.class
+                "SELECT DISTINCT u FROM Usuario u LEFT JOIN FETCH u.misInscripciones", Usuario.class
             ).getResultList();
 
             misUsuarios.addAll(docentes);
@@ -109,7 +115,7 @@ public class ManejadorUsuario {
         EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
-            em.persist(ub); // Persiste el Usuario/Docente
+            em.persist(ub);
 
             if (ub instanceof Docente d && d.getInstitutos() != null) {
                 for (Instituto inst : d.getInstitutos()) {
@@ -136,7 +142,7 @@ public class ManejadorUsuario {
     }
 
     public UsuarioBase BuscarUsuario(String nickname) {
-        if (nickname==null) return null;
+        if (nickname == null) return null;
         for (UsuarioBase ub : misUsuarios) {
             if (nickname.equals(ub.getNickname())) {
                 return ub;
@@ -168,11 +174,12 @@ public class ManejadorUsuario {
                 for (Curso c : docente.getCursos()) {
                     if (c != null && c.getNombre() != null) {
                         auxCur.add(c.getNombre());
-                        //Devolver Prog. de Formacion del curso que fue creado el docente
-                        if(c.getDocente().getNickname().equals(docente.getNickname())){
-                            for (ProgramaDeFormacion pg : c.getProgramas()) {
-                                if (pg != null && pg.getNombre() != null) {
-                                    auxProg.add(pg.getNombre());
+                        if (c.getDocente() != null && c.getDocente().getNickname().equals(docente.getNickname())) {
+                            if (c.getProgramas() != null) {
+                                for (ProgramaDeFormacion pg : c.getProgramas()) {
+                                    if (pg != null && pg.getNombre() != null) {
+                                        auxProg.add(pg.getNombre());
+                                    }
                                 }
                             }
                         }
@@ -180,25 +187,27 @@ public class ManejadorUsuario {
                 }
             }
             List<String> auxEdi = new ArrayList<>();
-            if(docente.getEdiciones()!=null){
-                for(EdicionCurso ec : docente.getEdiciones()){
-                    if(ec!=null && ec.getNombre()!=null){
+            if (docente.getEdiciones() != null) {
+                for (EdicionCurso ec : docente.getEdiciones()) {
+                    if (ec != null && ec.getNombre() != null) {
                         auxEdi.add(ec.getNombre());
                     }
                 }
             }
-            return new DTDocente(ub.getNickname(), ub.getNombre(), ub.getApellido(), ub.getCorreo(),ub.getFNac(),auxStr,img, auxCur, auxEdi, auxProg);
-        }else if(ub instanceof Usuario usuario){
+            return new DTDocente(ub.getNickname(), ub.getNombre(), ub.getApellido(), ub.getCorreo(), ub.getFNac(), auxStr, img, auxCur, auxEdi, auxProg);
+        } else if (ub instanceof Usuario usuario) {
             List<String> auxEdi = new ArrayList<>();
-            if(usuario.getMisEdiciones()!=null){
-                for(Edi_Usu eu : usuario.getMisEdiciones()){
-                    EdicionCurso ec = eu.getId().getEdicion();
-                    if(ec!=null && ec.getNombre()!=null){
-                        auxEdi.add(ec.getNombre());
+            if (usuario.getMisInscripciones() != null) {
+                for (Edi_Usu eu : usuario.getMisInscripciones()) {
+                    if (eu != null && eu.getId() != null) {
+                        EdicionCurso ec = eu.getId().getEdicion();
+                        if (ec != null && ec.getNombre() != null) {
+                            auxEdi.add(ec.getNombre());
+                        }
                     }
                 }
             }
-            return new DTUsuario(ub.getNickname(),ub.getNombre(),ub.getApellido(),ub.getCorreo(),ub.getFNac(),img, auxEdi, new ArrayList());
+            return new DTUsuario(ub.getNickname(), ub.getNombre(), ub.getApellido(), ub.getCorreo(), ub.getFNac(), img, auxEdi, new ArrayList<>());
         }
         return null;
     }
@@ -239,34 +248,41 @@ public class ManejadorUsuario {
 
         return auxList;
     }
+
     /*-----------------------------------Funciones para la lista de cursos del docente--------------------*/
-    public void AddCurso(UsuarioBase ub, Curso c){
-        if(ub instanceof Docente docente){
+    public void AddCurso(UsuarioBase ub, Curso c) {
+        if (ub instanceof Docente docente) {
             docente.AddCurso(c);
         }
     }
 
-    public void RemoveCurso(UsuarioBase ub, Curso c){
-        if(ub instanceof Docente docente){
+    public void RemoveCurso(UsuarioBase ub, Curso c) {
+        if (ub instanceof Docente docente) {
             docente.RemoveCurso(c);
         }
     }
     /*-----------------------------------------------------------------------------------------------------*/
+
     /*-----------------------------Funciones para la lista de ediciones de cursos del docente---------------*/
-    public void AddEdicion(UsuarioBase ub, EdicionCurso ec){
-        if(ub instanceof Docente docente){
+    public void AddEdicion(UsuarioBase ub, EdicionCurso ec) {
+        if (ub instanceof Docente docente) {
             docente.AddEdicion(ec);
         }
     }
-    public void RemoveEdicion(UsuarioBase ub, EdicionCurso ec){
-        if(ub instanceof Docente docente){
+
+    public void RemoveEdicion(UsuarioBase ub, EdicionCurso ec) {
+        if (ub instanceof Docente docente) {
             docente.RemoveEdicion(ec);
         }
     }
-    public void InscribirUsuarioAEdicion(Edi_Usu eu){
-        eu.getId().getUsuario().AddEdicionCurso(eu);
+
+    public void InscribirUsuarioAEdicion(Edi_Usu eu) {
+        if (eu != null && eu.getId() != null && eu.getId().getUsuario() != null) {
+            eu.getId().getUsuario().AddEdicionCurso(eu);
+        }
     }
     /*-----------------------------------------------------------------------------------------------------*/
+
     private byte[] ConvertirImageIconToByte(String imgPath) throws IOException {
         if (imgPath == null || imgPath.trim().isEmpty()) {
             return null;
