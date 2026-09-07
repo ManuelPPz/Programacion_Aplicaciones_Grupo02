@@ -16,9 +16,9 @@ import java.util.Objects;
 public class Id_EdiUsu implements Serializable {
 
     @ManyToOne
-    private Usuario miUsuario;
+    public Usuario miUsuario;
     @ManyToOne
-    private EdicionCurso miEdicion;
+    public EdicionCurso miEdicion;
     public Usuario getUsuario() {
         return miUsuario;
     }
