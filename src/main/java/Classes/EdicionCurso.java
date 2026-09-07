@@ -41,8 +41,19 @@ public class EdicionCurso implements Serializable {
     // y CascadeType.ALL para persistir cambios en la relacion
     @OneToMany(mappedBy="id.miEdicion")
     private List<Edi_Usu> misUsuarios;
-    @ManyToMany(mappedBy="misEdiciones")
-    private List<Docente> misDocentes;
+@ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+@JoinTable(
+    name = "Docente_EdicionCurso",
+    joinColumns = @JoinColumn(
+        name = "ediciones_Nombre", 
+        referencedColumnName = "Nombre"
+    ),
+    inverseJoinColumns = @JoinColumn(
+        name = "docentes_Nickname", 
+        referencedColumnName = "Nickname"
+    )
+)
+private List<Docente> misDocentes = new ArrayList<>();
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "F_Alta")
     private Date fAlta;

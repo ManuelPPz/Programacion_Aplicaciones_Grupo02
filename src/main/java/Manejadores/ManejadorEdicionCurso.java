@@ -58,22 +58,47 @@ public class ManejadorEdicionCurso {
         }
     }
     
-    public void Add(EdicionCurso ec) throws Exception{
-        misEdiciones.add(ec);
-        EntityManager em = JPAUtil.getEntityManager();
-        try{
-            em.getTransaction().begin();
-            em.persist(ec);
-            em.getTransaction().commit();
-        } catch (Exception e){
-            if(em.getTransaction().isActive()){
-                em.getTransaction().rollback();
-            }
-            throw new Exception("Error al guardar la edición de curso: " + e.getMessage());
-        } finally{
-            em.close();
+public void Add(EdicionCurso ec) throws Exception {
+    misEdiciones.add(ec);
+    
+    // --- DIAGNÓSTICO EN CONSOLA ---
+    System.out.println(">>> [DEBUG] Intentando guardar Edición: " + ec.getNombre());
+    if (ec.getMisDocentes() == null) {
+        System.out.println(">>> [ERROR] misDocentes es NULL");
+    } else {
+        System.out.println(">>> [DEBUG] Cantidad de docentes recibidos: " + ec.getMisDocentes().size());
+        for (Docente d : ec.getMisDocentes()) {
+            System.out.println(">>> [DEBUG] Docente en lista: " + d.getNickname());
         }
     }
+    // ------------------------------
+
+    EntityManager em = JPAUtil.getEntityManager();
+    try {
+        em.getTransaction().begin();
+        
+        if (ec.getMisDocentes() != null && !ec.getMisDocentes().isEmpty()) {
+            List<Docente> docentesGestionados = new ArrayList<>();
+            for (Docente d : ec.getMisDocentes()) {
+                Docente dManaged = em.merge(d);
+                docentesGestionados.add(dManaged);
+            }
+            ec.getMisDocentes().clear();
+            ec.getMisDocentes().addAll(docentesGestionados);
+        }
+
+        em.persist(ec);
+        em.getTransaction().commit();
+        System.out.println(">>> [DEBUG] Transacción COMMIT ejecutada con éxito.");
+    } catch (Exception e) {
+        if (em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+        }
+        throw new Exception("Error al guardar la edición de curso: " + e.getMessage());
+    } finally {
+        em.close();
+    }
+}
     
     public EdicionCurso BuscarEdicion(String nombre){
         for(int i = 0; i < misEdiciones.size(); i++){

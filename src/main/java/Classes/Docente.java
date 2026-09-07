@@ -25,8 +25,8 @@ public class Docente extends UsuarioBase {
     
     @OneToMany(mappedBy="miDocente")
     private List<Curso> misCursos;
-    
-    @ManyToMany
+     
+    @ManyToMany(mappedBy = "misDocentes")
     private List<EdicionCurso> misEdiciones;
             
     
@@ -87,5 +87,12 @@ public class Docente extends UsuarioBase {
     public List<EdicionCurso> getEdiciones(){
         return this.misEdiciones;
     }
+    public List<EdicionCurso> getMisEdiciones() {
+    return misEdiciones;
+}
+
+public void setMisEdiciones(List<EdicionCurso> misEdiciones) {
+    this.misEdiciones = misEdiciones;
+}
     
 }

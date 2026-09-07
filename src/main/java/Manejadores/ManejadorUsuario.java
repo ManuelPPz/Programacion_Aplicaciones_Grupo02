@@ -96,20 +96,35 @@ public class ManejadorUsuario {
     }
 
     public void ModificarDatosUsuario(String nick, String nombre, String apellido, String correo, boolean docente, Date fNac, List<Instituto> institutos, String imgPath) throws IOException {
-        byte[] imgByte = null;
-        if (imgPath != null && !imgPath.trim().isEmpty()) {
-            imgByte = ConvertirImageIconToByte(imgPath);
+    byte[] imgByte = null;
+    if (imgPath != null && !imgPath.trim().isEmpty()) {
+        imgByte = ConvertirImageIconToByte(imgPath);
+    }
+
+    UsuarioBase ub = BuscarUsuario(nick);
+    if (ub != null) {
+        if (docente && ub instanceof Docente d) {
+            d.ModificarMisDatos(nombre, apellido, correo, fNac, imgByte, institutos);
+        } else if (ub instanceof Usuario u) {
+            u.ModificarMisDatos(nombre, apellido, correo, fNac, imgByte);
         }
 
-        UsuarioBase ub = BuscarUsuario(nick);
-        if (ub != null) {
-            if (docente && ub instanceof Docente d) {
-                d.ModificarMisDatos(nombre, apellido, correo, fNac, imgByte, institutos);
-            } else if (ub instanceof Usuario u) {
-                u.ModificarMisDatos(nombre, apellido, correo, fNac, imgByte);
+        // Sincronizar los cambios con JPA
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(ub);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
             }
+            System.err.println("Error al actualizar usuario en BD: " + e.getMessage());
+        } finally {
+            em.close();
         }
     }
+}
 
     public void Add(UsuarioBase ub) throws Exception {
         EntityManager em = getEntityManager();
@@ -142,14 +157,35 @@ public class ManejadorUsuario {
     }
 
     public UsuarioBase BuscarUsuario(String nickname) {
-        if (nickname == null) return null;
-        for (UsuarioBase ub : misUsuarios) {
-            if (nickname.equals(ub.getNickname())) {
-                return ub;
-            }
-        }
+    if (nickname == null || nickname.trim().isEmpty()) {
         return null;
     }
+    
+    String nickLimpio = nickname.trim();
+
+    // 1. Buscar en la colección local en RAM (insensible a mayúsculas/minúsculas)
+    for (UsuarioBase ub : misUsuarios) {
+        if (nickLimpio.equalsIgnoreCase(ub.getNickname())) {
+            return ub;
+        }
+    }
+
+    // 2. Fallback: Si no está en memoria, consultar directamente en JPA
+    EntityManager em = getEntityManager();
+    try {
+        UsuarioBase ubBD = em.find(UsuarioBase.class, nickLimpio);
+        if (ubBD != null) {
+            misUsuarios.add(ubBD); // Sincronizar memoria
+            return ubBD;
+        }
+    } catch (Exception e) {
+        System.err.println("Error al buscar usuario en BD: " + e.getMessage());
+    } finally {
+        em.close();
+    }
+
+    return null;
+}
 
     public DTUsuarioBase getDT(UsuarioBase ub) {
         if (ub == null) return null;

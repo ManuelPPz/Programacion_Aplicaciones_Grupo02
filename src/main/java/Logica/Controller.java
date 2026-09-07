@@ -129,62 +129,72 @@ public class Controller implements IController{
         return null;        
     }
     
-    //Alta Edicion Curso
-    @Override
-    public void AltaEdicionCurso(String instituto, String nomCurso, String nomEdicion, Date fInicio, Date fFin, int cupo, List<String> docentes, Date fAlta) throws Exception {
-        Instituto ins = manInstituto.BuscarInstituto(instituto);
-        Curso c = manCursos.BuscarCurso(nomCurso);
-        EdicionCurso auxEc = manEdicion.BuscarEdicion(nomEdicion);
-        
-        if(auxEc==null){
-            // 1. Crear la entidad Edición
-            List<Docente> auxListDocentes = new ArrayList<>();
-            if (docentes != null) {
-                for(int i = 0; i < docentes.size(); i++){
-                    Docente ub = (Docente)manUsuario.BuscarUsuario(docentes.get(i));
-                    if (ub != null) {
-                        auxListDocentes.add(ub);
+// Alta Edicion Curso
+@Override
+public void AltaEdicionCurso(String instituto, String nomCurso, String nomEdicion, Date fInicio, Date fFin, int cupo, List<String> docentes, Date fAlta) throws Exception {
+    
+    Instituto ins = manInstituto.BuscarInstituto(instituto);
+    Curso c = manCursos.BuscarCurso(nomCurso);
+    EdicionCurso auxEc = manEdicion.BuscarEdicion(nomEdicion);
+    
+    if (auxEc == null) {
+        List<Docente> auxListDocentes = new ArrayList<>();
+        if (docentes != null) {
+            for (String docStr : docentes) {
+                if (docStr == null || docStr.trim().isEmpty()) continue;
+
+                // 1. Extraer el nickname limpiando posibles formatos
+                String nick = docStr.trim();
+                if (nick.contains("(")) {
+                    // Formato: "Nombre Apellido (nickname)"
+                    nick = nick.substring(nick.indexOf("(") + 1, nick.indexOf(")")).trim();
+                } else if (nick.contains(":")) {
+                    // Formato: "cod: Nombre" o "Nickname: cod"
+                    nick = nick.split(":")[0].trim();
+                } else if (nick.contains("-")) {
+                    // Formato: "cod - Nombre"
+                    nick = nick.split("-")[0].trim();
+                }
+
+                // 2. Intentar buscar en el manejador directo en memoria
+                UsuarioBase ub = manUsuario.BuscarUsuario(nick);
+                
+                // 3. Fallback: Búsqueda insensible a mayúsculas/minúsculas en el listado de DTs
+                if (ub == null) {
+                    for (DTMaster dt : manUsuario.getDTList()) {
+                        if (dt instanceof DTUsuarioBase dtUser) {
+                            if (dtUser.getNickname().equalsIgnoreCase(nick)) {
+                                ub = manUsuario.BuscarUsuario(dtUser.getNickname());
+                                break;
+                            }
+                        }
                     }
                 }
-            }
-            EdicionCurso ec = manEdicion.CrearEdicion(ins, c, nomEdicion, fInicio, fFin, cupo, fAlta,auxListDocentes);
-            
-            // 2. Guardar la edición en su manejador / BD
-            manEdicion.Add(ec);
-            for(Docente d : auxListDocentes){
-                    manUsuario.AddEdicion(d, ec);
-                }
-            // 3. Vincular en memoria la nueva Edición al Curso padre
-            if (c != null) {
-                if (c.getEdiciones() == null) {
-                    // Inicialización en caso de que sea null
-                }
-                c.getEdiciones().add(ec);
-            }
-            
-           
-        }else{
-            List<Docente> auxListDocentes = new ArrayList<>();
-            if (docentes != null) {
-                for(int i = 0; i < docentes.size(); i++){
-                    Docente ub = (Docente)manUsuario.BuscarUsuario(docentes.get(i));
-                    if (ub != null) {
-                        auxListDocentes.add(ub);
-                    }
+
+                // 4. Validar que sea Instancia de Docente
+                if (ub instanceof Docente d) {
+                    auxListDocentes.add(d);
+                } else {
+                    System.err.println("[WARN] No se pudo encontrar el docente con nickname/id: '" + nick + "' (Entrada original: '" + docStr + "')");
                 }
             }
-            if(auxListDocentes!=null){
-                for(Docente d : auxEc.getMisDocentes()){
-                    manUsuario.RemoveEdicion(d, auxEc);
-                }
-                for(Docente d : auxListDocentes){
-                    manUsuario.AddEdicion(d, auxEc);
-                }
-            }
-            manEdicion.ModificarDatos(auxEc, fInicio, fFin, cupo, fAlta, auxListDocentes);
         }
+
+        // Impresión de depuración
+        System.out.println("Docentes a asociar en la edición: " + auxListDocentes.size());
+
+        // Crear la edición con la lista validada de docentes
+        EdicionCurso ec = manEdicion.CrearEdicion(ins, c, nomEdicion, fInicio, fFin, cupo, fAlta, auxListDocentes);
         
+        // Persistir en base de datos mediante el manejador
+        manEdicion.Add(ec);
+
+        // Vincular edición con el curso en memoria
+        if (c != null && c.getEdiciones() != null && !c.getEdiciones().contains(ec)) {
+            c.getEdiciones().add(ec);
+        }
     }
+}
     
     //Consulta Edicion Curso
     @Override

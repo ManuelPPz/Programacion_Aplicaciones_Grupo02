@@ -54,7 +54,7 @@ public class Curso implements Serializable {
     private List<EdicionCurso> misEdiciones = new ArrayList<>();
     
     // Mapeo bidireccional apuntando al atributo 'cursos' de ProgramaDeFormacion
-    @ManyToMany(mappedBy = "cursos")
+   @ManyToMany(mappedBy = "cursos", fetch = FetchType.EAGER)
     private List<ProgramaDeFormacion> misProgramas = new ArrayList<>();
     
     @ManyToOne
