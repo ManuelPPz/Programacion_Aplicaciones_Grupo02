@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import Classes.Curso;
 import Classes.EdicionCurso; 
 import Classes.Instituto;
+import Classes.ProgramaDeFormacion;
 import Classes.UsuarioBase;
 import DTsClasses.DTCurso;
 import DTsClasses.DTMaster;
@@ -100,6 +101,13 @@ public class ManejadorCursos {
         }
     }
     
+    
+    public void AddPrograma(ProgramaDeFormacion pdf, Curso c){
+        c.AddPrograma(pdf);
+    }
+    public void RemovePrograma(ProgramaDeFormacion pdf, Curso c){
+        c.RemovePrograma(pdf);
+    }
     public Curso BuscarCurso(String nombre){
         for(int i = 0; i < misCursos.size(); i++){
             Curso c = misCursos.get(i);

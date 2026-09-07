@@ -4,6 +4,7 @@ import Classes.EdicionCurso;
 import Classes.Instituto;
 import Classes.Curso;
 import Classes.Docente;
+import Classes.Edi_Usu;
 import Classes.UsuarioBase;
 import java.util.ArrayList;
 import java.util.Date;
@@ -112,6 +113,9 @@ public void Add(EdicionCurso ec) throws Exception {
     
     public void AddUsuario(EdicionCurso ec, Docente ub){
         ec.AddUsuarios(ub);
+    }
+    public void AddUsuarioInscripto(Edi_Usu eu){
+        eu.getId().getEdicion().AddUsuarioInscripto(eu);
     }
     
     public DTEdicionCurso getDT(EdicionCurso ec){

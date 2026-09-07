@@ -18,9 +18,9 @@ import javax.swing.table.DefaultTableModel;
  */
 public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
     IController ico;
-    List<Object[]> rowsCursos;
-    List<Object[]> rowsEdiciones;
-    List<Object[]> rowsUsuario;
+    List<Object[]> rowsCursos = new ArrayList<>();
+    List<Object[]> rowsEdiciones = new ArrayList<>();
+    List<Object[]> rowsUsuario = new ArrayList<>();
     public InscripcionEdicionCurso() {
         Fabric f = Fabric.GetInstance();
         ico = f.GetIController();
@@ -34,7 +34,9 @@ public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
         }
         //Tener lista de usuarios en la plataforma
         List<DTMaster> auxUsuarios = ico.ListarClase(EnumDT.DT_USUARIO);
+        System.out.println("auxUsaurios es: "+auxUsuarios);
         if(auxUsuarios!=null){
+            System.out.println("Estoy aca if auxUsuarios");
             auxUsuarios = OrdenarLista(auxUsuarios);
             IniciarRows(auxUsuarios);
             IniciarTable(EnumDT.DT_USUARIO);
@@ -59,26 +61,22 @@ public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
                 if(i==0){
                     rowsEdiciones = new ArrayList();
                 }
-                if(dti instanceof DTEdicionCurso){
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                    Date fAlta = dti.getFechaAlta();
-                    String fechaA = sdf.format(fAlta);
-                    Date fFin = dti.getFFin();
-                    String fechaF = sdf.format(fFin);
-                    Date fNow = new Date();
-                    if(fNow.before(fFin)){
-                        Object[] row = {dti.getNombre(),fechaA,fechaF};
-                        rowsEdiciones.add(row);
-                    }                   
-                }
-            }else if(dt instanceof DTUsuarioBase dti){
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                Date fAlta = dti.getFechaAlta();
+                String fechaA = sdf.format(fAlta);
+                Date fFin = dti.getFFin();
+                String fechaF = sdf.format(fFin);
+                Date fNow = new Date();
+                if(fNow.before(fFin)){
+                    Object[] row = {dti.getNombre(),fechaA,fechaF};
+                    rowsEdiciones.add(row);
+                }   
+            }else if(dt instanceof DTUsuario dti){
                 if(i==0){
                     rowsUsuario = new ArrayList();
                 }
-                if(dti instanceof DTUsuario){
-                    Object[] row = {dti.getNickname(),dti.getNombre(), dti.getApellido()};
-                    rowsCursos.add(row);
-                }
+                Object[] row = {dti.getNickname(),dti.getNombre(), dti.getApellido()};
+                rowsUsuario.add(row);
             }
         }
     }
@@ -95,6 +93,7 @@ public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
                         auxDT.set(j+1,temp);  
                     }
                 }else if(auxDT instanceof DTEdicionCurso){
+                    System.out.println("Estoy aca en if edicion");
                     DTEdicionCurso aux = (DTEdicionCurso)auxDT.get(j);
                     DTEdicionCurso auxJMas = (DTEdicionCurso)auxDT.get(j+1);
                     if(aux.getNombre().toLowerCase().compareTo(auxJMas.getNombre().toLowerCase()) > 0){
@@ -103,7 +102,6 @@ public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
                         auxDT.set(j+1,temp);  
                     }
                 }else if(auxDT instanceof DTUsuarioBase){
-                    if(auxDT instanceof DTUsuario){
                         DTUsuario aux = (DTUsuario)auxDT.get(j);
                         DTUsuario auxJMas = (DTUsuario)auxDT.get(j+1);
                         if(aux.getNickname().toLowerCase().compareTo(auxJMas.getNickname().toLowerCase()) > 0){
@@ -111,7 +109,6 @@ public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
                             auxDT.set(j, auxDT.get(j+1));
                             auxDT.set(j+1,temp);  
                         }
-                    }
                 }
             }
         }
@@ -144,6 +141,12 @@ public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
         DefaultTableModel modeloEdi = (DefaultTableModel) tableEdiciones.getModel();
         DefaultTableModel modeloUsu = (DefaultTableModel) tableUsuarios.getModel();
         ico.InscripcionAEdicionCurso((String)modeloEdi.getValueAt(filaEdi, 0), (String)modeloUsu.getValueAt(filaUsu, 0), (Date)spinDateIns.getValue());
+        // Mensaje de éxito
+        javax.swing.JOptionPane.showMessageDialog(this, 
+            "Usuario '" +(String)modeloUsu.getValueAt(filaUsu, 0) + "' registrado con éxito " + (String)modeloEdi.getValueAt(filaEdi, 0) +".", 
+            "Alta Exitosa", 
+            javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        this.dispose();
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

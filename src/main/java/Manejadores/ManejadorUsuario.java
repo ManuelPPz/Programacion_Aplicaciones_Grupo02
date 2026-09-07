@@ -212,8 +212,10 @@ public class ManejadorUsuario {
                         auxCur.add(c.getNombre());
                         if (c.getDocente() != null && c.getDocente().getNickname().equals(docente.getNickname())) {
                             if (c.getProgramas() != null) {
+                                
                                 for (ProgramaDeFormacion pg : c.getProgramas()) {
-                                    if (pg != null && pg.getNombre() != null) {
+                                    String auxStrPg = pg.getNombre();
+                                    if (auxStrPg!= null && !auxProg.contains(auxStrPg)) {
                                         auxProg.add(pg.getNombre());
                                     }
                                 }
@@ -251,7 +253,9 @@ public class ManejadorUsuario {
     public List<DTMaster> getDTList() {
         List<DTMaster> auxList = new ArrayList<>();
         for (UsuarioBase ub : misUsuarios) {
-            auxList.add(getDT(ub));
+            DTUsuarioBase auxDT = getDT(ub);
+            System.out.println(auxDT);
+            auxList.add(auxDT);
         }
         return auxList;
     }

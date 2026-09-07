@@ -14,8 +14,8 @@ import javax.swing.ImageIcon;
  * @author mateo
  */
 public class DTDocente extends DTUsuarioBase{
-    List<String> institutos = new ArrayList();
-    List<String> cursos = new ArrayList();
+    List<String> institutos = new ArrayList<>();
+    List<String> cursos = new ArrayList<>();
     public DTDocente(String nickname,String nombre,String apellido,String correo,Date fNac, List<String> institutos, ImageIcon img, List<String> cursos, List<String> ediciones, List<String> programas){
         super(nickname,nombre,apellido,correo,fNac,img, ediciones, programas);
         this.institutos = institutos;

@@ -49,7 +49,7 @@ public class MiniInterfazDeConsultaUsuario extends javax.swing.JInternalFrame {
         
         if(dt instanceof DTDocente){
             InfoExtraDocente ied = new InfoExtraDocente();
-            ColocarDatosEnListas(dt.getProgramas(),ied.getListCursos());
+            ColocarDatosEnListas(((DTDocente) dt).getCursos(),ied.getListCursos());
             ColocarDatosEnListas(dt.getEdiciones(),ied.getListEdiciones());
             ColocarDatosEnListas(dt.getProgramas(),ied.getListProgramas());
             
@@ -63,13 +63,17 @@ public class MiniInterfazDeConsultaUsuario extends javax.swing.JInternalFrame {
         }
     }
     private void ColocarDatosEnListas(List<String> list, JList jList){
+        jList.setModel(new DefaultListModel<>());
         DefaultListModel<String> modelo = (DefaultListModel<String>) jList.getModel();
         modelo.clear();
-        List<String> auxList = list;
-        auxList = OrdenarLista(auxList);
-        for(int i =0;i<list.size();i++){
-            modelo.addElement(auxList.get(i));
+        if(list!=null){
+            List<String> auxList = list;
+            auxList = OrdenarLista(auxList);
+            for(int i =0;i<list.size();i++){
+                modelo.addElement(auxList.get(i));
+            }
         }
+        
     }
     
     private List<String> OrdenarLista(List<String> listaParam){
