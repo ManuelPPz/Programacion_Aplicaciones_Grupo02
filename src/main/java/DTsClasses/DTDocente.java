@@ -20,4 +20,6 @@ public class DTDocente extends DTUsuarioBase{
         super(nickname,nombre,apellido,correo,fNac,img);
         this.institutos = institutos;
     }
+     public List<String> getInstitutos(){return institutos;}
 }
+
