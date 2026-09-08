@@ -4,12 +4,7 @@
  */
 package Classes;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -18,24 +13,39 @@ import java.util.Date;
  * @author mateo
  */
 @Entity
+@Table(name = "Prog_Usu")
 public class Prog_Usu implements Serializable {
 
     @EmbeddedId
     private Id_ProgUsu id;
-    @Column(name="Fecha inscripcion")
+    @Temporal(TemporalType.DATE)
+    @Column(name = "fInscripcion")
     private Date fInscripcion;
     
-    public Id_ProgUsu getId() {
-        return id;
-    }
-    public Date getFIns(){
-        return this.fInscripcion;
-    }
+    public Prog_Usu(){}
+    
     public Prog_Usu(Id_ProgUsu id, Date fIns){
         this.id = id;
         this.fInscripcion = fIns;
     }
 
+    // Getters y Setters
+    public Id_ProgUsu getId() {
+        return id;
+    }
+
+    public void setId(Id_ProgUsu id) {
+        this.id = id;
+    }
+
+    public Date getFIns() {
+        return this.fInscripcion;
+    }
+
+    public void setFIns(Date fInscripcion) {
+        this.fInscripcion = fInscripcion;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

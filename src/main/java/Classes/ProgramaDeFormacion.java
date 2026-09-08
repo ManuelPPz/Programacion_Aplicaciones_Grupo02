@@ -37,6 +37,9 @@ public class ProgramaDeFormacion implements Serializable {
         inverseJoinColumns = @JoinColumn(name = "curso_nombre")
     )
     private List<Curso> cursos;
+    // Se corrige mappedBy apuntando a la propiedad edicion de Edi_Usu
+    @OneToMany(mappedBy = "id.miEdicion", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Prog_Usu> misUsuarios = new ArrayList<>();
     // Requerido por JPA/Hibernate
 public ProgramaDeFormacion() {}
 

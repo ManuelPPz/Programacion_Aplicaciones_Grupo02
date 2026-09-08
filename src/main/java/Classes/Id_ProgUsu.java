@@ -24,17 +24,30 @@ public class Id_ProgUsu implements Serializable {
     @ManyToOne
     private ProgramaDeFormacion miPrograma;
     
-    public Usuario getUsuario() {
-        return miUsuario;
-    }
-    public ProgramaDeFormacion getPrograma(){
-        return miPrograma;
-    }
+    public Id_ProgUsu(){}
     public Id_ProgUsu(Usuario ub, ProgramaDeFormacion pdf){
         this.miUsuario = ub;
         this.miPrograma = pdf;
     }
+    
+    // Getters y Setters
+    public Usuario getUsuario() {
+        return miUsuario;
+    }
 
+    public void setUsuario(Usuario miUsuario) {
+        this.miUsuario = miUsuario;
+    }
+
+    public ProgramaDeFormacion getEdicion() {
+        return miPrograma;
+    }
+
+    public void setEdicion(ProgramaDeFormacion miEdicion) {
+        this.miPrograma = miEdicion;
+    }
+
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

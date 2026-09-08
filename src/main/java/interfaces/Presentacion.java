@@ -148,6 +148,7 @@ public class Presentacion extends javax.swing.JFrame {
         jMenu11.add(jMenuItem6);
 
         jMenuItem8.setText("Inscripcion");
+        jMenuItem8.addActionListener(this::jMenuItem8ActionPerformed);
         jMenu11.add(jMenuItem8);
 
         jMenuBar1.add(jMenu11);
@@ -334,6 +335,17 @@ public class Presentacion extends javax.swing.JFrame {
         vInscripcionEdicion.setVisible(true);
         vInscripcionEdicion.toFront();
     }//GEN-LAST:event_itemMenuInsEdiActionPerformed
+
+    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
+        InscripcionProgramaDeFormacion vInscripcionPrograma = new InscripcionProgramaDeFormacion();
+        jDesktopPane1.add(vInscripcionPrograma);
+         java.awt.Dimension desktopSize = jDesktopPane1.getSize();
+        java.awt.Dimension frameSize = vInscripcionPrograma.getSize();
+        vInscripcionPrograma.setLocation((desktopSize.width - frameSize.width) / 2, 
+                      (desktopSize.height - frameSize.height) / 2);
+        vInscripcionPrograma.setVisible(true);
+        vInscripcionPrograma.toFront();
+    }//GEN-LAST:event_jMenuItem8ActionPerformed
 
 
     /**
