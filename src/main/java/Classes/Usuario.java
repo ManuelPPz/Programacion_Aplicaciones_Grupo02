@@ -18,7 +18,8 @@ public class Usuario extends UsuarioBase {
 
     @OneToMany(mappedBy = "id.miUsuario")
     private List<Edi_Usu> misInscripciones = new ArrayList<>();
-
+    @OneToMany(mappedBy="id.miUsuario")
+    private List<Prog_Usu> misInscripcionesProg = new ArrayList<>();
     public Usuario() {
         super();
     }
@@ -38,12 +39,18 @@ public class Usuario extends UsuarioBase {
         }
         misInscripciones.add(ec);
     }
+    public void AddPrograma(Prog_Usu pu){
+        if (misInscripcionesProg == null) {
+            misInscripcionesProg = new ArrayList<>();
+        }
+        misInscripcionesProg.add(pu);
+    }
 
     public List<Edi_Usu> getMisInscripciones() {
         return this.misInscripciones;
     }
 
-    public List<Edi_Usu> getMisEdiciones() {
-        return this.misInscripciones;
+    public List<Prog_Usu> getMisInscripcionesPro() {
+        return this.misInscripcionesProg;
     }
 }

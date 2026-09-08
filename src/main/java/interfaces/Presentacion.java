@@ -56,6 +56,7 @@ public class Presentacion extends javax.swing.JFrame {
         CrearProgFormacion = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
+        jMenuItem8 = new javax.swing.JMenuItem();
         jMenu12 = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
 
@@ -145,6 +146,9 @@ public class Presentacion extends javax.swing.JFrame {
         jMenuItem6.setText("Consultar");
         jMenuItem6.addActionListener(this::jMenuItem6ActionPerformed);
         jMenu11.add(jMenuItem6);
+
+        jMenuItem8.setText("Inscripcion");
+        jMenu11.add(jMenuItem8);
 
         jMenuBar1.add(jMenu11);
 
@@ -385,6 +389,7 @@ public class Presentacion extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
+    private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JPopupMenu jPopupMenu2;
     private javax.swing.JMenuItem mConsultarUsuario;

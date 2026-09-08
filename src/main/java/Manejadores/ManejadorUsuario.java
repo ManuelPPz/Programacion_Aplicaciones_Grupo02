@@ -9,6 +9,7 @@ import Classes.Edi_Usu;
 import Classes.EdicionCurso;
 import Classes.Usuario;
 import Classes.Instituto;
+import Classes.Prog_Usu;
 import Classes.ProgramaDeFormacion;
 import Classes.UsuarioBase;
 
@@ -263,7 +264,7 @@ public class ManejadorUsuario {
     }
     /*-----------------------------------------------------------------------------------------------------*/
 
-    /*-----------------------------Funciones para la lista de ediciones de cursos del docente---------------*/
+    /*-----------------------------Funciones para la lista de ediciones de cursos de los usuarios---------------*/
     public void AddEdicion(UsuarioBase ub, EdicionCurso ec) {
         if (ub instanceof Docente docente) {
             docente.AddEdicion(ec);
@@ -282,7 +283,13 @@ public class ManejadorUsuario {
         }
     }
     /*-----------------------------------------------------------------------------------------------------*/
-
+    /*-------------------------Funciones para la lista de programas de cursos de los usuarios--------------*/
+    public void InscribirUsuarioAPrograma(Prog_Usu pu) {
+        if (pu != null && pu.getId() != null && pu.getId().getUsuario() != null) {
+            pu.getId().getUsuario().AddPrograma(pu);
+        }
+    }
+    /*-----------------------------------------------------------------------------------------------------*/
     private byte[] ConvertirImageIconToByte(String imgPath) throws IOException {
         if (imgPath == null || imgPath.trim().isEmpty()) {
             return null;

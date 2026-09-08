@@ -19,8 +19,12 @@ import Manejadores.*;
 import Classes.UsuarioBase;
 import Classes.Curso;
 import Classes.Docente;
+import Classes.Edi_Usu;
 import Classes.Instituto;
 import Classes.EdicionCurso;
+import Classes.Id_EdiUsu;
+import Classes.Id_ProgUsu;
+import Classes.Prog_Usu;
 import Classes.Usuario;
 import Classes.ProgramaDeFormacion;
 //Imports DTs
@@ -271,7 +275,23 @@ public class Controller implements IController{
         manInstituto.Add(i);
     }
     
-    
+    @Override
+    public void InscripcionUsuarioAProgramas(String nomPrograma, String nickname, Date fIns) {
+        Usuario u = (Usuario) manUsuario.BuscarUsuario(nickname);
+        ProgramaDeFormacion pdf = manProgramas.BuscarPrograma(nomPrograma);
+        Id_ProgUsu ipu = new Id_ProgUsu(u, pdf);
+        Prog_Usu pu = new Prog_Usu(ipu, fIns);
+
+        //manUsuario.InscribirUsuarioAEdicion(eu);
+/*
+        try {
+            manEdicion.AddUsuarioInscripto(eu); // Linea 220
+        } catch (Exception e) {
+            System.err.println("Error al agregar usuario inscripto: " + e.getMessage());
+            e.printStackTrace();
+        }
+*/
+    }
     //Otras Funciones
     //Verificar si existe curso con el nombre
     @Override
@@ -328,5 +348,7 @@ public class Controller implements IController{
         List<DTMaster> listReturn = manUsuario.getDTList(nomInstituto);
         return listReturn;
     }
+
+    
     
 }
