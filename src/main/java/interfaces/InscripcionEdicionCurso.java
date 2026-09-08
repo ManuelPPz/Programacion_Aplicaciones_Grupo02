@@ -46,74 +46,79 @@ public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
         
     }
     
-    private void IniciarRows(List<DTMaster> listCur){
-        for(int i = 0;i<listCur.size();i++){
-            DTMaster dt = listCur.get(i);
-            if(dt instanceof DTCurso dti){
-                if(i==0){
-                    rowsCursos = new ArrayList();
+private void IniciarRows(List<DTMaster> listCur) {
+    if (listCur == null || listCur.isEmpty()) return;
+
+    DTMaster primero = listCur.get(0);
+    if (primero instanceof DTCurso) {
+        rowsCursos = new ArrayList<>();
+    } else if (primero instanceof DTEdicionCurso) {
+        rowsEdiciones = new ArrayList<>();
+    } else if (primero instanceof DTUsuarioBase) {
+        rowsUsuario = new ArrayList<>();
+    }
+
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+    for (DTMaster dt : listCur) {
+        if (dt instanceof DTCurso dti) {
+            Object[] row = {dti.getInstituto(), dti.getNombre()};
+            rowsCursos.add(row);
+
+        } else if (dt instanceof DTEdicionCurso dti) {
+            Date fAlta = dti.getFechaAlta();
+            Date fFin = dti.getFFin();
+
+            String fechaA = (fAlta != null) ? sdf.format(fAlta) : "Sin fecha";
+            String fechaF = (fFin != null) ? sdf.format(fFin) : "Sin fecha";
+
+            Object[] row = {dti.getNombre(), fechaA, fechaF};
+            rowsEdiciones.add(row);
+
+        } else if (dt instanceof DTUsuarioBase dti) {
+            // Acepta tanto DTDocente como DTEstudiante/DTUsuario sin provocar ClassCastException
+            Object[] row = {dti.getNickname(), dti.getNombre(), dti.getApellido()};
+            rowsUsuario.add(row);
+        }
+    }
+}
+ 
+   private List<DTMaster> OrdenarLista(List<DTMaster> listaParam) {
+    if (listaParam == null || listaParam.isEmpty()) return listaParam;
+    
+    List<DTMaster> auxDT = listaParam;
+    DTMaster primerElemento = auxDT.get(0);
+
+    for (int i = 0; i < auxDT.size() - 1; i++) {
+        for (int j = 0; j < auxDT.size() - 1 - i; j++) {
+            
+            if (primerElemento instanceof DTCurso) {
+                DTCurso aux = (DTCurso) auxDT.get(j);
+                DTCurso auxJMas = (DTCurso) auxDT.get(j + 1);
+                if (aux.getInstituto().toLowerCase().compareTo(auxJMas.getInstituto().toLowerCase()) > 0) {
+                    auxDT.set(j, auxJMas);
+                    auxDT.set(j + 1, aux);
                 }
-                if(dti instanceof DTCurso){
-                    Object[] row = {dti.getInstituto(),dti.getNombre()};
-                    rowsCursos.add(row);
+            } else if (primerElemento instanceof DTEdicionCurso) {
+                DTEdicionCurso aux = (DTEdicionCurso) auxDT.get(j);
+                DTEdicionCurso auxJMas = (DTEdicionCurso) auxDT.get(j + 1);
+                if (aux.getNombre().toLowerCase().compareTo(auxJMas.getNombre().toLowerCase()) > 0) {
+                    auxDT.set(j, auxJMas);
+                    auxDT.set(j + 1, aux);
                 }
-            }else if(dt instanceof DTEdicionCurso dti){
-                if(i==0){
-                    rowsEdiciones = new ArrayList();
+            } else if (primerElemento instanceof DTUsuarioBase) { 
+                // Castear a DTUsuarioBase (clase padre de DTDocente y DTEstudiante/DTUsuario)
+                DTUsuarioBase aux = (DTUsuarioBase) auxDT.get(j);
+                DTUsuarioBase auxJMas = (DTUsuarioBase) auxDT.get(j + 1);
+                if (aux.getNickname().toLowerCase().compareTo(auxJMas.getNickname().toLowerCase()) > 0) {
+                    auxDT.set(j, auxJMas);
+                    auxDT.set(j + 1, aux);
                 }
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                Date fAlta = dti.getFechaAlta();
-                String fechaA = sdf.format(fAlta);
-                Date fFin = dti.getFFin();
-                String fechaF = sdf.format(fFin);
-                Date fNow = new Date();
-                if(fNow.before(fFin)){
-                    Object[] row = {dti.getNombre(),fechaA,fechaF};
-                    rowsEdiciones.add(row);
-                }   
-            }else if(dt instanceof DTUsuario dti){
-                if(i==0){
-                    rowsUsuario = new ArrayList();
-                }
-                Object[] row = {dti.getNickname(),dti.getNombre(), dti.getApellido()};
-                rowsUsuario.add(row);
             }
         }
     }
-    private List<DTMaster> OrdenarLista(List<DTMaster> listaParam){
-        List<DTMaster> auxDT = listaParam;
-        for(int i = 0;i<auxDT.size()-1;i++){
-            for(int j = 0;j<auxDT.size()-1;j++){
-                if(auxDT instanceof DTCurso){
-                    DTCurso aux = (DTCurso)auxDT.get(j);
-                    DTCurso auxJMas = (DTCurso)auxDT.get(j+1);
-                    if(aux.getInstituto().toLowerCase().compareTo(auxJMas.getInstituto().toLowerCase()) > 0){
-                        DTCurso temp = aux;
-                        auxDT.set(j, auxDT.get(j+1));
-                        auxDT.set(j+1,temp);  
-                    }
-                }else if(auxDT instanceof DTEdicionCurso){
-                    System.out.println("Estoy aca en if edicion");
-                    DTEdicionCurso aux = (DTEdicionCurso)auxDT.get(j);
-                    DTEdicionCurso auxJMas = (DTEdicionCurso)auxDT.get(j+1);
-                    if(aux.getNombre().toLowerCase().compareTo(auxJMas.getNombre().toLowerCase()) > 0){
-                        DTEdicionCurso temp = aux;
-                        auxDT.set(j, auxDT.get(j+1));
-                        auxDT.set(j+1,temp);  
-                    }
-                }else if(auxDT instanceof DTUsuarioBase){
-                        DTUsuario aux = (DTUsuario)auxDT.get(j);
-                        DTUsuario auxJMas = (DTUsuario)auxDT.get(j+1);
-                        if(aux.getNickname().toLowerCase().compareTo(auxJMas.getNickname().toLowerCase()) > 0){
-                            DTUsuario temp = aux;
-                            auxDT.set(j, auxDT.get(j+1));
-                            auxDT.set(j+1,temp);  
-                        }
-                }
-            }
-        }
-        return auxDT;
-    }
+    return auxDT;
+}
     
     private void IniciarTable(EnumDT enumType){
         if(enumType == EnumDT.DT_CURSO){

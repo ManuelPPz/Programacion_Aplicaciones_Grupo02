@@ -19,8 +19,10 @@ import Manejadores.*;
 import Classes.UsuarioBase;
 import Classes.Curso;
 import Classes.Docente;
+import Classes.Edi_Usu;
 import Classes.Instituto;
 import Classes.EdicionCurso;
+import Classes.Id_EdiUsu;
 import Classes.Usuario;
 import Classes.ProgramaDeFormacion;
 //Imports DTs
@@ -209,10 +211,21 @@ public void AltaEdicionCurso(String instituto, String nomCurso, String nomEdicio
     
     //Inscripcion a Edicion Curso
     @Override
-    public void InscripcionAEdicionCurso(String nomCurso, String nickname, Date fIns){
-        Usuario u = (Usuario)manUsuario.BuscarUsuario(nickname);
-        EdicionCurso ec = manEdicion.BuscarEdicion(nomCurso);
+  public void InscripcionAEdicionCurso(String nomCurso, String nickname, Date fIns) {
+    Usuario u = (Usuario) manUsuario.BuscarUsuario(nickname);
+    EdicionCurso ec = manEdicion.BuscarEdicion(nomCurso);
+    Id_EdiUsu ieu = new Id_EdiUsu(u, ec);
+    Edi_Usu eu = new Edi_Usu(ieu, fIns);
+    
+    manUsuario.InscribirUsuarioAEdicion(eu);
+
+    try {
+        manEdicion.AddUsuarioInscripto(eu); // Linea 220
+    } catch (Exception e) {
+        System.err.println("Error al agregar usuario inscripto: " + e.getMessage());
+        e.printStackTrace();
     }
+}
     
     //Crear Programa de Formacion (Versión por parámetros sueltos)
     @Override
@@ -231,10 +244,18 @@ public void AltaEdicionCurso(String instituto, String nomCurso, String nomEdicio
     @Override
     public void AgregarCursoAProgramas(String nomPrograma, List<String> cursos){
         ProgramaDeFormacion pdf = manProgramas.BuscarPrograma(nomPrograma);
-        for(int i = 0;i<cursos.size();i++){
-            Curso c = manCursos.BuscarCurso(cursos.get(i));
-            manProgramas.AddCurso(pdf, c);
-        }
+            if (pdf != null && cursos != null) {
+             for (String nomCurso : cursos) {
+                 Curso c = manCursos.BuscarCurso(nomCurso);
+                 if (c != null) {
+                // 1. Agrega el curso al programa
+                manProgramas.AddCurso(pdf, c); 
+                
+                // 2. CRUCIAL: Vincula el programa dentro del curso en memoria RAM
+                c.AddPrograma(pdf); 
+            }
+             }
+         }
     }
     
     //Consulta Programa de Formacion

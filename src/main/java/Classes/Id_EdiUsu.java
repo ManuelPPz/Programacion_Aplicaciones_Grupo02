@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Classes;
 
 import jakarta.persistence.*;
@@ -9,25 +5,43 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- *
  * @author mateo
  */
 @Embeddable
 public class Id_EdiUsu implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @ManyToOne
     public Usuario miUsuario;
+
     @ManyToOne
     public EdicionCurso miEdicion;
+
+    // 1. Constructor vacio OBLIGATORIO para JPA
+    public Id_EdiUsu() {}
+
+    // 2. Constructor con parametros
+    public Id_EdiUsu(Usuario ub, EdicionCurso ec) {
+        this.miUsuario = ub;
+        this.miEdicion = ec;
+    }
+
+    // Getters y Setters
     public Usuario getUsuario() {
         return miUsuario;
     }
-    public EdicionCurso getEdicion(){
+
+    public void setUsuario(Usuario miUsuario) {
+        this.miUsuario = miUsuario;
+    }
+
+    public EdicionCurso getEdicion() {
         return miEdicion;
     }
-    public Id_EdiUsu(Usuario ub, EdicionCurso ec){
-        this.miUsuario = ub;
-        this.miEdicion = ec;
+
+    public void setEdicion(EdicionCurso miEdicion) {
+        this.miEdicion = miEdicion;
     }
 
     @Override
@@ -43,5 +57,4 @@ public class Id_EdiUsu implements Serializable {
     public int hashCode() {
         return Objects.hash(miUsuario, miEdicion);
     }
-    
 }

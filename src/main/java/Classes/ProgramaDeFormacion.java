@@ -55,12 +55,25 @@ public ProgramaDeFormacion() {}
     }
     
     
-    public void AddCurso(Curso c){
-        cursos.add(c);
+public void AddCurso(Curso c){
+    if (c != null) {
+        if (this.cursos == null) {
+            this.cursos = new ArrayList<>();
+        }
+        if (!this.cursos.contains(c)) {
+            this.cursos.add(c);
+            c.AddPrograma(this); // OBLIGATORIO: Actualiza la referencia en el Curso
+        }
     }
-    public void RemoveCurso(Curso c){
-        cursos.remove(c);
+}
+
+public void RemoveCurso(Curso c){
+    if (c != null && this.cursos != null) {
+        if (this.cursos.remove(c)) {
+            c.RemovePrograma(this); // Sincroniza también al remover
+        }
     }
+}
     
     
     public String getNombre() {

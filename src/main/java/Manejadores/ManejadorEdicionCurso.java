@@ -5,6 +5,7 @@ import Classes.Instituto;
 import Classes.Curso;
 import Classes.Docente;
 import Classes.Edi_Usu;
+import Classes.Usuario;
 import Classes.UsuarioBase;
 import java.util.ArrayList;
 import java.util.Date;
@@ -114,10 +115,36 @@ public void Add(EdicionCurso ec) throws Exception {
     public void AddUsuario(EdicionCurso ec, Docente ub){
         ec.AddUsuarios(ub);
     }
-    public void AddUsuarioInscripto(Edi_Usu eu){
-        eu.getId().getEdicion().AddUsuarioInscripto(eu);
+public void AddUsuarioInscripto(Edi_Usu eu) throws Exception {
+        if (eu == null || eu.getId() == null) {
+            return;
+        }
+
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+
+            // 1. Guardar/Actualizar la entidad de asociación en la BD
+            Edi_Usu euManaged = em.merge(eu);
+
+            // 2. Sincronizar el modelo en memoria RAM
+            if (eu.getId().getEdicion() != null) {
+                eu.getId().getEdicion().AddUsuarioInscripto(euManaged);
+            }
+
+            em.getTransaction().commit();
+            System.out.println(">>> [DEBUG] Inscripción registrada con éxito.");
+
+        } catch (Exception e) {
+            if (em.getTransaction() != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            e.printStackTrace();
+            throw new Exception("Error al guardar la inscripción: " + e.getMessage());
+        } finally {
+            em.close();
+        }
     }
-    
     public DTEdicionCurso getDT(EdicionCurso ec){
         DTEdicionCurso auxDT;
         String ins = (ec.getInstituto() != null) ? ec.getInstituto().getNombre() : "";

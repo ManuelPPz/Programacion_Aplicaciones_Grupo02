@@ -5,22 +5,42 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
+@Table(name = "Edi_Usu")
 public class Edi_Usu implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @EmbeddedId
     private Id_EdiUsu id;
-    @Column(name="Fecha inscripcion")
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "fInscripcion")
     private Date fInscripcion;
-    
+
+    // 1. Constructor por defecto (OBLIGATORIO para JPA)
+    public Edi_Usu() {}
+
+    // 2. Constructor con parámetros
+    public Edi_Usu(Id_EdiUsu id, Date fIns) {
+        this.id = id;
+        this.fInscripcion = fIns;
+    }
+
+    // Getters y Setters
     public Id_EdiUsu getId() {
         return id;
     }
-    public Date getFIns(){
+
+    public void setId(Id_EdiUsu id) {
+        this.id = id;
+    }
+
+    public Date getFIns() {
         return this.fInscripcion;
     }
-    public Edi_Usu(Id_EdiUsu id, Date fIns){
-        this.id = id;
-        this.fInscripcion = fIns;
+
+    public void setFIns(Date fInscripcion) {
+        this.fInscripcion = fInscripcion;
     }
 
     @Override
@@ -32,7 +52,6 @@ public class Edi_Usu implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Edi_Usu)) {
             return false;
         }
@@ -47,5 +66,4 @@ public class Edi_Usu implements Serializable {
     public String toString() {
         return "Classes.Edi_Usu[ id=" + id + " ]";
     }
-    
 }
