@@ -89,20 +89,20 @@ public class Controller implements IController{
     //Modificar Datos Usuario
     @Override
     public void ModificarUsuario(String nickname, String newNombre, String newApellido, String newCorreo,boolean docente, Date newFechaNac, List<String> institutos, String imgPath){
-        
-        List<Instituto> auxInstituto = new ArrayList<>();
+       List<Instituto> auxInstituto = new ArrayList();
         if(institutos!=null){
             for(int i = 0;i<institutos.size();i++){
                 auxInstituto.add(manInstituto.BuscarInstituto(institutos.get(i)));
             }
         }
+        
+        
         try {
-            manUsuario.ModificarDatosUsuario(nickname, newNombre, newApellido, newCorreo, true, newFechaNac, auxInstituto, imgPath);
+            manUsuario.ModificarDatosUsuario(nickname, newNombre, newApellido, newCorreo, docente, newFechaNac, auxInstituto, imgPath);
         } catch (IOException ex) {
             System.out.print("No se puedo modificar los datos");
         }
     }
-    
     //Alta Curso
     @Override
     public void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso, String docente) throws Exception {

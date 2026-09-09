@@ -15,7 +15,7 @@
     </properties>
     
     <name>proyecto_pda_grupo02</name>
-    
+
     <dependencies>
         <dependency>
             <groupId>com.mysql</groupId>
@@ -32,6 +32,13 @@
 
     <build>
         <plugins>
+            <!-- Plugin para compilar con Java 21 y preview features -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+            </plugin>
+
             <!-- Plugin para empaquetar todas las dependencias dentro del ejecutable -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
