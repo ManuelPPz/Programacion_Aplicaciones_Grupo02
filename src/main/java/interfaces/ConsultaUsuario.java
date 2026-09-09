@@ -97,14 +97,6 @@ public class ConsultaUsuario extends javax.swing.JInternalFrame {
         micu.toFront();
         micu.ColocarDatos(dt);
         
-        micu.addInternalFrameListener(new javax.swing.event.InternalFrameAdapter() {
-        @Override
-        public void internalFrameClosed(javax.swing.event.InternalFrameEvent e) {
-            // Cuando la ventana de edición se cierra, recargamos la tabla
-            RecargarDatosTabla();
-        }
-    });
-        
     }
     
     
@@ -227,37 +219,6 @@ public class ConsultaUsuario extends javax.swing.JInternalFrame {
             sorter.setRowFilter(RowFilter.regexFilter("(?i)" + texto, valorPorCualBuscar));
         }
     }
-public void RecargarDatosTabla() {
-    System.out.println("--- INICIANDO RECARGA DE TABLA ---");
-
-    // 1. Volvemos a pedir la lista al controlador
-    List<DTMaster> listUsuario = ico.ListarClase(EnumDT.DT_USUARIO);
-    
-    // 2. La ordenamos
-    listUsuario = OrdenarLista(listUsuario);
-    
-    // 3. Forzamos la creación de una nueva lista de filas vacía
-    rows = new ArrayList(); 
-    IniciarRows(listUsuario);
-    
-    // 4. Llenamos el modelo de la tabla
-    DefaultTableModel modelo = (DefaultTableModel) tableUsuario.getModel();
-    modelo.setRowCount(0); // Borra las filas visuales viejas
-    
-    for(int i = 0; i < rows.size(); i++){
-        modelo.addRow(rows.get(i));
-    }
-    
-    // 5. FORZAR LA ACTUALIZACIÓN VISUAL DE SWING
-    modelo.fireTableDataChanged();
-    tableUsuario.repaint();
-    tableUsuario.revalidate();
-    
-    // 6. Volver a aplicar el filtro por si había algo escrito en el buscador
-    FiltrarUsuarios();
-    
-    System.out.println("--- RECARGA FINALIZADA --- Filas mostradas: " + tableUsuario.getRowCount());
-}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> boxTipoBusqueda;
