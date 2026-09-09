@@ -1,6 +1,7 @@
 package Manejadores;
 
 import Classes.Curso;
+import Classes.Prog_Usu;
 import Classes.ProgramaDeFormacion;
 import DTsClasses.DTMaster;
 import DTsClasses.DTProgramaForm;
@@ -75,7 +76,6 @@ public class ManejadorProgramasDeFormacion {
     
     public void Add(ProgramaDeFormacion pdf){
         misProgramas.add(pdf);
-        
         EntityManager em = JPAUtil.getEntityManager();
         try {
             em.getTransaction().begin();
@@ -86,6 +86,37 @@ public class ManejadorProgramasDeFormacion {
                 em.getTransaction().rollback();
             }
             throw new RuntimeException("Error al guardar el programa: " + e.getMessage(), e);
+        } finally {
+            em.close();
+        }
+    }
+    
+    public void AddUsuarioInscripto(Prog_Usu pu) throws Exception {
+        if (pu == null || pu.getId() == null) {
+            return;
+        }
+
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+
+            // 1. Guardar/Actualizar la entidad de asociación en la BD
+            Prog_Usu euManaged = em.merge(pu);
+
+            // 2. Sincronizar el modelo en memoria RAM
+            if (pu.getId().getPrograma() != null) {
+                pu.getId().getPrograma().AddUsuarioInscripto(euManaged);
+            }
+
+            em.getTransaction().commit();
+            System.out.println(">>> [DEBUG] Inscripción registrada con éxito.");
+
+        } catch (Exception e) {
+            if (em.getTransaction() != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            e.printStackTrace();
+            throw new Exception("Error al guardar la inscripción: " + e.getMessage());
         } finally {
             em.close();
         }
@@ -118,8 +149,12 @@ public class ManejadorProgramasDeFormacion {
             Curso cMerged = em.find(Curso.class, c.getNombre());
             
             if (pdfMerged != null && cMerged != null) {
+                // Sincronizar bidireccionalmente en las entidades gestionadas por JPA
                 pdfMerged.AddCurso(cMerged);
+                cMerged.AddPrograma(pdfMerged);
+
                 em.merge(pdfMerged);
+                em.merge(cMerged);
             }
             
             em.getTransaction().commit();
@@ -131,6 +166,10 @@ public class ManejadorProgramasDeFormacion {
         } finally {
             em.close();
         }
+        // 2. CRUCIAL: Sincronizar AMBOS objetos en la memoria RAM local (fuera del EM)
+        // Para que los Manejadores en memoria vean los cambios AL INSTANTE
+        pdf.AddCurso(c);
+        c.AddPrograma(pdf);
     }
     
     public DTProgramaForm getDT(ProgramaDeFormacion pdf){

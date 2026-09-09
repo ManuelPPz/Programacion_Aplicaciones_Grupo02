@@ -374,12 +374,34 @@ if (dtc != null) {
     private void listEdiCursosValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listEdiCursosValueChanged
         //Logica ventana de consulta de edicion de curso
         //Este mensaje es de prueba para mostrar como se pide el valor que se toco
+        /*
+        Posible solucion
+        String nombre = listEdiciones.getSelectedValue();
+            DTMaster dt = ico.ConsultaEdicionCurso(nombre);
+            MiniInterfazDeEdicionDeCurso miec = new MiniInterfazDeEdicionDeCurso();
+            this.getDesktopPane().add(miec);
+            miec.setTitle("(Info) " + nombre);
+            miec.ColocarDatos(dt);
+            miec.setVisible(true);
+            miec.toFront();
+        */
         javax.swing.JOptionPane.showMessageDialog(this, listEdiCursos.getSelectedValue(), "System",javax.swing.JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_listEdiCursosValueChanged
 
     private void listProgFormacionValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listProgFormacionValueChanged
         //Logica ventana de consulta de edicion de curso
         //Este mensaje es de prueba para mostrar como se pide el valor que se toco
+        /*
+        Posible solucion
+        String nombre = listProgFormacion.getSelectedValue();
+            DTMaster dt = ico.ConsultaProgramaFormacion(nombre);
+            MiniInterfazDeProgramas mip = new MiniInterfazDeProgramas();
+            this.getDesktopPane().add(mip);
+            mip.setTitle("(Info) " + nombre);
+            mip.ColocarDatos(dt);
+            mip.setVisible(true);
+            mip.toFront();
+        */
         javax.swing.JOptionPane.showMessageDialog(this, listProgFormacion.getSelectedValue(), "System",javax.swing.JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_listProgFormacionValueChanged
 

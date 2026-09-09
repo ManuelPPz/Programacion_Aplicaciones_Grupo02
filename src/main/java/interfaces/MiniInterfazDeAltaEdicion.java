@@ -9,11 +9,13 @@ import DTsClasses.DTDocente;
 import DTsClasses.DTMaster;
 import Logica.Fabric;
 import Logica.IController;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.SpinnerDateModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
@@ -63,7 +65,7 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
             for (DTMaster dt : auxList) {
                 if (dt instanceof DTDocente dTDocente) {
                     // Muestra Nickname - Nombre completo
-                    String etiqueta = dTDocente.getNickname() + " (" + dTDocente.getNombre() + ")";
+                    String etiqueta = dTDocente.getNombre()+ " (" + dTDocente.getNickname()+ ")";
                     Object[] fila = new Object[]{ etiqueta, Boolean.FALSE };
                     modelo.addRow(fila);
                 }
@@ -88,6 +90,7 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
         jLabel14 = new javax.swing.JLabel();
         checkCupo = new javax.swing.JCheckBox();
         spinnerCupo = new javax.swing.JSpinner();
+        
         jScrollPane7 = new javax.swing.JScrollPane();
         tableDocentes = new javax.swing.JTable();
         jLabel15 = new javax.swing.JLabel();
@@ -97,6 +100,8 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
         fieldInstituto = new javax.swing.JTextField();
         fieldCurso = new javax.swing.JTextField();
 
+        
+        
         jLabel5.setText("jLabel5");
 
         setClosable(true);
@@ -172,10 +177,19 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
         fieldInstituto.setEditable(false);
         fieldInstituto.setBackground(new java.awt.Color(255, 255, 255));
         fieldInstituto.setText("jTextField1");
-
+        fieldInstituto.setFocusable(false);
+        Dimension tamFijo = new Dimension(64,22);
+        fieldInstituto.setPreferredSize(tamFijo);
+        fieldInstituto.setMinimumSize(tamFijo);
+        fieldInstituto.setMaximumSize(tamFijo);
+        
         fieldCurso.setEditable(false);
         fieldCurso.setBackground(new java.awt.Color(255, 255, 255));
         fieldCurso.setText("jTextField2");
+        fieldCurso.setFocusable(false);
+        fieldCurso.setPreferredSize(tamFijo);
+        fieldCurso.setMinimumSize(tamFijo);
+        fieldCurso.setMaximumSize(tamFijo);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -271,6 +285,20 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
 
     private void checkCupoStateChanged(javax.swing.event.ChangeEvent evt) {                                       
         spinnerCupo.setVisible(checkCupo.isSelected());
+        Dimension dSpinner = new Dimension(30,22);
+        spinnerCupo.setModel(new SpinnerNumberModel(1, 1, null, 1));
+        spinnerCupo.setPreferredSize(dSpinner);
+        spinnerCupo.setMinimumSize(dSpinner);
+        spinnerCupo.setMaximumSize(dSpinner);
+        
+        Dimension tamFijo = new Dimension(64,22);
+        fieldInstituto.setPreferredSize(tamFijo);
+        fieldInstituto.setMinimumSize(tamFijo);
+        fieldInstituto.setMaximumSize(tamFijo);
+        
+        fieldCurso.setPreferredSize(tamFijo);
+        fieldCurso.setMinimumSize(tamFijo);
+        fieldCurso.setMaximumSize(tamFijo);
     }                                      
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {                                           
@@ -292,7 +320,19 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
             Object isSelected = tableDocentes.getValueAt(i, 1);
             if (isSelected != null && (Boolean) isSelected) {
                 String docenteNick = (String) tableDocentes.getValueAt(i, 0);
-                auxDocentes.add(docenteNick);
+                // 1. Extraer el nickname limpiando posibles formatos
+                String nick = docenteNick.trim();
+                if (nick.contains("(")) {
+                    // Formato: "Nombre Apellido (nickname)"
+                    nick = nick.substring(nick.indexOf("(") + 1, nick.indexOf(")")).trim();
+                } else if (nick.contains(":")) {
+                    // Formato: "cod: Nombre" o "Nickname: cod"
+                    nick = nick.split(":")[0].trim();
+                } else if (nick.contains("-")) {
+                    // Formato: "cod - Nombre"
+                    nick = nick.split("-")[0].trim();
+                }
+                auxDocentes.add(nick);
             }
         }
 

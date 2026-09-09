@@ -47,25 +47,27 @@ public class MiniInterfazDeConsultaUsuario extends javax.swing.JInternalFrame {
         
         
         
-        if(dt instanceof DTDocente){
+        if(dt instanceof DTDocente dti){
             InfoExtraDocente ied = new InfoExtraDocente();
-            ColocarDatosEnListas(dt.getProgramas(),ied.getListCursos());
-            ColocarDatosEnListas(dt.getEdiciones(),ied.getListEdiciones());
-            ColocarDatosEnListas(dt.getProgramas(),ied.getListProgramas());
+            ColocarDatosEnListas(dti.getCursos(),ied.getListCursos());
+            ColocarDatosEnListas(dti.getEdiciones(),ied.getListEdiciones());
+            ColocarDatosEnListas(dti.getProgramas(),ied.getListProgramas());
             
             MostrarPanelInfoExtra(ied);
-        }else{
+        }else if(dt instanceof DTUsuario dtu){
             InfoExtraUsuario ieu = new InfoExtraUsuario();
-            ColocarDatosEnListas(dt.getEdiciones(),ieu.getListEdiciones());
-            ColocarDatosEnListas(dt.getProgramas(),ieu.getListProgramas());
+            ColocarDatosEnListas(dtu.getEdiciones(),ieu.getListEdiciones());
+            ColocarDatosEnListas(dtu.getProgramas(),ieu.getListProgramas());
             MostrarPanelInfoExtra(ieu);
             
         }
     }
     private void ColocarDatosEnListas(List<String> list, JList jList){
-        DefaultListModel<String> modelo = (DefaultListModel<String>) jList.getModel();
+        DefaultListModel<String> modelo = new DefaultListModel<>();
+        jList.setModel(modelo);
         modelo.clear();
         List<String> auxList = list;
+        System.out.println(auxList);
         auxList = OrdenarLista(auxList);
         for(int i =0;i<list.size();i++){
             modelo.addElement(auxList.get(i));

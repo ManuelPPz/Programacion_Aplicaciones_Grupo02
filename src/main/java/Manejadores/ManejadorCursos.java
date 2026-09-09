@@ -48,6 +48,12 @@ public class ManejadorCursos {
                 ).setParameter("cursos", resultados)
                  .getResultList();
             }
+            if (!resultados.isEmpty()) {
+                resultados = em.createQuery(
+                    "SELECT DISTINCT c FROM Curso c LEFT JOIN FETCH c.misProgramas WHERE c IN :cursos", Curso.class
+                ).setParameter("cursos", resultados)
+                 .getResultList();
+            }
 
             em.getTransaction().commit();
 

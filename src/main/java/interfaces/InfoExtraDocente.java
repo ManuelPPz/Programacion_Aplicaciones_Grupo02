@@ -4,6 +4,9 @@
  */
 package interfaces;
 
+import DTsClasses.DTMaster;
+import Logica.Fabric;
+import Logica.IController;
 import javax.swing.JList;
 
 /**
@@ -12,10 +15,10 @@ import javax.swing.JList;
  */
 public class InfoExtraDocente extends javax.swing.JPanel {
 
-    /**
-     * Creates new form InfoExtraDocente
-     */
+    IController ico;
     public InfoExtraDocente() {
+        Fabric f = Fabric.GetInstance();
+        ico = f.GetIController();
         initComponents();
     }
     public JList getListCursos(){
@@ -98,15 +101,82 @@ public class InfoExtraDocente extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void listCursosValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listCursosValueChanged
-        //ConsultaCurso
+        if (!evt.getValueIsAdjusting()) {
+
+            String nombre = listCursos.getSelectedValue();
+
+            if (nombre != null) {
+                DTMaster dt = ico.ConsultaCurso(nombre);
+                MiniInterfazDeConsultaCurso micc = new MiniInterfazDeConsultaCurso();
+
+                javax.swing.JDesktopPane desktop = (javax.swing.JDesktopPane) 
+                    javax.swing.SwingUtilities.getAncestorOfClass(javax.swing.JDesktopPane.class, this);
+
+                if (desktop != null) {
+                    desktop.add(micc);
+                    micc.setTitle("(Info) " + nombre);
+                    micc.ColocarDatos(dt);
+                    micc.setVisible(true);
+                    micc.toFront();
+                }
+            }
+        }
     }//GEN-LAST:event_listCursosValueChanged
 
     private void listEdicionesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listEdicionesValueChanged
         //Consulta Ediciones
+        /*
+        Posible Solucion
+        if (!evt.getValueIsAdjusting()) {
+
+            String nombre = listEdiciones.getSelectedValue();
+
+            if (nombre != null) {
+                DTMaster dt = ico.ConsultaEdicionCurso(nombre);
+                MiniInterfazDeEdicionDeCurso miec = new MiniInterfazDeEdicionDeCurso();
+
+                javax.swing.JDesktopPane desktop = (javax.swing.JDesktopPane) 
+                    javax.swing.SwingUtilities.getAncestorOfClass(javax.swing.JDesktopPane.class, this);
+
+                if (desktop != null) {
+                    desktop.add(miec);
+                    miec.setTitle("(Info) " + nombre);
+                    miec.ColocarDatos(dt);
+                    miec.setVisible(true);
+                    miec.toFront();
+                }
+            }
+        }
+        
+        */
     }//GEN-LAST:event_listEdicionesValueChanged
 
     private void listProgramasValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listProgramasValueChanged
         //Consulta Programas de Formacion
+        /*
+        Posible Solucion
+        if (!evt.getValueIsAdjusting()) {
+
+            String nombre = listProgramas.getSelectedValue();
+
+            if (nombre != null) {
+                DTMaster dt = ico.ConsultaProgramaFormacion(nombre);
+                MiniInterfazDeProgramas mip = new MiniInterfazDeProgramas();
+
+                javax.swing.JDesktopPane desktop = (javax.swing.JDesktopPane) 
+                    javax.swing.SwingUtilities.getAncestorOfClass(javax.swing.JDesktopPane.class, this);
+
+                if (desktop != null) {
+                    desktop.add(mip);
+                    mip.setTitle("(Info) " + nombre);
+                    mip.ColocarDatos(dt);
+                    mip.setVisible(true);
+                    mip.toFront();
+                }
+            }
+        }
+        
+        */
     }//GEN-LAST:event_listProgramasValueChanged
 
 

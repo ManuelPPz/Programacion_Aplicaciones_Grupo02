@@ -4,11 +4,12 @@
  */
 package Classes;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 /**
  * @author mateo
@@ -16,10 +17,13 @@ import java.util.List;
 @Entity
 public class Usuario extends UsuarioBase {
 
-    @OneToMany(mappedBy = "id.miUsuario")
-    private List<Edi_Usu> misInscripciones = new ArrayList<>();
-    @OneToMany(mappedBy="id.miUsuario")
-    private List<Prog_Usu> misInscripcionesProg = new ArrayList<>();
+    @OneToMany(mappedBy = "id.miUsuario", fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT) 
+    private List<Edi_Usu> misInscripciones;
+    
+    @OneToMany(mappedBy = "id.miUsuario", fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
+    private List<Prog_Usu> misInscripcionesProg;
     public Usuario() {
         super();
     }

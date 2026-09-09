@@ -28,7 +28,7 @@ public class Curso implements Serializable {
     @JoinColumn(name="Instituto")
     private Instituto miInstituto;
     
-    @Column(name="Descripcion")
+    @Column(name="Descripcion",length = 750)
     private String descripcion;
     
     @Column(name="Duracion")
@@ -54,7 +54,7 @@ public class Curso implements Serializable {
     private List<EdicionCurso> misEdiciones = new ArrayList<>();
     
     // Mapeo bidireccional apuntando al atributo 'cursos' de ProgramaDeFormacion
-    @ManyToMany(mappedBy = "cursos")
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<ProgramaDeFormacion> misProgramas = new ArrayList<>();
     
     @ManyToOne

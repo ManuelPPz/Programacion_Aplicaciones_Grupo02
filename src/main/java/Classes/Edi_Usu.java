@@ -21,6 +21,7 @@ public class Edi_Usu implements Serializable {
     public Date getFIns(){
         return this.fInscripcion;
     }
+    public Edi_Usu(){}
     public Edi_Usu(Id_EdiUsu id, Date fIns){
         this.id = id;
         this.fInscripcion = fIns;

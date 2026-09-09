@@ -25,6 +25,7 @@ public class Id_EdiUsu implements Serializable {
     public EdicionCurso getEdicion(){
         return miEdicion;
     }
+    public Id_EdiUsu(){}
     public Id_EdiUsu(Usuario ub, EdicionCurso ec){
         this.miUsuario = ub;
         this.miEdicion = ec;

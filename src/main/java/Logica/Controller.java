@@ -78,6 +78,7 @@ public class Controller implements IController{
     @Override
     public DTUsuarioBase ConsultarUsuario(String nickname){
         UsuarioBase auxUsuario = manUsuario.BuscarUsuario(nickname);
+        
         if(auxUsuario!=null){
             DTUsuarioBase auxDT = manUsuario.getDT(auxUsuario);
             return auxDT;
@@ -139,7 +140,7 @@ public class Controller implements IController{
         Instituto ins = manInstituto.BuscarInstituto(instituto);
         Curso c = manCursos.BuscarCurso(nomCurso);
         EdicionCurso auxEc = manEdicion.BuscarEdicion(nomEdicion);
-        
+        System.out.println("Los docentes son: "+docentes);
         if(auxEc==null){
             // 1. Crear la entidad Edición
             List<Docente> auxListDocentes = new ArrayList<>();
@@ -147,6 +148,7 @@ public class Controller implements IController{
                 for(int i = 0; i < docentes.size(); i++){
                     Docente ub = (Docente)manUsuario.BuscarUsuario(docentes.get(i));
                     if (ub != null) {
+                        
                         auxListDocentes.add(ub);
                     }
                 }
@@ -154,10 +156,10 @@ public class Controller implements IController{
             EdicionCurso ec = manEdicion.CrearEdicion(ins, c, nomEdicion, fInicio, fFin, cupo, fAlta,auxListDocentes);
             
             // 2. Guardar la edición en su manejador / BD
-            manEdicion.Add(ec);
+            
             for(Docente d : auxListDocentes){
-                    manUsuario.AddEdicion(d, ec);
-                }
+                manUsuario.AddEdicion(d, ec);
+            }
             // 3. Vincular en memoria la nueva Edición al Curso padre
             if (c != null) {
                 if (c.getEdiciones() == null) {
@@ -165,7 +167,7 @@ public class Controller implements IController{
                 }
                 c.getEdiciones().add(ec);
             }
-            
+            manEdicion.Add(ec);
            
         }else{
             List<Docente> auxListDocentes = new ArrayList<>();
@@ -206,6 +208,17 @@ public class Controller implements IController{
     public void InscripcionAEdicionCurso(String nomCurso, String nickname, Date fIns){
         Usuario u = (Usuario)manUsuario.BuscarUsuario(nickname);
         EdicionCurso ec = manEdicion.BuscarEdicion(nomCurso);
+        Id_EdiUsu ieu = new Id_EdiUsu(u, ec);
+        Edi_Usu eu = new Edi_Usu(ieu, fIns);
+
+        manUsuario.InscribirUsuarioAEdicion(eu);
+
+        try {
+            manEdicion.AddUsuarioInscripto(eu); // Linea 220
+        } catch (Exception e) {
+            System.err.println("Error al agregar usuario inscripto: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
     
     //Crear Programa de Formacion (Versión por parámetros sueltos)
@@ -225,9 +238,17 @@ public class Controller implements IController{
     @Override
     public void AgregarCursoAProgramas(String nomPrograma, List<String> cursos){
         ProgramaDeFormacion pdf = manProgramas.BuscarPrograma(nomPrograma);
-        for(int i = 0;i<cursos.size();i++){
-            Curso c = manCursos.BuscarCurso(cursos.get(i));
-            manProgramas.AddCurso(pdf, c);
+        if (pdf != null && cursos != null) {
+            for (String nomCurso : cursos) {
+                Curso c = manCursos.BuscarCurso(nomCurso);
+                if (c != null) {
+                    // 1. Agrega el curso al programa
+                    manProgramas.AddCurso(pdf, c); 
+
+                    // 2. CRUCIAL: Vincula el programa dentro del curso en memoria RAM
+                    c.AddPrograma(pdf); 
+                }
+            }
         }
     }
     
@@ -282,15 +303,15 @@ public class Controller implements IController{
         Id_ProgUsu ipu = new Id_ProgUsu(u, pdf);
         Prog_Usu pu = new Prog_Usu(ipu, fIns);
 
-        //manUsuario.InscribirUsuarioAEdicion(eu);
-/*
+        manUsuario.InscribirUsuarioAPrograma(pu);
+
         try {
-            manEdicion.AddUsuarioInscripto(eu); // Linea 220
+            manProgramas.AddUsuarioInscripto(pu);
         } catch (Exception e) {
             System.err.println("Error al agregar usuario inscripto: " + e.getMessage());
             e.printStackTrace();
         }
-*/
+
     }
     //Otras Funciones
     //Verificar si existe curso con el nombre

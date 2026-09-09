@@ -77,7 +77,7 @@ public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
                 }
                 if(dti instanceof DTUsuario){
                     Object[] row = {dti.getNickname(),dti.getNombre(), dti.getApellido()};
-                    rowsCursos.add(row);
+                    rowsUsuario.add(row);
                 }
             }
         }
@@ -144,6 +144,11 @@ public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
         DefaultTableModel modeloEdi = (DefaultTableModel) tableEdiciones.getModel();
         DefaultTableModel modeloUsu = (DefaultTableModel) tableUsuarios.getModel();
         ico.InscripcionAEdicionCurso((String)modeloEdi.getValueAt(filaEdi, 0), (String)modeloUsu.getValueAt(filaUsu, 0), (Date)spinDateIns.getValue());
+        javax.swing.JOptionPane.showMessageDialog(this, 
+                    "USUARIO "+(String)modeloUsu.getValueAt(filaUsu, 0)+" inscripto con exito.", 
+                    "Exito", 
+                    javax.swing.JOptionPane.WARNING_MESSAGE); 
+        this.dispose();
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

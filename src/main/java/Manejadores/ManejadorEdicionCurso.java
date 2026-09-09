@@ -5,6 +5,7 @@ import Classes.Instituto;
 import Classes.Curso;
 import Classes.Docente;
 import Classes.UsuarioBase;
+import Classes.Edi_Usu;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -58,19 +59,34 @@ public class ManejadorEdicionCurso {
         }
     }
     
-    public void Add(EdicionCurso ec) throws Exception{
+    public void Add(EdicionCurso ec) throws Exception {
         misEdiciones.add(ec);
         EntityManager em = JPAUtil.getEntityManager();
-        try{
+        try {
             em.getTransaction().begin();
-            em.persist(ec);
+
+            // 1. Asegurar la relación bidireccional en memoria
+            if (ec.getMisDocentes() != null) {
+                for (Docente d : ec.getMisDocentes()) {
+                    if (d.getEdiciones() != null && !d.getEdiciones().contains(ec)) {
+                        d.getEdiciones().add(ec);
+                    }
+                }
+            }
+
+            // 2. Usar merge(ec) en lugar de persist(ec).
+            // merge() busca los docentes por su ID (nickname), los asocia y genera las inserciones 
+            // en la tabla intermedia "Docente_EdicionCurso" automáticamente.
+            EdicionCurso ecManaged = em.merge(ec);
+
             em.getTransaction().commit();
-        } catch (Exception e){
-            if(em.getTransaction().isActive()){
+            System.out.println(">>> [DEBUG] Transacción COMMIT ejecutada con éxito.");
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
             throw new Exception("Error al guardar la edición de curso: " + e.getMessage());
-        } finally{
+        } finally {
             em.close();
         }
     }
@@ -87,6 +103,36 @@ public class ManejadorEdicionCurso {
     
     public void AddUsuario(EdicionCurso ec, Docente ub){
         ec.AddUsuarios(ub);
+    }
+    public void AddUsuarioInscripto(Edi_Usu eu) throws Exception {
+        if (eu == null || eu.getId() == null) {
+            return;
+        }
+
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+
+            // 1. Guardar/Actualizar la entidad de asociación en la BD
+            Edi_Usu euManaged = em.merge(eu);
+
+            // 2. Sincronizar el modelo en memoria RAM
+            if (eu.getId().getEdicion() != null) {
+                eu.getId().getEdicion().AddUsuarioInscripto(euManaged);
+            }
+
+            em.getTransaction().commit();
+            System.out.println(">>> [DEBUG] Inscripción registrada con éxito.");
+
+        } catch (Exception e) {
+            if (em.getTransaction() != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            e.printStackTrace();
+            throw new Exception("Error al guardar la inscripción: " + e.getMessage());
+        } finally {
+            em.close();
+        }
     }
     
     public DTEdicionCurso getDT(EdicionCurso ec){

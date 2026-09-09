@@ -25,6 +25,8 @@ public class InscripcionProgramaDeFormacion extends javax.swing.JInternalFrame {
         Fabric f = Fabric.GetInstance();
         ico = f.GetIController();
         initComponents();
+        rowsProgramas = new ArrayList<>();
+        rowsUsuario = new ArrayList<>();
         //Tener lista de cursos en la plataforma
         List<DTMaster> auxPrograma = ico.ListarClase(EnumDT.DT_PROGRAMA);     
         if(auxPrograma!=null){
@@ -114,6 +116,11 @@ public class InscripcionProgramaDeFormacion extends javax.swing.JInternalFrame {
         DefaultTableModel modeloEdi = (DefaultTableModel) tableProgramas.getModel();
         DefaultTableModel modeloUsu = (DefaultTableModel) tableUsuarios.getModel();
         ico.InscripcionUsuarioAProgramas((String)modeloEdi.getValueAt(filaEdi, 0), (String)modeloUsu.getValueAt(filaUsu, 0), (Date)spinDateIns.getValue());
+        javax.swing.JOptionPane.showMessageDialog(this, 
+                    "Usuario "+(String)modeloUsu.getValueAt(filaUsu, 0)+" Inscripto con exito.", 
+                    "Atención", 
+                    javax.swing.JOptionPane.WARNING_MESSAGE); 
+        this.dispose();
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

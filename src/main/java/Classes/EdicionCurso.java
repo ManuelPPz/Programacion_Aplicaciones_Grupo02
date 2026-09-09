@@ -36,13 +36,19 @@ public class EdicionCurso implements Serializable {
     private Date fFin;
     @Column(name="Cupo")
     private int cupo;
+
+    // Se corrige mappedBy apuntando a la propiedad edicion de Edi_Usu
+    @OneToMany(mappedBy = "id.miEdicion", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Edi_Usu> misUsuarios = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "Docente_EdicionCurso",
+        joinColumns = @JoinColumn(name = "ediciones_Nombre", referencedColumnName = "Nombre"),
+        inverseJoinColumns = @JoinColumn(name = "docentes_Nickname", referencedColumnName = "Nickname")
+    )
+    private List<Docente> misDocentes = new ArrayList<>();
     
-   // Se especifica FetchType.EAGER para evitar LazyInitializationException 
-    // y CascadeType.ALL para persistir cambios en la relacion
-    @OneToMany(mappedBy="id.miEdicion")
-    private List<Edi_Usu> misUsuarios;
-    @ManyToMany(mappedBy="misEdiciones")
-    private List<Docente> misDocentes;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "F_Alta")
     private Date fAlta;
@@ -105,10 +111,7 @@ public class EdicionCurso implements Serializable {
             return false;
         }
         EdicionCurso other = (EdicionCurso) object;
-        if ((this.nombre == null && other.nombre != null) || (this.nombre != null && !this.nombre.equals(other.nombre))) {
-            return false;
-        }
-        return true;
+        return !((this.nombre == null && other.nombre != null) || (this.nombre != null && !this.nombre.equals(other.nombre)));
     }
 
     @Override

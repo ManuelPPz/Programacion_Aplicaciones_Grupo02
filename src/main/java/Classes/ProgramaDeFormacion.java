@@ -38,7 +38,7 @@ public class ProgramaDeFormacion implements Serializable {
     )
     private List<Curso> cursos;
     // Se corrige mappedBy apuntando a la propiedad edicion de Edi_Usu
-    @OneToMany(mappedBy = "id.miEdicion", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "id.miPrograma", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Prog_Usu> misUsuarios = new ArrayList<>();
     // Requerido por JPA/Hibernate
 public ProgramaDeFormacion() {}
@@ -59,10 +59,26 @@ public ProgramaDeFormacion() {}
     
     
     public void AddCurso(Curso c){
-        cursos.add(c);
+        if (c != null) {
+            if (this.cursos == null) {
+                this.cursos = new ArrayList<>();
+            }
+            if (!this.cursos.contains(c)) {
+                this.cursos.add(c);
+                c.AddPrograma(this); // OBLIGATORIO: Actualiza la referencia en el Curso
+            }
+        }
     }
     public void RemoveCurso(Curso c){
-        cursos.remove(c);
+        if (c != null && this.cursos != null) {
+            if (this.cursos.remove(c)) {
+                c.RemovePrograma(this); // Sincroniza también al remover
+            }
+        }
+    }
+    
+    public void AddUsuarioInscripto(Prog_Usu pu){
+        misUsuarios.add(pu);
     }
     
     

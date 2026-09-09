@@ -220,7 +220,6 @@ public class Presentacion extends javax.swing.JFrame {
 
     private void jMenuAltaCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuAltaCursoActionPerformed
         AltaCurso vAltaCurso = new AltaCurso();
-        vAltaCurso.setBounds(0, 0, 400, 450);
         // 2. Agregarla al contenedor principal JDesktopPane
         // (Asegúrate de que 'jDesktopPane1' sea el nombre de variable de tu JDesktopPane)
         jDesktopPane1.add(vAltaCurso);

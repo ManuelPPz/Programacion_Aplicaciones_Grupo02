@@ -39,7 +39,7 @@ public class Id_ProgUsu implements Serializable {
         this.miUsuario = miUsuario;
     }
 
-    public ProgramaDeFormacion getEdicion() {
+    public ProgramaDeFormacion getPrograma() {
         return miPrograma;
     }
 
