@@ -20,7 +20,6 @@ import java.util.List;
  */
 public class ConsultaProgramaFormacion extends javax.swing.JInternalFrame {
     IController controlador = new Controller();
-    SimpleDateFormat FORMATO_FECHA = new SimpleDateFormat("dd/MM/yyyy");
     DTProgramaForm programaActual;
     DefaultListModel<String> modeloListaCursos;
 
@@ -30,8 +29,150 @@ public class ConsultaProgramaFormacion extends javax.swing.JInternalFrame {
     public ConsultaProgramaFormacion() {
         super("Consulta de Programa de Formación", true, true, true, true);
         initComponents();
-        
+ 
+        // >>> AGREGAR: todo lo que sigue es código propio, fuera del bloque generado <<<
+        configurarComponentesAdicionales();
+        cargarProgramas();
     }
+     private void configurarComponentesAdicionales() {
+        // El modelo de listCursos que trae el generado es un DefaultListModel
+        // anónimo y vacío. Lo reemplazamos por el que vamos a controlar nosotros.
+        modeloListaCursos = new DefaultListModel<>();
+        listCursos.setModel(modeloListaCursos);
+ 
+        // Es una pantalla de consulta: las fechas no las carga el usuario.
+        spinnerFechadeInicio.setEnabled(false);
+        spinnerFechadeFinal.setEnabled(false);
+        spinnerFechadeAlta.setEnabled(false);
+        txtDescripcion.setEditable(false);
+ 
+        // Combo: cada cambio de selección dispara la consulta al controlador.
+        comboProgramas.addActionListener(e -> onProgramaSeleccionado());
+ 
+        // Doble clic sobre un curso -> ver su detalle (puente a Consulta de Curso).
+        listCursos.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    //mostrarDetalleCursoSeleccionado();
+                }
+            }
+        });
+    }
+     private void cargarProgramas() {
+        comboProgramas.removeAllItems();
+        comboProgramas.addItem("-- Seleccione un programa --");
+        try {
+            List<String> nombres = controlador.listarProgramasFormacion();
+            for (String nombre : nombres) {
+                comboProgramas.addItem(nombre);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo obtener la lista de programas de formación.\n" + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+     private void onProgramaSeleccionado() {
+        String seleccionado = (String) comboProgramas.getSelectedItem();
+        if (seleccionado == null || comboProgramas.getSelectedIndex() <= 0) {
+            limpiarDatos();
+            return;
+        }
+ 
+        try {
+            DTProgramaForm dt = controlador.obtenerDatosPrograma(seleccionado);
+            if (dt == null) {
+                JOptionPane.showMessageDialog(this,
+                        "No se encontraron datos para el programa seleccionado.",
+                        "Aviso", JOptionPane.WARNING_MESSAGE);
+                limpiarDatos();
+                return;
+            }
+            mostrarDatosPrograma(dt);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Ocurrió un error al consultar el programa.\n" + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void mostrarDatosPrograma(DTProgramaForm dt) {
+        this.programaActual = dt;
+ 
+        txtDescripcion.setText(dt.getDescripcion());
+        txtDescripcion.setCaretPosition(0);
+ 
+        // JSpinner con SpinnerDateModel necesita un Date no nulo -> si falta, usamos hoy.
+        spinnerFechadeInicio.setValue(dt.getFechaInicio() != null ? dt.getFechaInicio() : new Date());
+        spinnerFechadeFinal.setValue(dt.getFechaFin() != null ? dt.getFechaFin() : new Date());
+        spinnerFechadeAlta.setValue(dt.getFechaAlta() != null ? dt.getFechaAlta() : new Date());
+ 
+        modeloListaCursos.clear();
+        List<String> cursos = dt.getCursos();
+        if (cursos != null) {
+            for (String nombreCurso : cursos) {
+                modeloListaCursos.addElement(nombreCurso);
+            }
+        }
+    }
+    private void limpiarDatos() {
+        this.programaActual = null;
+        txtDescripcion.setText("");
+        spinnerFechadeInicio.setValue(new Date());
+        spinnerFechadeFinal.setValue(new Date());
+        spinnerFechadeAlta.setValue(new Date());
+        modeloListaCursos.clear();
+    }
+    /*private void mostrarDetalleCursoSeleccionado() {
+        String nombreCurso = listCursos.getSelectedValue();
+        if (nombreCurso == null) {
+            return;
+        }
+ 
+        DTCurso dtCurso = buscarDTCursoPorNombre(nombreCurso);
+ 
+        if (dtCurso == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Curso: " + nombreCurso,
+                    "Detalle del curso", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+ 
+        String mensaje = "Instituto: " + dtCurso.getInstituto() + "\n"
+                + "Nombre: " + dtCurso.getNombre() + "\n"
+                + "Descripción: " + dtCurso.getDescripcion() + "\n"
+                + "Duración: " + dtCurso.getDuracion() + " meses\n"
+                + "Cant. horas: " + dtCurso.getCantHoras() + "\n"
+                + "Cant. créditos: " + dtCurso.getCantCreditos();
+ 
+        JOptionPane.showMessageDialog(this, mensaje,
+                "Detalle del curso", JOptionPane.INFORMATION_MESSAGE);
+ 
+        // --- PUENTE al Caso de Uso "Consulta de Curso" ---
+        // Descomentar y ajustar cuando esa pantalla esté disponible:
+        //
+        // ConsultaCurso ventanaCurso = new ConsultaCurso(dtCurso.getInstituto(), dtCurso.getNombre());
+        // JDesktopPane escritorio = getDesktopPane();
+        // if (escritorio != null) {
+        //     escritorio.add(ventanaCurso);
+        //     ventanaCurso.setVisible(true);
+        //     try { ventanaCurso.setSelected(true); } catch (Exception ignored) {}
+        // }
+    }*/
+ 
+    //** Busca, dentro de los datos del programa ya cargados, el DTCurso correspondiente al nombre dado. */
+    /*private String buscarDTCursoPorNombre(String nombreCurso) {
+        if (programaActual == null || programaActual.getCursos() == null) {
+            return null;
+        }
+        for (DTMaster c : programaActual.getCursos()) {
+            if (c.getNombre() != null && c.getNombre().equals(nombreCurso)) {
+                return c;
+            }
+        }
+        return null;
+    }*/
+    
    
 
 
@@ -46,16 +187,16 @@ public class ConsultaProgramaFormacion extends javax.swing.JInternalFrame {
 
         jLabel1 = new javax.swing.JLabel();
         comboProgramas = new javax.swing.JComboBox<>();
-        jInternalFrame1 = new javax.swing.JInternalFrame();
+        pane1 = new javax.swing.JInternalFrame();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        txtDescripcion = new javax.swing.JTextArea();
         jLabel3 = new javax.swing.JLabel();
-        jSpinner1 = new javax.swing.JSpinner();
+        spinnerFechadeInicio = new javax.swing.JSpinner();
         jLabel8 = new javax.swing.JLabel();
-        jSpinner4 = new javax.swing.JSpinner();
+        spinnerFechadeFinal = new javax.swing.JSpinner();
         jLabel7 = new javax.swing.JLabel();
-        jSpinner3 = new javax.swing.JSpinner();
+        spinnerFechadeAlta = new javax.swing.JSpinner();
         jInternalFrame2 = new javax.swing.JInternalFrame();
         jLabel4 = new javax.swing.JLabel();
         jComboBox2 = new javax.swing.JComboBox<>();
@@ -65,7 +206,7 @@ public class ConsultaProgramaFormacion extends javax.swing.JInternalFrame {
         jTextArea2 = new javax.swing.JTextArea();
         jLabel6 = new javax.swing.JLabel();
         jSpinner2 = new javax.swing.JSpinner();
-        jInternalFrame5 = new javax.swing.JInternalFrame();
+        pane2 = new javax.swing.JInternalFrame();
         jScrollPane4 = new javax.swing.JScrollPane();
         listCursos = new javax.swing.JList<>();
 
@@ -73,72 +214,72 @@ public class ConsultaProgramaFormacion extends javax.swing.JInternalFrame {
 
         comboProgramas.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        jInternalFrame1.setTitle("Datos del Programa");
-        jInternalFrame1.setVisible(true);
+        pane1.setTitle("Datos del Programa");
+        pane1.setVisible(true);
 
         jLabel2.setText("Descripcion:");
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        txtDescripcion.setColumns(20);
+        txtDescripcion.setRows(5);
+        jScrollPane1.setViewportView(txtDescripcion);
 
         jLabel3.setText("Fecha de Inicio:");
 
-        jSpinner1.setModel(new javax.swing.SpinnerDateModel());
-        jSpinner1.setEditor(new javax.swing.JSpinner.DateEditor(jSpinner1, "dd/MM/yyyy"));
+        spinnerFechadeInicio.setModel(new javax.swing.SpinnerDateModel());
+        spinnerFechadeInicio.setEditor(new javax.swing.JSpinner.DateEditor(spinnerFechadeInicio, "dd/MM/yyyy"));
 
         jLabel8.setText("Fecha de Final:");
 
-        jSpinner4.setModel(new javax.swing.SpinnerDateModel());
-        jSpinner4.setEditor(new javax.swing.JSpinner.DateEditor(jSpinner4, "dd/MM/yyyy"));
+        spinnerFechadeFinal.setModel(new javax.swing.SpinnerDateModel());
+        spinnerFechadeFinal.setEditor(new javax.swing.JSpinner.DateEditor(spinnerFechadeFinal, "dd/MM/yyyy"));
 
         jLabel7.setText("Fecha de Alta:");
 
-        jSpinner3.setModel(new javax.swing.SpinnerDateModel());
-        jSpinner3.setEditor(new javax.swing.JSpinner.DateEditor(jSpinner3, "dd/MM/yyyy"));
+        spinnerFechadeAlta.setModel(new javax.swing.SpinnerDateModel());
+        spinnerFechadeAlta.setEditor(new javax.swing.JSpinner.DateEditor(spinnerFechadeAlta, "dd/MM/yyyy"));
 
-        javax.swing.GroupLayout jInternalFrame1Layout = new javax.swing.GroupLayout(jInternalFrame1.getContentPane());
-        jInternalFrame1.getContentPane().setLayout(jInternalFrame1Layout);
-        jInternalFrame1Layout.setHorizontalGroup(
-            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jInternalFrame1Layout.createSequentialGroup()
+        javax.swing.GroupLayout pane1Layout = new javax.swing.GroupLayout(pane1.getContentPane());
+        pane1.getContentPane().setLayout(pane1Layout);
+        pane1Layout.setHorizontalGroup(
+            pane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pane1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jInternalFrame1Layout.createSequentialGroup()
+                .addGroup(pane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pane1Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addGap(18, 18, 18)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 393, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jInternalFrame1Layout.createSequentialGroup()
+                    .addGroup(pane1Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(spinnerFechadeInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(35, 35, 35)
                         .addComponent(jLabel8)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jSpinner4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jInternalFrame1Layout.createSequentialGroup()
+                        .addComponent(spinnerFechadeFinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pane1Layout.createSequentialGroup()
                         .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jSpinner3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(spinnerFechadeAlta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(14, Short.MAX_VALUE))
         );
-        jInternalFrame1Layout.setVerticalGroup(
-            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jInternalFrame1Layout.createSequentialGroup()
+        pane1Layout.setVerticalGroup(
+            pane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pane1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
                 .addGap(18, 18, 18)
-                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(pane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(spinnerFechadeInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel8)
-                    .addComponent(jSpinner4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(spinnerFechadeFinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(pane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(jSpinner3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(spinnerFechadeAlta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(22, Short.MAX_VALUE))
         );
 
@@ -217,24 +358,24 @@ public class ConsultaProgramaFormacion extends javax.swing.JInternalFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jInternalFrame5.setTitle("Cursos que integran el Programa");
-        jInternalFrame5.setVisible(true);
+        pane2.setTitle("Cursos que integran el Programa");
+        pane2.setVisible(true);
 
         listCursos.setModel(new javax.swing.DefaultListModel<String>());
         jScrollPane4.setViewportView(listCursos);
 
-        javax.swing.GroupLayout jInternalFrame5Layout = new javax.swing.GroupLayout(jInternalFrame5.getContentPane());
-        jInternalFrame5.getContentPane().setLayout(jInternalFrame5Layout);
-        jInternalFrame5Layout.setHorizontalGroup(
-            jInternalFrame5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jInternalFrame5Layout.createSequentialGroup()
+        javax.swing.GroupLayout pane2Layout = new javax.swing.GroupLayout(pane2.getContentPane());
+        pane2.getContentPane().setLayout(pane2Layout);
+        pane2Layout.setHorizontalGroup(
+            pane2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pane2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane4)
                 .addContainerGap())
         );
-        jInternalFrame5Layout.setVerticalGroup(
-            jInternalFrame5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jInternalFrame5Layout.createSequentialGroup()
+        pane2Layout.setVerticalGroup(
+            pane2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pane2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
                 .addContainerGap())
@@ -251,8 +392,8 @@ public class ConsultaProgramaFormacion extends javax.swing.JInternalFrame {
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(comboProgramas, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jInternalFrame1)
-                    .addComponent(jInternalFrame5))
+                    .addComponent(pane1)
+                    .addComponent(pane2))
                 .addContainerGap(20, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
@@ -268,9 +409,9 @@ public class ConsultaProgramaFormacion extends javax.swing.JInternalFrame {
                     .addComponent(jLabel1)
                     .addComponent(comboProgramas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jInternalFrame1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(pane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jInternalFrame5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(pane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(42, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
@@ -286,10 +427,8 @@ public class ConsultaProgramaFormacion extends javax.swing.JInternalFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> comboProgramas;
     private javax.swing.JComboBox<String> jComboBox2;
-    private javax.swing.JInternalFrame jInternalFrame1;
     private javax.swing.JInternalFrame jInternalFrame2;
     private javax.swing.JInternalFrame jInternalFrame3;
-    private javax.swing.JInternalFrame jInternalFrame5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -301,12 +440,14 @@ public class ConsultaProgramaFormacion extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JSpinner jSpinner1;
     private javax.swing.JSpinner jSpinner2;
-    private javax.swing.JSpinner jSpinner3;
-    private javax.swing.JSpinner jSpinner4;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextArea jTextArea2;
     private javax.swing.JList<String> listCursos;
+    private javax.swing.JInternalFrame pane1;
+    private javax.swing.JInternalFrame pane2;
+    private javax.swing.JSpinner spinnerFechadeAlta;
+    private javax.swing.JSpinner spinnerFechadeFinal;
+    private javax.swing.JSpinner spinnerFechadeInicio;
+    private javax.swing.JTextArea txtDescripcion;
     // End of variables declaration//GEN-END:variables
 }
