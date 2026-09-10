@@ -190,6 +190,9 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
             }
         });
         jScrollPane1.setViewportView(tableInstitutos);
+        if (tableInstitutos.getColumnModel().getColumnCount() > 0) {
+            tableInstitutos.getColumnModel().getColumn(0).setResizable(false);
+        }
 
         fieldInstituto.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -219,9 +222,16 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
             Class[] types = new Class [] {
                 java.lang.String.class, java.lang.String.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
         tableCursos.getSelectionModel().addListSelectionListener(e -> {
@@ -232,11 +242,16 @@ public class AltaEdicionCurso extends javax.swing.JInternalFrame {
                     //Logica de mostrar curso
                     String nombre = (String)tableCursos.getValueAt(fila, 0);
                     String objNick = (String)tableInstitutos.getValueAt(filaIns, 0);
+                    tableCursos.clearSelection();
                     MostrarDatos(nombre,objNick);
+
                 }
             }
         });
         jScrollPane2.setViewportView(tableCursos);
+        if (tableCursos.getColumnModel().getColumnCount() > 0) {
+            tableCursos.getColumnModel().getColumn(1).setResizable(false);
+        }
 
         jLabel1.setText("Instituto");
 

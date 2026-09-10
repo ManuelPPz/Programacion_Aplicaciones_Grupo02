@@ -145,7 +145,7 @@ public class ManejadorEdicionCurso {
             for(int i = 0; i < auxUsuarios.size(); i++){
                 UsuarioBase ub = auxUsuarios.get(i);
                 if(ub instanceof Docente d){
-                    auxDocentes.add(d.getNombre());
+                    auxDocentes.add(d.getNickname());
                 }
             }
         }

@@ -86,6 +86,15 @@
                 <Column editable="false" title="Nombre" type="java.lang.String"/>
               </Table>
             </Property>
+            <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
+              <TableColumnModel selectionModel="0">
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="false">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+              </TableColumnModel>
+            </Property>
             <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
               <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
             </Property>
@@ -107,11 +116,25 @@
       <SubComponents>
         <Component class="javax.swing.JTable" name="tableCursos">
           <Properties>
-            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor" postCode="tableCursos.getSelectionModel().addListSelectionListener(e -&gt; {&#xa;    if (!e.getValueIsAdjusting()) {&#xa;        int fila = tableCursos.getSelectedRow();&#xa;        int filaIns = tableInstitutos.getSelectedRow();&#xa;        if (fila != -1) {&#xa;            //Logica de mostrar curso&#xa;            String nombre = (String)tableCursos.getValueAt(fila, 0);&#xa;            String objNick = (String)tableInstitutos.getValueAt(filaIns, 0);&#xa;            MostrarDatos(nombre,objNick);&#xa;        }&#xa;    }&#xa;});">
+            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor" postCode="tableCursos.getSelectionModel().addListSelectionListener(e -&gt; {&#xa;    if (!e.getValueIsAdjusting()) {&#xa;        int fila = tableCursos.getSelectedRow();&#xa;        int filaIns = tableInstitutos.getSelectedRow();&#xa;        if (fila != -1) {&#xa;            //Logica de mostrar curso&#xa;            String nombre = (String)tableCursos.getValueAt(fila, 0);&#xa;            String objNick = (String)tableInstitutos.getValueAt(filaIns, 0);&#xa;            tableCursos.clearSelection();&#xa;            MostrarDatos(nombre,objNick);&#xa;            &#xa;        }&#xa;    }&#xa;});">
               <Table columnCount="2" rowCount="0">
-                <Column editable="true" title="Nombre" type="java.lang.String"/>
-                <Column editable="true" title="Fecha de Alta" type="java.lang.String"/>
+                <Column editable="false" title="Nombre" type="java.lang.String"/>
+                <Column editable="false" title="Fecha de Alta" type="java.lang.String"/>
               </Table>
+            </Property>
+            <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
+              <TableColumnModel selectionModel="0">
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="false">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
+              </TableColumnModel>
             </Property>
             <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
               <TableHeader reorderingAllowed="true" resizingAllowed="true"/>

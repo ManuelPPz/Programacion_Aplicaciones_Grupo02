@@ -21,7 +21,7 @@ public class Curso implements Serializable {
     private static final long serialVersionUID = 1L;
     
     @Id
-    @Column(name="Nickname", unique=true, nullable=false)
+    @Column(name="Nombre", unique=true, nullable=false)
     private String nombre;
     
     @ManyToOne
@@ -34,16 +34,16 @@ public class Curso implements Serializable {
     @Column(name="Duracion")
     private int duracion;
     
-    @Column(name="Cant. Horas")
+    @Column(name="Cant_Horas")
     private float cantHoras;
     
-    @Column(name="Cant. Creditos")
+    @Column(name="Cant_Creditos")
     private int cantCreditos;
     
     @Column(name="URL")
     private String URL;
     
-    @Column(name="Fecha Alta")
+    @Column(name="F_Alta")
     private Date fAlta;
     
     @ManyToMany

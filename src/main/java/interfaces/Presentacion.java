@@ -44,6 +44,7 @@ public class Presentacion extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem9 = new javax.swing.JMenuItem();
         mConsultarUsuario = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuAltaCurso = new javax.swing.JMenuItem();
@@ -98,6 +99,10 @@ public class Presentacion extends javax.swing.JFrame {
         jMenuItem1.setText("Alta de Usuario");
         jMenuItem1.addActionListener(this::jMenuItem1ActionPerformed);
         jMenu1.add(jMenuItem1);
+
+        jMenuItem9.setText("Modificar");
+        jMenuItem9.addActionListener(this::jMenuItem9ActionPerformed);
+        jMenu1.add(jMenuItem9);
 
         mConsultarUsuario.setText("Consultar Usuario");
         mConsultarUsuario.addActionListener(this::mConsultarUsuarioActionPerformed);
@@ -321,7 +326,14 @@ public class Presentacion extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
-        // TODO add your handling code here:
+        ConsultaEdicionCurso vConsultaEdicion = new ConsultaEdicionCurso();
+        jDesktopPane1.add(vConsultaEdicion);
+         java.awt.Dimension desktopSize = jDesktopPane1.getSize();
+        java.awt.Dimension frameSize = vConsultaEdicion.getSize();
+        vConsultaEdicion.setLocation((desktopSize.width - frameSize.width) / 2, 
+                      (desktopSize.height - frameSize.height) / 2);
+        vConsultaEdicion.setVisible(true);
+        vConsultaEdicion.toFront();
     }//GEN-LAST:event_jMenuItem7ActionPerformed
 
     private void itemMenuInsEdiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemMenuInsEdiActionPerformed
@@ -345,6 +357,24 @@ public class Presentacion extends javax.swing.JFrame {
         vInscripcionPrograma.setVisible(true);
         vInscripcionPrograma.toFront();
     }//GEN-LAST:event_jMenuItem8ActionPerformed
+
+    private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem9ActionPerformed
+        ModificarDatosdeUsuario vModificar = new ModificarDatosdeUsuario();
+    
+        
+        jDesktopPane1.add(vModificar);
+    
+        // 3. Centrar la ventana dentro del escritorio
+        java.awt.Dimension desktopSize = jDesktopPane1.getSize();
+        java.awt.Dimension frameSize = vModificar.getSize();
+        vModificar.setLocation((desktopSize.width - frameSize.width) / 2, 
+                      (desktopSize.height - frameSize.height) / 2);
+    
+        // 4. Hacerla visible y traerla al frente
+        
+        vModificar.setVisible(true);
+        vModificar.toFront();// TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItem9ActionPerformed
 
 
     /**
@@ -401,6 +431,7 @@ public class Presentacion extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;
+    private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JPopupMenu jPopupMenu2;
     private javax.swing.JMenuItem mConsultarUsuario;

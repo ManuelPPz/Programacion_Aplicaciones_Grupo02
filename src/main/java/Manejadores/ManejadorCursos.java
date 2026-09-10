@@ -138,7 +138,7 @@ public class ManejadorCursos {
         }
 
         List<String> auxProgramasStr = new ArrayList<>();
-
+        
         return new DTCurso(
             ins,
             c.getNombre(),

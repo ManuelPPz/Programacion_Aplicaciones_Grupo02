@@ -4,7 +4,6 @@ package main;
 import interfaces.Presentacion;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-
 public class proyecto_pda_grupo02 {
 
     public static void main(String[] args) {

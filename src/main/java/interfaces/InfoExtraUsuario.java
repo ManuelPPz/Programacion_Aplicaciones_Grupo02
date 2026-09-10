@@ -4,6 +4,9 @@
  */
 package interfaces;
 
+import DTsClasses.DTMaster;
+import Logica.Fabric;
+import Logica.IController;
 import javax.swing.JList;
 
 /**
@@ -12,10 +15,10 @@ import javax.swing.JList;
  */
 public class InfoExtraUsuario extends javax.swing.JPanel {
 
-    /**
-     * Creates new form InfoExtraUsuario
-     */
+    IController ico;
     public InfoExtraUsuario() {
+        Fabric f = Fabric.GetInstance();
+        ico = f.GetIController();
         initComponents();
     }
     public JList getListEdiciones(){
@@ -71,15 +74,13 @@ public class InfoExtraUsuario extends javax.swing.JPanel {
 
     private void listEdicionesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listEdicionesValueChanged
         //Consulta Ediciones
-        /*
-        Posible Solucion
         if (!evt.getValueIsAdjusting()) {
 
             String nombre = listEdiciones.getSelectedValue();
 
             if (nombre != null) {
                 DTMaster dt = ico.ConsultaEdicionCurso(nombre);
-                MiniInterfazDeEdicionDeCurso miec = new MiniInterfazDeEdicionDeCurso();
+                MiniInterfazDeConsultaEdicion miec = new MiniInterfazDeConsultaEdicion();
 
                 javax.swing.JDesktopPane desktop = (javax.swing.JDesktopPane) 
                     javax.swing.SwingUtilities.getAncestorOfClass(javax.swing.JDesktopPane.class, this);
@@ -93,8 +94,6 @@ public class InfoExtraUsuario extends javax.swing.JPanel {
                 }
             }
         }
-        
-        */
     }//GEN-LAST:event_listEdicionesValueChanged
 
     private void listProgramasValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listProgramasValueChanged

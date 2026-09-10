@@ -67,7 +67,6 @@ public class MiniInterfazDeConsultaUsuario extends javax.swing.JInternalFrame {
         jList.setModel(modelo);
         modelo.clear();
         List<String> auxList = list;
-        System.out.println(auxList);
         auxList = OrdenarLista(auxList);
         for(int i =0;i<list.size();i++){
             modelo.addElement(auxList.get(i));

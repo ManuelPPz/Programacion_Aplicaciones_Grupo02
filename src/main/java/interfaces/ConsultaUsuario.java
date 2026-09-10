@@ -114,6 +114,8 @@ public class ConsultaUsuario extends javax.swing.JInternalFrame {
         boxTipoBusqueda = new javax.swing.JComboBox<>();
         labelText = new javax.swing.JLabel();
 
+        setClosable(true);
+
         tableUsuario.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 

@@ -98,11 +98,11 @@ public class ManejadorUsuario {
 
     public void ModificarDatosUsuario(String nick, String nombre, String apellido, String correo, boolean docente, Date fNac, List<Instituto> institutos, String imgPath) throws IOException {
         byte[] imgByte = null;
-    if (imgPath != null && !imgPath.trim().isEmpty()) {
-        imgByte = ConvertirImageIconToByte(imgPath);
-    }
+        if (imgPath != null && !imgPath.trim().isEmpty()) {
+            imgByte = ConvertirImageIconToByte(imgPath);
+        }
 
-    UsuarioBase ub = BuscarUsuario(nick);
+        UsuarioBase ub = BuscarUsuario(nick);
         if (ub != null) {
             if (docente && ub instanceof Docente d) {
                 d.ModificarMisDatos(nombre, apellido, correo, fNac, imgByte, institutos);

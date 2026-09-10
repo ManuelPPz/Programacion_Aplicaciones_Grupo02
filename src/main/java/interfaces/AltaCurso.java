@@ -4,16 +4,16 @@
  */
 package interfaces;
 
-import Logica.IController;
-import Logica.Fabric;
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
-import DTsClasses.DTMaster;
 import DTsClasses.DTCurso;
 import DTsClasses.DTDocente;
 import DTsClasses.DTInstituto;
+import DTsClasses.DTMaster;
 import DTsClasses.EnumDT;
+import Logica.Fabric;
+import Logica.IController;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import javax.swing.RowFilter;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -22,7 +22,7 @@ import javax.swing.table.TableRowSorter;
 
 /**
  *
- * @author sebas xD
+ * @author mateo
  */
 public class AltaCurso extends javax.swing.JInternalFrame {
 
@@ -41,7 +41,7 @@ public class AltaCurso extends javax.swing.JInternalFrame {
     }
 
     private void IniciarRows(List<DTMaster> list) {
-
+        
         for (int i = 0; i < list.size(); i++) {
             DTMaster dt = list.get(i);
             if (dt instanceof DTDocente dti) {
@@ -129,56 +129,48 @@ public class AltaCurso extends javax.swing.JInternalFrame {
             sorter.setRowFilter(RowFilter.regexFilter("(?i)" + texto, 0));
         }
     }
-
+    public void ResetTable(EnumDT tipoDT){
+        if (tipoDT == EnumDT.DT_USUARIO) {
+            DefaultTableModel modelo = (DefaultTableModel) tableDocentes.getModel();
+            modelo.setRowCount(0);
+        } else if (tipoDT == EnumDT.DT_CURSO) {
+            DefaultTableModel modelo = (DefaultTableModel) tableCursos.getModel();
+            modelo.setRowCount(0);
+        }
+    }
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
         fieldNombre = new javax.swing.JTextField();
+        spinnerFecha = new javax.swing.JSpinner();
         boxInstituto = new javax.swing.JComboBox<>();
+        spinnerHoras = new javax.swing.JSpinner();
         jScrollPane2 = new javax.swing.JScrollPane();
         areaDescripcion = new javax.swing.JTextArea();
-        spinnerDuracion = new javax.swing.JSpinner();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
-        fieldURL = new javax.swing.JTextField();
-        buttonAceptar = new javax.swing.JButton();
-        btnCancelar = new javax.swing.JButton();
-        jLabel15 = new javax.swing.JLabel();
-        spinnerFecha = new javax.swing.JSpinner();
-        spinnerHoras = new javax.swing.JSpinner();
         jLabel5 = new javax.swing.JLabel();
         spinnerCreditos = new javax.swing.JSpinner();
+        spinnerDuracion = new javax.swing.JSpinner();
         jScrollPane7 = new javax.swing.JScrollPane();
         tableCursos = new javax.swing.JTable();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
         jScrollPane8 = new javax.swing.JScrollPane();
         tableDocentes = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
+        fieldURL = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        buttonAceptar = new javax.swing.JButton();
         fieldDocente = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        btnCancelar = new javax.swing.JButton();
         fieldCurso = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
-
-        setClosable(true);
-        setIconifiable(true);
-        setMaximizable(true);
-        setResizable(true);
-        setTitle("Alta Curso");
-
-        jLabel1.setText("Instituto*");
-
-        jLabel2.setText("Nombre*");
-
-        jLabel3.setText("Descripcion*");
-
-        jLabel4.setText("Duracion*");
+        setMaximumSize(new java.awt.Dimension(423, 611));
+        setMinimumSize(new java.awt.Dimension(423, 611));
+        setName(""); // NOI18N
 
         fieldNombre.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
@@ -190,29 +182,14 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         });
         fieldNombre.addActionListener(this::fieldNombreActionPerformed);
 
+        spinnerFecha.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
+        spinnerFecha.setEditor(new javax.swing.JSpinner.DateEditor(spinnerFecha, "dd/MM/yyyy"));
+
         boxInstituto.addActionListener(this::boxInstitutoActionPerformed);
 
         areaDescripcion.setColumns(20);
         areaDescripcion.setRows(5);
         jScrollPane2.setViewportView(areaDescripcion);
-
-        jLabel11.setText("Cant. Horas*");
-
-        jLabel13.setText("URL*");
-
-        fieldURL.addActionListener(this::fieldURLActionPerformed);
-
-        buttonAceptar.setText("Aceptar");
-        buttonAceptar.addActionListener(this::buttonAceptarActionPerformed);
-
-        btnCancelar.setForeground(new java.awt.Color(255, 102, 102));
-        btnCancelar.setText("Cancelar");
-        btnCancelar.addActionListener(this::btnCancelarActionPerformed);
-
-        jLabel15.setText("Fecha de alta*");
-
-        spinnerFecha.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
-        spinnerFecha.setEditor(new javax.swing.JSpinner.DateEditor(spinnerFecha, "dd/MM/yyyy"));
 
         jLabel5.setText("Cant. Creditos*");
 
@@ -240,10 +217,10 @@ public class AltaCurso extends javax.swing.JInternalFrame {
             }
         });
         jScrollPane7.setViewportView(tableCursos);
-        if (tableCursos.getColumnModel().getColumnCount() > 0) {
-            tableCursos.getColumnModel().getColumn(0).setResizable(false);
-            tableCursos.getColumnModel().getColumn(1).setResizable(false);
-        }
+
+        jLabel11.setText("Cant. Horas*");
+
+        jLabel13.setText("URL*");
 
         tableDocentes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -269,9 +246,15 @@ public class AltaCurso extends javax.swing.JInternalFrame {
             }
         });
         jScrollPane8.setViewportView(tableDocentes);
-        if (tableDocentes.getColumnModel().getColumnCount() > 0) {
-            tableDocentes.getColumnModel().getColumn(0).setResizable(false);
-        }
+
+        jLabel1.setText("Instituto*");
+
+        fieldURL.addActionListener(this::fieldURLActionPerformed);
+
+        jLabel2.setText("Nombre*");
+
+        buttonAceptar.setText("Aceptar");
+        buttonAceptar.addActionListener(this::buttonAceptarActionPerformed);
 
         fieldDocente.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -290,6 +273,12 @@ public class AltaCurso extends javax.swing.JInternalFrame {
             }
         });
 
+        jLabel3.setText("Descripcion*");
+
+        btnCancelar.setForeground(new java.awt.Color(255, 102, 102));
+        btnCancelar.setText("Cancelar");
+        btnCancelar.addActionListener(this::btnCancelarActionPerformed);
+
         fieldCurso.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -307,71 +296,73 @@ public class AltaCurso extends javax.swing.JInternalFrame {
             }
         });
 
+        jLabel4.setText("Duracion*");
+
+        jLabel15.setText("Fecha de alta*");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(59, 59, 59)
-                                        .addComponent(spinnerDuracion, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(6, 6, 6)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(73, 73, 73)
-                                        .addComponent(spinnerHoras, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(5, 5, 5)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(87, 87, 87)
-                                        .addComponent(spinnerCreditos, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(6, 6, 6)
-                                .addComponent(spinnerFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(113, 113, 113)
-                                .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(20, 20, 20)
-                                .addComponent(buttonAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(24, 24, 24)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(fieldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(boxInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(fieldCurso, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(23, 23, 23)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(fieldDocente, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(8, 8, 8)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(fieldURL, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addGap(59, 59, 59)
+                                            .addComponent(spinnerDuracion, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGap(6, 6, 6)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addGap(73, 73, 73)
+                                            .addComponent(spinnerHoras, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGap(5, 5, 5)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addGap(87, 87, 87)
+                                            .addComponent(spinnerCreditos, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(6, 6, 6)
+                                    .addComponent(spinnerFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(24, 24, 24)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(fieldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(boxInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(fieldCurso, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(fieldURL, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(jScrollPane8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(fieldDocente, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(314, 314, 314))
+                .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20)
+                .addComponent(buttonAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(23, 23, 23)
+                .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(3, 3, 3)
@@ -421,39 +412,66 @@ public class AltaCurso extends javax.swing.JInternalFrame {
                     .addComponent(fieldCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnCancelar)
-                            .addComponent(buttonAceptar))
-                        .addGap(18, 18, 18))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnCancelar)
+                    .addComponent(buttonAceptar))
+                .addGap(25, 25, 25))
         );
 
         List<DTMaster> auxListIns = ico.ListarClase(EnumDT.DT_INSTITUTO);
 
         boxInstituto.insertItemAt("SIN DATOS", 0);
-        for (int i = 0; i < auxListIns.size(); i++) {
-            DTInstituto dt = (DTInstituto) auxListIns.get(i);
-            boxInstituto.insertItemAt(dt.getNombre(), i + 1);
+        for(int i = 0;i<auxListIns.size();i++){
+            DTInstituto dt = (DTInstituto)auxListIns.get(i);
+            boxInstituto.insertItemAt(dt.getNombre(), i+1);
         }
         boxInstituto.setSelectedIndex(0);
 
         pack();
-    }// </editor-fold>                          
+    }// </editor-fold>//GEN-END:initComponents
 
-    private void fieldNombreActionPerformed(java.awt.event.ActionEvent evt) {
+    private void fieldNombreFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fieldNombreFocusGained
         // TODO add your handling code here:
-    }
+    }//GEN-LAST:event_fieldNombreFocusGained
 
-    private void fieldURLActionPerformed(java.awt.event.ActionEvent evt) {
+    private void fieldNombreFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fieldNombreFocusLost
         // TODO add your handling code here:
-    }
+    }//GEN-LAST:event_fieldNombreFocusLost
 
-    private void buttonAceptarActionPerformed(java.awt.event.ActionEvent evt) {
+    private void fieldNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldNombreActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fieldNombreActionPerformed
+
+    private void boxInstitutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boxInstitutoActionPerformed
+        if (boxInstituto.getSelectedIndex() != 0) {
+            String auxStr = (String) boxInstituto.getSelectedItem();
+            List<DTMaster> listDocente = ico.ListarDocentes(auxStr);
+            if (!listDocente.isEmpty()) {
+                listDocente = OrdenarLista(listDocente);
+                IniciarRows(listDocente);
+                IniciarTable(EnumDT.DT_USUARIO);
+            }else{
+                ResetTable(EnumDT.DT_USUARIO);
+            }
+            List<DTMaster> listCursos = ico.ListarCursos(auxStr);
+            if (!listCursos.isEmpty()) {
+                listCursos = OrdenarLista(listCursos);
+                IniciarRows(listCursos);
+                IniciarTable(EnumDT.DT_CURSO);
+            }else{
+                ResetTable(EnumDT.DT_CURSO);
+            }
+        }
+    }//GEN-LAST:event_boxInstitutoActionPerformed
+
+    private void fieldURLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldURLActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fieldURLActionPerformed
+
+    private void buttonAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAceptarActionPerformed
         // Logica de boton aceptar
         if (VerificarDatos()) {
             javax.swing.JOptionPane.showMessageDialog(this, "Algunos campos deben ser completados", "Atencion", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -503,8 +521,7 @@ public class AltaCurso extends javax.swing.JInternalFrame {
                 javax.swing.JOptionPane.showMessageDialog(this, "Error al procesar el curso: " + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
         }
-    }
-
+    }//GEN-LAST:event_buttonAceptarActionPerformed
     boolean VerificarDatos() {
         return boxInstituto.getSelectedIndex() == 0
                 || fieldNombre.getText().isEmpty()
@@ -513,41 +530,13 @@ public class AltaCurso extends javax.swing.JInternalFrame {
                 || (int) spinnerHoras.getValue() == 0
                 || fieldURL.getText().isEmpty();
     }
-
-    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         // Simplemente cierra la ventana interna sin cerrar el programa
         this.dispose();
-    }
-
-    private void boxInstitutoActionPerformed(java.awt.event.ActionEvent evt) {
-        if (boxInstituto.getSelectedIndex() != 0) {
-            String auxStr = (String) boxInstituto.getSelectedItem();
-            List<DTMaster> listDocente = ico.ListarDocentes(auxStr);
-            if (!listDocente.isEmpty()) {
-                listDocente = OrdenarLista(listDocente);
-                IniciarRows(listDocente);
-                IniciarTable(EnumDT.DT_USUARIO);
-            }
-            List<DTMaster> listCursos = ico.ListarCursos(auxStr);
-            if (!listCursos.isEmpty()) {
-                listCursos = OrdenarLista(listCursos);
-                IniciarRows(listCursos);
-                IniciarTable(EnumDT.DT_CURSO);
-            }
-        }
-
-    }
-
-    private void fieldNombreFocusGained(java.awt.event.FocusEvent evt) {
-        // TODO add your handling code here:
-    }
-
-    private void fieldNombreFocusLost(java.awt.event.FocusEvent evt) {
-
-    }
+    }//GEN-LAST:event_btnCancelarActionPerformed
 
 
-    // Variables declaration - do not modify                     
+    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea areaDescripcion;
     private javax.swing.JComboBox<String> boxInstituto;
     private javax.swing.JButton btnCancelar;
@@ -564,16 +553,14 @@ public class AltaCurso extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JScrollPane jScrollPane8;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JSpinner spinnerCreditos;
     private javax.swing.JSpinner spinnerDuracion;
     private javax.swing.JSpinner spinnerFecha;
     private javax.swing.JSpinner spinnerHoras;
     private javax.swing.JTable tableCursos;
     private javax.swing.JTable tableDocentes;
-    // End of variables declaration                   
+    // End of variables declaration//GEN-END:variables
 }
