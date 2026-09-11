@@ -34,7 +34,7 @@ public class MiniInterfazDeConsultaCurso extends javax.swing.JInternalFrame {
         initComponents();
         
     }
-    public void ColocarDatos(DTMaster dtCurso){dtc = (DTCurso)dtCurso;
+    public void ColocarDatos(DTMaster dtCurso){
         dtc = (DTCurso)dtCurso;
         areaDescripcion.setText(dtc.getDescripcion());
         textDuracion.setText(String.valueOf(dtc.getDuracion()));
@@ -46,46 +46,40 @@ public class MiniInterfazDeConsultaCurso extends javax.swing.JInternalFrame {
         LLenarTablasYListas();
         
         
-        
-        
-        
-        
-        
     }
     private void LLenarTablasYListas(){
-if (dtc != null) {
-
+        if (dtc != null) {
             // 1. Cargar Ediciones de Curso
             if (modeloListEdiCurso != null) {
-                modeloListEdiCurso.clear(); // Limpiamos elementos previos
-                List<String> listEdi = dtc.getEdiCursos();
-                if (listEdi != null) {
-                    for (String ed : listEdi) {
-                        modeloListEdiCurso.addElement(ed);
+                        modeloListEdiCurso.clear(); // Limpiamos elementos previos
+                        List<String> listEdi = dtc.getEdiCursos();
+                        if (listEdi != null) {
+                            for (String ed : listEdi) {
+                                modeloListEdiCurso.addElement(ed);
+                            }
+                        }
                     }
-                }
-            }
 
-            // 2. Cargar Programas de Formación
-            if (modeloListProgCurso != null) {
-                modeloListProgCurso.clear();
-                List<String> listPro = dtc.getProgFormacion();
-                if (listPro != null) {
-                    for (String prog : listPro) {
-                        modeloListProgCurso.addElement(prog);
+                    // 2. Cargar Programas de Formación
+                    if (modeloListProgCurso != null) {
+                        modeloListProgCurso.clear();
+                        List<String> listPro = dtc.getProgFormacion();
+                        if (listPro != null) {
+                            for (String prog : listPro) {
+                                modeloListProgCurso.addElement(prog);
+                            }
+                        }
                     }
-                }
-            }
 
-            // 3. Cargar Cursos Previos
-            DefaultTableModel modeloPrevias = (DefaultTableModel) tablePrevias.getModel();
-            modeloPrevias.setRowCount(0); // Limpiamos la tabla antes de cargar
-            List<String> listStr = dtc.getPrevias();
-            if (listStr != null) {
-                for (String previa : listStr) {
-                    modeloPrevias.addRow(new Object[]{previa});
-                }
-            }
+                    // 3. Cargar Cursos Previos
+                    DefaultTableModel modeloPrevias = (DefaultTableModel) tablePrevias.getModel();
+                    modeloPrevias.setRowCount(0); // Limpiamos la tabla antes de cargar
+                    List<String> listStr = dtc.getPrevias();
+                    if (listStr != null) {
+                        for (String previa : listStr) {
+                            modeloPrevias.addRow(new Object[]{previa});
+                        }
+                    }
 
         } else {
             System.out.println("El DTCurso proporcionado es null.");
@@ -116,7 +110,7 @@ if (dtc != null) {
         textCantCreditos = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        listEdiCursos = new javax.swing.JList<>();
+        listEdiciones = new javax.swing.JList<>();
         jLabel9 = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
         listProgFormacion = new javax.swing.JList<>();
@@ -208,9 +202,9 @@ if (dtc != null) {
         jLabel7.setText("URL:");
 
         modeloListEdiCurso = new DefaultListModel<>();
-        listEdiCursos.setModel(modeloListEdiCurso);
-        listEdiCursos.addListSelectionListener(this::listEdiCursosValueChanged);
-        jScrollPane3.setViewportView(listEdiCursos);
+        listEdiciones.setModel(modeloListEdiCurso);
+        listEdiciones.addListSelectionListener(this::listEdicionesValueChanged);
+        jScrollPane3.setViewportView(listEdiciones);
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -371,22 +365,18 @@ if (dtc != null) {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void listEdiCursosValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listEdiCursosValueChanged
+    private void listEdicionesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listEdicionesValueChanged
         //Logica ventana de consulta de edicion de curso
         //Este mensaje es de prueba para mostrar como se pide el valor que se toco
-        /*
-        Posible solucion
         String nombre = listEdiciones.getSelectedValue();
             DTMaster dt = ico.ConsultaEdicionCurso(nombre);
-            MiniInterfazDeEdicionDeCurso miec = new MiniInterfazDeEdicionDeCurso();
+            MiniInterfazDeConsultaEdicion miec = new MiniInterfazDeConsultaEdicion();
             this.getDesktopPane().add(miec);
             miec.setTitle("(Info) " + nombre);
             miec.ColocarDatos(dt);
             miec.setVisible(true);
             miec.toFront();
-        */
-        javax.swing.JOptionPane.showMessageDialog(this, listEdiCursos.getSelectedValue(), "System",javax.swing.JOptionPane.INFORMATION_MESSAGE);
-    }//GEN-LAST:event_listEdiCursosValueChanged
+    }//GEN-LAST:event_listEdicionesValueChanged
 
     private void listProgFormacionValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listProgFormacionValueChanged
         //Logica ventana de consulta de edicion de curso
@@ -437,7 +427,7 @@ if (dtc != null) {
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
-    private javax.swing.JList<String> listEdiCursos;
+    private javax.swing.JList<String> listEdiciones;
     private javax.swing.JList<String> listProgFormacion;
     private javax.swing.JTable tablePrevias;
     private javax.swing.JTextField textCantCreditos;

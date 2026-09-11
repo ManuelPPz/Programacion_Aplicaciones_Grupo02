@@ -28,7 +28,7 @@ public class ProgramaDeFormacion implements Serializable {
     private String descripcion;
     @Embedded
     private Vigencia vigenciaPrograma;
-    @Column(name="F. Alta")
+    @Column(name="F_Alta")
     private Date fAlta;
     @ManyToMany
     @JoinTable(

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Classes;
 
 import jakarta.persistence.*;
@@ -21,40 +17,44 @@ public class Curso implements Serializable {
     private static final long serialVersionUID = 1L;
     
     @Id
-    @Column(name="Nickname", unique=true, nullable=false)
+    @Column(name="Nombre", unique=true, nullable=false)
     private String nombre;
     
     @ManyToOne
     @JoinColumn(name="Instituto")
     private Instituto miInstituto;
     
-    @Column(name="Descripcion",length = 750)
+    @Column(name="Descripcion", length = 750)
     private String descripcion;
     
     @Column(name="Duracion")
-    private int duracion;
+    private Integer duracion;
     
-    @Column(name="Cant. Horas")
-    private float cantHoras;
+    @Column(name="Cant_Horas")
+    private Float cantHoras;
     
-    @Column(name="Cant. Creditos")
-    private int cantCreditos;
+    @Column(name="Cant_Creditos")
+    private Integer cantCreditos;
     
     @Column(name="URL")
     private String URL;
     
-    @Column(name="Fecha Alta")
+    @Column(name="F_Alta")
     private Date fAlta;
     
     @ManyToMany
-    @JoinTable(name = "Previa", joinColumns = @JoinColumn(name="Nombre"), inverseJoinColumns = @JoinColumn(name="Previa_Nombre"))
+    @JoinTable(
+        name = "Previa", 
+        joinColumns = @JoinColumn(name="Nombre"), 
+        inverseJoinColumns = @JoinColumn(name="Previa_Nombre")
+    )
     private List<Curso> previas = new ArrayList<>();
     
     @OneToMany(mappedBy="miCurso")
     private List<EdicionCurso> misEdiciones = new ArrayList<>();
     
-    // Mapeo bidireccional apuntando al atributo 'cursos' de ProgramaDeFormacion
-    @ManyToMany(fetch = FetchType.EAGER)
+    // Si la relación la esclavitza ProgramaDeFormacion, usamos mappedBy
+    @ManyToMany(mappedBy = "cursos", fetch = FetchType.EAGER)
     private List<ProgramaDeFormacion> misProgramas = new ArrayList<>();
     
     @ManyToOne
@@ -64,9 +64,9 @@ public class Curso implements Serializable {
     public Instituto getInstituto() { return miInstituto; }
     public String getNombre() { return nombre; }
     public String getDescripcion(){ return descripcion; }
-    public int getDuracion() { return duracion; }
-    public float getCantHoras(){ return cantHoras; }
-    public int getCantCreditos() { return cantCreditos; }
+    public Integer getDuracion() { return duracion; }
+    public Float getCantHoras(){ return cantHoras; }
+    public Integer getCantCreditos() { return cantCreditos; }
     public String getURL(){ return URL; }
     public Date getFAlta(){ return fAlta; }
     public List<Curso> getPrevias(){ return previas; }
@@ -77,7 +77,7 @@ public class Curso implements Serializable {
     public Curso() {
     }
     
-    public Curso(Instituto instituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<Curso> previas, UsuarioBase ub){
+    public Curso(Instituto instituto, String nombre, String descripcion, Integer duracion, Float cantHoras, Integer cantCreditos, String URL, Date fAlta, List<Curso> previas, UsuarioBase ub){
         this.miInstituto = instituto;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -92,7 +92,7 @@ public class Curso implements Serializable {
         this.misEdiciones = new ArrayList<>();
     }
 
-    public void ModificarMisDatos(String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<Curso> previas, UsuarioBase ub){
+    public void ModificarMisDatos(String descripcion, Integer duracion, Float cantHoras, Integer cantCreditos, String URL, Date fAlta, List<Curso> previas, UsuarioBase ub){
         this.descripcion = descripcion;
         this.duracion = duracion;
         this.cantHoras = cantHoras;
@@ -125,6 +125,18 @@ public class Curso implements Serializable {
     
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+    
+    public void setDuracion(Integer duracion) {
+        this.duracion = duracion;
+    }
+
+    public void setCantHoras(Float cantHoras) {
+        this.cantHoras = cantHoras;
+    }
+
+    public void setCantCreditos(Integer cantCreditos) {
+        this.cantCreditos = cantCreditos;
     }
     
     public Docente getMiDocente(){

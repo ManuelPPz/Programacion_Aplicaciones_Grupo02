@@ -46,14 +46,12 @@ public class Presentacion extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         mConsultarUsuario = new javax.swing.JMenuItem();
         jMenuItem10 = new javax.swing.JMenuItem();
-        jMenuItem9 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuAltaCurso = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenu10 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
-        jMenuItem9 = new javax.swing.JMenuItem();
-        jMenuItem8 = new javax.swing.JMenuItem();
+        jMenuItem11 = new javax.swing.JMenuItem();
         itemMenuInsEdi = new javax.swing.JMenuItem();
         jMenu11 = new javax.swing.JMenu();
         CrearProgFormacion = new javax.swing.JMenuItem();
@@ -106,12 +104,9 @@ public class Presentacion extends javax.swing.JFrame {
         mConsultarUsuario.addActionListener(this::mConsultarUsuarioActionPerformed);
         ModUsuario.add(mConsultarUsuario);
 
-        jMenuItem10.setText("jMenuItem10");
+        jMenuItem10.setText("Modificar");
         jMenuItem10.addActionListener(this::jMenuItem10ActionPerformed);
         ModUsuario.add(jMenuItem10);
-        jMenuItem9.setText("Modificar Usuario");
-        jMenuItem9.addActionListener(this::jMenuItem9ActionPerformed);
-        ModUsuario.add(jMenuItem9);
 
         jMenuBar1.add(ModUsuario);
 
@@ -131,9 +126,9 @@ public class Presentacion extends javax.swing.JFrame {
         jMenuItem3.addActionListener(this::jMenuItem3ActionPerformed);
         jMenu10.add(jMenuItem3);
 
-        jMenu10.add(jMenuItem9);
-        jMenuItem8.setText("Consulta");
-        jMenu10.add(jMenuItem8);
+        jMenuItem11.setText("Consulta");
+        jMenuItem11.addActionListener(this::jMenuItem7ActionPerformed);
+        jMenu10.add(jMenuItem11);
 
         itemMenuInsEdi.setText("Inscripcion");
         itemMenuInsEdi.addActionListener(this::itemMenuInsEdiActionPerformed);
@@ -330,6 +325,19 @@ public class Presentacion extends javax.swing.JFrame {
         vConProgForm.toFront();
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
+
+    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
+        ConsultaEdicionCurso vConsultaEdicion = new ConsultaEdicionCurso();
+        jDesktopPane1.add(vConsultaEdicion);
+         java.awt.Dimension desktopSize = jDesktopPane1.getSize();
+        java.awt.Dimension frameSize = vConsultaEdicion.getSize();
+        vConsultaEdicion.setLocation((desktopSize.width - frameSize.width) / 2, 
+                      (desktopSize.height - frameSize.height) / 2);
+        vConsultaEdicion.setVisible(true);
+        vConsultaEdicion.toFront();
+    }//GEN-LAST:event_jMenuItem7ActionPerformed
+
+
     private void itemMenuInsEdiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemMenuInsEdiActionPerformed
         InscripcionEdicionCurso vInscripcionEdicion = new InscripcionEdicionCurso();
         jDesktopPane1.add(vInscripcionEdicion);
@@ -371,7 +379,8 @@ public class Presentacion extends javax.swing.JFrame {
         vInscripcionPrograma.toFront();
     }//GEN-LAST:event_jMenuItem8ActionPerformed
 
-    private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
+
+    private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {                                            
            ModificarDatosdeUsuario vModificar = new ModificarDatosdeUsuario();
     
         
@@ -387,7 +396,8 @@ public class Presentacion extends javax.swing.JFrame {
         
         vModificar.setVisible(true);
         vModificar.toFront();// TODO add your handling code here:
-    }//GEN-LAST:event_jMenuItem10ActionPerformed
+    }                                           
+
 
 
     /**
@@ -438,13 +448,13 @@ public class Presentacion extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar4;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem10;
+    private javax.swing.JMenuItem jMenuItem11;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem8;
-    private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JPopupMenu jPopupMenu2;
     private javax.swing.JMenuItem mConsultarUsuario;

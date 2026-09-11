@@ -13,7 +13,7 @@ public class Edi_Usu implements Serializable {
 
     @EmbeddedId
     private Id_EdiUsu id;
-    @Column(name="Fecha inscripcion")
+    @Column(name="Fecha_inscripcion")
     private Date fInscripcion;
     public Id_EdiUsu getId() {
         return id;

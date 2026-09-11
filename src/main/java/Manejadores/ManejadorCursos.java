@@ -124,7 +124,9 @@ public class ManejadorCursos {
         List<String> auxPreviasStr = new ArrayList<>();
         if (auxPrevias != null) {
             for(Curso previa : auxPrevias){
-                auxPreviasStr.add(previa.getNombre());
+                if (previa != null) {
+                    auxPreviasStr.add(previa.getNombre());
+                }
             }
         }
 
@@ -137,9 +139,10 @@ public class ManejadorCursos {
                 }
             }
         }
+
         List<ProgramaDeFormacion> auxProgramas = c.getProgramas();
         List<String> auxProgramasStr = new ArrayList<>();
-        if (auxProgramasStr != null) {
+        if (auxProgramas != null) {
             for(ProgramaDeFormacion programa : auxProgramas){
                 if (programa != null) {
                     auxProgramasStr.add(programa.getNombre());
@@ -147,14 +150,19 @@ public class ManejadorCursos {
             }
         }
 
+        // Manejo seguro de valores nulos para los tipos numéricos
+        int duracion = (c.getDuracion() != null) ? c.getDuracion() : 0;
+        float cantHoras = (c.getCantHoras() != null) ? c.getCantHoras() : 0.0f;
+        int cantCreditos = (c.getCantCreditos() != null) ? c.getCantCreditos() : 0;
+
         return new DTCurso(
             ins,
-            c.getNombre(),
-            c.getDescripcion(),
-            c.getDuracion(),
-            c.getCantHoras(),
-            c.getCantCreditos(),
-            c.getURL(),
+            c.getNombre() != null ? c.getNombre() : "",
+            c.getDescripcion() != null ? c.getDescripcion() : "",
+            duracion,
+            cantHoras,
+            cantCreditos,
+            c.getURL() != null ? c.getURL() : "",
             c.getFAlta(),
             auxPreviasStr,
             auxEdicionesStr,

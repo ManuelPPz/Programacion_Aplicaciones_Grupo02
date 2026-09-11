@@ -11,6 +11,7 @@ import Logica.Fabric;
 import Logica.IController;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -51,6 +52,13 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
         modeloIni.setStart((Date)spinDatePub.getValue());
         modeloIni.setValue((Date)spinDatePub.getValue());
             
+        SpinnerDateModel modeloFin = (SpinnerDateModel)spinDateFin.getModel();
+        modeloFin.setStart((Date)spinDateIni.getValue());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime((Date)spinDateIni.getValue());
+        calendar.add(Calendar.WEEK_OF_YEAR, auxDt.getDuracion());
+        Date fFin = calendar.getTime();
+        modeloFin.setValue(fFin);
         LlenarTablas();
     }
     

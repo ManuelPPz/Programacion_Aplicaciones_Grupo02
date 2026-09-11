@@ -51,26 +51,33 @@ public class ConsultaCurso extends javax.swing.JInternalFrame {
     }
 
     private void IniciarRows(List<DTMaster> list){
-        
-        for(int i = 0;i<list.size();i++){
-            DTMaster dt = list.get(i);
-            if(dt instanceof DTInstituto dti){
-                if(i==0){
-                    rowsIns = new ArrayList();
-                }
-                Object[] row = {dti.getNombre()};
-                rowsIns.add(row);
-            }else if(dt instanceof DTCurso dti){
-                if(i==0){
-                    rowsCurso = new ArrayList();
-                }
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                String fecha = sdf.format(dti.getFechaAlta());
-                Object[] row = {dti.getNombre(), fecha};
-                rowsCurso.add(row);
+    for(int i = 0; i < list.size(); i++){
+        DTMaster dt = list.get(i);
+        if(dt instanceof DTInstituto dti){
+            if(i == 0){
+                rowsIns = new ArrayList<>();
             }
+            Object[] row = {dti.getNombre()};
+            rowsIns.add(row);
+        } else if(dt instanceof DTCurso dti){
+            if(i == 0){
+                rowsCurso = new ArrayList<>();
+            }
+            
+            // Validación para evitar NullPointerException si la fecha es null
+            String fecha = "";
+            if (dti.getFechaAlta() != null) {
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                fecha = sdf.format(dti.getFechaAlta());
+            } else {
+                fecha = "Sin fecha"; // O asigna "-"
+            }
+
+            Object[] row = {dti.getNombre(), fecha};
+            rowsCurso.add(row);
         }
     }
+}
     
     
     

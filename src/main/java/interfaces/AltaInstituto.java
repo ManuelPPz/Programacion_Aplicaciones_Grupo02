@@ -36,9 +36,6 @@ public class AltaInstituto extends javax.swing.JInternalFrame {
         jLabel5 = new javax.swing.JLabel();
 
         setClosable(true);
-        setIconifiable(true);
-        setMaximizable(true);
-        setResizable(true);
         setTitle("Alta de Instituto");
 
         txtNombreInstituto.addActionListener(this::txtNombreInstitutoActionPerformed);
@@ -55,7 +52,6 @@ public class AltaInstituto extends javax.swing.JInternalFrame {
         jLabel5.setFont(new java.awt.Font("Helvetica Neue", 1, 13)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 0, 255));
         jLabel5.setText("Ingrese los datos del Instituto:");
-        jLabel5.setSize(new java.awt.Dimension(44, 19));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

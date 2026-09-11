@@ -29,10 +29,10 @@ public class EdicionCurso implements Serializable {
     @JoinColumn(name="Curso")
     private Curso miCurso;
     @Temporal(TemporalType.DATE) 
-    @Column(name="F. Inicio")
+    @Column(name="F_Inicio")
     private Date fInicio;
     @Temporal(TemporalType.DATE) 
-    @Column(name="F. Fin")
+    @Column(name="F_Fin")
     private Date fFin;
     @Column(name="Cupo")
     private int cupo;
