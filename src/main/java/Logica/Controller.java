@@ -252,8 +252,15 @@ public class Controller implements IController{
     
     //Consulta Programa de Formacion
     @Override
-    public DTProgramaForm ConsultaProgramaFormacion(String nomPrograma){
+    public DTMaster ConsultaProgramaFormacion(String nomPrograma){
+        ProgramaDeFormacion pdf = manProgramas.BuscarPrograma(nomPrograma);
+        if(pdf!=null){
+            DTMaster auxDT = manProgramas.getDT(pdf);
+            return auxDT;
+        }
         return null;
+        
+        
     }
     
     //MOMENTANEO PONER EN TRUE PARA PROBAR Y DEJAR EN FALSE HASTA QUE SE AGREGE METODO

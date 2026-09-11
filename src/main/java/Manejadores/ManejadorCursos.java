@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import Classes.Curso;
 import Classes.EdicionCurso; 
 import Classes.Instituto;
+import Classes.ProgramaDeFormacion;
 import Classes.UsuarioBase;
 import DTsClasses.DTCurso;
 import DTsClasses.DTMaster;
@@ -136,8 +137,16 @@ public class ManejadorCursos {
                 }
             }
         }
-
+        
+        List<ProgramaDeFormacion> auxProgramas = c.getProgramas();
         List<String> auxProgramasStr = new ArrayList<>();
+        if(auxProgramas!=null){
+            for(ProgramaDeFormacion programa : auxProgramas){
+                if (programa != null) {
+                    auxProgramasStr.add(programa.getNombre());
+                }
+            }
+        }
         
         return new DTCurso(
             ins,

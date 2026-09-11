@@ -380,19 +380,14 @@ public class MiniInterfazDeConsultaCurso extends javax.swing.JInternalFrame {
 
     private void listProgFormacionValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listProgFormacionValueChanged
         //Logica ventana de consulta de edicion de curso
-        //Este mensaje es de prueba para mostrar como se pide el valor que se toco
-        /*
-        Posible solucion
         String nombre = listProgFormacion.getSelectedValue();
             DTMaster dt = ico.ConsultaProgramaFormacion(nombre);
-            MiniInterfazDeProgramas mip = new MiniInterfazDeProgramas();
+            MiniInterfazDeConsultaPrograma mip = new MiniInterfazDeConsultaPrograma();
             this.getDesktopPane().add(mip);
             mip.setTitle("(Info) " + nombre);
-            mip.ColocarDatos(dt);
+            mip.mostrarDatosPrograma(dt);
             mip.setVisible(true);
             mip.toFront();
-        */
-        javax.swing.JOptionPane.showMessageDialog(this, listProgFormacion.getSelectedValue(), "System",javax.swing.JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_listProgFormacionValueChanged
 
     private void textURLMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_textURLMouseClicked

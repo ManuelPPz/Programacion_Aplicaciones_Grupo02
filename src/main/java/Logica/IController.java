@@ -59,7 +59,7 @@ public interface IController {
     
     //Consulta Programa de Formacion
     //Se modificara al crear el tipo de dato ProgramaFormacion retornando el tipo de dato "ProgramaFormacion"
-    public abstract DTProgramaForm ConsultaProgramaFormacion(String nomPrograma);
+    public abstract DTMaster ConsultaProgramaFormacion(String nomPrograma);
     
     //Inscripcion de usuario a programa de formacion
     public abstract void InscripcionUsuarioAProgramas(String nomPrograma, String nickname, Date fIns);

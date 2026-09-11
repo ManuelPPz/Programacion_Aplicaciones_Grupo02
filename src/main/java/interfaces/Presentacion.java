@@ -315,7 +315,7 @@ public class Presentacion extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
-  ConsultaProgramaFormacion vConProgForm = new ConsultaProgramaFormacion();
+  interfaces.ConsultaProgramaFormacion vConProgForm = new interfaces.ConsultaProgramaFormacion();
    jDesktopPane1.add(vConProgForm);
          java.awt.Dimension desktopSize = jDesktopPane1.getSize();
         java.awt.Dimension frameSize = vConProgForm.getSize();

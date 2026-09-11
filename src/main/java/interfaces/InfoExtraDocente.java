@@ -148,16 +148,13 @@ public class InfoExtraDocente extends javax.swing.JPanel {
     }//GEN-LAST:event_listEdicionesValueChanged
 
     private void listProgramasValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listProgramasValueChanged
-        //Consulta Programas de Formacion
-        /*
-        Posible Solucion
         if (!evt.getValueIsAdjusting()) {
 
             String nombre = listProgramas.getSelectedValue();
 
             if (nombre != null) {
                 DTMaster dt = ico.ConsultaProgramaFormacion(nombre);
-                MiniInterfazDeProgramas mip = new MiniInterfazDeProgramas();
+                MiniInterfazDeConsultaPrograma mip = new MiniInterfazDeConsultaPrograma();
 
                 javax.swing.JDesktopPane desktop = (javax.swing.JDesktopPane) 
                     javax.swing.SwingUtilities.getAncestorOfClass(javax.swing.JDesktopPane.class, this);
@@ -165,14 +162,12 @@ public class InfoExtraDocente extends javax.swing.JPanel {
                 if (desktop != null) {
                     desktop.add(mip);
                     mip.setTitle("(Info) " + nombre);
-                    mip.ColocarDatos(dt);
+                    mip.mostrarDatosPrograma(dt);
                     mip.setVisible(true);
                     mip.toFront();
                 }
             }
         }
-        
-        */
     }//GEN-LAST:event_listProgramasValueChanged
 
 
