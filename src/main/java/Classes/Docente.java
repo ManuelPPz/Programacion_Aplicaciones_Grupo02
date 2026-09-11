@@ -88,5 +88,12 @@ public class Docente extends UsuarioBase {
     public List<EdicionCurso> getEdiciones(){
         return this.misEdiciones;
     }
+    public List<EdicionCurso> getMisEdiciones() {
+    return misEdiciones;
+}
+
+public void setMisEdiciones(List<EdicionCurso> misEdiciones) {
+    this.misEdiciones = misEdiciones;
+}
     
 }

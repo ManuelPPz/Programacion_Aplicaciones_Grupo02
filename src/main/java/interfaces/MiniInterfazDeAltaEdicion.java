@@ -302,17 +302,17 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
     }                                      
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {                                           
-        if(VerificarDatos()){
-            JOptionPane.showMessageDialog(this, "Algunos campos deben ser completados o son inválidos", "Atencion", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        String nombre = nombreField.getText();
-        Date fIni = (Date) spinDateIni.getValue();
-        Date fFin = (Date) spinDateFin.getValue();
-        boolean auxCheckCupo = checkCupo.isSelected();
-        int auxCupo = auxCheckCupo ? (int) spinnerCupo.getValue() : 0;
-        Date fPub = (Date) spinDatePub.getValue();
+      if (VerificarDatos()) {
+        JOptionPane.showMessageDialog(this, "Algunos campos deben ser completados o son inválidos", "Atencion", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+    
+    String nombre = nombreField.getText().trim();
+    Date fIni = (Date) spinDateIni.getValue();
+    Date fFin = (Date) spinDateFin.getValue();
+    boolean auxCheckCupo = checkCupo.isSelected();
+    int auxCupo = auxCheckCupo ? (int) spinnerCupo.getValue() : 0;
+    Date fPub = (Date) spinDatePub.getValue();
 
         List<String> auxDocentes = new ArrayList<>();
         
@@ -336,30 +336,30 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
             }
         }
 
-        try {
-            if (ico.VerificarEdicion(nombre)) {
-                int respuesta = JOptionPane.showConfirmDialog(
-                    this, 
-                    "La edición '" + nombre + "' ya existe. ¿Deseas modificar sus datos?", 
-                    "Edición Existente", 
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE
-                );
-                
-                if (respuesta == JOptionPane.YES_OPTION) {
-                    ico.AltaEdicionCurso(instituto, curso, nombre, fIni, fFin, auxCupo, auxDocentes, fPub);
-                    JOptionPane.showMessageDialog(this, "Edición actualizada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                    this.dispose();
-                }
-            } else {
+    try {
+        if (ico.VerificarEdicion(nombre)) {
+            int respuesta = JOptionPane.showConfirmDialog(
+                this, 
+                "La edición '" + nombre + "' ya existe. ¿Deseas modificar sus datos?", 
+                "Edición Existente", 
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+            );
+            
+            if (respuesta == JOptionPane.YES_OPTION) {
                 ico.AltaEdicionCurso(instituto, curso, nombre, fIni, fFin, auxCupo, auxDocentes, fPub);
-                JOptionPane.showMessageDialog(this, "Edición dada de alta con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Edición actualizada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            ico.AltaEdicionCurso(instituto, curso, nombre, fIni, fFin, auxCupo, auxDocentes, fPub);
+            JOptionPane.showMessageDialog(this, "Edición dada de alta con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            this.dispose();
         }
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
     }                                          
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {                                            

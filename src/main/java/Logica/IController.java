@@ -92,4 +92,6 @@ public interface IController {
     //Devolver lista de docentes x instituto
     public abstract List<DTMaster>ListarDocentes(String nomInstituto);
     
+    public List<DTMaster>ListarProgramaDeForm();
+    
 }

@@ -46,12 +46,14 @@ public class Presentacion extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         mConsultarUsuario = new javax.swing.JMenuItem();
         jMenuItem10 = new javax.swing.JMenuItem();
+        jMenuItem9 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuAltaCurso = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenu10 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenuItem9 = new javax.swing.JMenuItem();
+        jMenuItem8 = new javax.swing.JMenuItem();
         itemMenuInsEdi = new javax.swing.JMenuItem();
         jMenu11 = new javax.swing.JMenu();
         CrearProgFormacion = new javax.swing.JMenuItem();
@@ -107,6 +109,9 @@ public class Presentacion extends javax.swing.JFrame {
         jMenuItem10.setText("jMenuItem10");
         jMenuItem10.addActionListener(this::jMenuItem10ActionPerformed);
         ModUsuario.add(jMenuItem10);
+        jMenuItem9.setText("Modificar Usuario");
+        jMenuItem9.addActionListener(this::jMenuItem9ActionPerformed);
+        ModUsuario.add(jMenuItem9);
 
         jMenuBar1.add(ModUsuario);
 
@@ -126,9 +131,9 @@ public class Presentacion extends javax.swing.JFrame {
         jMenuItem3.addActionListener(this::jMenuItem3ActionPerformed);
         jMenu10.add(jMenuItem3);
 
-        jMenuItem9.setText("Consulta");
-        jMenuItem9.addActionListener(this::jMenuItem7ActionPerformed);
         jMenu10.add(jMenuItem9);
+        jMenuItem8.setText("Consulta");
+        jMenu10.add(jMenuItem8);
 
         itemMenuInsEdi.setText("Inscripcion");
         itemMenuInsEdi.addActionListener(this::itemMenuInsEdiActionPerformed);
@@ -315,17 +320,28 @@ public class Presentacion extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
-  /* ConsultarProgForm vConProgForm = new ConsultarProgForm();
+  ConsultaProgramaFormacion vConProgForm = new ConsultaProgramaFormacion();
    jDesktopPane1.add(vConProgForm);
          java.awt.Dimension desktopSize = jDesktopPane1.getSize();
         java.awt.Dimension frameSize = vConProgForm.getSize();
         vConProgForm.setLocation((desktopSize.width - frameSize.width) / 2, 
                       (desktopSize.height - frameSize.height) / 2);
         vConProgForm.setVisible(true);
-        vConProgForm.toFront();*/
+        vConProgForm.toFront();
     }//GEN-LAST:event_jMenuItem6ActionPerformed
-// modificarusuario
-    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
+
+    private void itemMenuInsEdiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemMenuInsEdiActionPerformed
+        InscripcionEdicionCurso vInscripcionEdicion = new InscripcionEdicionCurso();
+        jDesktopPane1.add(vInscripcionEdicion);
+         java.awt.Dimension desktopSize = jDesktopPane1.getSize();
+        java.awt.Dimension frameSize = vInscripcionEdicion.getSize();
+        vInscripcionEdicion.setLocation((desktopSize.width - frameSize.width) / 2, 
+                      (desktopSize.height - frameSize.height) / 2);
+        vInscripcionEdicion.setVisible(true);
+        vInscripcionEdicion.toFront();
+    }//GEN-LAST:event_itemMenuInsEdiActionPerformed
+
+    private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {                                           
         ModificarDatosdeUsuario vModificar = new ModificarDatosdeUsuario();
     
         
@@ -341,18 +357,8 @@ public class Presentacion extends javax.swing.JFrame {
         
         vModificar.setVisible(true);
         vModificar.toFront();// TODO add your handling code here:
-    }//GEN-LAST:event_jMenuItem7ActionPerformed
+    }                                          
 
-    private void itemMenuInsEdiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemMenuInsEdiActionPerformed
-        InscripcionEdicionCurso vInscripcionEdicion = new InscripcionEdicionCurso();
-        jDesktopPane1.add(vInscripcionEdicion);
-         java.awt.Dimension desktopSize = jDesktopPane1.getSize();
-        java.awt.Dimension frameSize = vInscripcionEdicion.getSize();
-        vInscripcionEdicion.setLocation((desktopSize.width - frameSize.width) / 2, 
-                      (desktopSize.height - frameSize.height) / 2);
-        vInscripcionEdicion.setVisible(true);
-        vInscripcionEdicion.toFront();
-    }//GEN-LAST:event_itemMenuInsEdiActionPerformed
 
     private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
         InscripcionProgramaDeFormacion vInscripcionPrograma = new InscripcionProgramaDeFormacion();

@@ -127,6 +127,7 @@ public class ManejadorUsuario {
         }
     }
 
+
     public void Add(UsuarioBase ub) throws Exception {
         EntityManager em = getEntityManager();
         try {
@@ -211,7 +212,6 @@ public class ManejadorUsuario {
                 return ub;
             }
         }
-
         return null;
     }
 

@@ -3,6 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    
     <groupId>com.mycompany</groupId>
     <artifactId>proyecto_pda_grupo02</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -17,19 +18,21 @@
     <name>proyecto_pda_grupo02</name>
 
     <dependencies>
+        <!-- MySQL Connector -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>9.0.0</version>
         </dependency>
             
+        <!-- Hibernate Core -->
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>6.5.2.Final</version>
         </dependency>
 
-        <!-- DEPENDENCIA DE JUNIT 5 (Agregada para permitir pruebas) -->
+        <!-- JUnit 5 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -46,13 +49,11 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.12</version>
                 <executions>
-                    <!-- 1. Prepara el agente antes de ejecutar las pruebas -->
                     <execution>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
-                    <!-- 2. Genera el reporte automáticamente después de las pruebas -->
                     <execution>
                         <id>report</id>
                         <phase>test</phase>
@@ -63,7 +64,7 @@
                 </executions>
             </plugin>
 
-            <!-- Plugin de Surefire configurado para leer el agente de JaCoCo -->
+            <!-- Plugin de Surefire -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -80,7 +81,7 @@
                 <version>3.11.0</version>
             </plugin>
 
-            <!-- Plugin para empaquetar todas las dependencias dentro del ejecutable -->
+            <!-- Plugin para empaquetar con dependencias -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>

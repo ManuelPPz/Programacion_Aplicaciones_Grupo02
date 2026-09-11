@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  *
- * @author mateo
+ * @author mateoa
  */
 @Entity
 @Table(name = "EdicionCurso")

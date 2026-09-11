@@ -90,7 +90,7 @@ public class ManejadorEdicionCurso {
             em.close();
         }
     }
-    
+   
     public EdicionCurso BuscarEdicion(String nombre){
         for(int i = 0; i < misEdiciones.size(); i++){
             EdicionCurso ec = misEdiciones.get(i);
