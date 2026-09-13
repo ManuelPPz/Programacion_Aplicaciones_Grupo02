@@ -7,7 +7,6 @@ import DTsClasses.DTCurso;
 import DTsClasses.DTInstituto;
 import DTsClasses.DTMaster;
 import DTsClasses.EnumDT;
-import interfaces.MiniInterfazDeAltaEdicion;
 import Logica.Fabric;
 import Logica.IController;
 import java.text.SimpleDateFormat;

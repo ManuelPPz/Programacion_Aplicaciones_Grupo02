@@ -26,8 +26,8 @@
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
 
-            <!-- Generación de esquemas (Se mantiene solo la propiedad de Hibernate para evitar ejecuciones dobles) -->
-            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <!-- Desactiva la creación/modificación automática de tablas -->
+            <property name="hibernate.hbm2ddl.auto" value="none"/>
         </properties>
     </persistence-unit>
-</persistence>
+</persistence> 

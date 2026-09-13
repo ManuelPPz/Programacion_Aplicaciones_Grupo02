@@ -82,54 +82,45 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
             System.out.println("No se encontraron docentes para el instituto: " + instituto);
         }
     }
-    
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel5 = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        nombreField = new javax.swing.JTextField();
-        spinDateIni = new javax.swing.JSpinner();
         jLabel12 = new javax.swing.JLabel();
+        fieldInstituto = new javax.swing.JTextField();
         spinDateFin = new javax.swing.JSpinner();
+        fieldCurso = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
         checkCupo = new javax.swing.JCheckBox();
         spinnerCupo = new javax.swing.JSpinner();
-        
         jScrollPane7 = new javax.swing.JScrollPane();
         tableDocentes = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
         spinDatePub = new javax.swing.JSpinner();
+        nombreField = new javax.swing.JTextField();
         btnAceptar = new javax.swing.JButton();
+        spinDateIni = new javax.swing.JSpinner();
         btnCancelar = new javax.swing.JButton();
-        fieldInstituto = new javax.swing.JTextField();
-        fieldCurso = new javax.swing.JTextField();
-
-        
-        
-        jLabel5.setText("jLabel5");
 
         setClosable(true);
-
-        jLabel1.setText("Instituto:");
-
-        jLabel2.setText("Curso:");
-
-        jLabel6.setText("Nombre*");
-
-        spinDateIni.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1788277564604L), null, null, java.util.Calendar.DAY_OF_MONTH));
-        spinDateIni.setEditor(new javax.swing.JSpinner.DateEditor(spinDateIni, "dd/MM/yyyy"));
-        spinDateIni.addChangeListener(this::spinDateIniStateChanged);
 
         jLabel12.setBackground(new java.awt.Color(255, 255, 255));
         jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel12.setText("Inicio*");
 
+        fieldInstituto.setEditable(false);
+        fieldInstituto.setBackground(new java.awt.Color(255, 255, 255));
+        fieldInstituto.setText("jTextField1");
+
         spinDateFin.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1788277549513L), null, null, java.util.Calendar.DAY_OF_MONTH));
         spinDateFin.setEditor(new javax.swing.JSpinner.DateEditor(spinDateFin, "dd/MM/yyyy"));
+
+        fieldCurso.setEditable(false);
+        fieldCurso.setBackground(new java.awt.Color(255, 255, 255));
+        fieldCurso.setText("jTextField2");
 
         jLabel14.setBackground(new java.awt.Color(255, 255, 255));
         jLabel14.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -162,14 +153,16 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
             }
         });
         jScrollPane7.setViewportView(tableDocentes);
-        if (tableDocentes.getColumnModel().getColumnCount() > 0) {
-            tableDocentes.getColumnModel().getColumn(0).setResizable(false);
-            tableDocentes.getColumnModel().getColumn(1).setResizable(false);
-        }
+
+        jLabel1.setText("Instituto:");
+
+        jLabel2.setText("Curso:");
 
         jLabel15.setBackground(new java.awt.Color(255, 255, 255));
         jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel15.setText("Fecha de publicacion*");
+
+        jLabel6.setText("Nombre*");
 
         spinDatePub.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1788277588408L), null, new java.util.Date(1788277588408L), java.util.Calendar.DAY_OF_MONTH));
         spinDatePub.setEditor(new javax.swing.JSpinner.DateEditor(spinDatePub, "dd/MM/yyyy"));
@@ -178,26 +171,13 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
         btnAceptar.setText("Aceptar");
         btnAceptar.addActionListener(this::btnAceptarActionPerformed);
 
+        spinDateIni.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(1788277564604L), null, null, java.util.Calendar.DAY_OF_MONTH));
+        spinDateIni.setEditor(new javax.swing.JSpinner.DateEditor(spinDateIni, "dd/MM/yyyy"));
+        spinDateIni.addChangeListener(this::spinDateIniStateChanged);
+
         btnCancelar.setForeground(new java.awt.Color(255, 102, 102));
         btnCancelar.setText("Cancelar");
         btnCancelar.addActionListener(this::btnCancelarActionPerformed);
-
-        fieldInstituto.setEditable(false);
-        fieldInstituto.setBackground(new java.awt.Color(255, 255, 255));
-        fieldInstituto.setText("jTextField1");
-        fieldInstituto.setFocusable(false);
-        Dimension tamFijo = new Dimension(64,22);
-        fieldInstituto.setPreferredSize(tamFijo);
-        fieldInstituto.setMinimumSize(tamFijo);
-        fieldInstituto.setMaximumSize(tamFijo);
-        
-        fieldCurso.setEditable(false);
-        fieldCurso.setBackground(new java.awt.Color(255, 255, 255));
-        fieldCurso.setText("jTextField2");
-        fieldCurso.setFocusable(false);
-        fieldCurso.setPreferredSize(tamFijo);
-        fieldCurso.setMinimumSize(tamFijo);
-        fieldCurso.setMaximumSize(tamFijo);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -233,14 +213,14 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
                                     .addGap(20, 20, 20)))
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(nombreField)
-                                .addComponent(fieldInstituto, javax.swing.GroupLayout.DEFAULT_SIZE, 206, Short.MAX_VALUE)
+                                .addComponent(fieldInstituto)
                                 .addComponent(fieldCurso))))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel15)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(spinDatePub, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(89, Short.MAX_VALUE))
+                .addContainerGap(86, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnCancelar)
@@ -289,9 +269,9 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
         );
 
         pack();
-    }// </editor-fold>                        
+    }// </editor-fold>//GEN-END:initComponents
 
-    private void checkCupoStateChanged(javax.swing.event.ChangeEvent evt) {                                       
+    private void checkCupoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_checkCupoStateChanged
         spinnerCupo.setVisible(checkCupo.isSelected());
         Dimension dSpinner = new Dimension(30,22);
         spinnerCupo.setModel(new SpinnerNumberModel(1, 1, null, 1));
@@ -307,10 +287,20 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
         fieldCurso.setPreferredSize(tamFijo);
         fieldCurso.setMinimumSize(tamFijo);
         fieldCurso.setMaximumSize(tamFijo);
-    }                                      
+    }//GEN-LAST:event_checkCupoStateChanged
 
-    private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {                                           
-      if (VerificarDatos()) {
+    private void spinDatePubStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spinDatePubStateChanged
+        Date fAlta = (Date)spinDatePub.getValue();
+        Date fInicio = (Date)spinDateIni.getValue();
+        SpinnerDateModel modelo =(SpinnerDateModel)spinDateIni.getModel();
+        modelo.setStart((Date)spinDatePub.getValue());
+        if(fAlta.after(fInicio)){
+            modelo.setValue((Date)spinDatePub.getValue());
+        }
+    }//GEN-LAST:event_spinDatePubStateChanged
+
+    private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
+        if (VerificarDatos()) {
         JOptionPane.showMessageDialog(this, "Algunos campos deben ser completados o son inválidos", "Atencion", JOptionPane.ERROR_MESSAGE);
         return;
     }
@@ -368,36 +358,8 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
         e.printStackTrace();
         JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
-    }                                          
-
-    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {                                            
-        // Simplemente cierra la ventana interna sin cerrar el programa
-        this.dispose();
-    }                                           
-
-    private void spinDateIniStateChanged(javax.swing.event.ChangeEvent evt) {                                         
-        Date fInicio = (Date)spinDateIni.getValue();
-        Date fFin = (Date)spinDateFin.getValue();
-        SpinnerDateModel modelo =(SpinnerDateModel)spinDateFin.getModel();
-            modelo.setStart((Date)spinDateIni.getValue());
-        if(fInicio.after(fFin)){
-            modelo.setValue((Date)spinDateIni.getValue());
-        }
-        
-        
-    }                                        
-
-    private void spinDatePubStateChanged(javax.swing.event.ChangeEvent evt) {                                         
-        Date fAlta = (Date)spinDatePub.getValue();
-        Date fInicio = (Date)spinDateIni.getValue();
-        SpinnerDateModel modelo =(SpinnerDateModel)spinDateIni.getModel();
-        modelo.setStart((Date)spinDatePub.getValue());
-        if(fAlta.after(fInicio)){
-            modelo.setValue((Date)spinDatePub.getValue());
-        }
-    }                                        
-    
-    boolean VerificarDatos(){
+    }//GEN-LAST:event_btnAceptarActionPerformed
+boolean VerificarDatos(){
         Date fecha1 = (Date)spinDateIni.getValue();
         Date fecha2 = (Date)spinDateFin.getValue();
         Date fechaPub = (Date)spinDatePub.getValue();
@@ -415,8 +377,22 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
                 fechaPub.after(fecha1);
                 
     }
+    private void spinDateIniStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spinDateIniStateChanged
+        Date fInicio = (Date)spinDateIni.getValue();
+        Date fFin = (Date)spinDateFin.getValue();
+        SpinnerDateModel modelo =(SpinnerDateModel)spinDateFin.getModel();
+            modelo.setStart((Date)spinDateIni.getValue());
+        if(fInicio.after(fFin)){
+            modelo.setValue((Date)spinDateIni.getValue());
+        }
+    }//GEN-LAST:event_spinDateIniStateChanged
 
-    // Variables declaration - do not modify                     
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_btnCancelarActionPerformed
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAceptar;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JCheckBox checkCupo;
@@ -427,7 +403,6 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JTextField nombreField;
@@ -436,5 +411,5 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
     private javax.swing.JSpinner spinDatePub;
     private javax.swing.JSpinner spinnerCupo;
     private javax.swing.JTable tableDocentes;
-    // End of variables declaration                   
+    // End of variables declaration//GEN-END:variables
 }

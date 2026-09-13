@@ -57,6 +57,21 @@ public class ManejadorEdicionCurso {
         if (ec != null) {
             ec.ModificarDatos(fInicio, fFin, cupo, fAlta, misUsuarios);
         }
+        
+        // Sincronizar los cambios con JPA
+            EntityManager em = getEntityManager();
+            try {
+                em.getTransaction().begin();
+                em.merge(ec);
+                em.getTransaction().commit();
+            } catch (Exception e) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                System.err.println("Error al actualizar curso en BD: " + e.getMessage());
+            } finally {
+                em.close();
+            }
     }
     
     public void Add(EdicionCurso ec) throws Exception {

@@ -187,11 +187,18 @@ public class AltaCurso extends javax.swing.JInternalFrame {
 
         boxInstituto.addActionListener(this::boxInstitutoActionPerformed);
 
+        spinnerHoras.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
+
         areaDescripcion.setColumns(20);
         areaDescripcion.setRows(5);
         jScrollPane2.setViewportView(areaDescripcion);
 
         jLabel5.setText("Cant. Creditos*");
+
+        spinnerCreditos.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
+        spinnerCreditos.setToolTipText("");
+
+        spinnerDuracion.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
 
         tableCursos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -473,54 +480,91 @@ public class AltaCurso extends javax.swing.JInternalFrame {
 
     private void buttonAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAceptarActionPerformed
         // Logica de boton aceptar
-        if (VerificarDatos()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Algunos campos deben ser completados", "Atencion", javax.swing.JOptionPane.ERROR_MESSAGE);
-        } else {
-            try {
-                List<String> previas = new ArrayList<>();
-                int tam = tableCursos.getRowCount();
-                for (int i = 0; i < tam; i++) {
-                    boolean auxBool = (Boolean) tableCursos.getValueAt(i, 1);
-                    if (auxBool) {
-                        String auxStr = (String) tableCursos.getValueAt(i, 0);
-                        previas.add(auxStr);
-                    }
-                }
+if (VerificarDatos()) {
+    javax.swing.JOptionPane.showMessageDialog(this, "Algunos campos deben ser completados", "Atención", javax.swing.JOptionPane.ERROR_MESSAGE);
+    return;
+}
 
-                int fila = tableDocentes.getSelectedRow();
-                if (fila == -1) {
-                    javax.swing.JOptionPane.showMessageDialog(this, "Debe seleccionar un docente", "Atencion", javax.swing.JOptionPane.ERROR_MESSAGE);
-                } else {
-                    String auxStr = (String) tableDocentes.getValueAt(fila, 0);
-                    
-                    if (ico.VerificarCurso(fieldNombre.getText())) {
-                        int respuesta = javax.swing.JOptionPane.showConfirmDialog(
-                                this,
-                                "El programa '" + fieldNombre.getText() + "' ya existe. ¿Deseas modificar sus datos?",
-                                "Programa Existente",
-                                javax.swing.JOptionPane.YES_NO_OPTION,
-                                javax.swing.JOptionPane.QUESTION_MESSAGE);
-
-                        if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
-                            // El usuario quiere modificarlo
-                            System.out.println(areaDescripcion.getText());
-                            ico.AltaCurso(boxInstituto.getSelectedItem().toString(), fieldNombre.getText(), areaDescripcion.getText(), (int) spinnerDuracion.getValue(), (int) spinnerHoras.getValue(), (int) spinnerCreditos.getValue(), fieldURL.getText(), previas, (Date) spinnerFecha.getValue(), auxStr);
-                            javax.swing.JOptionPane.showMessageDialog(this, "Programa actualizado con éxito.");
-                            this.dispose();
-                        } else {
-                            // El usuario canceló la operación
-                            this.dispose();
-                        }
-                    } else {
-                        ico.AltaCurso(boxInstituto.getSelectedItem().toString(), fieldNombre.getText(), areaDescripcion.getText(), (int) spinnerDuracion.getValue(), (int) spinnerHoras.getValue(), (int) spinnerCreditos.getValue(), fieldURL.getText(), previas, (Date) spinnerFecha.getValue(), auxStr);
-                        javax.swing.JOptionPane.showMessageDialog(this, "Curso ingresado con exito!", "System", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-                        this.dispose();
-                    }
-                }
-            } catch (Exception e) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Error al procesar el curso: " + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+try {
+    List<String> previas = new ArrayList<>();
+    int tam = tableCursos.getRowCount();
+    
+    // Obtención segura de los datos de la tabla de cursos
+    for (int i = 0; i < tam; i++) {
+        Object valBool = tableCursos.getValueAt(i, 1);
+        if (Boolean.TRUE.equals(valBool)) { // Evita NullPointerException o ClassCastException
+            Object valStr = tableCursos.getValueAt(i, 0);
+            if (valStr != null) {
+                previas.add(valStr.toString());
             }
         }
+    }
+
+    // Validación de selección de docente
+    int fila = tableDocentes.getSelectedRow();
+    if (fila == -1) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Debe seleccionar un docente", "Atención", javax.swing.JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+    
+    String docenteSeleccionado = tableDocentes.getValueAt(fila, 0).toString();
+    String nombreCurso = fieldNombre.getText().trim();
+
+    // Obtención segura del valor de la fecha
+    java.util.Date fecha = null;
+    if (spinnerFecha.getValue() instanceof java.util.Date) {
+        fecha = (java.util.Date) spinnerFecha.getValue();
+    }
+
+    // Verificación si el curso/programa ya existe
+    if (ico.VerificarCurso(nombreCurso)) {
+        int respuesta = javax.swing.JOptionPane.showConfirmDialog(
+                this,
+                "El programa '" + nombreCurso + "' ya existe. ¿Deseas modificar sus datos?",
+                "Programa Existente",
+                javax.swing.JOptionPane.YES_NO_OPTION,
+                javax.swing.JOptionPane.QUESTION_MESSAGE);
+
+        if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
+            // Nota: Verifica que tu método Modificar/AltaCurso en el backend reciba las operaciones UPDATE correctamente
+            ico.AltaCurso(
+                boxInstituto.getSelectedItem().toString(), 
+                nombreCurso, 
+                areaDescripcion.getText(), 
+                (int) spinnerDuracion.getValue(), 
+                (int) spinnerHoras.getValue(), 
+                (int) spinnerCreditos.getValue(), 
+                fieldURL.getText(), 
+                previas, 
+                fecha, 
+                docenteSeleccionado
+            );
+            javax.swing.JOptionPane.showMessageDialog(this, "Programa actualizado con éxito.", "Éxito", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            this.dispose();
+        }
+    } else {
+        // Alta de nuevo curso
+        ico.AltaCurso(
+            boxInstituto.getSelectedItem().toString(), 
+            nombreCurso, 
+            areaDescripcion.getText(), 
+            (int) spinnerDuracion.getValue(), 
+            (int) spinnerHoras.getValue(), 
+            (int) spinnerCreditos.getValue(), 
+            fieldURL.getText(), 
+            previas, 
+            fecha, 
+            docenteSeleccionado
+        );
+        javax.swing.JOptionPane.showMessageDialog(this, "Curso ingresado con éxito!", "System", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        this.dispose();
+    }
+
+} catch (Exception e) {
+    // Imprime la pila de llamadas en la consola para identificar exactamente la línea del error
+    e.printStackTrace(); 
+    javax.swing.JOptionPane.showMessageDialog(this, "Error al procesar el curso: " + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+}
     }//GEN-LAST:event_buttonAceptarActionPerformed
     boolean VerificarDatos() {
         return boxInstituto.getSelectedIndex() == 0

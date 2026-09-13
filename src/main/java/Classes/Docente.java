@@ -23,8 +23,9 @@ public class Docente extends UsuarioBase {
     @ManyToMany(mappedBy = "misDocentes", fetch = FetchType.EAGER)
     private List<Instituto> misInstitutos;
     
-    @OneToMany(mappedBy="miDocente")
-    private List<Curso> misCursos;
+    // En la clase Docente.java
+    @OneToMany(mappedBy = "miDocente", fetch = FetchType.EAGER)
+    private List<Curso> misCursos = new ArrayList<>();
     
     @ManyToMany(mappedBy = "misDocentes", fetch = FetchType.EAGER)
     @org.hibernate.annotations.Fetch(org.hibernate.annotations.FetchMode.SUBSELECT) // Para evitar conflictos de List con EAGER

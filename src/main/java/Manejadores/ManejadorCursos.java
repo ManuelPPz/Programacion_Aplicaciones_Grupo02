@@ -88,6 +88,21 @@ public class ManejadorCursos {
             auxPrevias.add(BuscarCurso(previas.get(i)));
         }
         c.ModificarMisDatos(descripcion, duracion, cantHoras, cantCreditos, URL, fAlta, auxPrevias, ub);
+        
+        // Sincronizar los cambios con JPA
+            EntityManager em = getEntityManager();
+            try {
+                em.getTransaction().begin();
+                em.merge(c);
+                em.getTransaction().commit();
+            } catch (Exception e) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                System.err.println("Error al actualizar usuario en BD: " + e.getMessage());
+            } finally {
+                em.close();
+            }
     }
     
     public void Add(Curso c) throws Exception{
