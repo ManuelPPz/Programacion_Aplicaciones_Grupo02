@@ -9,8 +9,10 @@ import DTsClasses.DTProgramaForm;
 import Logica.Fabric;
 import Logica.IController;
 import interfaces.MiniInterfazDeConsultaCurso;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import javax.swing.DefaultListModel;
@@ -42,9 +44,6 @@ public class MiniInterfazDeConsultaPrograma extends javax.swing.JInternalFrame {
         listCursos.setModel(modeloListaCursos);
  
         // Es una pantalla de consulta: las fechas no las carga el usuario.
-        spinnerFechadeInicio.setEnabled(false);
-        spinnerFechadeFinal.setEnabled(false);
-        spinnerFechadeAlta.setEnabled(false);
         txtDescripcion.setEditable(false);
     }
     
@@ -56,10 +55,10 @@ public class MiniInterfazDeConsultaPrograma extends javax.swing.JInternalFrame {
             txtDescripcion.setCaretPosition(0);
 
             // JSpinner con SpinnerDateModel necesita un Date no nulo -> si falta, usamos hoy.
-            spinnerFechadeInicio.setValue(dt.getVigenciaProg().getFechaFin() != null ? dt.getVigenciaProg().getFechaFin() : new Date());
-            spinnerFechadeFinal.setValue(dt.getVigenciaProg().getFechaFin() != null ? dt.getVigenciaProg().getFechaFin() : new Date());
-            spinnerFechadeAlta.setValue(dt.getFechaAlta() != null ? dt.getFechaAlta() : new Date());
-
+            SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+            bannerDateIni.setText(formato.format(dt.getVigenciaProg().getFechaFin() != null ? dt.getVigenciaProg().getFechaFin() : new Date()));
+            bannerDateFin.setText(formato.format(dt.getVigenciaProg().getFechaFin() != null ? dt.getVigenciaProg().getFechaFin() : new Date()));
+            bannerDatePub.setText(formato.format(dt.getFechaAlta() != null ? dt.getFechaAlta() : new Date()));
             modeloListaCursos.clear();
             List<String> cursos = dt.getCursos();
             if (cursos != null) {
@@ -101,11 +100,11 @@ public class MiniInterfazDeConsultaPrograma extends javax.swing.JInternalFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         txtDescripcion = new javax.swing.JTextArea();
         jLabel3 = new javax.swing.JLabel();
-        spinnerFechadeInicio = new javax.swing.JSpinner();
         jLabel8 = new javax.swing.JLabel();
-        spinnerFechadeFinal = new javax.swing.JSpinner();
         jLabel7 = new javax.swing.JLabel();
-        spinnerFechadeAlta = new javax.swing.JSpinner();
+        bannerDateIni = new javax.swing.JTextField();
+        bannerDatePub = new javax.swing.JTextField();
+        bannerDateFin = new javax.swing.JTextField();
 
         setClosable(true);
 
@@ -129,33 +128,37 @@ public class MiniInterfazDeConsultaPrograma extends javax.swing.JInternalFrame {
             pane2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pane2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         pane1.setTitle("Datos del Programa");
+        pane1.setEnabled(false);
+        pane1.setFocusTraversalPolicyProvider(true);
         pane1.setVisible(true);
 
         jLabel2.setText("Descripcion:");
 
+        txtDescripcion.setEditable(false);
+        txtDescripcion.setBackground(new java.awt.Color(255, 255, 255));
         txtDescripcion.setColumns(20);
         txtDescripcion.setRows(5);
+        txtDescripcion.setFocusable(false);
         jScrollPane1.setViewportView(txtDescripcion);
 
         jLabel3.setText("Fecha de Inicio:");
 
-        spinnerFechadeInicio.setModel(new javax.swing.SpinnerDateModel());
-        spinnerFechadeInicio.setEditor(new javax.swing.JSpinner.DateEditor(spinnerFechadeInicio, "dd/MM/yyyy"));
-
         jLabel8.setText("Fecha de Final:");
-
-        spinnerFechadeFinal.setModel(new javax.swing.SpinnerDateModel());
-        spinnerFechadeFinal.setEditor(new javax.swing.JSpinner.DateEditor(spinnerFechadeFinal, "dd/MM/yyyy"));
 
         jLabel7.setText("Fecha de Alta:");
 
-        spinnerFechadeAlta.setModel(new javax.swing.SpinnerDateModel());
-        spinnerFechadeAlta.setEditor(new javax.swing.JSpinner.DateEditor(spinnerFechadeAlta, "dd/MM/yyyy"));
+        bannerDateIni.setEditable(false);
+        bannerDateIni.setBackground(new java.awt.Color(255, 255, 255));
+        bannerDateIni.setFocusable(false);
+
+        bannerDatePub.setEditable(false);
+        bannerDatePub.setBackground(new java.awt.Color(255, 255, 255));
+        bannerDatePub.setFocusable(false);
 
         javax.swing.GroupLayout pane1Layout = new javax.swing.GroupLayout(pane1.getContentPane());
         pane1.getContentPane().setLayout(pane1Layout);
@@ -170,16 +173,14 @@ public class MiniInterfazDeConsultaPrograma extends javax.swing.JInternalFrame {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 393, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(pane1Layout.createSequentialGroup()
                         .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(spinnerFechadeInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(35, 35, 35)
-                        .addComponent(jLabel8)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(spinnerFechadeFinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(bannerDateIni, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(26, 26, 26)
+                        .addComponent(jLabel8))
                     .addGroup(pane1Layout.createSequentialGroup()
                         .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(spinnerFechadeAlta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(bannerDatePub, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(14, Short.MAX_VALUE))
         );
         pane1Layout.setVerticalGroup(
@@ -192,21 +193,27 @@ public class MiniInterfazDeConsultaPrograma extends javax.swing.JInternalFrame {
                 .addGap(18, 18, 18)
                 .addGroup(pane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(spinnerFechadeInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel8)
-                    .addComponent(spinnerFechadeFinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                    .addComponent(bannerDateIni, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(23, 23, 23)
                 .addGroup(pane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(spinnerFechadeAlta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(22, Short.MAX_VALUE))
+                    .addComponent(bannerDatePub, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(17, Short.MAX_VALUE))
         );
+
+        bannerDateFin.setEditable(false);
+        bannerDateFin.setBackground(new java.awt.Color(255, 255, 255));
+        bannerDateFin.setFocusable(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 520, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(322, Short.MAX_VALUE)
+                .addComponent(bannerDateFin, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(90, 90, 90))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
@@ -217,12 +224,15 @@ public class MiniInterfazDeConsultaPrograma extends javax.swing.JInternalFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 441, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(96, 96, 96)
+                .addComponent(bannerDateFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(321, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(pane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                     .addComponent(pane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
@@ -237,6 +247,9 @@ public class MiniInterfazDeConsultaPrograma extends javax.swing.JInternalFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField bannerDateFin;
+    private javax.swing.JTextField bannerDateIni;
+    private javax.swing.JTextField bannerDatePub;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel7;
@@ -246,9 +259,6 @@ public class MiniInterfazDeConsultaPrograma extends javax.swing.JInternalFrame {
     private javax.swing.JList<String> listCursos;
     private javax.swing.JInternalFrame pane1;
     private javax.swing.JInternalFrame pane2;
-    private javax.swing.JSpinner spinnerFechadeAlta;
-    private javax.swing.JSpinner spinnerFechadeFinal;
-    private javax.swing.JSpinner spinnerFechadeInicio;
     private javax.swing.JTextArea txtDescripcion;
     // End of variables declaration//GEN-END:variables
 }

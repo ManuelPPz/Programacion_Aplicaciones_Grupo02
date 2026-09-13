@@ -4,6 +4,8 @@
  */
 package interfaces;
 
+import javax.swing.ImageIcon;
+
 /**
  *
  * @author sebas
@@ -16,6 +18,7 @@ public class Presentacion extends javax.swing.JFrame {
      * Creates new form Presentacion
      */
     public Presentacion() {
+        setTitle("edEXT");
         initComponents();
     }
 
