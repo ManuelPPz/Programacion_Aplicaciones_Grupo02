@@ -76,9 +76,6 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
         jScrollPane1.setViewportView(jTextArea1);
 
         setClosable(true);
-        setIconifiable(true);
-        setMaximizable(true);
-        setResizable(true);
         setTitle("Alta de Usuario");
 
         jLabel1.setText("Nickname:");
@@ -132,7 +129,7 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
         buttonChooser.setText("...");
         buttonChooser.addActionListener(this::buttonChooserActionPerformed);
 
-        spinnerDate.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
+        spinnerDate.setModel(new javax.swing.SpinnerDateModel());
         spinnerDate.setEditor(new javax.swing.JSpinner.DateEditor(spinnerDate, "dd/MM/yyyy"));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
