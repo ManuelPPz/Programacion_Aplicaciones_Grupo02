@@ -38,8 +38,8 @@ public class Docente extends UsuarioBase {
         misCursos = new ArrayList<>();
     }
 
-    public Docente(String nick, String nombre, String apellido, String correo, Date fNac, byte[] img, List<Instituto> institutos) {
-        super(nick, nombre, apellido, correo, fNac, img);
+    public Docente(String nick, String nombre, String apellido, String correo, String contrasenia, Date fNac, byte[] img, List<Instituto> institutos) {
+        super(nick, nombre, apellido, correo, contrasenia, fNac, img);
         this.setInstitutos(institutos);
         this.misCursos = new ArrayList<>();
     }

@@ -81,7 +81,7 @@ public class ManejadorUsuario {
         }
     }
 
-    public UsuarioBase CrearUsuario(String nick, String nombre, String apellido, String correo, boolean docente, Date fNac, List<Instituto> institutos, String imgPath) throws IOException {
+    public UsuarioBase CrearUsuario(String nick, String nombre, String apellido, String correo, String contrasenia, boolean docente, Date fNac, List<Instituto> institutos, String imgPath) throws IOException {
         UsuarioBase returnUb;
         byte[] imgByte = null;
         if (imgPath != null && !imgPath.trim().isEmpty()) {
@@ -89,9 +89,9 @@ public class ManejadorUsuario {
         }
 
         if (docente) {
-            returnUb = new Docente(nick, nombre, apellido, correo, fNac, imgByte, institutos);
+            returnUb = new Docente(nick, nombre, apellido, correo, contrasenia, fNac, imgByte, institutos);
         } else {
-            returnUb = new Usuario(nick, nombre, apellido, correo, fNac, imgByte);
+            returnUb = new Usuario(nick, nombre, apellido, correo, contrasenia, fNac, imgByte);
         }
         return returnUb;
     }
@@ -266,7 +266,7 @@ public class ManejadorUsuario {
             }
         }
 
-        return new DTDocente(ub.getNickname(), ub.getNombre(), ub.getApellido(), ub.getCorreo(), ub.getFNac(), auxStr, img, auxCur, auxEdi, auxProg);
+        return new DTDocente(ub.getNickname(), ub.getNombre(), ub.getApellido(), ub.getCorreo(), ub.getPassword(), ub.getFNac(), auxStr, img, auxCur, auxEdi, auxProg);
 
         } else if (ub instanceof Usuario usuario) {
             List<String> auxEdi = new ArrayList<>();
@@ -291,7 +291,7 @@ public class ManejadorUsuario {
                     }
                 }
             }
-            return new DTUsuario(ub.getNickname(), ub.getNombre(), ub.getApellido(), ub.getCorreo(), ub.getFNac(), img, auxEdi, auxProg);
+            return new DTUsuario(ub.getNickname(), ub.getNombre(), ub.getApellido(), ub.getCorreo(), ub.getPassword(),ub.getFNac(), img, auxEdi, auxProg);
         }
         return null;
     }

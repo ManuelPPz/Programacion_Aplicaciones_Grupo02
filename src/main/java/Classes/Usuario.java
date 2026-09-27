@@ -15,6 +15,8 @@ import org.hibernate.annotations.FetchMode;
  * @author mateo
  */
 @Entity
+@Table(name="Usuario")
+@PrimaryKeyJoinColumn(name = "nickname")
 public class Usuario extends UsuarioBase {
 
     @OneToMany(mappedBy = "id.miUsuario", fetch = FetchType.EAGER)
@@ -28,8 +30,8 @@ public class Usuario extends UsuarioBase {
         super();
     }
 
-    public Usuario(String nick, String nombre, String apellido, String correo, Date fNac, byte[] img) {
-        super(nick, nombre, apellido, correo, fNac, img);
+    public Usuario(String nick, String nombre, String apellido, String correo,String contrasenia, Date fNac, byte[] img) {
+        super(nick, nombre, apellido, correo,contrasenia, fNac, img);
     }
 
     @Override

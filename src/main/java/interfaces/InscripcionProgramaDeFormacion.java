@@ -8,10 +8,14 @@ import DTsClasses.DTUsuarioBase;
 import DTsClasses.EnumDT;
 import Logica.Fabric;
 import Logica.IController;
+import com.toedter.calendar.JCalendar;
+import java.awt.BorderLayout;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.swing.JPopupMenu;
 import javax.swing.table.DefaultTableModel;
 /**
  *
@@ -21,6 +25,7 @@ public class InscripcionProgramaDeFormacion extends javax.swing.JInternalFrame {
     IController ico;
     List<Object[]> rowsProgramas;
     List<Object[]> rowsUsuario;
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
     public InscripcionProgramaDeFormacion() {
         Fabric f = Fabric.GetInstance();
         ico = f.GetIController();
@@ -112,10 +117,11 @@ public class InscripcionProgramaDeFormacion extends javax.swing.JInternalFrame {
         }
         
     }
-    private void Inscribir(int filaEdi, int filaUsu){
+    private void Inscribir(int filaEdi, int filaUsu) throws ParseException{
         DefaultTableModel modeloEdi = (DefaultTableModel) tableProgramas.getModel();
         DefaultTableModel modeloUsu = (DefaultTableModel) tableUsuarios.getModel();
-        ico.InscripcionUsuarioAProgramas((String)modeloEdi.getValueAt(filaEdi, 0), (String)modeloUsu.getValueAt(filaUsu, 0), (Date)spinDateIns.getValue());
+        Date fecha = sdf.parse(fieldFecha.getText());
+        ico.InscripcionUsuarioAProgramas((String)modeloEdi.getValueAt(filaEdi, 0), (String)modeloUsu.getValueAt(filaUsu, 0), fecha);
         javax.swing.JOptionPane.showMessageDialog(this, 
                     "Usuario "+(String)modeloUsu.getValueAt(filaUsu, 0)+" Inscripto con exito.", 
                     "Atención", 
@@ -132,7 +138,7 @@ public class InscripcionProgramaDeFormacion extends javax.swing.JInternalFrame {
         tableUsuarios = new javax.swing.JTable();
         btnAceptar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
-        spinDateIns = new javax.swing.JSpinner();
+        fieldFecha = new javax.swing.JTextField();
 
         setPreferredSize(new java.awt.Dimension(412, 500));
 
@@ -202,8 +208,13 @@ public class InscripcionProgramaDeFormacion extends javax.swing.JInternalFrame {
         btnCancelar.setText("Cancelar");
         btnCancelar.addActionListener(this::btnCancelarActionPerformed);
 
-        spinDateIns.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
-        spinDateIns.setEditor(new javax.swing.JSpinner.DateEditor(spinDateIns, "dd/MM/yyyy"));
+        fieldFecha.setMaximumSize(new java.awt.Dimension(64, 22));
+        fieldFecha.setPreferredSize(new java.awt.Dimension(64, 18));
+        fieldFecha.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                fieldFechaMousePressed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -211,15 +222,15 @@ public class InscripcionProgramaDeFormacion extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(21, 21, 21)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 352, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(fieldFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 352, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(spinDateIns, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnCancelar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnAceptar)))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 352, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                            .addComponent(btnCancelar)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btnAceptar))))
                 .addContainerGap(27, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -227,18 +238,15 @@ public class InscripcionProgramaDeFormacion extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(27, 27, 27)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(spinDateIns, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(39, 39, 39)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnAceptar)
-                            .addComponent(btnCancelar))))
-                .addContainerGap(19, Short.MAX_VALUE))
+                .addGap(26, 26, 26)
+                .addComponent(fieldFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(35, 35, 35)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAceptar)
+                    .addComponent(btnCancelar))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         pack();
@@ -249,7 +257,11 @@ public class InscripcionProgramaDeFormacion extends javax.swing.JInternalFrame {
         int filaUsu = tableUsuarios.getSelectedRow();
         if(filaProg!=-1){
             if(filaUsu!=-1){
+                try {
                     Inscribir(filaProg,filaUsu);
+                } catch (ParseException ex) {
+                    System.getLogger("Error en el la inscripcion del programa de formacion");
+                }
                 }else{
                     javax.swing.JOptionPane.showMessageDialog(this, 
                     "Debe seleccionar un usuario para continuar.", 
@@ -268,13 +280,36 @@ public class InscripcionProgramaDeFormacion extends javax.swing.JInternalFrame {
         this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
+    private void fieldFechaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fieldFechaMousePressed
+        JPopupMenu popupMenu = new JPopupMenu();
+        JCalendar popupCalendar = new JCalendar();
+
+        // Configurar el evento al seleccionar una fecha
+        popupCalendar.getDayChooser().addPropertyChangeListener("day", evtc -> {
+            Date fechaSeleccionada = popupCalendar.getDate();
+
+            if (fechaSeleccionada != null) {
+                fieldFecha.setText(sdf.format(fechaSeleccionada));
+            }
+
+            // Cerramos el menú flotante al seleccionar el día
+            popupMenu.setVisible(false);
+        });
+
+        popupMenu.setLayout(new BorderLayout());
+        popupMenu.add(popupCalendar, BorderLayout.CENTER);
+
+        // DESPLEGAR EL POPUP (Muestra el calendario justo debajo del JTextField)
+        popupMenu.show(fieldFecha, 0, fieldFecha.getHeight());
+    }//GEN-LAST:event_fieldFechaMousePressed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAceptar;
     private javax.swing.JButton btnCancelar;
+    private javax.swing.JTextField fieldFecha;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JSpinner spinDateIns;
     private javax.swing.JTable tableProgramas;
     private javax.swing.JTable tableUsuarios;
     // End of variables declaration//GEN-END:variables

@@ -6,10 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- *
- * @author mateo
- */
+
+
 @Entity
 @Table(name = "Curso")
 public class Curso implements Serializable {
@@ -61,6 +59,14 @@ public class Curso implements Serializable {
     @JoinColumn(name="Nombre_Doc")
     private Docente miDocente;
     
+    @ManyToMany
+    @JoinTable(
+        name = "Categoria_Curso", 
+        joinColumns = @JoinColumn(name="Nombre_Curso"), 
+        inverseJoinColumns = @JoinColumn(name="Categoria_Nombre")
+    )
+    private List<Categoria> misCategorias;
+    
     public Instituto getInstituto() { return miInstituto; }
     public String getNombre() { return nombre; }
     public String getDescripcion(){ return descripcion; }
@@ -73,11 +79,12 @@ public class Curso implements Serializable {
     public List<EdicionCurso> getEdiciones(){ return misEdiciones; }
     public List<ProgramaDeFormacion> getProgramas(){ return this.misProgramas; }
     public UsuarioBase getDocente(){ return this.miDocente; }
+    public List<Categoria> getCategorias(){return this.misCategorias;}
     
     public Curso() {
     }
     
-    public Curso(Instituto instituto, String nombre, String descripcion, Integer duracion, Float cantHoras, Integer cantCreditos, String URL, Date fAlta, List<Curso> previas, UsuarioBase ub){
+    public Curso(Instituto instituto, String nombre, String descripcion, Integer duracion, Float cantHoras, Integer cantCreditos, String URL, Date fAlta, List<Curso> previas, UsuarioBase ub, List<Categoria> categorias){
         this.miInstituto = instituto;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -88,11 +95,12 @@ public class Curso implements Serializable {
         this.fAlta = fAlta;
         this.previas = previas != null ? previas : new ArrayList<>();
         this.miDocente = (Docente)ub;
+        this.misCategorias = categorias;
         this.misProgramas = new ArrayList<>();
         this.misEdiciones = new ArrayList<>();
     }
 
-    public void ModificarMisDatos(String descripcion, Integer duracion, Float cantHoras, Integer cantCreditos, String URL, Date fAlta, List<Curso> previas, UsuarioBase ub){
+    public void ModificarMisDatos(String descripcion, Integer duracion, Float cantHoras, Integer cantCreditos, String URL, Date fAlta, List<Curso> previas, UsuarioBase ub, List<Categoria> newCategoria){
         this.descripcion = descripcion;
         this.duracion = duracion;
         this.cantHoras = cantHoras;
@@ -101,6 +109,7 @@ public class Curso implements Serializable {
         this.fAlta = fAlta;
         this.previas = previas;
         this.miDocente = (Docente)ub;
+        this.misCategorias = newCategoria;
     }
     
     public void AddEdicion(EdicionCurso ec){

@@ -34,7 +34,7 @@ public interface IController {
     //Alta Curso
     //La fecha del curso se toma dentro de la funcion
     //Preguntar al profe si los cursos previos son el tipo de dato o un int
-    public abstract void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso, String docente) throws Exception;
+    public abstract void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso, String docente, List<String> categorias) throws Exception;
     
     //Consulta Curso
     //Se modificara al crear el tipo de dato curso retornando el tipo de dato "Curso"
@@ -81,6 +81,8 @@ public interface IController {
     public abstract boolean VerificarEdicion(String nombre);
     //Verificar existencia de programas de formacion
     public abstract boolean VerificarPrograma(String nombre);
+    //Verificar existencia de categoria
+    public abstract boolean VerificarCategoria(String nombre);
     
     //Devoolver lista completa de DTs
     public abstract List<DTMaster> ListarClase(EnumDT enumType);
@@ -92,6 +94,8 @@ public interface IController {
     //Devolver lista de docentes x instituto
     public abstract List<DTMaster>ListarDocentes(String nomInstituto);
     
-    public List<DTMaster>ListarProgramaDeForm();
+    public abstract List<DTMaster>ListarProgramaDeForm();
+    public abstract String GenerateRandPassword();
     
+    public abstract void AltaCategoria(String nombre);
 }

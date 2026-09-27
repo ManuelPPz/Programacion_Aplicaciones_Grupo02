@@ -13,7 +13,7 @@ import javax.swing.ImageIcon;
  * @author mateo
  */
 public class DTUsuario extends DTUsuarioBase{
-    public DTUsuario(String nickname,String nombre,String apellido,String correo,Date fNac, ImageIcon img, List<String> ediciones, List<String> programas){
-        super(nickname,nombre,apellido,correo,fNac,img, ediciones, programas);
+    public DTUsuario(String nickname,String nombre,String apellido,String correo, String password,Date fNac, ImageIcon img, List<String> ediciones, List<String> programas){
+        super(nickname,nombre,apellido,correo, password,fNac,img, ediciones, programas);
     }
 }
