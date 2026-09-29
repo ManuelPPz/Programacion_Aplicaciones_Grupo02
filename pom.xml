@@ -18,6 +18,14 @@
     <name>proyecto_pda_grupo02</name>
 
     <dependencies>
+        <!-- Jakarta Servlet API -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- MySQL Connector -->
         <dependency>
             <groupId>com.mysql</groupId>
@@ -39,16 +47,19 @@
             <version>5.10.2</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>com.toedter</groupId>
             <artifactId>jcalendar</artifactId>
             <version>1.4</version>
         </dependency>
+
         <dependency>
             <groupId>org.netbeans.external</groupId>
             <artifactId>AbsoluteLayout</artifactId>
             <version>RELEASE300</version>
         </dependency>
+
         <dependency>
             <groupId>org.eclipse.angus</groupId>
             <artifactId>angus-mail</artifactId>
