@@ -346,7 +346,7 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
     private void fieldFechaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fieldFechaMouseClicked
         JPopupMenu popupMenu = new JPopupMenu();
         JCalendar popupCalendar = new JCalendar();
-
+        popupCalendar.setMaxSelectableDate(new Date());
         // Configurar el evento al seleccionar una fecha
         popupCalendar.getDayChooser().addPropertyChangeListener("day", evtc -> {
             Date fechaSeleccionada = popupCalendar.getDate();
