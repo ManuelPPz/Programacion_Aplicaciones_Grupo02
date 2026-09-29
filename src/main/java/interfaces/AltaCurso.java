@@ -42,7 +42,7 @@ public class AltaCurso extends javax.swing.JInternalFrame {
     
     DefaultTableModel modeloCurso;
     TableRowSorter<DefaultTableModel> sorterCurso;
-    
+    JCalendar popupCalendar;
     public AltaCurso() {
         rowsDocente = new ArrayList<>();
         rowsCursos = new ArrayList<>(); // Es recomendable inicializar ambas listas aquí
@@ -51,6 +51,7 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         ico = f.GetIController();
 
         // 1. Inicializar componentes visuales primero
+        popupCalendar = new JCalendar();
         initComponents();
 
         // 2. Vincular modelos y sorters después de initComponents
@@ -547,17 +548,23 @@ public class AltaCurso extends javax.swing.JInternalFrame {
 
     private void fieldFechaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fieldFechaMouseClicked
         JPopupMenu popupMenu = new JPopupMenu();
-        JCalendar popupCalendar = new JCalendar();
+        
 
         // Configurar el evento al seleccionar una fecha
         popupCalendar.getDayChooser().addPropertyChangeListener("day", evtc -> {
-            Date fechaSeleccionada = popupCalendar.getDate();
+            // 1. Obtener el nuevo día seleccionado
+            int nuevoDia = (Integer) evtc.getNewValue();
+
+            // 2. Obtener el objeto Calendar actual y asignarle el nuevo día
+            java.util.Calendar cal = popupCalendar.getCalendar();
+            cal.set(java.util.Calendar.DAY_OF_MONTH, nuevoDia);
+
+            Date fechaSeleccionada = cal.getTime();
 
             if (fechaSeleccionada != null) {
                 fieldFecha.setText(sdf.format(fechaSeleccionada));
             }
 
-            // Cerramos el menú flotante al seleccionar el día
             popupMenu.setVisible(false);
         });
 
