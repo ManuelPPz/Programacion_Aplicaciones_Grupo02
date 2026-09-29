@@ -30,6 +30,8 @@ public class UsuarioBase implements Serializable {
     //Falta hacerlo que sea unico
     @Column(name="Correo", nullable=false, unique=true)
     private String correo;
+    @Column(name="contrasenia")
+    private String contrasenia;
     @Column(name="fNac")
     private Date fNac;
     @Column(name="Imagen", columnDefinition = "BLOB")
@@ -41,13 +43,15 @@ public class UsuarioBase implements Serializable {
     public String getCorreo(){return this.correo;}
     public Date getFNac(){return this.fNac;}
     public byte[] getImage(){return this.image;}
+    public String getPassword(){return this.contrasenia;}
     
     public UsuarioBase(){}
-    public UsuarioBase(String nick, String nom, String apellido, String correo, Date fNac,byte[] img){
+    public UsuarioBase(String nick, String nom, String apellido, String correo,String contrasenia, Date fNac,byte[] img){
         this.nickname = nick;
         this.nombre = nom;
         this.apellido = apellido;
         this.correo = correo;
+        this.contrasenia = contrasenia;
         this.fNac = fNac;
         this.image = img;
     }

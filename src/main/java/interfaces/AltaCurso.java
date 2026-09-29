@@ -7,13 +7,19 @@ package interfaces;
 import DTsClasses.DTCurso;
 import DTsClasses.DTDocente;
 import DTsClasses.DTInstituto;
+import DTsClasses.DTCategoria;
 import DTsClasses.DTMaster;
 import DTsClasses.EnumDT;
 import Logica.Fabric;
 import Logica.IController;
+import com.toedter.calendar.JCalendar;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.swing.JPopupMenu;
 import javax.swing.RowFilter;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -30,14 +36,49 @@ public class AltaCurso extends javax.swing.JInternalFrame {
     List<Object[]> rowsDocente;
     List<Object[]> rowsCursos;
 
-    /**
-     * Creates new form AltaUsuario
-     */
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    DefaultTableModel modeloDocente;
+    TableRowSorter<DefaultTableModel> sorterDocente;
+    
+    DefaultTableModel modeloCurso;
+    TableRowSorter<DefaultTableModel> sorterCurso;
+    JCalendar popupCalendar;
     public AltaCurso() {
         rowsDocente = new ArrayList<>();
+        rowsCursos = new ArrayList<>(); // Es recomendable inicializar ambas listas aquí
+
         Fabric f = Fabric.GetInstance();
         ico = f.GetIController();
+
+        // 1. Inicializar componentes visuales primero
+        popupCalendar = new JCalendar();
         initComponents();
+
+        // 2. Vincular modelos y sorters después de initComponents
+        modeloDocente = (DefaultTableModel) tableDocentes.getModel();
+        sorterDocente = new TableRowSorter<>(modeloDocente);
+
+        modeloCurso = (DefaultTableModel) tableCursos.getModel();
+        sorterCurso = new TableRowSorter<>(modeloCurso);
+
+        // 3. Asignar listeners de filtrado al final, cuando sorterCurso y sorterDocente NO son null
+        fieldCurso.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) { FiltrarCurso(); }
+            @Override
+            public void removeUpdate(DocumentEvent e) { FiltrarCurso(); }
+            @Override
+            public void changedUpdate(DocumentEvent e) { }
+        });
+
+        fieldDocente.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) { FiltrarDocente(); }
+            @Override
+            public void removeUpdate(DocumentEvent e) { FiltrarDocente(); }
+            @Override
+            public void changedUpdate(DocumentEvent e) { }
+        });
     }
 
     private void IniciarRows(List<DTMaster> list) {
@@ -104,29 +145,31 @@ public class AltaCurso extends javax.swing.JInternalFrame {
 
     public void FiltrarDocente() {
         //Para filtrar los docentes
-        DefaultTableModel modelo = (DefaultTableModel) tableDocentes.getModel();
-        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelo);
-        tableDocentes.setRowSorter(sorter);
+        if(fieldDocente.getForeground()==new Color(204,204,204)){
+            return;
+        }
+        tableDocentes.setRowSorter(sorterDocente);
 
         String texto = fieldDocente.getText();
         if (texto.trim().length() == 0) {
-            sorter.setRowFilter(null);
+            sorterDocente.setRowFilter(null);
         } else {
-            sorter.setRowFilter(RowFilter.regexFilter("(?i)" + texto, 0));
+            sorterDocente.setRowFilter(RowFilter.regexFilter("(?i)" + texto, 0));
         }
     }
 
     public void FiltrarCurso() {
         //Para filtrar los cursos
-        DefaultTableModel modelo = (DefaultTableModel) tableCursos.getModel();
-        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelo);
-        tableCursos.setRowSorter(sorter);
+        if(fieldCurso.getForeground()==new Color(204,204,204)){
+            return;
+        }
+        tableCursos.setRowSorter(sorterCurso);
 
         String texto = fieldCurso.getText();
         if (texto.trim().length() == 0) {
-            sorter.setRowFilter(null);
+            sorterCurso.setRowFilter(null);
         } else {
-            sorter.setRowFilter(RowFilter.regexFilter("(?i)" + texto, 0));
+            sorterCurso.setRowFilter(RowFilter.regexFilter("(?i)" + texto, 0));
         }
     }
     public void ResetTable(EnumDT tipoDT){
@@ -143,7 +186,6 @@ public class AltaCurso extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         fieldNombre = new javax.swing.JTextField();
-        spinnerFecha = new javax.swing.JSpinner();
         boxInstituto = new javax.swing.JComboBox<>();
         spinnerHoras = new javax.swing.JSpinner();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -151,26 +193,30 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         jLabel5 = new javax.swing.JLabel();
         spinnerCreditos = new javax.swing.JSpinner();
         spinnerDuracion = new javax.swing.JSpinner();
+        fieldCurso = new javax.swing.JTextField();
         jScrollPane7 = new javax.swing.JScrollPane();
         tableCursos = new javax.swing.JTable();
         jLabel11 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
+        fieldDocente = new javax.swing.JTextField();
         jScrollPane8 = new javax.swing.JScrollPane();
         tableDocentes = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         fieldURL = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         buttonAceptar = new javax.swing.JButton();
-        fieldDocente = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         btnCancelar = new javax.swing.JButton();
-        fieldCurso = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
+        fieldFecha = new javax.swing.JTextField();
+        comboCategoria = new javax.swing.JComboBox<>();
+        jLabel16 = new javax.swing.JLabel();
 
         setMaximumSize(new java.awt.Dimension(423, 611));
         setMinimumSize(new java.awt.Dimension(423, 611));
         setName(""); // NOI18N
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         fieldNombre.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
@@ -181,24 +227,46 @@ public class AltaCurso extends javax.swing.JInternalFrame {
             }
         });
         fieldNombre.addActionListener(this::fieldNombreActionPerformed);
-
-        spinnerFecha.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
-        spinnerFecha.setEditor(new javax.swing.JSpinner.DateEditor(spinnerFecha, "dd/MM/yyyy"));
+        getContentPane().add(fieldNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(116, 44, 254, -1));
 
         boxInstituto.addActionListener(this::boxInstitutoActionPerformed);
+        getContentPane().add(boxInstituto, new org.netbeans.lib.awtextra.AbsoluteConstraints(116, 16, 254, -1));
+        List<DTMaster> auxListIns = ico.ListarClase(EnumDT.DT_INSTITUTO);
+
+        boxInstituto.insertItemAt("SIN DATOS", 0);
+        for(int i = 0;i<auxListIns.size();i++){
+            DTInstituto dt = (DTInstituto)auxListIns.get(i);
+            boxInstituto.insertItemAt(dt.getNombre(), i+1);
+        }
+        boxInstituto.setSelectedIndex(0);
 
         spinnerHoras.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
+        getContentPane().add(spinnerHoras, new org.netbeans.lib.awtextra.AbsoluteConstraints(217, 184, 48, 38));
 
         areaDescripcion.setColumns(20);
         areaDescripcion.setRows(5);
         jScrollPane2.setViewportView(areaDescripcion);
 
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(116, 83, 254, -1));
+
         jLabel5.setText("Cant. Creditos*");
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 192, 100, -1));
 
         spinnerCreditos.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
         spinnerCreditos.setToolTipText("");
+        getContentPane().add(spinnerCreditos, new org.netbeans.lib.awtextra.AbsoluteConstraints(357, 184, 48, 38));
 
         spinnerDuracion.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
+        getContentPane().add(spinnerDuracion, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 181, 48, 38));
+
+        fieldCurso.setForeground(new java.awt.Color(204, 204, 204));
+        fieldCurso.setText("Previas...");
+        fieldCurso.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                fieldCursoFocusGained(evt);
+            }
+        });
+        getContentPane().add(fieldCurso, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 358, 200, 23));
 
         tableCursos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -225,9 +293,25 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         });
         jScrollPane7.setViewportView(tableCursos);
 
+        getContentPane().add(jScrollPane7, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 360, 200, 138));
+
         jLabel11.setText("Cant. Horas*");
+        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(144, 192, 80, -1));
 
         jLabel13.setText("URL*");
+        getContentPane().add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(31, 236, 72, -1));
+
+        fieldDocente.setForeground(new java.awt.Color(204, 204, 204));
+        fieldDocente.setText("Docente...");
+        fieldDocente.setMinimumSize(new java.awt.Dimension(64, 10));
+        fieldDocente.setPreferredSize(new java.awt.Dimension(68, 9));
+        fieldDocente.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                fieldDocenteFocusGained(evt);
+            }
+        });
+        fieldDocente.addActionListener(this::fieldDocenteActionPerformed);
+        getContentPane().add(fieldDocente, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 358, 120, 23));
 
         tableDocentes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -253,189 +337,63 @@ public class AltaCurso extends javax.swing.JInternalFrame {
             }
         });
         jScrollPane8.setViewportView(tableDocentes);
+        if (tableDocentes.getColumnModel().getColumnCount() > 0) {
+            tableDocentes.getColumnModel().getColumn(0).setResizable(false);
+        }
+
+        getContentPane().add(jScrollPane8, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 360, 120, 138));
 
         jLabel1.setText("Instituto*");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(31, 19, 61, -1));
 
         fieldURL.addActionListener(this::fieldURLActionPerformed);
+        getContentPane().add(fieldURL, new org.netbeans.lib.awtextra.AbsoluteConstraints(121, 233, 247, -1));
 
         jLabel2.setText("Nombre*");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(31, 47, 61, -1));
 
         buttonAceptar.setText("Aceptar");
         buttonAceptar.addActionListener(this::buttonAceptarActionPerformed);
-
-        fieldDocente.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                FiltrarDocente();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                FiltrarDocente();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-
-            }
-        });
+        getContentPane().add(buttonAceptar, new org.netbeans.lib.awtextra.AbsoluteConstraints(315, 527, 90, -1));
 
         jLabel3.setText("Descripcion*");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(31, 83, 90, -1));
 
         btnCancelar.setForeground(new java.awt.Color(255, 102, 102));
         btnCancelar.setText("Cancelar");
         btnCancelar.addActionListener(this::btnCancelarActionPerformed);
-
-        fieldCurso.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                FiltrarCurso();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                FiltrarCurso();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-
-            }
-        });
+        getContentPane().add(btnCancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(205, 527, 90, -1));
 
         jLabel4.setText("Duracion*");
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(31, 192, 60, -1));
 
-        jLabel15.setText("Fecha de alta*");
+        jLabel15.setText("Categoria/s");
+        getContentPane().add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 320, 101, 20));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(23, 23, 23)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(fieldDocente, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(8, 8, 8)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addGap(59, 59, 59)
-                                            .addComponent(spinnerDuracion, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGap(6, 6, 6)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addGap(73, 73, 73)
-                                            .addComponent(spinnerHoras, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGap(5, 5, 5)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addGap(87, 87, 87)
-                                            .addComponent(spinnerCreditos, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(6, 6, 6)
-                                    .addComponent(spinnerFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(24, 24, 24)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(fieldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(boxInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(fieldCurso, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(fieldURL, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addComponent(jScrollPane8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20)
-                .addComponent(buttonAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(3, 3, 3)
-                        .addComponent(jLabel1))
-                    .addComponent(boxInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(6, 6, 6)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(fieldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(17, 17, 17)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(spinnerDuracion, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(11, 11, 11)
-                        .addComponent(jLabel4))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(3, 3, 3)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(spinnerHoras, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(8, 8, 8)
-                                .addComponent(jLabel11))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(3, 3, 3)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(8, 8, 8)
-                                .addComponent(jLabel5))
-                            .addComponent(spinnerCreditos, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(11, 11, 11)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel13)
-                    .addComponent(fieldURL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(3, 3, 3)
-                        .addComponent(jLabel15))
-                    .addComponent(spinnerFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(fieldDocente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(fieldCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnCancelar)
-                    .addComponent(buttonAceptar))
-                .addGap(25, 25, 25))
-        );
+        fieldFecha.setMaximumSize(new java.awt.Dimension(64, 22));
+        fieldFecha.setPreferredSize(new java.awt.Dimension(64, 18));
+        fieldFecha.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                fieldFechaMouseClicked(evt);
+            }
+        });
+        getContentPane().add(fieldFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 275, 250, 20));
 
-        List<DTMaster> auxListIns = ico.ListarClase(EnumDT.DT_INSTITUTO);
+        comboCategoria.addActionListener(this::comboCategoriaActionPerformed);
+        List<DTMaster> auxListCat = ico.ListarClase(EnumDT.DT_CATEGORIA);
+        comboCategoria.insertItemAt("Seleccionar...", 0);
+        for(int i = 0;i<auxListCat.size();i++){
+            DTMaster dt = auxListCat.get(i);
+            if(dt instanceof DTCategoria dtc){
+                comboCategoria.insertItemAt(dtc.getNombre(), i+1);
+            }
 
-        boxInstituto.insertItemAt("SIN DATOS", 0);
-        for(int i = 0;i<auxListIns.size();i++){
-            DTInstituto dt = (DTInstituto)auxListIns.get(i);
-            boxInstituto.insertItemAt(dt.getNombre(), i+1);
         }
-        boxInstituto.setSelectedIndex(0);
+        comboCategoria.setSelectedIndex(0);
+        getContentPane().add(comboCategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 320, 200, 20));
+
+        jLabel16.setText("Fecha de alta*");
+        getContentPane().add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(31, 275, 107, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -480,91 +438,100 @@ public class AltaCurso extends javax.swing.JInternalFrame {
 
     private void buttonAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAceptarActionPerformed
         // Logica de boton aceptar
-if (VerificarDatos()) {
-    javax.swing.JOptionPane.showMessageDialog(this, "Algunos campos deben ser completados", "Atención", javax.swing.JOptionPane.ERROR_MESSAGE);
-    return;
-}
+        if (VerificarDatos()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Algunos campos deben ser completados", "Atención", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-try {
-    List<String> previas = new ArrayList<>();
-    int tam = tableCursos.getRowCount();
-    
-    // Obtención segura de los datos de la tabla de cursos
-    for (int i = 0; i < tam; i++) {
-        Object valBool = tableCursos.getValueAt(i, 1);
-        if (Boolean.TRUE.equals(valBool)) { // Evita NullPointerException o ClassCastException
-            Object valStr = tableCursos.getValueAt(i, 0);
-            if (valStr != null) {
-                previas.add(valStr.toString());
+        try {
+            List<String> previas = new ArrayList<>();
+            int tam = tableCursos.getRowCount();
+
+            // Obtención segura de los datos de la tabla de cursos
+            for (int i = 0; i < tam; i++) {
+                Object valBool = tableCursos.getValueAt(i, 1);
+                if (Boolean.TRUE.equals(valBool)) { // Evita NullPointerException o ClassCastException
+                    Object valStr = tableCursos.getValueAt(i, 0);
+                    if (valStr != null) {
+                        previas.add(valStr.toString());
+                    }
+                }
             }
+            //Obtencion segura de los datos del combo box categoria
+            List<String> categorias = new ArrayList();
+            int tamCat = comboCategoria.getItemCount();
+            for(int i = 1;i<tamCat;i++){
+                String text = (String) comboCategoria.getItemAt(i);
+                if(text.contains("✓")){
+                    String auxSubString = text.substring(2);
+                    categorias.add(auxSubString);
+                }
+            }
+
+            // Validación de selección de docente
+            int fila = tableDocentes.getSelectedRow();
+            if (fila == -1) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Debe seleccionar un docente", "Atención", javax.swing.JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            String docenteSeleccionado = tableDocentes.getValueAt(fila, 0).toString();
+            String nombreCurso = fieldNombre.getText().trim();
+
+            // Obtención segura del valor de la fecha
+            Date fecha = sdf.parse(fieldFecha.getText());
+
+            // Verificación si el curso/programa ya existe
+            if (ico.VerificarCurso(nombreCurso)) {
+                int respuesta = javax.swing.JOptionPane.showConfirmDialog(
+                        this,
+                        "El programa '" + nombreCurso + "' ya existe. ¿Deseas modificar sus datos?",
+                        "Programa Existente",
+                        javax.swing.JOptionPane.YES_NO_OPTION,
+                        javax.swing.JOptionPane.QUESTION_MESSAGE);
+
+                if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
+                    // Nota: Verifica que tu método Modificar/AltaCurso en el backend reciba las operaciones UPDATE correctamente
+                    ico.AltaCurso(
+                        boxInstituto.getSelectedItem().toString(), 
+                        nombreCurso, 
+                        areaDescripcion.getText(), 
+                        (int) spinnerDuracion.getValue(), 
+                        (int) spinnerHoras.getValue(), 
+                        (int) spinnerCreditos.getValue(), 
+                        fieldURL.getText(), 
+                        previas, 
+                        fecha, 
+                        docenteSeleccionado,
+                        categorias
+                    );
+                    javax.swing.JOptionPane.showMessageDialog(this, "Programa actualizado con éxito.", "Éxito", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                    this.dispose();
+                }
+            } else {
+                // Alta de nuevo curso
+                ico.AltaCurso(
+                    boxInstituto.getSelectedItem().toString(), 
+                    nombreCurso, 
+                    areaDescripcion.getText(), 
+                    (int) spinnerDuracion.getValue(), 
+                    (int) spinnerHoras.getValue(), 
+                    (int) spinnerCreditos.getValue(), 
+                    fieldURL.getText(), 
+                    previas, 
+                    fecha, 
+                    docenteSeleccionado,
+                    categorias
+                );
+                javax.swing.JOptionPane.showMessageDialog(this, "Curso ingresado con éxito!", "System", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                this.dispose();
+            }
+
+        } catch (Exception e) {
+            // Imprime la pila de llamadas en la consola para identificar exactamente la línea del error
+            e.printStackTrace(); 
+            javax.swing.JOptionPane.showMessageDialog(this, "Error al procesar el curso: " + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    // Validación de selección de docente
-    int fila = tableDocentes.getSelectedRow();
-    if (fila == -1) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Debe seleccionar un docente", "Atención", javax.swing.JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-    
-    String docenteSeleccionado = tableDocentes.getValueAt(fila, 0).toString();
-    String nombreCurso = fieldNombre.getText().trim();
-
-    // Obtención segura del valor de la fecha
-    java.util.Date fecha = null;
-    if (spinnerFecha.getValue() instanceof java.util.Date) {
-        fecha = (java.util.Date) spinnerFecha.getValue();
-    }
-
-    // Verificación si el curso/programa ya existe
-    if (ico.VerificarCurso(nombreCurso)) {
-        int respuesta = javax.swing.JOptionPane.showConfirmDialog(
-                this,
-                "El programa '" + nombreCurso + "' ya existe. ¿Deseas modificar sus datos?",
-                "Programa Existente",
-                javax.swing.JOptionPane.YES_NO_OPTION,
-                javax.swing.JOptionPane.QUESTION_MESSAGE);
-
-        if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
-            // Nota: Verifica que tu método Modificar/AltaCurso en el backend reciba las operaciones UPDATE correctamente
-            ico.AltaCurso(
-                boxInstituto.getSelectedItem().toString(), 
-                nombreCurso, 
-                areaDescripcion.getText(), 
-                (int) spinnerDuracion.getValue(), 
-                (int) spinnerHoras.getValue(), 
-                (int) spinnerCreditos.getValue(), 
-                fieldURL.getText(), 
-                previas, 
-                fecha, 
-                docenteSeleccionado
-            );
-            javax.swing.JOptionPane.showMessageDialog(this, "Programa actualizado con éxito.", "Éxito", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-            this.dispose();
-        }
-    } else {
-        // Alta de nuevo curso
-        ico.AltaCurso(
-            boxInstituto.getSelectedItem().toString(), 
-            nombreCurso, 
-            areaDescripcion.getText(), 
-            (int) spinnerDuracion.getValue(), 
-            (int) spinnerHoras.getValue(), 
-            (int) spinnerCreditos.getValue(), 
-            fieldURL.getText(), 
-            previas, 
-            fecha, 
-            docenteSeleccionado
-        );
-        javax.swing.JOptionPane.showMessageDialog(this, "Curso ingresado con éxito!", "System", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-        this.dispose();
-    }
-
-} catch (Exception e) {
-    // Imprime la pila de llamadas en la consola para identificar exactamente la línea del error
-    e.printStackTrace(); 
-    javax.swing.JOptionPane.showMessageDialog(this, "Error al procesar el curso: " + e.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-}
     }//GEN-LAST:event_buttonAceptarActionPerformed
     boolean VerificarDatos() {
         return boxInstituto.getSelectedIndex() == 0
@@ -579,20 +546,84 @@ try {
         this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
+    private void fieldFechaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fieldFechaMouseClicked
+        JPopupMenu popupMenu = new JPopupMenu();
+        
+
+        // Configurar el evento al seleccionar una fecha
+        popupCalendar.getDayChooser().addPropertyChangeListener("day", evtc -> {
+            // 1. Obtener el nuevo día seleccionado
+            int nuevoDia = (Integer) evtc.getNewValue();
+
+            // 2. Obtener el objeto Calendar actual y asignarle el nuevo día
+            java.util.Calendar cal = popupCalendar.getCalendar();
+            cal.set(java.util.Calendar.DAY_OF_MONTH, nuevoDia);
+
+            Date fechaSeleccionada = cal.getTime();
+
+            if (fechaSeleccionada != null) {
+                fieldFecha.setText(sdf.format(fechaSeleccionada));
+            }
+
+            popupMenu.setVisible(false);
+        });
+
+        popupMenu.setLayout(new BorderLayout());
+        popupMenu.add(popupCalendar, BorderLayout.CENTER);
+
+        // DESPLEGAR EL POPUP (Muestra el calendario justo debajo del JTextField)
+        popupMenu.show(fieldFecha, 0, fieldFecha.getHeight());
+    }//GEN-LAST:event_fieldFechaMouseClicked
+
+    private void fieldDocenteFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fieldDocenteFocusGained
+        fieldDocente.setText("");
+        fieldDocente.setForeground(Color.black);
+    }//GEN-LAST:event_fieldDocenteFocusGained
+
+    private void fieldCursoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fieldCursoFocusGained
+        fieldCurso.setText("");
+        fieldCurso.setForeground(Color.black);
+    }//GEN-LAST:event_fieldCursoFocusGained
+
+    private void fieldDocenteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldDocenteActionPerformed
+        fieldDocente.setText("");
+    }//GEN-LAST:event_fieldDocenteActionPerformed
+
+    private void comboCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboCategoriaActionPerformed
+        if(comboCategoria.getSelectedIndex()!=0){
+            String auxString = comboCategoria.getSelectedItem().toString();
+            if(auxString.contains("✓")){
+                String auxSubString = auxString.substring(2);
+                int auxInt = comboCategoria.getSelectedIndex();
+                comboCategoria.removeItemAt(auxInt);
+                comboCategoria.insertItemAt(auxSubString, auxInt);
+            }else{
+                auxString = "✓ " + auxString;
+                int auxInt = comboCategoria.getSelectedIndex();
+                comboCategoria.removeItemAt(auxInt);
+                comboCategoria.insertItemAt(auxString, auxInt);
+                comboCategoria.setSelectedIndex(auxInt);
+            }
+        }
+    }//GEN-LAST:event_comboCategoriaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea areaDescripcion;
     private javax.swing.JComboBox<String> boxInstituto;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton buttonAceptar;
+    private javax.swing.JComboBox<String> comboCategoria;
     private javax.swing.JTextField fieldCurso;
     private javax.swing.JTextField fieldDocente;
+    private javax.swing.JTextField fieldFecha;
     private javax.swing.JTextField fieldNombre;
     private javax.swing.JTextField fieldURL;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -602,7 +633,6 @@ try {
     private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JSpinner spinnerCreditos;
     private javax.swing.JSpinner spinnerDuracion;
-    private javax.swing.JSpinner spinnerFecha;
     private javax.swing.JSpinner spinnerHoras;
     private javax.swing.JTable tableCursos;
     private javax.swing.JTable tableDocentes;

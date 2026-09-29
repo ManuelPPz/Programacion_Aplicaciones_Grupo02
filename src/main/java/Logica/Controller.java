@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Logica;
+import Classes.Categoria;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
@@ -35,6 +36,8 @@ import DTsClasses.DTInstituto;
 import DTsClasses.DTMaster;
 import DTsClasses.EnumDT;
 import DTsClasses.DTProgramaForm;
+import java.util.Random;
+
 
 /**
  *
@@ -46,6 +49,7 @@ public class Controller implements IController{
     ManejadorInstituto manInstituto;
     ManejadorEdicionCurso manEdicion;
     ManejadorProgramasDeFormacion manProgramas;
+    ManejadorCategoria manCategoria;
     
     public Controller(){
         manUsuario = ManejadorUsuario.GetInstance();
@@ -53,6 +57,7 @@ public class Controller implements IController{
         manInstituto = ManejadorInstituto.GetInstance();
         manEdicion = ManejadorEdicionCurso.GetInstance();
         manProgramas = ManejadorProgramasDeFormacion.GetInstance();
+        manCategoria = ManejadorCategoria.GetInstance();
     }
     
     //Alta Usuario
@@ -65,13 +70,16 @@ public class Controller implements IController{
                 auxInstituto.add(manInstituto.BuscarInstituto(institutos.get(i)));
             }
         }
-        
+        String password = GenerateRandPassword();
         try {
-            auxUsuario = manUsuario.CrearUsuario(nickname, nombre, apellido, correo, docente, fechaNac, auxInstituto, imgPath);
+            
+            auxUsuario = manUsuario.CrearUsuario(nickname, nombre, apellido, correo, password,docente, fechaNac, auxInstituto, imgPath);
         } catch (IOException ex) {
-            System.out.print("No se puedo ingresar el usuario");
+            System.getLogger("No se pudo crear el usuario(Error en Controller.AgregarUsuario())");
         }
         manUsuario.Add(auxUsuario);
+        EnviarGmail eg = new EnviarGmail();
+        eg.Enviar(correo, "Bienvenido a la plataforma de edEXT", eg.CuerpoMensajeNuevoUsuario(manUsuario.getDT(auxUsuario)));
     }
     
     //ConsultaUsuario
@@ -99,25 +107,29 @@ public class Controller implements IController{
         try {
             manUsuario.ModificarDatosUsuario(nickname, newNombre, newApellido, newCorreo, true, newFechaNac, auxInstituto, imgPath);
         } catch (IOException ex) {
-            System.out.print("No se puedo modificar los datos");
+            System.getLogger("No se pudo modificar el usuario(Error en Controller.ModificarUsuario())");
         }
     }
     
     //Alta Curso
     @Override
-    public void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso, String docente) throws Exception {
+    public void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso, String docente, List<String> categorias) throws Exception {
         Curso auxC = manCursos.BuscarCurso(nombre);
         UsuarioBase auxUb = manUsuario.BuscarUsuario(docente);
+        List<Categoria> auxCategorias = new ArrayList<>();
+        for(int i = 0;i<categorias.size();i++){
+            auxCategorias.add(manCategoria.BuscarCategoria(categorias.get(i)));
+        }
         if(auxC==null){
             Instituto ins = new Instituto();
-            ins.setNombre(nomInstituto);
-            Curso c = manCursos.CrearCurso(ins, nombre, descripcion, duracion, cantHoras, cantCreditos, URL, fechaIngreso,previas, auxUb);
+            ins.setNombre(nomInstituto);     
+            Curso c = manCursos.CrearCurso(ins, nombre, descripcion, duracion, cantHoras, cantCreditos, URL, fechaIngreso,previas, auxUb, auxCategorias);
             manUsuario.AddCurso(auxUb, c);
             manCursos.Add(c);
         }else{
             manUsuario.RemoveCurso(auxC.getMiDocente(), auxC);
             manUsuario.AddCurso(auxUb, auxC);
-            manCursos.ModificarCurso(auxC, descripcion, duracion, cantHoras, cantCreditos, URL, fechaIngreso,previas, auxUb);
+            manCursos.ModificarCurso(auxC, descripcion, duracion, cantHoras, cantCreditos, URL, fechaIngreso,previas, auxUb, auxCategorias);
         }
         
     }
@@ -340,6 +352,11 @@ public class Controller implements IController{
         ProgramaDeFormacion pdf = manProgramas.BuscarPrograma(nombre);
         return pdf!=null;
     }
+    @Override
+    public boolean VerificarCategoria(String nombre){
+        Categoria c = manCategoria.BuscarCategoria(nombre);
+        return c!=null;
+    }
     
     //Devoolver lista completa de DTs
     //Lista que no requiere de ninguna condicion
@@ -354,6 +371,12 @@ public class Controller implements IController{
             listReturn = manUsuario.getDTList();
         }else if(enumType==EnumDT.DT_PROGRAMA){
             listReturn = manProgramas.getDTList();
+        }else if(enumType==EnumDT.DT_CATEGORIA){
+            try {
+                listReturn = manCategoria.getDTList();
+            } catch (Exception ex) {
+                System.getLogger(Controller.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
         }
         
         return listReturn;
@@ -378,6 +401,38 @@ public class Controller implements IController{
     public List<DTMaster>ListarProgramaDeForm(){
         List<DTMaster> listReturn = manProgramas.getDTList();
         return listReturn;
+    }
+    
+    @Override
+    public String GenerateRandPassword(){
+        Random random = new Random();
+        String letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        String numeros = "0123456789";
+        int tamPassword = 10;
+        String finalPass = ".-";
+        for(int i = 0;i<tamPassword;i++){
+            int randChar = random.nextInt(3);
+            if(randChar==0){
+                int letraNum = random.nextInt(letras.length());
+                char letra = letras.charAt(letraNum);
+                finalPass += letra;
+            }else if(randChar == 1){
+                int letraNum = random.nextInt(numeros.length());
+                char letra = numeros.charAt(letraNum);
+                finalPass += letra;
+            }
+        }
+        return finalPass;
+    }
+    
+    @Override
+    public void AltaCategoria(String nombre){
+        Categoria c = manCategoria.CrearCategoria(nombre);
+        try {
+            manCategoria.Add(c);
+        } catch (Exception ex) {
+            System.getLogger("No se pudo crear la categoria(Error en Controller.AltaCategoria())");
+        }
     }
    
 }

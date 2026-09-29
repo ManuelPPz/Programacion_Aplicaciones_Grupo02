@@ -18,15 +18,17 @@ public class DTUsuarioBase extends DTMaster{
     String nombre;
     String apellido;
     String correo;
+    String password;
     Date fNac;
     ImageIcon img;
     List<String> ediciones; 
     List<String> programas;
-    public DTUsuarioBase(String nickname,String nombre,String apellido,String correo,Date fNac, ImageIcon img, List<String> ediciones, List<String> programas){
+    public DTUsuarioBase(String nickname,String nombre,String apellido,String correo, String password,Date fNac, ImageIcon img, List<String> ediciones, List<String> programas){
         this.nickname = nickname;
         this.nombre = nombre;
         this.apellido = apellido;
         this.correo = correo;
+        this.password = password;
         this.fNac = fNac;
         this.img = img;
         this.ediciones = ediciones;
@@ -40,4 +42,5 @@ public class DTUsuarioBase extends DTMaster{
     public ImageIcon getImg(){return img;}
     public List<String> getEdiciones(){return this.ediciones;}
     public List<String> getProgramas(){return this.programas;}
+    public String getPassword(){return this.password;}
 }

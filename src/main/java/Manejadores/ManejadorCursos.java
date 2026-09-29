@@ -1,5 +1,6 @@
 package Manejadores;
 
+import Classes.Categoria;
 import java.util.List;
 import java.util.ArrayList;
 import Classes.Curso;
@@ -72,22 +73,22 @@ public class ManejadorCursos {
         }
     }
     
-    public Curso CrearCurso(Instituto instituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<String> previas, UsuarioBase ub){
+    public Curso CrearCurso(Instituto instituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<String> previas, UsuarioBase ub, List<Categoria> categorias){
         Curso returnCurso;
         List<Curso> auxPrevias = new ArrayList<>();
         for(int i = 0; i < previas.size(); i++){
             auxPrevias.add(BuscarCurso(previas.get(i)));
         }
-        returnCurso = new Curso(instituto, nombre, descripcion, duracion, cantHoras, cantCreditos, URL, fAlta, auxPrevias, ub);
+        returnCurso = new Curso(instituto, nombre, descripcion, duracion, cantHoras, cantCreditos, URL, fAlta, auxPrevias, ub, categorias);
         return returnCurso;
     }
 
-    public void ModificarCurso(Curso c, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<String> previas, UsuarioBase ub){
+    public void ModificarCurso(Curso c, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<String> previas, UsuarioBase ub, List<Categoria> categorias){
         List<Curso> auxPrevias = new ArrayList<>();
         for(int i = 0; i < previas.size(); i++){
             auxPrevias.add(BuscarCurso(previas.get(i)));
         }
-        c.ModificarMisDatos(descripcion, duracion, cantHoras, cantCreditos, URL, fAlta, auxPrevias, ub);
+        c.ModificarMisDatos(descripcion, duracion, cantHoras, cantCreditos, URL, fAlta, auxPrevias, ub, categorias);
         
         // Sincronizar los cambios con JPA
             EntityManager em = getEntityManager();
@@ -105,18 +106,28 @@ public class ManejadorCursos {
             }
     }
     
-    public void Add(Curso c) throws Exception{
-        misCursos.add(c);
+    public void Add(Curso c) throws Exception {
         EntityManager em = JPAUtil.getEntityManager();
         try {
             em.getTransaction().begin();
             em.persist(c);
             em.getTransaction().commit();
+
+            // Se agrega a la lista solo si el commit en DB fue exitoso
+            misCursos.add(c); 
+
         } catch (Exception e) {
-            if(em.getTransaction().isActive()){
+            if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw new Exception("Error al guardar el curso: " + e.getMessage());
+
+            // Imprime el error real de la base de datos en la consola del IDE
+            System.err.println("Causa raiz: " + (e.getCause() != null ? e.getCause().getMessage() : "Desconocida"));
+            if (e.getCause() != null && e.getCause().getCause() != null) {
+                System.err.println("Detalle SQL: " + e.getCause().getCause().getMessage());
+            }
+
+            throw new Exception("Error al guardar el curso: " + e.getMessage(), e);
         } finally {
             em.close();
         }
