@@ -49,6 +49,14 @@ public class ManejadorUsuario {
     }
     // =============================================
 
+    public static EntityManager getEntityManager() {
+        return JPAUtil.getEntityManager();
+    }
+
+    public static void close() {
+        JPAUtil.close();
+    }
+
     public void CargarDeBaseDeDatos() {
         EntityManager em = getEntityManager();
         try {
@@ -76,7 +84,7 @@ public class ManejadorUsuario {
 
             misUsuarios.addAll(docentes);
             misUsuarios.addAll(estudiantes);
-        }finally {
+        } finally {
             em.close();
         }
     }
@@ -126,7 +134,6 @@ public class ManejadorUsuario {
             }
         }
     }
-
 
     public void Add(UsuarioBase ub) throws Exception {
         EntityManager em = getEntityManager();
@@ -178,7 +185,7 @@ public class ManejadorUsuario {
                     if (d.getInstitutos() != null) {
                         d.getInstitutos().size();
                     }
-                    // 2. Cargar Ediciones (AQUÍ DABA EL ERROR)
+                    // 2. Cargar Ediciones
                     if (d.getEdiciones() != null) {
                         d.getEdiciones().size();
                     }
@@ -203,7 +210,7 @@ public class ManejadorUsuario {
         } catch (Exception e) {
             System.err.println("Error al buscar usuario en BD: " + e.getMessage());
         } finally {
-            em.close(); // Se cierra la sesión SOLO después de haber cargado todo en memoria
+            em.close();
         }
 
         // Fallback a la memoria local si no está en BD
@@ -225,48 +232,46 @@ public class ManejadorUsuario {
 
         if (ub instanceof Docente docente) {
             List<String> auxStr = new ArrayList<>();
-        if (docente.getInstitutos() != null) {
-            for (Instituto inst : docente.getInstitutos()) {
-                if (inst != null && inst.getNombre() != null) {
-                    auxStr.add(inst.getNombre());
+            if (docente.getInstitutos() != null) {
+                for (Instituto inst : docente.getInstitutos()) {
+                    if (inst != null && inst.getNombre() != null) {
+                        auxStr.add(inst.getNombre());
+                    }
                 }
             }
-        }
 
-        List<String> auxCur = new ArrayList<>();
-        List<String> auxProg = new ArrayList<>();
+            List<String> auxCur = new ArrayList<>();
+            List<String> auxProg = new ArrayList<>();
 
-        if (docente.getCursos() != null) {
-            for (Curso c : docente.getCursos()) {
-                if (c != null && c.getNombre() != null) {
+            if (docente.getCursos() != null) {
+                for (Curso c : docente.getCursos()) {
+                    if (c != null && c.getNombre() != null) {
                         auxCur.add(c.getNombre());
 
-                    // REVISIÓN Y LECTURA DE PROGRAMAS DIRECTA:
-                    // Ya no filtramos por c.getDocente() porque el curso YA pertenece al docente (docente.getCursos())
-                    if (c.getProgramas() != null) {
-                        for (ProgramaDeFormacion pg : c.getProgramas()) {
-                            if (pg != null && pg.getNombre() != null) {
-                                String nomPg = pg.getNombre();
-                                if (!auxProg.contains(nomPg)) {
-                                    auxProg.add(nomPg);
+                        if (c.getProgramas() != null) {
+                            for (ProgramaDeFormacion pg : c.getProgramas()) {
+                                if (pg != null && pg.getNombre() != null) {
+                                    String nomPg = pg.getNombre();
+                                    if (!auxProg.contains(nomPg)) {
+                                        auxProg.add(nomPg);
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
 
-        List<String> auxEdi = new ArrayList<>();
-        if (docente.getEdiciones() != null) {
-            for (EdicionCurso ec : docente.getEdiciones()) {
-                if (ec != null && ec.getNombre() != null) {
-                    auxEdi.add(ec.getNombre());
+            List<String> auxEdi = new ArrayList<>();
+            if (docente.getEdiciones() != null) {
+                for (EdicionCurso ec : docente.getEdiciones()) {
+                    if (ec != null && ec.getNombre() != null) {
+                        auxEdi.add(ec.getNombre());
+                    }
                 }
             }
-        }
 
-        return new DTDocente(ub.getNickname(), ub.getNombre(), ub.getApellido(), ub.getCorreo(), ub.getFNac(), auxStr, img, auxCur, auxEdi, auxProg);
+            return new DTDocente(ub.getNickname(), ub.getNombre(), ub.getApellido(), ub.getCorreo(), ub.getFNac(), auxStr, img, auxCur, auxEdi, auxProg);
 
         } else if (ub instanceof Usuario usuario) {
             List<String> auxEdi = new ArrayList<>();
@@ -281,7 +286,7 @@ public class ManejadorUsuario {
                 }
             }
             List<String> auxProg = new ArrayList<>();
-            if (usuario.getMisInscripcionesPro()!= null) {
+            if (usuario.getMisInscripcionesPro() != null) {
                 for (Prog_Usu pu : usuario.getMisInscripcionesPro()) {
                     if (pu != null && pu.getId() != null) {
                         ProgramaDeFormacion pdf = pu.getId().getPrograma();
@@ -345,7 +350,6 @@ public class ManejadorUsuario {
             docente.RemoveCurso(c);
         }
     }
-    /*-----------------------------------------------------------------------------------------------------*/
 
     /*-----------------------------Funciones para la lista de ediciones de cursos de los usuarios---------------*/
     public void AddEdicion(UsuarioBase ub, EdicionCurso ec) {
@@ -365,14 +369,14 @@ public class ManejadorUsuario {
             eu.getId().getUsuario().AddEdicionCurso(eu);
         }
     }
-    /*-----------------------------------------------------------------------------------------------------*/
+
     /*-------------------------Funciones para la lista de programas de cursos de los usuarios--------------*/
     public void InscribirUsuarioAPrograma(Prog_Usu pu) {
         if (pu != null && pu.getId() != null && pu.getId().getUsuario() != null) {
             pu.getId().getUsuario().AddPrograma(pu);
         }
     }
-    /*-----------------------------------------------------------------------------------------------------*/
+
     private byte[] ConvertirImageIconToByte(String imgPath) throws IOException {
         if (imgPath == null || imgPath.trim().isEmpty()) {
             return null;
@@ -388,9 +392,5 @@ public class ManejadorUsuario {
 
     private ImageIcon ConvertirByteToImageIcon(byte[] bytes) {
         return new ImageIcon(bytes);
-    }
-
-    private EntityManager getEntityManager() {
-        return JPAUtil.getEntityManager();
     }
 }

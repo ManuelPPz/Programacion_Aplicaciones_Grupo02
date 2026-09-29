@@ -119,36 +119,47 @@ public class ManejadorEdicionCurso {
     public void AddUsuario(EdicionCurso ec, Docente ub){
         ec.AddUsuarios(ub);
     }
-    public void AddUsuarioInscripto(Edi_Usu eu) throws Exception {
-        if (eu == null || eu.getId() == null) {
-            return;
-        }
-
-        EntityManager em = JPAUtil.getEntityManager();
-        try {
-            em.getTransaction().begin();
-
-            // 1. Guardar/Actualizar la entidad de asociación en la BD
-            Edi_Usu euManaged = em.merge(eu);
-
-            // 2. Sincronizar el modelo en memoria RAM
-            if (eu.getId().getEdicion() != null) {
-                eu.getId().getEdicion().AddUsuarioInscripto(euManaged);
-            }
-
-            em.getTransaction().commit();
-            System.out.println(">>> [DEBUG] Inscripción registrada con éxito.");
-
-        } catch (Exception e) {
-            if (em.getTransaction() != null && em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            e.printStackTrace();
-            throw new Exception("Error al guardar la inscripción: " + e.getMessage());
-        } finally {
-            em.close();
-        }
+public void AddUsuarioInscripto(Edi_Usu eu) throws Exception {
+    if (eu == null || eu.getId() == null) {
+        throw new Exception("La entidad de inscripción o su ID no pueden ser nulos.");
     }
+
+    // 1. Validar que ni la edición ni el usuario dentro de la clave sean nulos
+    if (eu.getId().getEdicion() == null || eu.getId().getUsuario() == null) {
+        throw new Exception("La edicion o el usuario dentro del ID de inscripción son nulos.");
+    }
+
+    EntityManager em = JPAUtil.getEntityManager();
+    try {
+        em.getTransaction().begin();
+
+        // 2. Buscar las entidades asociadas en la sesión actual para asegurarnos de que estén en estado "managed"
+        EdicionCurso edicionManaged = em.find(EdicionCurso.class, eu.getId().getEdicion().getNombre());
+        UsuarioBase usuarioManaged = em.find(UsuarioBase.class, eu.getId().getUsuario().getNickname());
+
+        if (edicionManaged == null || usuarioManaged == null) {
+            throw new Exception("No se encontró la Edición o el Usuario en la base de datos.");
+        }
+
+        // 4. Guardar / Sincronizar en la BD
+        Edi_Usu euManaged = em.merge(eu);
+
+        // 5. Actualizar la memoria RAM en el objeto persistido
+        edicionManaged.AddUsuarioInscripto(euManaged);
+
+        em.getTransaction().commit();
+        System.out.println(">>> [DEBUG] Inscripción registrada con éxito.");
+
+    } catch (Exception e) {
+        if (em.getTransaction() != null && em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+        }
+        e.printStackTrace();
+        throw new Exception("Error al guardar la inscripción: " + e.getMessage());
+    } finally {
+        em.close();
+    }
+}
     
     public DTEdicionCurso getDT(EdicionCurso ec){
         DTEdicionCurso auxDT;

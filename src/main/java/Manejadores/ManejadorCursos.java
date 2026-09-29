@@ -12,7 +12,7 @@ import DTsClasses.DTMaster;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.Date;
-import util.JPAUtil; // Import de la clase utilitaria
+import util.JPAUtil;
 
 public class ManejadorCursos {
     private List<Curso> misCursos;
@@ -32,8 +32,16 @@ public class ManejadorCursos {
     }
     //=======================================================
     
+    public static EntityManager getEntityManager() {
+        return JPAUtil.getEntityManager();
+    }
+
+    public static void close() {
+        JPAUtil.close();
+    }
+    
     public void CargarDeBaseDeDatos() {
-        EntityManager em = JPAUtil.getEntityManager();
+        EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
 
@@ -75,8 +83,13 @@ public class ManejadorCursos {
     public Curso CrearCurso(Instituto instituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<String> previas, UsuarioBase ub){
         Curso returnCurso;
         List<Curso> auxPrevias = new ArrayList<>();
-        for(int i = 0; i < previas.size(); i++){
-            auxPrevias.add(BuscarCurso(previas.get(i)));
+        if (previas != null) {
+            for(int i = 0; i < previas.size(); i++){
+                Curso cPrevia = BuscarCurso(previas.get(i));
+                if (cPrevia != null) {
+                    auxPrevias.add(cPrevia);
+                }
+            }
         }
         returnCurso = new Curso(instituto, nombre, descripcion, duracion, cantHoras, cantCreditos, URL, fAlta, auxPrevias, ub);
         return returnCurso;
@@ -84,30 +97,35 @@ public class ManejadorCursos {
 
     public void ModificarCurso(Curso c, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<String> previas, UsuarioBase ub){
         List<Curso> auxPrevias = new ArrayList<>();
-        for(int i = 0; i < previas.size(); i++){
-            auxPrevias.add(BuscarCurso(previas.get(i)));
+        if (previas != null) {
+            for(int i = 0; i < previas.size(); i++){
+                Curso cPrevia = BuscarCurso(previas.get(i));
+                if (cPrevia != null) {
+                    auxPrevias.add(cPrevia);
+                }
+            }
         }
         c.ModificarMisDatos(descripcion, duracion, cantHoras, cantCreditos, URL, fAlta, auxPrevias, ub);
         
         // Sincronizar los cambios con JPA
-            EntityManager em = getEntityManager();
-            try {
-                em.getTransaction().begin();
-                em.merge(c);
-                em.getTransaction().commit();
-            } catch (Exception e) {
-                if (em.getTransaction().isActive()) {
-                    em.getTransaction().rollback();
-                }
-                System.err.println("Error al actualizar usuario en BD: " + e.getMessage());
-            } finally {
-                em.close();
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(c);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
             }
+            System.err.println("Error al actualizar curso en BD: " + e.getMessage());
+        } finally {
+            em.close();
+        }
     }
     
     public void Add(Curso c) throws Exception{
         misCursos.add(c);
-        EntityManager em = JPAUtil.getEntityManager();
+        EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
             em.persist(c);
@@ -123,9 +141,10 @@ public class ManejadorCursos {
     }
     
     public Curso BuscarCurso(String nombre){
+        if (nombre == null) return null;
         for(int i = 0; i < misCursos.size(); i++){
             Curso c = misCursos.get(i);
-            if(c.getNombre().equals(nombre)){
+            if(c != null && nombre.equals(c.getNombre())){
                 return c;
             }
         }
@@ -133,13 +152,22 @@ public class ManejadorCursos {
     }
 
     public DTCurso getDT(Curso c){
+        if (c == null) return null;
+
         String ins = (c.getInstituto() != null) ? c.getInstituto().getNombre() : "";
+        
+        // PROTECCIÓN CONTRA NULOS: Evita el NullPointerException en el unboxing
+        int duracionSegura = (c.getDuracion() != null) ? c.getDuracion() : 0;
+        float cantHorasSegura = (c.getCantHoras() != null) ? c.getCantHoras() : 0.0f;
+        int cantCreditosSeguro = (c.getCantCreditos() != null) ? c.getCantCreditos() : 0;
         
         List<Curso> auxPrevias = c.getPrevias();
         List<String> auxPreviasStr = new ArrayList<>();
         if (auxPrevias != null) {
             for(Curso previa : auxPrevias){
-                auxPreviasStr.add(previa.getNombre());
+                if (previa != null && previa.getNombre() != null) {
+                    auxPreviasStr.add(previa.getNombre());
+                }
             }
         }
 
@@ -147,7 +175,7 @@ public class ManejadorCursos {
         List<String> auxEdicionesStr = new ArrayList<>();
         if (auxEdiciones != null) {
             for(EdicionCurso edicion : auxEdiciones){
-                if (edicion != null) {
+                if (edicion != null && edicion.getNombre() != null) {
                     auxEdicionesStr.add(edicion.getNombre());
                 }
             }
@@ -155,9 +183,9 @@ public class ManejadorCursos {
         
         List<ProgramaDeFormacion> auxProgramas = c.getProgramas();
         List<String> auxProgramasStr = new ArrayList<>();
-        if(auxProgramas!=null){
+        if(auxProgramas != null){
             for(ProgramaDeFormacion programa : auxProgramas){
-                if (programa != null) {
+                if (programa != null && programa.getNombre() != null) {
                     auxProgramasStr.add(programa.getNombre());
                 }
             }
@@ -167,9 +195,9 @@ public class ManejadorCursos {
             ins,
             c.getNombre(),
             c.getDescripcion(),
-            c.getDuracion(),
-            c.getCantHoras(),
-            c.getCantCreditos(),
+            duracionSegura,
+            cantHorasSegura,
+            cantCreditosSeguro,
             c.getURL(),
             c.getFAlta(),
             auxPreviasStr,
@@ -182,24 +210,26 @@ public class ManejadorCursos {
         List<DTMaster> auxList = new ArrayList<>();
         for(int i = 0; i < misCursos.size(); i++){
             DTMaster dt = getDT(misCursos.get(i));
-            auxList.add(dt);
-        }
-        return auxList;
-    }
-
-    public List<DTMaster> getDTLIst(String instituto){
-        List<DTMaster> auxList = new ArrayList<>();
-        for(int i = 0; i < misCursos.size(); i++){
-            Curso c = misCursos.get(i);
-            if(c.getInstituto() != null && c.getInstituto().getNombre().equals(instituto)){
-                DTMaster dt = getDT(c);
+            if (dt != null) {
                 auxList.add(dt);
             }
         }
         return auxList;
     }
 
-    private EntityManager getEntityManager() {
-        return JPAUtil.getEntityManager();
+    public List<DTMaster> getDTLIst(String instituto){
+        List<DTMaster> auxList = new ArrayList<>();
+        if (instituto == null) return auxList;
+        
+        for(int i = 0; i < misCursos.size(); i++){
+            Curso c = misCursos.get(i);
+            if(c != null && c.getInstituto() != null && instituto.equals(c.getInstituto().getNombre())){
+                DTMaster dt = getDT(c);
+                if (dt != null) {
+                    auxList.add(dt);
+                }
+            }
+        }
+        return auxList;
     }
 }

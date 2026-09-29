@@ -88,20 +88,21 @@ public class Controller implements IController{
     
     //Modificar Datos Usuario
     @Override
-    public void ModificarUsuario(String nickname, String newNombre, String newApellido, String newCorreo,boolean docente, Date newFechaNac, List<String> institutos, String imgPath){
-        
-        List<Instituto> auxInstituto = new ArrayList<>();
-        if(institutos!=null){
-            for(int i = 0;i<institutos.size();i++){
-                auxInstituto.add(manInstituto.BuscarInstituto(institutos.get(i)));
-            }
-        }
-        try {
-            manUsuario.ModificarDatosUsuario(nickname, newNombre, newApellido, newCorreo, true, newFechaNac, auxInstituto, imgPath);
-        } catch (IOException ex) {
-            System.out.print("No se puedo modificar los datos");
+public void ModificarUsuario(String nickname, String newNombre, String newApellido, String newCorreo, boolean docente, Date newFechaNac, List<String> institutos, String imgPath) {
+    
+    List<Instituto> auxInstituto = new ArrayList<>();
+    if (institutos != null) {
+        for (int i = 0; i < institutos.size(); i++) {
+            auxInstituto.add(manInstituto.BuscarInstituto(institutos.get(i)));
         }
     }
+    try {
+        // Corregido: usamos la variable 'docente' en lugar del 'true' fijo
+        manUsuario.ModificarDatosUsuario(nickname, newNombre, newApellido, newCorreo, docente, newFechaNac, auxInstituto, imgPath);
+    } catch (IOException ex) {
+        System.out.print("No se pudieron modificar los datos");
+    }
+}
     
     //Alta Curso
     @Override
