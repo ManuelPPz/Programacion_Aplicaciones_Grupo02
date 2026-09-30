@@ -22,7 +22,9 @@ public class DTCurso extends DTMaster{
     private List<String> listPrevias;
     private List<String> listEdiCursos;
     private List<String> listProgCursos;
-    public DTCurso(String nomInstituto, String nom, String descripcion, int duracion,float cantHoras,int cantCreditos, String URL, Date fecha, List<String> listPrevias, List<String> listEdiCursos, List<String> listProgCursos){
+    private List<String> listCategorias;
+    
+    public DTCurso(String nomInstituto, String nom, String descripcion, int duracion,float cantHoras,int cantCreditos, String URL, Date fecha, List<String> listPrevias, List<String> listEdiCursos, List<String> listProgCursos, List<String> categorias){
         this.instituto = nomInstituto;
         this.nombre = nom;
         this.descripcion = descripcion;
@@ -34,6 +36,7 @@ public class DTCurso extends DTMaster{
         this.listPrevias = listPrevias;
         this.listEdiCursos = listEdiCursos;
         this.listProgCursos = listProgCursos;
+        this.listCategorias = categorias;
     }
     public String getInstituto(){return this.instituto;}
     public String getNombre(){return this.nombre;}
@@ -46,5 +49,6 @@ public class DTCurso extends DTMaster{
     public List<String> getPrevias(){return this.listPrevias;}
     public List<String> getEdiCursos(){return this.listEdiCursos;}
     public List<String> getProgFormacion(){return this.listProgCursos;}
+    public List<String> getCategorias(){return this.listCategorias;}
     
 }

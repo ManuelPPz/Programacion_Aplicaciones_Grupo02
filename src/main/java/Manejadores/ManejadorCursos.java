@@ -173,7 +173,15 @@ public class ManejadorCursos {
                 }
             }
         }
-        
+        List<Categoria> auxCategoria = c.getCategorias();
+        List<String> auxCategoriaStr = new ArrayList<>();
+        if(auxCategoria!=null){
+            for(Categoria cat : auxCategoria){
+                if(cat!=null){
+                    auxCategoriaStr.add(cat.getNombre());
+                }
+            }
+        }
         return new DTCurso(
             ins,
             c.getNombre(),
@@ -185,7 +193,8 @@ public class ManejadorCursos {
             c.getFAlta(),
             auxPreviasStr,
             auxEdicionesStr,
-            auxProgramasStr
+            auxProgramasStr,
+            auxCategoriaStr
         );
     }
 
