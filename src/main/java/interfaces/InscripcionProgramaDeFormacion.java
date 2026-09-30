@@ -140,6 +140,7 @@ public class InscripcionProgramaDeFormacion extends javax.swing.JInternalFrame {
         btnCancelar = new javax.swing.JButton();
         fieldFecha = new javax.swing.JTextField();
 
+        setClosable(true);
         setPreferredSize(new java.awt.Dimension(412, 500));
 
         tableProgramas.setModel(new javax.swing.table.DefaultTableModel(

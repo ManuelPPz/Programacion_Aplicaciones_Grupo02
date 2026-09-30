@@ -50,9 +50,58 @@ public class Crear_programa_formacion extends javax.swing.JInternalFrame {
         
             
         // 3. INICIALIZAR FECHA DE FIN (Inicio + Duración del curso)
-        Calendar calAux = Calendar.getInstance();
-        calAux.setTime(fAlta); // Partir de la fecha de inicio
-        Date fFin = calAux.getTime();
+        calendarFin.setMinSelectableDate(fAlta);
+        calendarFin.setDate(fAlta);
+        fieldDateFin.setText(sdf.format(fAlta));
+        
+        // 4. CONFIGURAR LISTENERS UNA SOLA VEZ
+        setupCalendarListeners();
+    }
+    
+    private void setupCalendarListeners() {
+        // LISTENER PUBLICACIÓN
+        calendarPub.getDayChooser().addPropertyChangeListener("day", evtc -> {
+            int nuevoDia = (Integer) evtc.getNewValue();
+            Calendar cal = calendarPub.getCalendar();
+            cal.set(Calendar.DAY_OF_MONTH, nuevoDia);
+            Date fPub = cal.getTime();
+
+            fieldFechaPub.setText(sdf.format(fPub));
+
+            // Ajustar el mínimo de Fecha Inicio
+            calendarIni.setMinSelectableDate(fPub);
+            if (calendarIni.getDate().before(fPub)) {
+                calendarIni.setDate(fPub);
+                fieldDateIni.setText(sdf.format(fPub));
+            }
+        });
+
+        // LISTENER INICIO
+        calendarIni.getDayChooser().addPropertyChangeListener("day", evtc -> {
+            int nuevoDia = (Integer) evtc.getNewValue();
+            Calendar cal = calendarIni.getCalendar();
+            cal.set(Calendar.DAY_OF_MONTH, nuevoDia);
+            Date fIni = cal.getTime();
+
+            fieldDateIni.setText(sdf.format(fIni));
+
+            // Ajustar el mínimo de Fecha Fin
+            calendarFin.setMinSelectableDate(fIni);
+            if (calendarFin.getDate().before(fIni)) {
+                calendarFin.setDate(fIni);
+                fieldDateFin.setText(sdf.format(fIni));
+            }
+        });
+
+        // LISTENER FIN
+        calendarFin.getDayChooser().addPropertyChangeListener("day", evtc -> {
+            int nuevoDia = (Integer) evtc.getNewValue();
+            Calendar cal = calendarFin.getCalendar();
+            cal.set(Calendar.DAY_OF_MONTH, nuevoDia);
+            Date fFin = cal.getTime();
+
+            fieldDateFin.setText(sdf.format(fFin));
+        });
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

@@ -213,6 +213,7 @@ public class AltaCurso extends javax.swing.JInternalFrame {
         comboCategoria = new javax.swing.JComboBox<>();
         jLabel16 = new javax.swing.JLabel();
 
+        setClosable(true);
         setMaximumSize(new java.awt.Dimension(423, 611));
         setMinimumSize(new java.awt.Dimension(423, 611));
         setName(""); // NOI18N

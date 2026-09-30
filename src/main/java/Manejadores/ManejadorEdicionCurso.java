@@ -17,7 +17,6 @@ import util.JPAUtil; // Import de la utilería centralizada
 
 public class ManejadorEdicionCurso {
 
-    private List<EdicionCurso> misEdiciones;
     
     //=================Codigo de Singleton=================
     private static ManejadorEdicionCurso instance;    
@@ -29,23 +28,9 @@ public class ManejadorEdicionCurso {
     }
     
     private ManejadorEdicionCurso(){  
-        misEdiciones = new ArrayList<>();
-        CargarDeBaseDeDatos();
     }
     //=======================================================
-    
-    private void CargarDeBaseDeDatos(){
-        EntityManager em = JPAUtil.getEntityManager();
-        try {
-            TypedQuery<EdicionCurso> query = em.createQuery("SELECT e FROM EdicionCurso e", EdicionCurso.class);
-            misEdiciones = query.getResultList();
-        } catch (Exception e) {
-            System.err.println("Error al cargar las ediciones desde la BD: " + e.getMessage());
-            misEdiciones = new ArrayList<>();
-        } finally {
-            em.close();
-        }
-    }
+
     
     public EdicionCurso CrearEdicion(Instituto instituto, Curso curso, String nombre, Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> docentes){
         EdicionCurso returnEdicion;
@@ -75,7 +60,6 @@ public class ManejadorEdicionCurso {
     }
     
     public void Add(EdicionCurso ec) throws Exception {
-        misEdiciones.add(ec);
         EntityManager em = JPAUtil.getEntityManager();
         try {
             em.getTransaction().begin();
@@ -106,14 +90,19 @@ public class ManejadorEdicionCurso {
         }
     }
    
-    public EdicionCurso BuscarEdicion(String nombre){
-        for(int i = 0; i < misEdiciones.size(); i++){
-            EdicionCurso ec = misEdiciones.get(i);
-            if(ec.getNombre().equals(nombre)){
-                return ec;
+    public EdicionCurso BuscarEdicion(String nombre) {
+        EntityManager em = getEntityManager();
+        EdicionCurso ec = null;
+        try {
+            ec = em.find(EdicionCurso.class, nombre);
+        } catch (Exception e) {
+            System.err.println("Error al buscar la edición de curso en el manejador: " + e.getMessage());
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close(); 
             }
         }
-        return null;
+        return ec; 
     }
     
     public void AddUsuario(EdicionCurso ec, Docente ub){
@@ -150,6 +139,22 @@ public class ManejadorEdicionCurso {
         }
     }
     
+    public List<EdicionCurso> getList(){
+        List<EdicionCurso> auxListEdi = new ArrayList<>();
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            TypedQuery<EdicionCurso> query = em.createQuery("SELECT e FROM EdicionCurso e", EdicionCurso.class);
+            auxListEdi = query.getResultList();
+        } catch (Exception e) {
+            System.err.println("Error al cargar las ediciones desde la BD: " + e.getMessage());
+            auxListEdi = new ArrayList<>();
+        } finally {
+            em.close();
+        }
+        return auxListEdi;
+    }
+    
+    
     public DTEdicionCurso getDT(EdicionCurso ec){
         DTEdicionCurso auxDT;
         String ins = (ec.getInstituto() != null) ? ec.getInstituto().getNombre() : "";
@@ -169,14 +174,18 @@ public class ManejadorEdicionCurso {
     }
     
     public List<DTMaster> getDTLIst(String curso){
+        List<EdicionCurso> auxListEdi = getList();
         List<DTMaster> auxList = new ArrayList<>();
-        for(int i = 0; i < misEdiciones.size(); i++){
-            EdicionCurso ec = misEdiciones.get(i);
-            if(ec.getCurso() != null && ec.getCurso().getNombre().equals(curso)){
-                DTMaster dt = getDT(ec);
-                auxList.add(dt);
+        if(auxListEdi!=null){
+            for(int i = 0; i < auxListEdi.size(); i++){
+                EdicionCurso ec = auxListEdi.get(i);
+                if(ec.getCurso() != null && ec.getCurso().getNombre().equals(curso)){
+                    DTMaster dt = getDT(ec);
+                    auxList.add(dt);
+                }
             }
         }
+        
         return auxList;
     }
     

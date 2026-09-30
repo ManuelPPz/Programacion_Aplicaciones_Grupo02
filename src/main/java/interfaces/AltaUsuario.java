@@ -19,6 +19,7 @@ import DTsClasses.DTMaster;
 import DTsClasses.DTInstituto;
 import DTsClasses.DTUsuarioBase;
 import DTsClasses.EnumDT;
+import Logica.TypeEnvioMail;
 import Manejadores.ManejadorUsuario;
 import com.toedter.calendar.JCalendar;
 import java.awt.BorderLayout;
@@ -115,20 +116,15 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
         getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(19, 93, 126, 22));
 
         txtNickname.setMaximumSize(new java.awt.Dimension(64, 22));
-        txtNickname.addActionListener(this::txtNicknameActionPerformed);
         txtNickname.setColumns(8);
         getContentPane().add(txtNickname, new org.netbeans.lib.awtextra.AbsoluteConstraints(163, 53, 195, -1));
 
         txtNombre.setMaximumSize(new java.awt.Dimension(64, 22));
-        txtNombre.addActionListener(this::txtNombreActionPerformed);
         txtNombre.setColumns(8);
         getContentPane().add(txtNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(163, 133, 195, -1));
-
-        txtApellido.addActionListener(this::txtApellidoActionPerformed);
         getContentPane().add(txtApellido, new org.netbeans.lib.awtextra.AbsoluteConstraints(163, 173, 195, -1));
 
         txtEmail.setMaximumSize(new java.awt.Dimension(64, 22));
-        txtEmail.addActionListener(this::txtEmailActionPerformed);
         txtEmail.setColumns(8);
         getContentPane().add(txtEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(163, 93, 195, -1));
 
@@ -182,8 +178,8 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
         getContentPane().add(buttonChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(362, 296, -1, -1));
 
         fieldFecha.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                fieldFechaMouseClicked(evt);
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                fieldFechaMousePressed(evt);
             }
         });
         getContentPane().add(fieldFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 210, 196, -1));
@@ -191,21 +187,28 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtNicknameActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtNicknameActionPerformed
-        // TODO add your handling code here:
-    }// GEN-LAST:event_txtNicknameActionPerformed
+    private void fieldFechaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fieldFechaMousePressed
+        JPopupMenu popupMenu = new JPopupMenu();
+        JCalendar popupCalendar = new JCalendar();
+        popupCalendar.setMaxSelectableDate(new Date());
+        // Configurar el evento al seleccionar una fecha
+        popupCalendar.getDayChooser().addPropertyChangeListener("day", evtc -> {
+            Date fechaSeleccionada = popupCalendar.getDate();
 
-    private void txtNombreActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtNombreActionPerformed
-        // TODO add your handling code here:
-    }// GEN-LAST:event_txtNombreActionPerformed
+            if (fechaSeleccionada != null) {
+                fieldFecha.setText(sdf.format(fechaSeleccionada));
+            }
 
-    private void txtApellidoActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtApellidoActionPerformed
-        // TODO add your handling code here:
-    }// GEN-LAST:event_txtApellidoActionPerformed
+            // Cerramos el menú flotante al seleccionar el día
+            popupMenu.setVisible(false);
+        });
 
-    private void txtEmailActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtEmailActionPerformed
-        // TODO add your handling code here:
-    }// GEN-LAST:event_txtEmailActionPerformed
+        popupMenu.setLayout(new BorderLayout());
+        popupMenu.add(popupCalendar, BorderLayout.CENTER);
+
+        // DESPLEGAR EL POPUP (Muestra el calendario justo debajo del JTextField)
+        popupMenu.show(fieldFecha, 0, fieldFecha.getHeight());
+    }//GEN-LAST:event_fieldFechaMousePressed
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAceptarActionPerformed
         // 1. Captura de datos básicos de texto
@@ -345,29 +348,6 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
              */
         }
     }// GEN-LAST:event_buttonChooserActionPerformed
-
-    private void fieldFechaMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_fieldFechaMouseClicked
-        JPopupMenu popupMenu = new JPopupMenu();
-        JCalendar popupCalendar = new JCalendar();
-        popupCalendar.setMaxSelectableDate(new Date());
-        // Configurar el evento al seleccionar una fecha
-        popupCalendar.getDayChooser().addPropertyChangeListener("day", evtc -> {
-            Date fechaSeleccionada = popupCalendar.getDate();
-
-            if (fechaSeleccionada != null) {
-                fieldFecha.setText(sdf.format(fechaSeleccionada));
-            }
-
-            // Cerramos el menú flotante al seleccionar el día
-            popupMenu.setVisible(false);
-        });
-
-        popupMenu.setLayout(new BorderLayout());
-        popupMenu.add(popupCalendar, BorderLayout.CENTER);
-
-        // DESPLEGAR EL POPUP (Muestra el calendario justo debajo del JTextField)
-        popupMenu.show(fieldFecha, 0, fieldFecha.getHeight());
-    }// GEN-LAST:event_fieldFechaMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAceptar;

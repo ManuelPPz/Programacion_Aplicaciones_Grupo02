@@ -257,17 +257,17 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
         fieldFechaPub.setMaximumSize(new java.awt.Dimension(64, 22));
         fieldFechaPub.setPreferredSize(new java.awt.Dimension(64, 18));
         fieldFechaPub.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                fieldFechaPubMouseClicked(evt);
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                fieldFechaPubMousePressed(evt);
             }
         });
-        getContentPane().add(fieldFechaPub, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 380, 80, 20));
+        getContentPane().add(fieldFechaPub, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 380, 90, 20));
 
         fieldDateIni.setMaximumSize(new java.awt.Dimension(64, 22));
         fieldDateIni.setPreferredSize(new java.awt.Dimension(64, 18));
         fieldDateIni.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                fieldDateIniMouseClicked(evt);
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                fieldDateIniMousePressed(evt);
             }
         });
         getContentPane().add(fieldDateIni, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 138, 80, 20));
@@ -275,8 +275,8 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
         fieldDateFin.setMaximumSize(new java.awt.Dimension(64, 22));
         fieldDateFin.setPreferredSize(new java.awt.Dimension(64, 18));
         fieldDateFin.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                fieldDateFinMouseClicked(evt);
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                fieldDateFinMousePressed(evt);
             }
         });
         getContentPane().add(fieldDateFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 138, 80, 20));
@@ -385,7 +385,41 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
         this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
-    private void fieldFechaPubMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fieldFechaPubMouseClicked
+    private void fieldDateIniMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fieldDateIniMousePressed
+        JPopupMenu popupMenu = new JPopupMenu();
+        popupMenu.setLayout(new BorderLayout());
+        popupMenu.add(calendarIni, BorderLayout.CENTER);
+
+        java.beans.PropertyChangeListener closeListener = new java.beans.PropertyChangeListener() {
+            @Override
+            public void propertyChange(java.beans.PropertyChangeEvent evtc) {
+                popupMenu.setVisible(false);
+                calendarIni.getDayChooser().removePropertyChangeListener("day", this);
+            }
+        };
+        calendarIni.getDayChooser().addPropertyChangeListener("day", closeListener);
+
+        popupMenu.show(fieldDateIni, 0, fieldDateIni.getHeight());
+    }//GEN-LAST:event_fieldDateIniMousePressed
+
+    private void fieldDateFinMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fieldDateFinMousePressed
+        JPopupMenu popupMenu = new JPopupMenu();
+        popupMenu.setLayout(new BorderLayout());
+        popupMenu.add(calendarFin, BorderLayout.CENTER);
+
+        java.beans.PropertyChangeListener closeListener = new java.beans.PropertyChangeListener() {
+            @Override
+            public void propertyChange(java.beans.PropertyChangeEvent evtc) {
+                popupMenu.setVisible(false);
+                calendarFin.getDayChooser().removePropertyChangeListener("day", this);
+            }
+        };
+        calendarFin.getDayChooser().addPropertyChangeListener("day", closeListener);
+
+        popupMenu.show(fieldDateFin, 0, fieldDateFin.getHeight());
+    }//GEN-LAST:event_fieldDateFinMousePressed
+
+    private void fieldFechaPubMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fieldFechaPubMousePressed
         JPopupMenu popupMenu = new JPopupMenu();
         popupMenu.setLayout(new BorderLayout());
         popupMenu.add(calendarPub, BorderLayout.CENTER);
@@ -401,41 +435,7 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
         calendarPub.getDayChooser().addPropertyChangeListener("day", closeListener);
 
         popupMenu.show(fieldFechaPub, 0, fieldFechaPub.getHeight());
-    }//GEN-LAST:event_fieldFechaPubMouseClicked
-
-    private void fieldDateIniMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fieldDateIniMouseClicked
-        JPopupMenu popupMenu = new JPopupMenu();
-        popupMenu.setLayout(new BorderLayout());
-        popupMenu.add(calendarIni, BorderLayout.CENTER);
-
-        java.beans.PropertyChangeListener closeListener = new java.beans.PropertyChangeListener() {
-            @Override
-            public void propertyChange(java.beans.PropertyChangeEvent evtc) {
-                popupMenu.setVisible(false);
-                calendarIni.getDayChooser().removePropertyChangeListener("day", this);
-            }
-        };
-        calendarIni.getDayChooser().addPropertyChangeListener("day", closeListener);
-
-        popupMenu.show(fieldDateIni, 0, fieldDateIni.getHeight());
-    }//GEN-LAST:event_fieldDateIniMouseClicked
-
-    private void fieldDateFinMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fieldDateFinMouseClicked
-        JPopupMenu popupMenu = new JPopupMenu();
-        popupMenu.setLayout(new BorderLayout());
-        popupMenu.add(calendarFin, BorderLayout.CENTER);
-
-        java.beans.PropertyChangeListener closeListener = new java.beans.PropertyChangeListener() {
-            @Override
-            public void propertyChange(java.beans.PropertyChangeEvent evtc) {
-                popupMenu.setVisible(false);
-                calendarFin.getDayChooser().removePropertyChangeListener("day", this);
-            }
-        };
-        calendarFin.getDayChooser().addPropertyChangeListener("day", closeListener);
-
-        popupMenu.show(fieldDateFin, 0, fieldDateFin.getHeight());
-    }//GEN-LAST:event_fieldDateFinMouseClicked
+    }//GEN-LAST:event_fieldFechaPubMousePressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

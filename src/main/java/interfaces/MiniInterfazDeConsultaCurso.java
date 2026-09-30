@@ -85,7 +85,7 @@ public class MiniInterfazDeConsultaCurso extends javax.swing.JInternalFrame {
                     modeloCategoria.setRowCount(0);
                     List<String> listStrCat = dtc.getCategorias();
                     if(listStrCat!=null){
-                        for(String categoria : listStr){
+                        for(String categoria : listStrCat){
                             modeloCategoria.addRow(new Object[]{categoria});
                         }
                     }

@@ -50,6 +50,7 @@ public class Controller implements IController{
     ManejadorEdicionCurso manEdicion;
     ManejadorProgramasDeFormacion manProgramas;
     ManejadorCategoria manCategoria;
+    EnviarGmail eg;
     
     public Controller(){
         manUsuario = ManejadorUsuario.GetInstance();
@@ -58,6 +59,7 @@ public class Controller implements IController{
         manEdicion = ManejadorEdicionCurso.GetInstance();
         manProgramas = ManejadorProgramasDeFormacion.GetInstance();
         manCategoria = ManejadorCategoria.GetInstance();
+        eg = new EnviarGmail();
     }
     
     //Alta Usuario
@@ -78,8 +80,8 @@ public class Controller implements IController{
             System.getLogger("No se pudo crear el usuario(Error en Controller.AgregarUsuario())");
         }
         manUsuario.Add(auxUsuario);
-        EnviarGmail eg = new EnviarGmail();
-        eg.Enviar(correo, "Bienvenido a la plataforma de edEXT", eg.CuerpoMensajeNuevoUsuario(manUsuario.getDT(auxUsuario)));
+        eg.EnviarAsincrono(correo, "Bienvenido a la plataforma de edEXT", eg.CuerpoMensajeNuevoUsuario(manUsuario.getDT(auxUsuario)));
+        
     }
     
     //ConsultaUsuario
@@ -434,5 +436,4 @@ public class Controller implements IController{
             System.getLogger("No se pudo crear la categoria(Error en Controller.AltaCategoria())");
         }
     }
-   
 }

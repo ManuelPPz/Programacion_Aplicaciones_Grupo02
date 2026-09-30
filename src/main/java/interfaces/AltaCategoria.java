@@ -30,6 +30,7 @@ public class AltaCategoria extends javax.swing.JInternalFrame {
         btnAceptar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
 
+        setClosable(true);
         setTitle("Alta Categoria");
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
