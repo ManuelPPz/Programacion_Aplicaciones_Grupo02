@@ -371,7 +371,6 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
             System.getLogger("Hubo un error con el ingreso de la fecha");
         }
 
-        // 3. Validación de campos obligatorios de texto
         if (nickname.isEmpty() || email.isEmpty() || nombre.isEmpty() || apellido.isEmpty()) {
             javax.swing.JOptionPane.showMessageDialog(this,
                     "Por favor, complete todos los campos de texto obligatorios.",
@@ -379,6 +378,29 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
                     javax.swing.JOptionPane.WARNING_MESSAGE);
             return;
         }
+        
+        // --- INGRESO DE CONTRASEÑA ---
+        javax.swing.JPasswordField pf1 = new javax.swing.JPasswordField();
+        javax.swing.JPasswordField pf2 = new javax.swing.JPasswordField();
+        Object[] message = {
+            "Contraseña:", pf1,
+            "Confirmar Contraseña:", pf2
+        };
+        
+        int option = javax.swing.JOptionPane.showConfirmDialog(this, message, "Ingreso de Contraseña", javax.swing.JOptionPane.OK_CANCEL_OPTION);
+        if (option != javax.swing.JOptionPane.OK_OPTION) {
+            return;
+        }
+        
+        String pass1 = new String(pf1.getPassword());
+        String pass2 = new String(pf2.getPassword());
+        
+        if (pass1.isEmpty() || !pass1.equals(pass2)) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Las contraseñas no coinciden o están vacías", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        // ------------------------------
+
 
         // 4. Validación del Combo Tipo de Usuario (posición 0 es "Seleccionar...")
         if (comboTipoUsuario.getSelectedIndex() == 0) {
@@ -416,9 +438,9 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
                         institutos.add(auxSubString);
                     }
                 }
-                ico.AgregarUsuario(nickname, nombre, apellido, email, fecha, true, institutos, imgPath);
+                ico.AgregarUsuario(nickname, nombre, apellido, email, pass1, fecha, true, institutos, imgPath);
             } else {
-                ico.AgregarUsuario(nickname, nombre, apellido, email, fecha, false, null, imgPath);
+                ico.AgregarUsuario(nickname, nombre, apellido, email, pass1, fecha, false, null, imgPath);
             }
 
             // Mensaje de éxito

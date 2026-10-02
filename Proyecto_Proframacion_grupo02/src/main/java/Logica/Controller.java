@@ -62,7 +62,7 @@ public class Controller implements IController{
     
     //Alta Usuario
     @Override
-    public void AgregarUsuario(String nickname, String nombre, String apellido, String correo, Date fechaNac, boolean docente, List<String> institutos, String imgPath)throws Exception {
+    public void AgregarUsuario(String nickname, String nombre, String apellido, String correo, String password, Date fechaNac, boolean docente, List<String> institutos, String imgPath)throws Exception {
         UsuarioBase auxUsuario = null;
         List<Instituto> auxInstituto = new ArrayList<>();
         if(institutos!=null){
@@ -70,7 +70,7 @@ public class Controller implements IController{
                 auxInstituto.add(manInstituto.BuscarInstituto(institutos.get(i)));
             }
         }
-        String password = GenerateRandPassword();
+        // String password = GenerateRandPassword();
         try {
             
             auxUsuario = manUsuario.CrearUsuario(nickname, nombre, apellido, correo, password,docente, fechaNac, auxInstituto, imgPath);
