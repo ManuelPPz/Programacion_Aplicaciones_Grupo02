@@ -1,0 +1,11 @@
+/* Elimina el icono de advertencia rojo de Bootstrap cuando el campo es inválido */
+.form-control.is-invalid, 
+.form-control:invalid {
+    background-image: none !important;
+}
+
+/* Evita que el contenedor floating deje espacio extra reservado para el icono de advertencia */
+.form-floating > .form-control.is-invalid {
+    padding-right: 2.75rem !important; /* Mantiene solo el espacio necesario para el botón del ojo */
+}
+
