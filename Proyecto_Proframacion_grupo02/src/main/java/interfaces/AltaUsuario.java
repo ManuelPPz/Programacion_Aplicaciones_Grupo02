@@ -19,10 +19,7 @@ import DTsClasses.DTMaster;
 import DTsClasses.DTInstituto;
 import DTsClasses.DTUsuarioBase;
 import DTsClasses.EnumDT;
-<<<<<<< HEAD
-=======
 import Logica.TypeEnvioMail;
->>>>>>> v2.0.1
 import Manejadores.ManejadorUsuario;
 import com.toedter.calendar.JCalendar;
 import java.awt.BorderLayout;
@@ -59,11 +56,7 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated
-<<<<<<< HEAD
-    // Code">//GEN-BEGIN:initComponents
-=======
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
->>>>>>> v2.0.1
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -123,31 +116,15 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
         getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(19, 93, 126, 22));
 
         txtNickname.setMaximumSize(new java.awt.Dimension(64, 22));
-<<<<<<< HEAD
-        txtNickname.addActionListener(this::txtNicknameActionPerformed);
-=======
->>>>>>> v2.0.1
         txtNickname.setColumns(8);
         getContentPane().add(txtNickname, new org.netbeans.lib.awtextra.AbsoluteConstraints(163, 53, 195, -1));
 
         txtNombre.setMaximumSize(new java.awt.Dimension(64, 22));
-<<<<<<< HEAD
-        txtNombre.addActionListener(this::txtNombreActionPerformed);
-        txtNombre.setColumns(8);
-        getContentPane().add(txtNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(163, 133, 195, -1));
-
-        txtApellido.addActionListener(this::txtApellidoActionPerformed);
-        getContentPane().add(txtApellido, new org.netbeans.lib.awtextra.AbsoluteConstraints(163, 173, 195, -1));
-
-        txtEmail.setMaximumSize(new java.awt.Dimension(64, 22));
-        txtEmail.addActionListener(this::txtEmailActionPerformed);
-=======
         txtNombre.setColumns(8);
         getContentPane().add(txtNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(163, 133, 195, -1));
         getContentPane().add(txtApellido, new org.netbeans.lib.awtextra.AbsoluteConstraints(163, 173, 195, -1));
 
         txtEmail.setMaximumSize(new java.awt.Dimension(64, 22));
->>>>>>> v2.0.1
         txtEmail.setColumns(8);
         getContentPane().add(txtEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(163, 93, 195, -1));
 
@@ -171,12 +148,7 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
         jLabel6.setPreferredSize(new java.awt.Dimension(115, 16));
         getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(19, 258, 114, -1));
 
-<<<<<<< HEAD
-        comboTipoUsuario.setModel(
-                new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar...", "Estudiante", "Docente" }));
-=======
         comboTipoUsuario.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar...", "Estudiante", "Docente" }));
->>>>>>> v2.0.1
         comboTipoUsuario.addActionListener(this::comboTipoUsuarioActionPerformed);
         getContentPane().add(comboTipoUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(139, 255, 130, -1));
 
@@ -187,15 +159,9 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
         List<DTMaster> auxListIns = ico.ListarClase(EnumDT.DT_INSTITUTO);
 
         comboInstituto.insertItemAt("Instituto...", 0);
-<<<<<<< HEAD
-        for (int i = 0; i < auxListIns.size(); i++) {
-            DTInstituto dt = (DTInstituto) auxListIns.get(i);
-            comboInstituto.insertItemAt(dt.getNombre(), i + 1);
-=======
         for(int i = 0;i<auxListIns.size();i++){
             DTInstituto dt = (DTInstituto)auxListIns.get(i);
             comboInstituto.insertItemAt(dt.getNombre(), i+1);
->>>>>>> v2.0.1
         }
         comboInstituto.setSelectedIndex(0);
         getContentPane().add(comboInstituto, new org.netbeans.lib.awtextra.AbsoluteConstraints(275, 255, 110, -1));
@@ -211,190 +177,16 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
         buttonChooser.addActionListener(this::buttonChooserActionPerformed);
         getContentPane().add(buttonChooser, new org.netbeans.lib.awtextra.AbsoluteConstraints(362, 296, -1, -1));
 
-<<<<<<< HEAD
-        fieldFecha.setMaximumSize(new java.awt.Dimension(64, 22));
-        fieldFecha.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                fieldFechaMouseClicked(evt);
-            }
-        });
-        getContentPane().add(fieldFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(163, 214, 196, -1));
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addContainerGap(176, Short.MAX_VALUE)
-                                                .addGroup(layout
-                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                        .addGroup(layout
-                                                                .createParallelGroup(
-                                                                        javax.swing.GroupLayout.Alignment.LEADING,
-                                                                        false)
-                                                                .addComponent(txtEmail,
-                                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 154,
-                                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addComponent(txtApellido,
-                                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 154,
-                                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addComponent(txtNombre,
-                                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 154,
-                                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addComponent(txtNickname,
-                                                                        javax.swing.GroupLayout.PREFERRED_SIZE, 154,
-                                                                        javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                        .addGroup(layout.createSequentialGroup()
-                                                                .addGroup(layout.createParallelGroup(
-                                                                        javax.swing.GroupLayout.Alignment.TRAILING)
-                                                                        .addComponent(comboInstituto,
-                                                                                javax.swing.GroupLayout.PREFERRED_SIZE,
-                                                                                151,
-                                                                                javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                        .addComponent(comboTipoUsuario,
-                                                                                javax.swing.GroupLayout.PREFERRED_SIZE,
-                                                                                151,
-                                                                                javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                                .addGap(10, 10, 10))))
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout
-                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addGroup(layout.createSequentialGroup()
-                                                                .addGap(19, 19, 19)
-                                                                .addComponent(jLabel5))
-                                                        .addGroup(layout.createSequentialGroup()
-                                                                .addGap(36, 36, 36)
-                                                                .addGroup(layout.createParallelGroup(
-                                                                        javax.swing.GroupLayout.Alignment.LEADING)
-                                                                        .addComponent(jLabel10)
-                                                                        .addGroup(layout.createParallelGroup(
-                                                                                javax.swing.GroupLayout.Alignment.LEADING,
-                                                                                false)
-                                                                                .addComponent(jLabel1,
-                                                                                        javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                        javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                        Short.MAX_VALUE)
-                                                                                .addComponent(jLabel2,
-                                                                                        javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                        javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                        Short.MAX_VALUE)
-                                                                                .addComponent(jLabel3,
-                                                                                        javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                        javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                        Short.MAX_VALUE)
-                                                                                .addComponent(jLabel4,
-                                                                                        javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                        javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                                        Short.MAX_VALUE))
-                                                                        .addComponent(jLabel6)
-                                                                        .addGroup(layout.createSequentialGroup()
-                                                                                .addComponent(jLabel11,
-                                                                                        javax.swing.GroupLayout.PREFERRED_SIZE,
-                                                                                        85,
-                                                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                                .addPreferredGap(
-                                                                                        javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                                .addComponent(fieldPath,
-                                                                                        javax.swing.GroupLayout.PREFERRED_SIZE,
-                                                                                        161,
-                                                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                                .addPreferredGap(
-                                                                                        javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                                .addComponent(buttonChooser)))))
-                                                .addGap(0, 0, Short.MAX_VALUE)))
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnCancelar)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnAceptar)
-                                .addGap(18, 18, 18)));
-        layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addGap(17, 17, 17)
-                                .addComponent(jLabel5)
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel1)
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addComponent(txtNickname, javax.swing.GroupLayout.PREFERRED_SIZE,
-                                                        javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                        javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addGroup(layout
-                                                        .createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE,
-                                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                                javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(jLabel2))))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE,
-                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jLabel3))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE,
-                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jLabel4))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(jLabel10))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel6)
-                                        .addComponent(comboTipoUsuario, javax.swing.GroupLayout.PREFERRED_SIZE,
-                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(comboInstituto, javax.swing.GroupLayout.PREFERRED_SIZE,
-                                                javax.swing.GroupLayout.DEFAULT_SIZE,
-                                                javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(jLabel11)
-                                        .addComponent(fieldPath)
-                                        .addComponent(buttonChooser))
-                                .addGap(38, 38, 38)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(btnCancelar)
-                                        .addComponent(btnAceptar))
-                                .addGap(0, 8, Short.MAX_VALUE)));
-=======
         fieldFecha.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 fieldFechaMousePressed(evt);
             }
         });
         getContentPane().add(fieldFecha, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 210, 196, -1));
->>>>>>> v2.0.1
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-<<<<<<< HEAD
-    private void txtNicknameActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtNicknameActionPerformed
-        // TODO add your handling code here:
-    }// GEN-LAST:event_txtNicknameActionPerformed
-
-    private void txtNombreActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtNombreActionPerformed
-        // TODO add your handling code here:
-    }// GEN-LAST:event_txtNombreActionPerformed
-
-    private void txtApellidoActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtApellidoActionPerformed
-        // TODO add your handling code here:
-    }// GEN-LAST:event_txtApellidoActionPerformed
-
-    private void txtEmailActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtEmailActionPerformed
-        // TODO add your handling code here:
-    }// GEN-LAST:event_txtEmailActionPerformed
-=======
     private void fieldFechaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fieldFechaMousePressed
         JPopupMenu popupMenu = new JPopupMenu();
         JCalendar popupCalendar = new JCalendar();
@@ -417,7 +209,6 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
         // DESPLEGAR EL POPUP (Muestra el calendario justo debajo del JTextField)
         popupMenu.show(fieldFecha, 0, fieldFecha.getHeight());
     }//GEN-LAST:event_fieldFechaMousePressed
->>>>>>> v2.0.1
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAceptarActionPerformed
         // 1. Captura de datos básicos de texto
@@ -558,32 +349,6 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
         }
     }// GEN-LAST:event_buttonChooserActionPerformed
 
-<<<<<<< HEAD
-    private void fieldFechaMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_fieldFechaMouseClicked
-        JPopupMenu popupMenu = new JPopupMenu();
-        JCalendar popupCalendar = new JCalendar();
-        popupCalendar.setMaxSelectableDate(new Date());
-        // Configurar el evento al seleccionar una fecha
-        popupCalendar.getDayChooser().addPropertyChangeListener("day", evtc -> {
-            Date fechaSeleccionada = popupCalendar.getDate();
-
-            if (fechaSeleccionada != null) {
-                fieldFecha.setText(sdf.format(fechaSeleccionada));
-            }
-
-            // Cerramos el menú flotante al seleccionar el día
-            popupMenu.setVisible(false);
-        });
-
-        popupMenu.setLayout(new BorderLayout());
-        popupMenu.add(popupCalendar, BorderLayout.CENTER);
-
-        // DESPLEGAR EL POPUP (Muestra el calendario justo debajo del JTextField)
-        popupMenu.show(fieldFecha, 0, fieldFecha.getHeight());
-    }// GEN-LAST:event_fieldFechaMouseClicked
-
-=======
->>>>>>> v2.0.1
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAceptar;
     private javax.swing.JButton btnCancelar;

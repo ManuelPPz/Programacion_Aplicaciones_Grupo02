@@ -46,27 +46,6 @@ public class Presentacion extends javax.swing.JFrame {
         jDesktopPane1 = new javax.swing.JDesktopPane();
         jMenuBar1 = new javax.swing.JMenuBar();
         ModUsuario = new javax.swing.JMenu();
-<<<<<<< HEAD
-        jMenuItem1 = new javax.swing.JMenuItem();
-        mConsultarUsuario = new javax.swing.JMenuItem();
-        jMenuItem10 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
-        jMenuAltaCurso = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jMenu10 = new javax.swing.JMenu();
-        jMenuItem3 = new javax.swing.JMenuItem();
-        jMenuItem11 = new javax.swing.JMenuItem();
-        itemMenuInsEdi = new javax.swing.JMenuItem();
-        jMenu11 = new javax.swing.JMenu();
-        CrearProgFormacion = new javax.swing.JMenuItem();
-        jMenuItem5 = new javax.swing.JMenuItem();
-        jMenuItem6 = new javax.swing.JMenuItem();
-        jMenuItem8 = new javax.swing.JMenuItem();
-        jMenu12 = new javax.swing.JMenu();
-        jMenuItem4 = new javax.swing.JMenuItem();
-        jMenu1 = new javax.swing.JMenu();
-        jMenuItem7 = new javax.swing.JMenuItem();
-=======
         AltaUsuarioMenuItem = new javax.swing.JMenuItem();
         ConsultaUsuarioMenuItem = new javax.swing.JMenuItem();
         ModificarUsuarioMenuItem = new javax.swing.JMenuItem();
@@ -86,7 +65,6 @@ public class Presentacion extends javax.swing.JFrame {
         AltaInstitutoMenuItem = new javax.swing.JMenuItem();
         jMenu1 = new javax.swing.JMenu();
         AltaCategoriaMenuItem = new javax.swing.JMenuItem();
->>>>>>> v2.0.1
 
         jMenu3.setText("jMenu3");
 
@@ -123,19 +101,6 @@ public class Presentacion extends javax.swing.JFrame {
 
         ModUsuario.setText("Usuarios");
 
-<<<<<<< HEAD
-        jMenuItem1.setText("Alta de Usuario");
-        jMenuItem1.addActionListener(this::jMenuItem1ActionPerformed);
-        ModUsuario.add(jMenuItem1);
-
-        mConsultarUsuario.setText("Consultar Usuario");
-        mConsultarUsuario.addActionListener(this::mConsultarUsuarioActionPerformed);
-        ModUsuario.add(mConsultarUsuario);
-
-        jMenuItem10.setText("Modificar");
-        jMenuItem10.addActionListener(this::jMenuItem10ActionPerformed);
-        ModUsuario.add(jMenuItem10);
-=======
         AltaUsuarioMenuItem.setText("Alta de Usuario");
         AltaUsuarioMenuItem.addActionListener(this::AltaUsuarioMenuItemActionPerformed);
         ModUsuario.add(AltaUsuarioMenuItem);
@@ -147,35 +112,11 @@ public class Presentacion extends javax.swing.JFrame {
         ModificarUsuarioMenuItem.setText("Modificar Usuario");
         ModificarUsuarioMenuItem.addActionListener(this::ModificarUsuarioMenuItemActionPerformed);
         ModUsuario.add(ModificarUsuarioMenuItem);
->>>>>>> v2.0.1
 
         jMenuBar1.add(ModUsuario);
 
         jMenu2.setText("Cursos");
 
-<<<<<<< HEAD
-        jMenuAltaCurso.setText("Ingresar");
-        jMenuAltaCurso.addActionListener(this::jMenuAltaCursoActionPerformed);
-        jMenu2.add(jMenuAltaCurso);
-
-        jMenuItem2.setText("Consultar");
-        jMenuItem2.addActionListener(this::jMenuItem2ActionPerformed);
-        jMenu2.add(jMenuItem2);
-
-        jMenu10.setText("Edicion Curso");
-
-        jMenuItem3.setText("Ingresar");
-        jMenuItem3.addActionListener(this::jMenuItem3ActionPerformed);
-        jMenu10.add(jMenuItem3);
-
-        jMenuItem11.setText("Consulta");
-        jMenuItem11.addActionListener(this::jMenuItem7ActionPerformed);
-        jMenu10.add(jMenuItem11);
-
-        itemMenuInsEdi.setText("Inscripcion");
-        itemMenuInsEdi.addActionListener(this::itemMenuInsEdiActionPerformed);
-        jMenu10.add(itemMenuInsEdi);
-=======
         IngresarCursoMenuItem.setText("Ingresar");
         IngresarCursoMenuItem.addActionListener(this::IngresarCursoMenuItemActionPerformed);
         jMenu2.add(IngresarCursoMenuItem);
@@ -197,7 +138,6 @@ public class Presentacion extends javax.swing.JFrame {
         InscripcionEdicionMenuItem.setText("Inscripcion");
         InscripcionEdicionMenuItem.addActionListener(this::InscripcionEdicionMenuItemActionPerformed);
         jMenu10.add(InscripcionEdicionMenuItem);
->>>>>>> v2.0.1
 
         jMenu2.add(jMenu10);
 
@@ -205,23 +145,6 @@ public class Presentacion extends javax.swing.JFrame {
 
         jMenu11.setText("Prog Formacion");
 
-<<<<<<< HEAD
-        CrearProgFormacion.setText("Crear");
-        CrearProgFormacion.addActionListener(this::CrearProgFormacionActionPerformed);
-        jMenu11.add(CrearProgFormacion);
-
-        jMenuItem5.setText("Agregar Curso");
-        jMenuItem5.addActionListener(this::jMenuItem5ActionPerformed);
-        jMenu11.add(jMenuItem5);
-
-        jMenuItem6.setText("Consultar");
-        jMenuItem6.addActionListener(this::jMenuItem6ActionPerformed);
-        jMenu11.add(jMenuItem6);
-
-        jMenuItem8.setText("Inscripcion");
-        jMenuItem8.addActionListener(this::jMenuItem8ActionPerformed);
-        jMenu11.add(jMenuItem8);
-=======
         CrearProgramaMenuItem.setText("Crear");
         CrearProgramaMenuItem.addActionListener(this::CrearProgramaMenuItemActionPerformed);
         jMenu11.add(CrearProgramaMenuItem);
@@ -237,35 +160,22 @@ public class Presentacion extends javax.swing.JFrame {
         InscripcionProgramaMenuItem.setText("Inscripcion");
         InscripcionProgramaMenuItem.addActionListener(this::InscripcionProgramaMenuItemActionPerformed);
         jMenu11.add(InscripcionProgramaMenuItem);
->>>>>>> v2.0.1
 
         jMenuBar1.add(jMenu11);
 
         jMenu12.setText("Instituto");
 
-<<<<<<< HEAD
-        jMenuItem4.setText("Alta Instituto");
-        jMenuItem4.addActionListener(this::jMenuItem4ActionPerformed);
-        jMenu12.add(jMenuItem4);
-=======
         AltaInstitutoMenuItem.setText("Alta Instituto");
         AltaInstitutoMenuItem.addActionListener(this::AltaInstitutoMenuItemActionPerformed);
         jMenu12.add(AltaInstitutoMenuItem);
->>>>>>> v2.0.1
 
         jMenuBar1.add(jMenu12);
 
         jMenu1.setText("Categoria");
 
-<<<<<<< HEAD
-        jMenuItem7.setText("Alta Categoria");
-        jMenuItem7.addActionListener(this::jMenuItem7ActionPerformed1);
-        jMenu1.add(jMenuItem7);
-=======
         AltaCategoriaMenuItem.setText("Alta Categoria");
         AltaCategoriaMenuItem.addActionListener(this::AltaCategoriaMenuItemActionPerformed1);
         jMenu1.add(AltaCategoriaMenuItem);
->>>>>>> v2.0.1
 
         jMenuBar1.add(jMenu1);
 
@@ -285,11 +195,7 @@ public class Presentacion extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-<<<<<<< HEAD
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-=======
     private void AltaUsuarioMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AltaUsuarioMenuItemActionPerformed
->>>>>>> v2.0.1
         // 1. Crear la instancia de la ventana interna
         AltaUsuario vAlta = new AltaUsuario();
 
@@ -308,16 +214,6 @@ public class Presentacion extends javax.swing.JFrame {
         // 5. Hacerla visible y traerla al frente
         vAlta.setVisible(true);
         vAlta.toFront();
-<<<<<<< HEAD
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
-
-
-    private void CrearProgFormacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CrearProgFormacionActionPerformed
-                                              
-    // 1. Crear una instancia de la ventana interna Programa_Formacion
-    Crear_programa_formacion vCrearpf = new Crear_programa_formacion();
-    
-=======
     }//GEN-LAST:event_AltaUsuarioMenuItemActionPerformed
 
 
@@ -326,7 +222,6 @@ public class Presentacion extends javax.swing.JFrame {
     // 1. Crear una instancia de la ventana interna Programa_Formacion
     Crear_programa_formacion vCrearpf = new Crear_programa_formacion();
     vCrearpf.setSize(400,367);
->>>>>>> v2.0.1
     // 2. Agregarla al contenedor principal JDesktopPane
     jDesktopPane1.add(vCrearpf);
     
@@ -340,15 +235,9 @@ public class Presentacion extends javax.swing.JFrame {
     vCrearpf.setVisible(true);
     vCrearpf.toFront();                                             
 
-<<<<<<< HEAD
-    }//GEN-LAST:event_CrearProgFormacionActionPerformed
-
-    private void jMenuAltaCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuAltaCursoActionPerformed
-=======
     }//GEN-LAST:event_CrearProgramaMenuItemActionPerformed
 
     private void IngresarCursoMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_IngresarCursoMenuItemActionPerformed
->>>>>>> v2.0.1
         // 1. Crear la instancia de la ventana interna
         AltaCurso vAlta = new AltaCurso();
 
@@ -367,19 +256,11 @@ public class Presentacion extends javax.swing.JFrame {
         // 5. Hacerla visible y traerla al frente
         vAlta.setVisible(true);
         vAlta.toFront();
-<<<<<<< HEAD
-    }//GEN-LAST:event_jMenuAltaCursoActionPerformed
-
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        ConsultaCurso vConsultaCurso = new ConsultaCurso();
-    
-=======
     }//GEN-LAST:event_IngresarCursoMenuItemActionPerformed
 
     private void ConsultaCursoMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConsultaCursoMenuItemActionPerformed
         ConsultaCurso vConsultaCurso = new ConsultaCurso();
         vConsultaCurso.setSize(355,469);
->>>>>>> v2.0.1
         // 2. Agregarla al contenedor principal JDesktopPane
         // (Asegúrate de que 'jDesktopPane1' sea el nombre de variable de tu JDesktopPane)
         jDesktopPane1.add(vConsultaCurso);
@@ -394,21 +275,12 @@ public class Presentacion extends javax.swing.JFrame {
         
         vConsultaCurso.setVisible(true);
         vConsultaCurso.toFront();
-<<<<<<< HEAD
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
-
-
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        AltaEdicionCurso vAltaEdicionCurso = new AltaEdicionCurso();
-    
-=======
     }//GEN-LAST:event_ConsultaCursoMenuItemActionPerformed
 
 
     private void IngresarEdicionMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_IngresarEdicionMenuItemActionPerformed
         AltaEdicionCurso vAltaEdicionCurso = new AltaEdicionCurso();
         vAltaEdicionCurso.setSize(355,469);
->>>>>>> v2.0.1
         // 2. Agregarla al contenedor principal JDesktopPane
         // (Asegúrate de que 'jDesktopPane1' sea el nombre de variable de tu JDesktopPane)
         jDesktopPane1.add(vAltaEdicionCurso);
@@ -423,18 +295,11 @@ public class Presentacion extends javax.swing.JFrame {
         
         vAltaEdicionCurso.setVisible(true);
         vAltaEdicionCurso.toFront();
-<<<<<<< HEAD
-    }//GEN-LAST:event_jMenuItem3ActionPerformed
-
-    private void mConsultarUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mConsultarUsuarioActionPerformed
-       ConsultaUsuario vConsultaUsuario = new ConsultaUsuario();
-=======
     }//GEN-LAST:event_IngresarEdicionMenuItemActionPerformed
 
     private void ConsultaUsuarioMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConsultaUsuarioMenuItemActionPerformed
        ConsultaUsuario vConsultaUsuario = new ConsultaUsuario();
        vConsultaUsuario.setSize(582,383);
->>>>>>> v2.0.1
         jDesktopPane1.add(vConsultaUsuario);
          java.awt.Dimension desktopSize = jDesktopPane1.getSize();
         java.awt.Dimension frameSize = vConsultaUsuario.getSize();
@@ -442,18 +307,11 @@ public class Presentacion extends javax.swing.JFrame {
                       (desktopSize.height - frameSize.height) / 2);
         vConsultaUsuario.setVisible(true);
         vConsultaUsuario.toFront();
-<<<<<<< HEAD
-    }//GEN-LAST:event_mConsultarUsuarioActionPerformed
-
-    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
-      AltaInstituto vAltaInstituto = new AltaInstituto();
-=======
     }//GEN-LAST:event_ConsultaUsuarioMenuItemActionPerformed
 
     private void AltaInstitutoMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AltaInstitutoMenuItemActionPerformed
       AltaInstituto vAltaInstituto = new AltaInstituto();
       vAltaInstituto.setSize(385,172);
->>>>>>> v2.0.1
        jDesktopPane1.add(vAltaInstituto);
          java.awt.Dimension desktopSize = jDesktopPane1.getSize();
         java.awt.Dimension frameSize = vAltaInstituto.getSize();
@@ -462,20 +320,12 @@ public class Presentacion extends javax.swing.JFrame {
         vAltaInstituto.setVisible(true);
         vAltaInstituto.toFront();
       
-<<<<<<< HEAD
-    }//GEN-LAST:event_jMenuItem4ActionPerformed
-
-    private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
-      
-        AgregarCursoProgramaForm vAgCurProgForm = new AgregarCursoProgramaForm();
-=======
     }//GEN-LAST:event_AltaInstitutoMenuItemActionPerformed
 
     private void AgregarCursoProgramaMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AgregarCursoProgramaMenuItemActionPerformed
       
         AgregarCursoProgramaForm vAgCurProgForm = new AgregarCursoProgramaForm();
         vAgCurProgForm.setSize(344,503);
->>>>>>> v2.0.1
         jDesktopPane1.add(vAgCurProgForm);
          java.awt.Dimension desktopSize = jDesktopPane1.getSize();
         java.awt.Dimension frameSize = vAgCurProgForm.getSize();
@@ -483,14 +333,6 @@ public class Presentacion extends javax.swing.JFrame {
                       (desktopSize.height - frameSize.height) / 2);
         vAgCurProgForm.setVisible(true);
         vAgCurProgForm.toFront();
-<<<<<<< HEAD
-    }//GEN-LAST:event_jMenuItem5ActionPerformed
-
-    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
-  interfaces.ConsultaProgramaFormacion vConProgForm = new interfaces.ConsultaProgramaFormacion();
-   jDesktopPane1.add(vConProgForm);
-         java.awt.Dimension desktopSize = jDesktopPane1.getSize();
-=======
     }//GEN-LAST:event_AgregarCursoProgramaMenuItemActionPerformed
 
     private void ConsultaProgramaMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConsultaProgramaMenuItemActionPerformed
@@ -498,25 +340,17 @@ public class Presentacion extends javax.swing.JFrame {
         vConProgForm.setSize(357,310);
         jDesktopPane1.add(vConProgForm);
         java.awt.Dimension desktopSize = jDesktopPane1.getSize();
->>>>>>> v2.0.1
         java.awt.Dimension frameSize = vConProgForm.getSize();
         vConProgForm.setLocation((desktopSize.width - frameSize.width) / 2, 
                       (desktopSize.height - frameSize.height) / 2);
         vConProgForm.setVisible(true);
         vConProgForm.toFront();
-<<<<<<< HEAD
-    }//GEN-LAST:event_jMenuItem6ActionPerformed
-=======
     }//GEN-LAST:event_ConsultaProgramaMenuItemActionPerformed
->>>>>>> v2.0.1
 
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
         ConsultaEdicionCurso vConsultaEdicion = new ConsultaEdicionCurso();
-<<<<<<< HEAD
-=======
         vConsultaEdicion.setSize(406,368);
->>>>>>> v2.0.1
         jDesktopPane1.add(vConsultaEdicion);
          java.awt.Dimension desktopSize = jDesktopPane1.getSize();
         java.awt.Dimension frameSize = vConsultaEdicion.getSize();
@@ -527,14 +361,9 @@ public class Presentacion extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem7ActionPerformed
 
 
-<<<<<<< HEAD
-    private void itemMenuInsEdiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemMenuInsEdiActionPerformed
-        InscripcionEdicionCurso vInscripcionEdicion = new InscripcionEdicionCurso();
-=======
     private void InscripcionEdicionMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InscripcionEdicionMenuItemActionPerformed
         InscripcionEdicionCurso vInscripcionEdicion = new InscripcionEdicionCurso();
         vInscripcionEdicion.setSize(400,300);
->>>>>>> v2.0.1
         jDesktopPane1.add(vInscripcionEdicion);
          java.awt.Dimension desktopSize = jDesktopPane1.getSize();
         java.awt.Dimension frameSize = vInscripcionEdicion.getSize();
@@ -542,37 +371,11 @@ public class Presentacion extends javax.swing.JFrame {
                       (desktopSize.height - frameSize.height) / 2);
         vInscripcionEdicion.setVisible(true);
         vInscripcionEdicion.toFront();
-<<<<<<< HEAD
-    }//GEN-LAST:event_itemMenuInsEdiActionPerformed
-
-    private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {                                           
-        ModificarDatosdeUsuario vModificar = new ModificarDatosdeUsuario();
-    
-        
-        jDesktopPane1.add(vModificar);
-    
-        // 3. Centrar la ventana dentro del escritorio
-        java.awt.Dimension desktopSize = jDesktopPane1.getSize();
-        java.awt.Dimension frameSize = vModificar.getSize();
-        vModificar.setLocation((desktopSize.width - frameSize.width) / 2, 
-                      (desktopSize.height - frameSize.height) / 2);
-    
-        // 4. Hacerla visible y traerla al frente
-        
-        vModificar.setVisible(true);
-        vModificar.toFront();// TODO add your handling code here:
-    }                                          
-
-
-    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
-        InscripcionProgramaDeFormacion vInscripcionPrograma = new InscripcionProgramaDeFormacion();
-=======
     }//GEN-LAST:event_InscripcionEdicionMenuItemActionPerformed
 
     private void InscripcionProgramaMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InscripcionProgramaMenuItemActionPerformed
         InscripcionProgramaDeFormacion vInscripcionPrograma = new InscripcionProgramaDeFormacion();
         vInscripcionPrograma.setSize(412,500);
->>>>>>> v2.0.1
         jDesktopPane1.add(vInscripcionPrograma);
          java.awt.Dimension desktopSize = jDesktopPane1.getSize();
         java.awt.Dimension frameSize = vInscripcionPrograma.getSize();
@@ -580,15 +383,9 @@ public class Presentacion extends javax.swing.JFrame {
                       (desktopSize.height - frameSize.height) / 2);
         vInscripcionPrograma.setVisible(true);
         vInscripcionPrograma.toFront();
-<<<<<<< HEAD
-    }//GEN-LAST:event_jMenuItem8ActionPerformed
-
-    private void jMenuItem7ActionPerformed1(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed1
-=======
     }//GEN-LAST:event_InscripcionProgramaMenuItemActionPerformed
 
     private void AltaCategoriaMenuItemActionPerformed1(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AltaCategoriaMenuItemActionPerformed1
->>>>>>> v2.0.1
         // 1. Crear la instancia de la ventana interna
         AltaCategoria vAlta = new AltaCategoria();
 
@@ -607,28 +404,6 @@ public class Presentacion extends javax.swing.JFrame {
         // 5. Hacerla visible y traerla al frente
         vAlta.setVisible(true);
         vAlta.toFront();
-<<<<<<< HEAD
-    }//GEN-LAST:event_jMenuItem7ActionPerformed1
-
-
-    private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {                                            
-           ModificarDatosdeUsuario vModificar = new ModificarDatosdeUsuario();
-    
-        
-        jDesktopPane1.add(vModificar);
-    
-        // 3. Centrar la ventana dentro del escritorio
-        java.awt.Dimension desktopSize = jDesktopPane1.getSize();
-        java.awt.Dimension frameSize = vModificar.getSize();
-        vModificar.setLocation((desktopSize.width - frameSize.width) / 2, 
-                      (desktopSize.height - frameSize.height) / 2);
-    
-        // 4. Hacerla visible y traerla al frente
-        
-        vModificar.setVisible(true);
-        vModificar.toFront();// TODO add your handling code here:
-    }                                           
-=======
     }//GEN-LAST:event_AltaCategoriaMenuItemActionPerformed1
 
     private void ModificarUsuarioMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ModificarUsuarioMenuItemActionPerformed
@@ -652,7 +427,6 @@ public class Presentacion extends javax.swing.JFrame {
         vMod.toFront();
     }//GEN-LAST:event_ModificarUsuarioMenuItemActionPerformed
                                         
->>>>>>> v2.0.1
 
 
 
@@ -682,11 +456,6 @@ public class Presentacion extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-<<<<<<< HEAD
-    private javax.swing.JMenuItem CrearProgFormacion;
-    private javax.swing.JMenu ModUsuario;
-    private javax.swing.JMenuItem itemMenuInsEdi;
-=======
     private javax.swing.JMenuItem AgregarCursoProgramaMenuItem;
     private javax.swing.JMenuItem AltaCategoriaMenuItem;
     private javax.swing.JMenuItem AltaInstitutoMenuItem;
@@ -702,7 +471,6 @@ public class Presentacion extends javax.swing.JFrame {
     private javax.swing.JMenuItem InscripcionProgramaMenuItem;
     private javax.swing.JMenu ModUsuario;
     private javax.swing.JMenuItem ModificarUsuarioMenuItem;
->>>>>>> v2.0.1
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu10;
@@ -716,31 +484,11 @@ public class Presentacion extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu7;
     private javax.swing.JMenu jMenu8;
     private javax.swing.JMenu jMenu9;
-<<<<<<< HEAD
-    private javax.swing.JMenuItem jMenuAltaCurso;
-=======
->>>>>>> v2.0.1
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuBar jMenuBar2;
     private javax.swing.JMenuBar jMenuBar3;
     private javax.swing.JMenuBar jMenuBar4;
-<<<<<<< HEAD
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem10;
-    private javax.swing.JMenuItem jMenuItem11;
-    private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem5;
-    private javax.swing.JMenuItem jMenuItem6;
-    private javax.swing.JMenuItem jMenuItem7;
-    private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JPopupMenu jPopupMenu2;
-    private javax.swing.JMenuItem mConsultarUsuario;
-=======
-    private javax.swing.JPopupMenu jPopupMenu1;
-    private javax.swing.JPopupMenu jPopupMenu2;
->>>>>>> v2.0.1
     // End of variables declaration//GEN-END:variables
 }

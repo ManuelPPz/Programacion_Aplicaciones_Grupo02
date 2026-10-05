@@ -22,14 +22,10 @@ public class DTCurso extends DTMaster{
     private List<String> listPrevias;
     private List<String> listEdiCursos;
     private List<String> listProgCursos;
-<<<<<<< HEAD
-    public DTCurso(String nomInstituto, String nom, String descripcion, int duracion,float cantHoras,int cantCreditos, String URL, Date fecha, List<String> listPrevias, List<String> listEdiCursos, List<String> listProgCursos){
-=======
     private List<String> listCategorias;
     private String docente;
     
     public DTCurso(String nomInstituto, String nom, String descripcion, int duracion,float cantHoras,int cantCreditos, String URL, Date fecha, List<String> listPrevias, List<String> listEdiCursos, List<String> listProgCursos, List<String> categorias, String docente){
->>>>>>> v2.0.1
         this.instituto = nomInstituto;
         this.nombre = nom;
         this.descripcion = descripcion;
@@ -41,11 +37,8 @@ public class DTCurso extends DTMaster{
         this.listPrevias = listPrevias;
         this.listEdiCursos = listEdiCursos;
         this.listProgCursos = listProgCursos;
-<<<<<<< HEAD
-=======
         this.listCategorias = categorias;
         this.docente = docente;
->>>>>>> v2.0.1
     }
     public String getInstituto(){return this.instituto;}
     public String getNombre(){return this.nombre;}
@@ -58,10 +51,7 @@ public class DTCurso extends DTMaster{
     public List<String> getPrevias(){return this.listPrevias;}
     public List<String> getEdiCursos(){return this.listEdiCursos;}
     public List<String> getProgFormacion(){return this.listProgCursos;}
-<<<<<<< HEAD
-=======
     public List<String> getCategorias(){return this.listCategorias;}
     public String getDocente(){return this.docente;}
->>>>>>> v2.0.1
     
 }

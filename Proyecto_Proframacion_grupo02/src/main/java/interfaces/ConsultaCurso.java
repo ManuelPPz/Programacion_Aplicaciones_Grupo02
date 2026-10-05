@@ -133,12 +133,8 @@ public class ConsultaCurso extends javax.swing.JInternalFrame {
         DTMaster dt = ico.ConsultaCurso(nombre);
         MiniInterfazDeConsultaCurso micc = new MiniInterfazDeConsultaCurso();
         this.getDesktopPane().add(micc);
-<<<<<<< HEAD
-        micc.setTitle("(Info) "+nombre);
-=======
         DTCurso dti = (DTCurso)dt;
         micc.setTitle("(Info) "+nombre+"  -  Creada por: "+dti.getDocente());
->>>>>>> v2.0.1
         micc.setVisible(true);
         micc.toFront();
         

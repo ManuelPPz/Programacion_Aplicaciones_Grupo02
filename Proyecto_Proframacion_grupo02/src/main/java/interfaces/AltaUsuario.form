@@ -130,12 +130,6 @@
           <Dimension value="[64, 22]"/>
         </Property>
       </Properties>
-<<<<<<< HEAD
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtNicknameActionPerformed"/>
-      </Events>
-=======
->>>>>>> v2.0.1
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_ListenersCodePost" type="java.lang.String" value="txtNickname.setColumns(8);"/>
       </AuxValues>
@@ -151,12 +145,6 @@
           <Dimension value="[64, 22]"/>
         </Property>
       </Properties>
-<<<<<<< HEAD
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtNombreActionPerformed"/>
-      </Events>
-=======
->>>>>>> v2.0.1
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_ListenersCodePost" type="java.lang.String" value="txtNombre.setColumns(8);"/>
       </AuxValues>
@@ -167,12 +155,6 @@
       </Constraints>
     </Component>
     <Component class="javax.swing.JTextField" name="txtApellido">
-<<<<<<< HEAD
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtApellidoActionPerformed"/>
-      </Events>
-=======
->>>>>>> v2.0.1
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
           <AbsoluteConstraints x="163" y="173" width="195" height="-1"/>
@@ -185,12 +167,6 @@
           <Dimension value="[64, 22]"/>
         </Property>
       </Properties>
-<<<<<<< HEAD
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtEmailActionPerformed"/>
-      </Events>
-=======
->>>>>>> v2.0.1
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_ListenersCodePost" type="java.lang.String" value="txtEmail.setColumns(8);"/>
       </AuxValues>
@@ -355,29 +331,12 @@
       </Constraints>
     </Component>
     <Component class="javax.swing.JTextField" name="fieldFecha">
-<<<<<<< HEAD
-      <Properties>
-        <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-          <SpinnerModel initial="now" stepSize="5" type="date"/>
-        </Property>
-        <Property name="editor" type="javax.swing.JComponent" editor="org.netbeans.modules.form.editors.SpinnerEditorEditor">
-          <SpinnerEditor format="dd/MM/yyyy" type="1"/>
-        </Property>
-      </Properties>
-      <Events>
-        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="fieldFechaMouseClicked"/>
-      </Events>
-      <Constraints>
-        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-          <AbsoluteConstraints x="163" y="214" width="196" height="-1"/>
-=======
       <Events>
         <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="fieldFechaMousePressed"/>
       </Events>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
           <AbsoluteConstraints x="160" y="210" width="196" height="-1"/>
->>>>>>> v2.0.1
         </Constraint>
       </Constraints>
     </Component>

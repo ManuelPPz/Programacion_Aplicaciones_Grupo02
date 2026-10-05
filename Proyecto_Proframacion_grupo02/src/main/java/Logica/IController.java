@@ -98,9 +98,6 @@ public interface IController {
     public abstract String GenerateRandPassword();
     
     public abstract void AltaCategoria(String nombre);
-<<<<<<< HEAD
-=======
     
     
->>>>>>> v2.0.1
 }

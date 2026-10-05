@@ -16,10 +16,6 @@ import java.util.Date;
 import util.JPAUtil; // Import de la clase utilitaria
 
 public class ManejadorCursos {
-<<<<<<< HEAD
-    private List<Curso> misCursos;
-=======
->>>>>>> v2.0.1
     
     //=================Codigo de Singleton=================
     private static ManejadorCursos instance;    
@@ -31,57 +27,9 @@ public class ManejadorCursos {
     }
     
     private ManejadorCursos() {
-<<<<<<< HEAD
-        misCursos = new ArrayList<>();
-        CargarDeBaseDeDatos();
     }
     //=======================================================
     
-    public void CargarDeBaseDeDatos() {
-        EntityManager em = JPAUtil.getEntityManager();
-        try {
-            em.getTransaction().begin();
-
-            // PASO 1: Cargar todos los cursos haciendo FETCH de la colección 'misEdiciones'
-            List<Curso> resultados = em.createQuery(
-                "SELECT DISTINCT c FROM Curso c LEFT JOIN FETCH c.misEdiciones", Curso.class
-            ).getResultList();
-
-            // PASO 2: En la misma sesión, hacer FETCH de la colección 'previas' para los mismos cursos
-            if (!resultados.isEmpty()) {
-                resultados = em.createQuery(
-                    "SELECT DISTINCT c FROM Curso c LEFT JOIN FETCH c.previas WHERE c IN :cursos", Curso.class
-                ).setParameter("cursos", resultados)
-                 .getResultList();
-            }
-            if (!resultados.isEmpty()) {
-                resultados = em.createQuery(
-                    "SELECT DISTINCT c FROM Curso c LEFT JOIN FETCH c.misProgramas WHERE c IN :cursos", Curso.class
-                ).setParameter("cursos", resultados)
-                 .getResultList();
-            }
-
-            em.getTransaction().commit();
-
-            // Guardar la lista de cursos obtenida
-            this.misCursos = resultados;
-
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            System.out.println("Error al cargar cursos desde la BD: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            em.close();
-        }
-    }
-    
-=======
-    }
-    //=======================================================
-    
->>>>>>> v2.0.1
     public Curso CrearCurso(Instituto instituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<String> previas, UsuarioBase ub, List<Categoria> categorias){
         Curso returnCurso;
         List<Curso> auxPrevias = new ArrayList<>();
@@ -122,12 +70,6 @@ public class ManejadorCursos {
             em.persist(c);
             em.getTransaction().commit();
 
-<<<<<<< HEAD
-            // Se agrega a la lista solo si el commit en DB fue exitoso
-            misCursos.add(c); 
-
-=======
->>>>>>> v2.0.1
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -145,16 +87,6 @@ public class ManejadorCursos {
         }
     }
     
-<<<<<<< HEAD
-    public Curso BuscarCurso(String nombre){
-        for(int i = 0; i < misCursos.size(); i++){
-            Curso c = misCursos.get(i);
-            if(c.getNombre().equals(nombre)){
-                return c;
-            }
-        }
-        return null;
-=======
     public Curso BuscarCurso(String nombre) {
         EntityManager em = JPAUtil.getEntityManager();
         Curso c = null;
@@ -241,7 +173,6 @@ public class ManejadorCursos {
             em.close();
         }
         return auxListCur;
->>>>>>> v2.0.1
     }
 
     public DTCurso getDT(Curso c){
@@ -274,9 +205,6 @@ public class ManejadorCursos {
                 }
             }
         }
-<<<<<<< HEAD
-        
-=======
         List<Categoria> auxCategoria = c.getCategorias();
         List<String> auxCategoriaStr = new ArrayList<>();
         if(auxCategoria!=null){
@@ -286,7 +214,6 @@ public class ManejadorCursos {
                 }
             }
         }
->>>>>>> v2.0.1
         return new DTCurso(
             ins,
             c.getNombre(),
@@ -298,24 +225,13 @@ public class ManejadorCursos {
             c.getFAlta(),
             auxPreviasStr,
             auxEdicionesStr,
-<<<<<<< HEAD
-            auxProgramasStr
-=======
             auxProgramasStr,
             auxCategoriaStr,
             c.getDocente().getNickname()
->>>>>>> v2.0.1
         );
     }
 
     public List<DTMaster> getDTList(){
-<<<<<<< HEAD
-        List<DTMaster> auxList = new ArrayList<>();
-        for(int i = 0; i < misCursos.size(); i++){
-            DTMaster dt = getDT(misCursos.get(i));
-            auxList.add(dt);
-        }
-=======
         List<Curso> auxListCur = getList();
         List<DTMaster> auxList = new ArrayList<>();
         if(auxListCur!=null){
@@ -325,21 +241,10 @@ public class ManejadorCursos {
             }
         }
         
->>>>>>> v2.0.1
         return auxList;
     }
 
     public List<DTMaster> getDTLIst(String instituto){
-<<<<<<< HEAD
-        List<DTMaster> auxList = new ArrayList<>();
-        for(int i = 0; i < misCursos.size(); i++){
-            Curso c = misCursos.get(i);
-            if(c.getInstituto() != null && c.getInstituto().getNombre().equals(instituto)){
-                DTMaster dt = getDT(c);
-                auxList.add(dt);
-            }
-        }
-=======
         List<Curso> auxListCur = getList();
         List<DTMaster> auxList = new ArrayList<>();
         if(auxListCur!=null){
@@ -352,7 +257,6 @@ public class ManejadorCursos {
             }
         }
         
->>>>>>> v2.0.1
         return auxList;
     }
 
