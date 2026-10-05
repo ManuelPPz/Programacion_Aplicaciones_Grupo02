@@ -10,12 +10,18 @@ import jakarta.persistence.TypedQuery;
 import util.JPAUtil; // Import de la utilería centralizada
 
 public class ManejadorInstituto {
+<<<<<<< HEAD
     private List<Instituto> misInstitutos;
+=======
+>>>>>>> v2.0.1
     private static ManejadorInstituto instance;
 
     // Constructora privada para respetar el patrón Singleton
     private ManejadorInstituto(){
+<<<<<<< HEAD
         misInstitutos = obtenerTodosLosInstitutos();
+=======
+>>>>>>> v2.0.1
     }
 
     public static ManejadorInstituto GetInstance(){
@@ -34,7 +40,10 @@ public class ManejadorInstituto {
     }
 
     public void Add(Instituto c) throws Exception{
+<<<<<<< HEAD
         misInstitutos.add(c);
+=======
+>>>>>>> v2.0.1
         EntityManager em = JPAUtil.getEntityManager();
         try{
             em.getTransaction().begin();
@@ -51,6 +60,7 @@ public class ManejadorInstituto {
     }
 
     public Instituto BuscarInstituto(String instituto){
+<<<<<<< HEAD
         for(int i = 0; i < misInstitutos.size(); i++){
             Instituto in = misInstitutos.get(i);
             if(in.getNombre().equals(instituto)){
@@ -59,6 +69,22 @@ public class ManejadorInstituto {
         }
         return null;
     }
+=======
+        EntityManager em = getEntityManager();
+        Instituto i = null;
+        try {
+            i = em.find(Instituto.class, instituto);
+        } catch (Exception e) {
+            System.err.println("Error al buscar la edición de curso en el manejador: " + e.getMessage());
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close(); 
+            }
+        }
+        return i; 
+    }
+    
+>>>>>>> v2.0.1
 
     public DTInstituto getDT(Instituto in){
         if (in == null) return null;
@@ -66,6 +92,7 @@ public class ManejadorInstituto {
     }
 
     public List<DTMaster> getDTList(){
+<<<<<<< HEAD
         List<DTMaster> auxList = new ArrayList<>();
         for(int i = 0; i < misInstitutos.size(); i++){
             DTMaster dt = getDT(misInstitutos.get(i));
@@ -75,6 +102,21 @@ public class ManejadorInstituto {
     }
 
     public List<Instituto> obtenerTodosLosInstitutos() {
+=======
+        List<Instituto> auxListIns = getList();
+        List<DTMaster> auxList = new ArrayList<>();
+        if(auxListIns!=null){
+            for(int i = 0; i < auxListIns.size(); i++){
+                DTMaster dt = getDT(auxListIns.get(i));
+                auxList.add(dt);
+            }
+        }
+        
+        return auxList;
+    }
+
+    public List<Instituto> getList() {
+>>>>>>> v2.0.1
         EntityManager em = JPAUtil.getEntityManager();
         try {
             TypedQuery<Instituto> query = em.createQuery("SELECT i FROM Instituto i", Instituto.class);

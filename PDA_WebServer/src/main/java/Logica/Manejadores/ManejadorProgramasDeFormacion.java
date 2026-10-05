@@ -13,7 +13,6 @@ import java.util.List;
 import Logica.util.JPAUtil;
 
 public class ManejadorProgramasDeFormacion {
-    private List<ProgramaDeFormacion> misProgramas;
     
     //=================Codigo de Singleton=================
     private static ManejadorProgramasDeFormacion instance;    
@@ -25,28 +24,6 @@ public class ManejadorProgramasDeFormacion {
         return instance;
     }
     
-    private ManejadorProgramasDeFormacion(){  
-        misProgramas = new ArrayList<>();
-        CargarDeBaseDeDatos();
-    }
-    //=======================================================
-    
-    private void CargarDeBaseDeDatos(){
-        EntityManager em = JPAUtil.getEntityManager();
-     try {
-            misProgramas.clear();
-            
-            // Cargar programas e hidratar la lista de cursos
-            List<ProgramaDeFormacion> programas = em.createQuery(
-                "SELECT DISTINCT p FROM ProgramaDeFormacion p LEFT JOIN FETCH p.cursos", 
-                ProgramaDeFormacion.class
-            ).getResultList();
-
-            misProgramas.addAll(programas);
-        } finally {
-            em.close();
-        }
-    }
     
     public ProgramaDeFormacion CrearPrograma(String nombre, String descripcion, Vigencia vigencia, Date fAlta){
         ProgramaDeFormacion auxPDF = new ProgramaDeFormacion(nombre, descripcion, vigencia, fAlta);
@@ -75,7 +52,6 @@ public class ManejadorProgramasDeFormacion {
     }
     
     public void Add(ProgramaDeFormacion pdf){
-        misProgramas.add(pdf);
         EntityManager em = JPAUtil.getEntityManager();
         try {
             em.getTransaction().begin();
@@ -123,14 +99,18 @@ public class ManejadorProgramasDeFormacion {
     }
     
     public ProgramaDeFormacion BuscarPrograma(String nombre){
-        if (nombre == null) return null;
-        for(int i = 0; i < misProgramas.size(); i++){
-            ProgramaDeFormacion ec = misProgramas.get(i);
-            if(ec.getNombre().equals(nombre)){
-                return ec;
+        EntityManager em = JPAUtil.getEntityManager();
+        ProgramaDeFormacion pdf = null;
+        try {
+            pdf = em.find(ProgramaDeFormacion.class, nombre);
+        } catch (Exception e) {
+            System.err.println("Error al buscar la edición de curso en el manejador: " + e.getMessage());
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close(); 
             }
         }
-        return null;
+        return pdf; 
     }
     
     public void AddCurso(ProgramaDeFormacion pdf, Curso c){
@@ -172,6 +152,30 @@ public class ManejadorProgramasDeFormacion {
         c.AddPrograma(pdf);
     }
     
+        private ManejadorProgramasDeFormacion(){  
+    }
+    //=======================================================
+    
+    private List<ProgramaDeFormacion> getList(){
+        List<ProgramaDeFormacion> auxList = new ArrayList<>();
+        EntityManager em = JPAUtil.getEntityManager();
+     try {
+            auxList.clear();
+            
+            // Cargar programas e hidratar la lista de cursos
+            List<ProgramaDeFormacion> programas = em.createQuery(
+                "SELECT DISTINCT p FROM ProgramaDeFormacion p LEFT JOIN FETCH p.cursos", 
+                ProgramaDeFormacion.class
+            ).getResultList();
+
+            auxList.addAll(programas);
+        } finally {
+            em.close();
+        }
+     return auxList;
+    }
+    
+    
     public DTProgramaForm getDT(ProgramaDeFormacion pdf){
         if (pdf == null) return null;
         
@@ -193,13 +197,17 @@ public class ManejadorProgramasDeFormacion {
     }
     
     public List<DTMaster> getDTList(){
+        List<ProgramaDeFormacion> auxListPdf = getList();
         List<DTMaster> auxList = new ArrayList<>();
-        for(int i = 0; i < misProgramas.size(); i++){
-            DTMaster dt = getDT(misProgramas.get(i));
-            if (dt != null) {
-                auxList.add(dt);
+        if(auxListPdf!=null){
+            for(int i = 0; i < auxListPdf.size(); i++){
+                DTMaster dt = getDT(auxListPdf.get(i));
+                if (dt != null) {
+                    auxList.add(dt);
+                }
             }
         }
+        
         return auxList;
     }
 }

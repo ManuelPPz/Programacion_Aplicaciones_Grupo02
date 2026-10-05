@@ -31,8 +31,11 @@ import java.io.IOException;
  */
 public class ManejadorUsuario {
 
+<<<<<<< HEAD
     private List<UsuarioBase> misUsuarios;
 
+=======
+>>>>>>> v2.0.1
     // ================= Singleton =================
     private static ManejadorUsuario instance;
 
@@ -44,6 +47,7 @@ public class ManejadorUsuario {
     }
 
     private ManejadorUsuario() {
+<<<<<<< HEAD
         misUsuarios = new ArrayList<>();
         CargarDeBaseDeDatos();
     }
@@ -80,6 +84,12 @@ public class ManejadorUsuario {
             em.close();
         }
     }
+=======
+    }
+    // =============================================
+
+    
+>>>>>>> v2.0.1
 
     public UsuarioBase CrearUsuario(String nick, String nombre, String apellido, String correo, String contrasenia, boolean docente, Date fNac, List<Instituto> institutos, String imgPath) throws IOException {
         UsuarioBase returnUb;
@@ -147,7 +157,10 @@ public class ManejadorUsuario {
             }
 
             em.getTransaction().commit();
+<<<<<<< HEAD
             misUsuarios.add(ub);
+=======
+>>>>>>> v2.0.1
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -159,7 +172,12 @@ public class ManejadorUsuario {
     }
 
     public UsuarioBase BuscarUsuario(String nickname) {
+<<<<<<< HEAD
         if (nickname == null || nickname.trim().isEmpty()) {
+=======
+        List<UsuarioBase> auxList = getList();
+        if (nickname == null || nickname.trim().isEmpty() || auxList==null) {
+>>>>>>> v2.0.1
             return null;
         }
 
@@ -207,7 +225,11 @@ public class ManejadorUsuario {
         }
 
         // Fallback a la memoria local si no está en BD
+<<<<<<< HEAD
         for (UsuarioBase ub : misUsuarios) {
+=======
+        for (UsuarioBase ub : auxList) {
+>>>>>>> v2.0.1
             if (nickLimpio.equalsIgnoreCase(ub.getNickname())) {
                 return ub;
             }
@@ -216,6 +238,10 @@ public class ManejadorUsuario {
     }
 
     public DTUsuarioBase getDT(UsuarioBase ub) {
+<<<<<<< HEAD
+=======
+        
+>>>>>>> v2.0.1
         if (ub == null) return null;
 
         ImageIcon img = null;
@@ -295,16 +321,63 @@ public class ManejadorUsuario {
         }
         return null;
     }
+<<<<<<< HEAD
 
     public List<DTMaster> getDTList() {
         List<DTMaster> auxList = new ArrayList<>();
         for (UsuarioBase ub : misUsuarios) {
             auxList.add(getDT(ub));
+=======
+    
+    public List<UsuarioBase> getList() {
+        List<UsuarioBase> auxList = new ArrayList<>();
+        EntityManager em = getEntityManager();
+        try {
+            auxList.clear();
+
+            // 1. Cargar los docentes con sus institutos
+            List<Docente> docentes = em.createQuery(
+                "SELECT DISTINCT d FROM Docente d LEFT JOIN FETCH d.misInstitutos", Docente.class
+            ).getResultList();
+
+            // 2. Hidratar misCursos y misEdiciones dentro de la sesión activa
+            for (Docente d : docentes) {
+                if (d.getCursos() != null) {
+                    d.getCursos().size();
+                }
+                if (d.getEdiciones() != null) {
+                    d.getEdiciones().size();
+                }
+            }
+
+            // 3. Cargar estudiantes haciendo JOIN FETCH sobre la propiedad 'misInscripciones'
+            List<Usuario> estudiantes = em.createQuery(
+                "SELECT DISTINCT u FROM Usuario u LEFT JOIN FETCH u.misInscripciones", Usuario.class
+            ).getResultList();
+
+            auxList.addAll(docentes);
+            auxList.addAll(estudiantes);
+        }finally {
+            em.close();
+        }
+        return auxList;
+    }
+
+    public List<DTMaster> getDTList() {
+        List<UsuarioBase> auxListUsu = getList();
+        List<DTMaster> auxList = new ArrayList<>();
+        if(auxListUsu!=null){
+            for (UsuarioBase ub : auxListUsu) {
+                auxList.add(getDT(ub));
+            }
+            
+>>>>>>> v2.0.1
         }
         return auxList;
     }
 
     public List<DTMaster> getDTList(String instituto) {
+<<<<<<< HEAD
         List<DTMaster> auxList = new ArrayList<>();
 
         if (instituto == null || instituto.trim().isEmpty()) {
@@ -324,12 +397,40 @@ public class ManejadorUsuario {
                         if (nomInst != null && nomInst.trim().equalsIgnoreCase(instBuscado)) {
                             auxList.add(dt);
                             break;
+=======
+        List<UsuarioBase> auxListUsu = getList();
+        List<DTMaster> auxList = new ArrayList<>();
+        if(auxListUsu!=null){
+            if (instituto == null || instituto.trim().isEmpty()) {
+                return auxList;
+            }
+
+            String instBuscado = instituto.trim();
+
+            for (UsuarioBase ub : auxListUsu) {
+                DTMaster dt = getDT(ub);
+
+                if (dt instanceof DTDocente auxDT) {
+                    List<String> auxIns = auxDT.getInstitutos();
+
+                    if (auxIns != null) {
+                        for (String nomInst : auxIns) {
+                            if (nomInst != null && nomInst.trim().equalsIgnoreCase(instBuscado)) {
+                                auxList.add(dt);
+                                break;
+                            }
+>>>>>>> v2.0.1
                         }
                     }
                 }
             }
         }
 
+<<<<<<< HEAD
+=======
+        
+
+>>>>>>> v2.0.1
         return auxList;
     }
 

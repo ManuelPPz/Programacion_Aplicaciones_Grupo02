@@ -82,6 +82,9 @@ public interface IController {
     public abstract boolean VerificarPrograma(String nombre);
     //Verificar existencia de categoria
     public abstract boolean VerificarCategoria(String nombre);
+    //Consulta usuario avanzada
+    public abstract DTMaster ConsultaUsuarioAvanzada(String id, String password);//id puede ser el nickname o correo, la funcion compruba por ambas posibilidades
+
     
     //Devoolver lista completa de DTs
     public abstract List<DTMaster> ListarClase(EnumDT enumType);

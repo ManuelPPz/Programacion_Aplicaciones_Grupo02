@@ -416,7 +416,7 @@ public class Controller implements IController{
         int tamPassword = 10;
         String finalPass = ".-";
         for(int i = 0;i<tamPassword;i++){
-            int randChar = random.nextInt(3);
+            int randChar = random.nextInt(2);
             if(randChar==0){
                 int letraNum = random.nextInt(letras.length());
                 char letra = letras.charAt(letraNum);
@@ -439,5 +439,16 @@ public class Controller implements IController{
             System.getLogger("No se pudo crear la categoria(Error en Controller.AltaCategoria())");
         }
     }
+    public DTMaster ConsultaUsuarioAvanzada(String id, String password){
+        UsuarioBase ub;
+        ub = manUsuario.BusquedaAvanzada(id, password);
+        if(ub!=null){
+            DTUsuarioBase dt = manUsuario.getDT(ub);
+            return dt;
+        }
+        
+        return null;
+    }
+
    
 }

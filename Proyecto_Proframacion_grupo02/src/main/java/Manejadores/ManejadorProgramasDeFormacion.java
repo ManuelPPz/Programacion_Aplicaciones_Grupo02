@@ -13,7 +13,10 @@ import java.util.List;
 import util.JPAUtil;
 
 public class ManejadorProgramasDeFormacion {
+<<<<<<< HEAD
     private List<ProgramaDeFormacion> misProgramas;
+=======
+>>>>>>> v2.0.1
     
     //=================Codigo de Singleton=================
     private static ManejadorProgramasDeFormacion instance;    
@@ -25,6 +28,7 @@ public class ManejadorProgramasDeFormacion {
         return instance;
     }
     
+<<<<<<< HEAD
     private ManejadorProgramasDeFormacion(){  
         misProgramas = new ArrayList<>();
         CargarDeBaseDeDatos();
@@ -47,6 +51,8 @@ public class ManejadorProgramasDeFormacion {
             em.close();
         }
     }
+=======
+>>>>>>> v2.0.1
     
     public ProgramaDeFormacion CrearPrograma(String nombre, String descripcion, Vigencia vigencia, Date fAlta){
         ProgramaDeFormacion auxPDF = new ProgramaDeFormacion(nombre, descripcion, vigencia, fAlta);
@@ -75,7 +81,10 @@ public class ManejadorProgramasDeFormacion {
     }
     
     public void Add(ProgramaDeFormacion pdf){
+<<<<<<< HEAD
         misProgramas.add(pdf);
+=======
+>>>>>>> v2.0.1
         EntityManager em = JPAUtil.getEntityManager();
         try {
             em.getTransaction().begin();
@@ -123,6 +132,7 @@ public class ManejadorProgramasDeFormacion {
     }
     
     public ProgramaDeFormacion BuscarPrograma(String nombre){
+<<<<<<< HEAD
         if (nombre == null) return null;
         for(int i = 0; i < misProgramas.size(); i++){
             ProgramaDeFormacion ec = misProgramas.get(i);
@@ -131,6 +141,20 @@ public class ManejadorProgramasDeFormacion {
             }
         }
         return null;
+=======
+        EntityManager em = JPAUtil.getEntityManager();
+        ProgramaDeFormacion pdf = null;
+        try {
+            pdf = em.find(ProgramaDeFormacion.class, nombre);
+        } catch (Exception e) {
+            System.err.println("Error al buscar la edición de curso en el manejador: " + e.getMessage());
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close(); 
+            }
+        }
+        return pdf; 
+>>>>>>> v2.0.1
     }
     
     public void AddCurso(ProgramaDeFormacion pdf, Curso c){
@@ -172,6 +196,33 @@ public class ManejadorProgramasDeFormacion {
         c.AddPrograma(pdf);
     }
     
+<<<<<<< HEAD
+=======
+        private ManejadorProgramasDeFormacion(){  
+    }
+    //=======================================================
+    
+    private List<ProgramaDeFormacion> getList(){
+        List<ProgramaDeFormacion> auxList = new ArrayList<>();
+        EntityManager em = JPAUtil.getEntityManager();
+     try {
+            auxList.clear();
+            
+            // Cargar programas e hidratar la lista de cursos
+            List<ProgramaDeFormacion> programas = em.createQuery(
+                "SELECT DISTINCT p FROM ProgramaDeFormacion p LEFT JOIN FETCH p.cursos", 
+                ProgramaDeFormacion.class
+            ).getResultList();
+
+            auxList.addAll(programas);
+        } finally {
+            em.close();
+        }
+     return auxList;
+    }
+    
+    
+>>>>>>> v2.0.1
     public DTProgramaForm getDT(ProgramaDeFormacion pdf){
         if (pdf == null) return null;
         
@@ -193,6 +244,7 @@ public class ManejadorProgramasDeFormacion {
     }
     
     public List<DTMaster> getDTList(){
+<<<<<<< HEAD
         List<DTMaster> auxList = new ArrayList<>();
         for(int i = 0; i < misProgramas.size(); i++){
             DTMaster dt = getDT(misProgramas.get(i));
@@ -200,6 +252,19 @@ public class ManejadorProgramasDeFormacion {
                 auxList.add(dt);
             }
         }
+=======
+        List<ProgramaDeFormacion> auxListPdf = getList();
+        List<DTMaster> auxList = new ArrayList<>();
+        if(auxListPdf!=null){
+            for(int i = 0; i < auxListPdf.size(); i++){
+                DTMaster dt = getDT(auxListPdf.get(i));
+                if (dt != null) {
+                    auxList.add(dt);
+                }
+            }
+        }
+        
+>>>>>>> v2.0.1
         return auxList;
     }
 }

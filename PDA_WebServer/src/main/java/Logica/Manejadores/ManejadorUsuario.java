@@ -23,6 +23,7 @@ import Logica.DTsClasses.DTMaster;
 
 import jakarta.persistence.EntityManager;
 import Logica.util.JPAUtil;
+import jakarta.persistence.TypedQuery;
 
 import java.io.IOException;
 
@@ -30,8 +31,6 @@ import java.io.IOException;
  * @author mateo
  */
 public class ManejadorUsuario {
-
-    private List<UsuarioBase> misUsuarios;
 
     // ================= Singleton =================
     private static ManejadorUsuario instance;
@@ -44,42 +43,10 @@ public class ManejadorUsuario {
     }
 
     private ManejadorUsuario() {
-        misUsuarios = new ArrayList<>();
-        CargarDeBaseDeDatos();
     }
     // =============================================
 
-    public void CargarDeBaseDeDatos() {
-        EntityManager em = getEntityManager();
-        try {
-            misUsuarios.clear();
-
-            // 1. Cargar los docentes con sus institutos
-            List<Docente> docentes = em.createQuery(
-                "SELECT DISTINCT d FROM Docente d LEFT JOIN FETCH d.misInstitutos", Docente.class
-            ).getResultList();
-
-            // 2. Hidratar misCursos y misEdiciones dentro de la sesión activa
-            for (Docente d : docentes) {
-                if (d.getCursos() != null) {
-                    d.getCursos().size();
-                }
-                if (d.getEdiciones() != null) {
-                    d.getEdiciones().size();
-                }
-            }
-
-            // 3. Cargar estudiantes haciendo JOIN FETCH sobre la propiedad 'misInscripciones'
-            List<Usuario> estudiantes = em.createQuery(
-                "SELECT DISTINCT u FROM Usuario u LEFT JOIN FETCH u.misInscripciones", Usuario.class
-            ).getResultList();
-
-            misUsuarios.addAll(docentes);
-            misUsuarios.addAll(estudiantes);
-        }finally {
-            em.close();
-        }
-    }
+    
 
     public UsuarioBase CrearUsuario(String nick, String nombre, String apellido, String correo, String contrasenia, boolean docente, Date fNac, List<Instituto> institutos, String imgPath) throws IOException {
         UsuarioBase returnUb;
@@ -147,7 +114,6 @@ public class ManejadorUsuario {
             }
 
             em.getTransaction().commit();
-            misUsuarios.add(ub);
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -159,7 +125,8 @@ public class ManejadorUsuario {
     }
 
     public UsuarioBase BuscarUsuario(String nickname) {
-        if (nickname == null || nickname.trim().isEmpty()) {
+        List<UsuarioBase> auxList = getList();
+        if (nickname == null || nickname.trim().isEmpty() || auxList==null) {
             return null;
         }
 
@@ -207,7 +174,7 @@ public class ManejadorUsuario {
         }
 
         // Fallback a la memoria local si no está en BD
-        for (UsuarioBase ub : misUsuarios) {
+        for (UsuarioBase ub : auxList) {
             if (nickLimpio.equalsIgnoreCase(ub.getNickname())) {
                 return ub;
             }
@@ -216,6 +183,7 @@ public class ManejadorUsuario {
     }
 
     public DTUsuarioBase getDT(UsuarioBase ub) {
+        
         if (ub == null) return null;
 
         ImageIcon img = null;
@@ -295,40 +263,82 @@ public class ManejadorUsuario {
         }
         return null;
     }
+    
+    public List<UsuarioBase> getList() {
+        List<UsuarioBase> auxList = new ArrayList<>();
+        EntityManager em = getEntityManager();
+        try {
+            auxList.clear();
+
+            // 1. Cargar los docentes con sus institutos
+            List<Docente> docentes = em.createQuery(
+                "SELECT DISTINCT d FROM Docente d LEFT JOIN FETCH d.misInstitutos", Docente.class
+            ).getResultList();
+
+            // 2. Hidratar misCursos y misEdiciones dentro de la sesión activa
+            for (Docente d : docentes) {
+                if (d.getCursos() != null) {
+                    d.getCursos().size();
+                }
+                if (d.getEdiciones() != null) {
+                    d.getEdiciones().size();
+                }
+            }
+
+            // 3. Cargar estudiantes haciendo JOIN FETCH sobre la propiedad 'misInscripciones'
+            List<Usuario> estudiantes = em.createQuery(
+                "SELECT DISTINCT u FROM Usuario u LEFT JOIN FETCH u.misInscripciones", Usuario.class
+            ).getResultList();
+
+            auxList.addAll(docentes);
+            auxList.addAll(estudiantes);
+        }finally {
+            em.close();
+        }
+        return auxList;
+    }
 
     public List<DTMaster> getDTList() {
+        List<UsuarioBase> auxListUsu = getList();
         List<DTMaster> auxList = new ArrayList<>();
-        for (UsuarioBase ub : misUsuarios) {
-            auxList.add(getDT(ub));
+        if(auxListUsu!=null){
+            for (UsuarioBase ub : auxListUsu) {
+                auxList.add(getDT(ub));
+            }
+            
         }
         return auxList;
     }
 
     public List<DTMaster> getDTList(String instituto) {
+        List<UsuarioBase> auxListUsu = getList();
         List<DTMaster> auxList = new ArrayList<>();
+        if(auxListUsu!=null){
+            if (instituto == null || instituto.trim().isEmpty()) {
+                return auxList;
+            }
 
-        if (instituto == null || instituto.trim().isEmpty()) {
-            return auxList;
-        }
+            String instBuscado = instituto.trim();
 
-        String instBuscado = instituto.trim();
+            for (UsuarioBase ub : auxListUsu) {
+                DTMaster dt = getDT(ub);
 
-        for (UsuarioBase ub : misUsuarios) {
-            DTMaster dt = getDT(ub);
+                if (dt instanceof DTDocente auxDT) {
+                    List<String> auxIns = auxDT.getInstitutos();
 
-            if (dt instanceof DTDocente auxDT) {
-                List<String> auxIns = auxDT.getInstitutos();
-
-                if (auxIns != null) {
-                    for (String nomInst : auxIns) {
-                        if (nomInst != null && nomInst.trim().equalsIgnoreCase(instBuscado)) {
-                            auxList.add(dt);
-                            break;
+                    if (auxIns != null) {
+                        for (String nomInst : auxIns) {
+                            if (nomInst != null && nomInst.trim().equalsIgnoreCase(instBuscado)) {
+                                auxList.add(dt);
+                                break;
+                            }
                         }
                     }
                 }
             }
         }
+
+        
 
         return auxList;
     }
@@ -392,5 +402,50 @@ public class ManejadorUsuario {
 
     private EntityManager getEntityManager() {
         return JPAUtil.getEntityManager();
+    }
+    
+    public UsuarioBase BusquedaAvanzada(String nicknameOCorreo, String password) {
+        if (nicknameOCorreo == null || nicknameOCorreo.trim().isEmpty() || password == null) {
+            return null;
+        }
+
+        String valorLimpio = nicknameOCorreo.trim();
+        EntityManager em = getEntityManager();
+
+        try {
+            // Consulta sensible a mayúsculas y minúsculas para nickname, correo y contraseña
+            String jpql = "SELECT u FROM UsuarioBase u WHERE (u.nickname = :valor OR u.correo = :valor) AND u.contrasenia = :pass";
+
+            TypedQuery<UsuarioBase> query = em.createQuery(jpql, UsuarioBase.class);
+            query.setParameter("valor", valorLimpio);
+            query.setParameter("pass", password);
+
+            List<UsuarioBase> resultados = query.getResultList();
+
+            if (!resultados.isEmpty()) {
+                return resultados.get(0);
+            }
+        } catch (Exception e) {
+            System.err.println("Error al buscar usuario en BD: " + e.getMessage());
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+
+        // Fallback a memoria local respetando mayúsculas y minúsculas (equals)
+        List<UsuarioBase> misUsuarios = getList();
+        if (misUsuarios != null) {
+            for (UsuarioBase ub : misUsuarios) {
+                boolean coincideIdentificador = valorLimpio.equals(ub.getNickname()) || valorLimpio.equals(ub.getCorreo());
+                boolean coincidePass = password.equals(ub.getPassword());
+
+                if (coincideIdentificador && coincidePass) {
+                    return ub;
+                }
+            }
+        }
+
+        return null;
     }
 }

@@ -5,6 +5,13 @@ import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import java.util.Properties;
+<<<<<<< HEAD
+=======
+import java.util.concurrent.CompletableFuture;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+>>>>>>> v2.0.1
 /**
  *
  * @author mateo
@@ -51,6 +58,21 @@ public class EnviarGmail {
         }
     }
     
+<<<<<<< HEAD
+=======
+    public void EnviarAsincrono(String destinatario, String asunto, String mensajeTexto){
+        CompletableFuture.runAsync(() -> {
+            try {
+                Enviar(destinatario, asunto, mensajeTexto);
+                System.out.println("Correo enviado exitosamente a: " + destinatario);
+            } catch (Exception e) {
+                System.err.println("Error al enviar el correo en segundo plano: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
+    }
+    
+>>>>>>> v2.0.1
     public String CuerpoMensajeNuevoUsuario(DTUsuarioBase dt) {
         String gmailBody = "<h2>Hola " + dt.getNombre() + ",</h2>"
                          + "<h3>¡Tu registro a la plataforma fue exitoso!</h3>"

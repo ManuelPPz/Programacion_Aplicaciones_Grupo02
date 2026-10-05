@@ -17,7 +17,10 @@ import util.JPAUtil; // Import de la utilería centralizada
 
 public class ManejadorEdicionCurso {
 
+<<<<<<< HEAD
     private List<EdicionCurso> misEdiciones;
+=======
+>>>>>>> v2.0.1
     
     //=================Codigo de Singleton=================
     private static ManejadorEdicionCurso instance;    
@@ -29,6 +32,7 @@ public class ManejadorEdicionCurso {
     }
     
     private ManejadorEdicionCurso(){  
+<<<<<<< HEAD
         misEdiciones = new ArrayList<>();
         CargarDeBaseDeDatos();
     }
@@ -46,6 +50,11 @@ public class ManejadorEdicionCurso {
             em.close();
         }
     }
+=======
+    }
+    //=======================================================
+
+>>>>>>> v2.0.1
     
     public EdicionCurso CrearEdicion(Instituto instituto, Curso curso, String nombre, Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> docentes){
         EdicionCurso returnEdicion;
@@ -75,7 +84,10 @@ public class ManejadorEdicionCurso {
     }
     
     public void Add(EdicionCurso ec) throws Exception {
+<<<<<<< HEAD
         misEdiciones.add(ec);
+=======
+>>>>>>> v2.0.1
         EntityManager em = JPAUtil.getEntityManager();
         try {
             em.getTransaction().begin();
@@ -106,6 +118,7 @@ public class ManejadorEdicionCurso {
         }
     }
    
+<<<<<<< HEAD
     public EdicionCurso BuscarEdicion(String nombre){
         for(int i = 0; i < misEdiciones.size(); i++){
             EdicionCurso ec = misEdiciones.get(i);
@@ -114,6 +127,21 @@ public class ManejadorEdicionCurso {
             }
         }
         return null;
+=======
+    public EdicionCurso BuscarEdicion(String nombre) {
+        EntityManager em = getEntityManager();
+        EdicionCurso ec = null;
+        try {
+            ec = em.find(EdicionCurso.class, nombre);
+        } catch (Exception e) {
+            System.err.println("Error al buscar la edición de curso en el manejador: " + e.getMessage());
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close(); 
+            }
+        }
+        return ec; 
+>>>>>>> v2.0.1
     }
     
     public void AddUsuario(EdicionCurso ec, Docente ub){
@@ -150,6 +178,25 @@ public class ManejadorEdicionCurso {
         }
     }
     
+<<<<<<< HEAD
+=======
+    public List<EdicionCurso> getList(){
+        List<EdicionCurso> auxListEdi = new ArrayList<>();
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            TypedQuery<EdicionCurso> query = em.createQuery("SELECT e FROM EdicionCurso e", EdicionCurso.class);
+            auxListEdi = query.getResultList();
+        } catch (Exception e) {
+            System.err.println("Error al cargar las ediciones desde la BD: " + e.getMessage());
+            auxListEdi = new ArrayList<>();
+        } finally {
+            em.close();
+        }
+        return auxListEdi;
+    }
+    
+    
+>>>>>>> v2.0.1
     public DTEdicionCurso getDT(EdicionCurso ec){
         DTEdicionCurso auxDT;
         String ins = (ec.getInstituto() != null) ? ec.getInstituto().getNombre() : "";
@@ -169,6 +216,7 @@ public class ManejadorEdicionCurso {
     }
     
     public List<DTMaster> getDTLIst(String curso){
+<<<<<<< HEAD
         List<DTMaster> auxList = new ArrayList<>();
         for(int i = 0; i < misEdiciones.size(); i++){
             EdicionCurso ec = misEdiciones.get(i);
@@ -177,6 +225,20 @@ public class ManejadorEdicionCurso {
                 auxList.add(dt);
             }
         }
+=======
+        List<EdicionCurso> auxListEdi = getList();
+        List<DTMaster> auxList = new ArrayList<>();
+        if(auxListEdi!=null){
+            for(int i = 0; i < auxListEdi.size(); i++){
+                EdicionCurso ec = auxListEdi.get(i);
+                if(ec.getCurso() != null && ec.getCurso().getNombre().equals(curso)){
+                    DTMaster dt = getDT(ec);
+                    auxList.add(dt);
+                }
+            }
+        }
+        
+>>>>>>> v2.0.1
         return auxList;
     }
     

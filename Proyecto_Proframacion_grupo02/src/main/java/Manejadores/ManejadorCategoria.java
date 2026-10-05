@@ -80,6 +80,7 @@ public class ManejadorCategoria {
     }
     public List<DTMaster> getDTList() throws Exception{
         List<Categoria> auxListC = getList();
+<<<<<<< HEAD
         System.out.println(auxListC.size());
         List<DTMaster> auxList = new ArrayList<>();
         for(int i = 0; i < auxListC.size(); i++){
@@ -89,6 +90,19 @@ public class ManejadorCategoria {
                 auxList.add(dt);
             }
         }
+=======
+        List<DTMaster> auxList = new ArrayList<>();
+        if(auxListC!=null){
+            for(int i = 0; i < auxListC.size(); i++){
+                Categoria c = auxListC.get(i);
+                if(c.getNombre()!= null){
+                    DTMaster dt = getDT(c);
+                    auxList.add(dt);
+                }
+            }
+        }
+        
+>>>>>>> v2.0.1
         return auxList;
     }
 }
