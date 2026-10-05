@@ -1,8 +1,9 @@
 package Logica.Manejadores;
 
-import Classes.Curso;
-import Classes.Prog_Usu;
-import Classes.ProgramaDeFormacion;
+import Logica.Classes.Categoria;
+import Logica.Classes.Curso;
+import Logica.Classes.Prog_Usu;
+import Logica.Classes.ProgramaDeFormacion;
 import Logica.DTsClasses.DTMaster;
 import Logica.DTsClasses.DTProgramaForm;
 import Logica.DTsClasses.Vigencia;
@@ -186,14 +187,24 @@ public class ManejadorProgramasDeFormacion {
         Date fAlta = pdf.getFAlta();
         List<String> auxList = new ArrayList<>();
         
+        List<String> auxListCat = new ArrayList<>();
         if (cursos != null) {
             for(int i = 0; i < cursos.size(); i++){
                 if (cursos.get(i) != null) {
                     auxList.add(cursos.get(i).getNombre());
+                    List<Categoria> auxCat = cursos.get(i).getCategorias();
+                    if(auxCat!=null){
+                        for(Categoria c : auxCat){
+                            String nomCat = c.getNombre();
+                            if(!auxListCat.contains(nomCat)){
+                                auxListCat.add(nomCat);
+                            }
+                        }
+                    }
                 }
             }
         }
-        return new DTProgramaForm(nom, desc, v, auxList, fAlta);
+        return new DTProgramaForm(nom, desc, v, auxList, fAlta, auxListCat);
     }
     
     public List<DTMaster> getDTList(){

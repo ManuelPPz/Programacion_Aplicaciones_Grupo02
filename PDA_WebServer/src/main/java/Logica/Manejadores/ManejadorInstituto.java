@@ -2,7 +2,7 @@ package Logica.Manejadores;
 
 import java.util.List;
 import java.util.ArrayList;
-import Classes.Instituto;
+import Logica.Classes.Instituto;
 import Logica.DTsClasses.DTMaster;
 import Logica.DTsClasses.DTInstituto;
 import jakarta.persistence.EntityManager;

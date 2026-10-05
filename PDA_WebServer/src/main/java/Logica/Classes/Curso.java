@@ -1,4 +1,4 @@
-package Classes;
+package Logica.Classes;
 
 import jakarta.persistence.*;
 import java.io.Serializable;

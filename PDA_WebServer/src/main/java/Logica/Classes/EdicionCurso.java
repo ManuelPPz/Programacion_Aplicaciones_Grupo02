@@ -2,8 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package Classes;
+package Logica.Classes;
 
+import Logica.Classes.Edi_Usu;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,6 +37,8 @@ public class EdicionCurso implements Serializable {
     private Date fFin;
     @Column(name="Cupo")
     private int cupo;
+    @Column(name="Cupo_actual")
+    private int cupoActual;
 
     // Se corrige mappedBy apuntando a la propiedad edicion de Edi_Usu
     @OneToMany(mappedBy = "id.miEdicion", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -59,8 +62,10 @@ public class EdicionCurso implements Serializable {
     public Date getFInicio() {return fInicio;}
     public Date getFFin() {return fFin;}
     public int getCupo() {return cupo;}
+    public int getCupoActual(){return this.cupoActual;}
     public List<Docente> getMisDocentes() {return misDocentes;}
     public Date getFAlta() {return fAlta;}
+    public List<Edi_Usu> getMisInscripciones(){return this.misUsuarios;}
 
     public EdicionCurso() { this.misUsuarios = new ArrayList<>();}
     
@@ -72,8 +77,9 @@ public class EdicionCurso implements Serializable {
         this.fFin = fFin;
         this.cupo = cupo;
         this.fAlta = fAlta;
-        misUsuarios = new ArrayList<>();
+        this.misUsuarios = new ArrayList<>();
         this.misDocentes = docentes;
+        this.cupoActual = cupo;
     }
     
     public void ModificarDatos(Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> newUsuarios){
@@ -87,6 +93,7 @@ public class EdicionCurso implements Serializable {
     public void AddUsuarioInscripto(Edi_Usu eu){
         misUsuarios.add(eu);
     }
+    
     public void AddUsuarios(Docente ub){
         if (this.misDocentes == null) {
             this.misDocentes = new ArrayList<>();
@@ -117,6 +124,9 @@ public class EdicionCurso implements Serializable {
     @Override
     public String toString() {
         return "Classes.EdicionCurso[ id=" + nombre + " ]";
+    }
+    public void setCupoActual(int nuevoCupo){
+        this.cupoActual=nuevoCupo;
     }
     
 }

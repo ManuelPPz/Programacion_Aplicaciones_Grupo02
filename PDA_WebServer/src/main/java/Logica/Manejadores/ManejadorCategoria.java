@@ -3,8 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Logica.Manejadores;
-
-import Classes.Categoria;
+import Logica.Classes.Categoria;
 import Logica.DTsClasses.DTCategoria;
 import Logica.DTsClasses.DTMaster;
 import jakarta.persistence.EntityManager;

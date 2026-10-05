@@ -1,4 +1,4 @@
-package servlets;
+package Logica.Servlets;
 
 import Logica.DTsClasses.DTMaster;
 import Logica.DTsClasses.DTInstituto;
@@ -91,7 +91,7 @@ public class AltaUsuarioServlet extends HttpServlet {
         try {
             // imgPath vacío por ahora; la carga de archivos requiere multipart config adicional
             control.AgregarUsuario(nickname.trim(), nombre.trim(), apellido.trim(),
-                                   correo.trim(), fechaNac, esDocente, institutos, "");
+                                   correo.trim(), password.trim(), fechaNac, esDocente, institutos, "");
             request.setAttribute("exito", "Usuario '" + nickname + "' registrado correctamente.");
             doGet(request, response);   // volver al formulario limpio
         } catch (Exception e) {

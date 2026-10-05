@@ -1,4 +1,4 @@
-package servlets;
+package Logica.Servlets;
 
 import Logica.DTsClasses.DTMaster;
 import Logica.DTsClasses.DTUsuarioBase;

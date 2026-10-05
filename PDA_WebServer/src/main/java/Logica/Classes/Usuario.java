@@ -2,8 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package Classes;
+package Logica.Classes;
 
+import Logica.Classes.Edi_Usu;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,6 +27,9 @@ public class Usuario extends UsuarioBase {
     @OneToMany(mappedBy = "id.miUsuario", fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
     private List<Prog_Usu> misInscripcionesProg;
+    
+    
+    
     public Usuario() {
         super();
     }
@@ -59,4 +63,20 @@ public class Usuario extends UsuarioBase {
     public List<Prog_Usu> getMisInscripcionesPro() {
         return this.misInscripcionesProg;
     }
+    
+    
+    public int getCantMisInscripcionesRechazadas(String nomCurso){
+        int cant = 0;
+        for(Edi_Usu eu : misInscripciones){
+            if(eu.getMiEstado() == Enum_Estado_inscripcion.RECHAZADO){
+                if(nomCurso!=null && nomCurso.equals(eu.getId().getEdicion().getCurso().getNombre())){
+                    cant++;
+                }
+               
+            }
+        }
+        return cant;
+    }
+    
+    
 }

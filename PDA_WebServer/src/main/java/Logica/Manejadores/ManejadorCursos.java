@@ -1,13 +1,16 @@
 package Logica.Manejadores;
 
-import Classes.Categoria;
+
 import java.util.List;
 import java.util.ArrayList;
-import Classes.Curso;
-import Classes.EdicionCurso; 
-import Classes.Instituto;
-import Classes.ProgramaDeFormacion;
-import Classes.UsuarioBase;
+
+import Logica.Classes.Categoria;
+import Logica.Classes.Curso;
+import Logica.Classes.EdicionCurso;
+import Logica.Classes.Instituto;
+import Logica.Classes.ProgramaDeFormacion;
+import Logica.Classes.UsuarioBase;
+
 import Logica.DTsClasses.DTCurso;
 import Logica.DTsClasses.DTMaster;
 import jakarta.persistence.EntityManager;

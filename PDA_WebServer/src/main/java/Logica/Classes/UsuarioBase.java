@@ -2,10 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package Classes;
+package Logica.Classes;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.swing.ImageIcon;
@@ -36,6 +37,14 @@ public class UsuarioBase implements Serializable {
     private Date fNac;
     @Column(name="Imagen", columnDefinition = "BLOB")
     private byte[] image;
+    
+    @ManyToMany
+    @JoinTable(
+        name = "Seguidos", 
+        joinColumns = @JoinColumn(name="MyNickname"), 
+        inverseJoinColumns = @JoinColumn(name="NicknameOtherUser")
+    )
+    private List<UsuarioBase> seguidos = new ArrayList<>();
 
     public String getNickname() {return nickname;}
     public String getNombre(){return this.nombre;}
@@ -56,10 +65,10 @@ public class UsuarioBase implements Serializable {
         this.image = img;
     }
 
-    public void ModificarMisDatos(String nom, String apellido, String correo, Date fNac,byte[] img){
+    public void ModificarMisDatos(String nom, String apellido, String password, Date fNac,byte[] img){
         this.nombre = nom;
         this.apellido = apellido;
-        this.correo = correo;
+        this.contrasenia = password;
         this.fNac = fNac;
         this.image = img;
     }
@@ -87,6 +96,16 @@ public class UsuarioBase implements Serializable {
     @Override
     public String toString() {
         return "Classes.UsuarioBase[ id=" + nickname + " ]";
+    }
+    
+    public void SeguirUsuario(UsuarioBase ub){
+        seguidos.add(ub);
+    }
+    public void DejarDeSeguir(UsuarioBase ub){
+        seguidos.remove(ub);
+    }
+    public List<UsuarioBase> getMisSeguidos(){
+        return this.seguidos;
     }
     
 }

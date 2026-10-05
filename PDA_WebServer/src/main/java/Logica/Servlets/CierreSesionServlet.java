@@ -1,4 +1,4 @@
-package servlets;
+package Logica.Servlets;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

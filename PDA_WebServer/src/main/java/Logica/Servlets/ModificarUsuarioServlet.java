@@ -1,4 +1,4 @@
-package servlets;
+package Logica.Servlets;
 
 import Logica.DTsClasses.DTMaster;
 import Logica.DTsClasses.DTUsuarioBase;
@@ -65,6 +65,7 @@ public class ModificarUsuarioServlet extends HttpServlet {
         String fechaStr   = request.getParameter("fechaNacimiento");
         String tipoUsuario = request.getParameter("tipoUsuario");
         String[] institutoArr = request.getParameterValues("institutos");
+        String newPassword = "rquest.parameter(password)";
 
         IController control = Fabric.GetInstance().GetIController();
 
@@ -96,7 +97,7 @@ public class ModificarUsuarioServlet extends HttpServlet {
 
         // Correo es inmutable → pasamos el correo actual
         control.ModificarUsuario(nickname, nombre.trim(), apellido.trim(),
-                                  usuarioSesion.getCorreo(), esDocente, fechaNac, institutos, "");
+                                  newPassword.trim(), esDocente, fechaNac, institutos, "");
 
         // Actualizar sesión con datos nuevos
         DTUsuarioBase usuarioActualizado = control.ConsultarUsuario(nickname);

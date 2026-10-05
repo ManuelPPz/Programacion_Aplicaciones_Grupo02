@@ -2,8 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package Classes;
+package Logica.Classes;
 
+import Logica.DTsClasses.DTEdi_Usu;
+import Logica.DTsClasses.DTMaster;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -15,6 +17,11 @@ public class Edi_Usu implements Serializable {
     private Id_EdiUsu id;
     @Column(name="Fecha_inscripcion")
     private Date fInscripcion;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado", length = 20)
+    private Enum_Estado_inscripcion estadoIns;
+    
+    
     public Id_EdiUsu getId() {
         return id;
     }
@@ -26,7 +33,7 @@ public class Edi_Usu implements Serializable {
         this.id = id;
         this.fInscripcion = fIns;
     }
-
+    public Enum_Estado_inscripcion getMiEstado(){return this.estadoIns;}
     @Override
     public int hashCode() {
         int hash = 0;
@@ -50,6 +57,9 @@ public class Edi_Usu implements Serializable {
     @Override
     public String toString() {
         return "Classes.Edi_Usu[ id=" + id + " ]";
+    }
+    public DTMaster getMyDT(){
+        return new DTEdi_Usu(id.getUsuario().getNickname(),id.getEdicion().getNombre(), fInscripcion,estadoIns);
     }
     
 }

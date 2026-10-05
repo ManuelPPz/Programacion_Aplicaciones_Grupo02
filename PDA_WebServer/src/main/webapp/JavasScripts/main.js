@@ -35,3 +35,5 @@ document.addEventListener("DOMContentLoaded", function() {
     // 2. Dar formato a los mensajes de error/éxito si existen en el JSP
     // (Asegúrate de imprimir variables ${error} o ${exito} dentro de divs con estas clases)
 });
+
+

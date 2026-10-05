@@ -1,17 +1,19 @@
 package Logica.Manejadores;
 
-import Classes.Curso;
+
 import java.util.List;
 import java.util.ArrayList;
 
-import Classes.Docente;
-import Classes.Edi_Usu;
-import Classes.EdicionCurso;
-import Classes.Usuario;
-import Classes.Instituto;
-import Classes.Prog_Usu;
-import Classes.ProgramaDeFormacion;
-import Classes.UsuarioBase;
+
+import Logica.Classes.Edi_Usu;
+import Logica.Classes.Curso;
+import Logica.Classes.EdicionCurso;
+import Logica.Classes.Usuario;
+import Logica.Classes.Instituto;
+import Logica.Classes.Prog_Usu;
+import Logica.Classes.ProgramaDeFormacion;
+import Logica.Classes.UsuarioBase;
+import Logica.Classes.Docente;
 
 import java.util.Date;
 import javax.swing.ImageIcon;
@@ -23,6 +25,8 @@ import Logica.DTsClasses.DTMaster;
 
 import jakarta.persistence.EntityManager;
 import Logica.util.JPAUtil;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.TypedQuery;
 
 import java.io.IOException;
@@ -63,7 +67,7 @@ public class ManejadorUsuario {
         return returnUb;
     }
 
-    public void ModificarDatosUsuario(String nick, String nombre, String apellido, String correo, boolean docente, Date fNac, List<Instituto> institutos, String imgPath) throws IOException {
+    public void ModificarDatosUsuario(String nick, String nombre, String apellido, String password, boolean docente, Date fNac, List<Instituto> institutos, String imgPath) throws IOException {
         byte[] imgByte = null;
         if (imgPath != null && !imgPath.trim().isEmpty()) {
             imgByte = ConvertirImageIconToByte(imgPath);
@@ -72,9 +76,9 @@ public class ManejadorUsuario {
         UsuarioBase ub = BuscarUsuario(nick);
         if (ub != null) {
             if (docente && ub instanceof Docente d) {
-                d.ModificarMisDatos(nombre, apellido, correo, fNac, imgByte, institutos);
+                d.ModificarMisDatos(nombre, apellido, password, fNac, imgByte, institutos);
             } else if (ub instanceof Usuario u) {
-                u.ModificarMisDatos(nombre, apellido, correo, fNac, imgByte);
+                u.ModificarMisDatos(nombre, apellido, password, fNac, imgByte);
             }
 
             // Sincronizar los cambios con JPA
@@ -383,6 +387,14 @@ public class ManejadorUsuario {
         }
     }
     /*-----------------------------------------------------------------------------------------------------*/
+    /*-------------------------Funciones para la lista de usuarios seguidos--------------------------------*/
+    public void SeguirUsuarios(UsuarioBase ub1, UsuarioBase ub2){
+        ub1.SeguirUsuario(ub2);
+    }
+    public void DejarDeSeguir(UsuarioBase ub1, UsuarioBase ub2){
+        ub1.DejarDeSeguir(ub2);
+    }
+    /*-----------------------------------------------------------------------------------------------------*/
     private byte[] ConvertirImageIconToByte(String imgPath) throws IOException {
         if (imgPath == null || imgPath.trim().isEmpty()) {
             return null;
@@ -447,5 +459,25 @@ public class ManejadorUsuario {
         }
 
         return null;
+    }
+    
+    public UsuarioBase VerificarUsuario(String nomCorreo){
+        EntityManager em = getEntityManager();
+
+        try {
+            String jpql = "SELECT u FROM UsuarioBase u " +
+                          "WHERE u.nickname = :criterio OR u.correo = :criterio";
+
+            return em.createQuery(jpql, UsuarioBase.class).setParameter("criterio", nomCorreo).getSingleResult();
+
+        } catch (NoResultException e) {
+            // No se encontró ningún usuario con ese nickname ni correo
+            return null; 
+        } catch (NonUniqueResultException e) {
+            // En caso inesperado de múltiples resultados
+            return null;
+        } finally {
+            em.close();
+        }
     }
 }

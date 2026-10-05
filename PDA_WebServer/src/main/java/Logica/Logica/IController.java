@@ -21,18 +21,21 @@ import javax.swing.ImageIcon;
  */
 public interface IController {
     //Alta Usuario
-    public abstract void AgregarUsuario(String nickname, String nombre, String apellido, String correo, Date fechaNac, boolean docente, List<String> institutos, String imgPath)throws Exception;
+    public abstract void AgregarUsuario(String nickname, String nombre, String apellido, String correo, String password, Date fechaNac, boolean docente, List<String> institutos, String imgPath)throws Exception;
     
     //Consultar Usuario, la funcion deberia devolver el tipo de dato usuario
     //Se modificara al crear el tipo de dato usuario retornando el tipo de dato "Usuario"
     public abstract DTUsuarioBase ConsultarUsuario(String nickname);
     
     //Modificar Datos Usuario
-    public abstract void ModificarUsuario(String nickname, String newNombre, String newApellido, String newCorreo,boolean docente, Date newFechaNac, List<String> institutos, String imgPath);
+    public abstract void ModificarUsuario(String nickname, String newNombre, String newApellido, String newPassword,boolean docente, Date newFechaNac, List<String> institutos, String imgPath);
+    
+    //Seguir a un usuario
+    public abstract void SeguirUsuario(String nickname1, String nickname2);
+    //Dejar de Seguir a usuario
+    public abstract void DejarDeSeguir(String nickname1, String nickname2);
     
     //Alta Curso
-    //La fecha del curso se toma dentro de la funcion
-    //Preguntar al profe si los cursos previos son el tipo de dato o un int
     public abstract void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso, String docente, List<String> categorias) throws Exception;
     
     //Consulta Curso
@@ -49,6 +52,8 @@ public interface IController {
     //Inscripcion a Edicion Curso
     public abstract void InscripcionAEdicionCurso(String nomCurso, String nickname, Date fIns);
     
+    //
+    public abstract void AceptarEstudiantesAEdicionCurso(List<Object[]> estudiantesYCambios, String nomEdicion);
     //Crear Programa de Formacion
     //El tipo de dato FechaType sera añadido cuando se cree el tipo de dato "FechaType" o alguno con nombre parecido
     public abstract void CrearProgramasDeFormacion(String nomPrograma, String descripcion, Date fInicio, Date fFin,Date fAlta)throws Exception;
@@ -82,6 +87,10 @@ public interface IController {
     public abstract boolean VerificarPrograma(String nombre);
     //Verificar existencia de categoria
     public abstract boolean VerificarCategoria(String nombre);
+    //Verificar correo repetido
+    public abstract boolean VerificarCorreo(String correo);
+    //Verificar Nickname repetido
+    public abstract boolean VerificarNickname(String nickname);
     //Consulta usuario avanzada
     public abstract DTMaster ConsultaUsuarioAvanzada(String id, String password);//id puede ser el nickname o correo, la funcion compruba por ambas posibilidades
 
@@ -93,8 +102,12 @@ public interface IController {
     public abstract List<DTMaster> ListarCursos(String nomInstituto);
     //Devolver lista de ediciones x curso
     public abstract List<DTMaster>ListarEdiciones(String nomCurso);
+    //Devolver lista de ediciones por prioridad para docente
+    public abstract List<DTMaster>ListarEdicionesPrioritarias(String nomEdicion);
     //Devolver lista de docentes x instituto
     public abstract List<DTMaster>ListarDocentes(String nomInstituto);
+    //Devolver lista de inscripciones a ediciones de curso de un usuario
+    public abstract List<DTMaster> ListarInscripciones(String nicknameEstudiante);
     
     public abstract List<DTMaster>ListarProgramaDeForm();
     public abstract String GenerateRandPassword();

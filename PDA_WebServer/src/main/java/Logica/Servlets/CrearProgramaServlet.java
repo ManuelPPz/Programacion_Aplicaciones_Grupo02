@@ -1,4 +1,4 @@
-package servlets;
+package Logica.Servlets;
 
 import Logica.Logica.Fabric;
 import Logica.Logica.IController;

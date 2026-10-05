@@ -17,14 +17,16 @@ public class DTProgramaForm extends DTMaster {
     private Vigencia vigenciaPrograma;
     private List<String> cursos;
     private Date fechaAlta;
+    private List<String> misCategorias;
     
     // constructor
-    public DTProgramaForm(String nomPrograma, String descripcion, Vigencia vigenciaProg, List<String> cursos, Date fechaAlta) {
+    public DTProgramaForm(String nomPrograma, String descripcion, Vigencia vigenciaProg, List<String> cursos, Date fechaAlta, List<String> misCategorias) {
         this.nombre = nomPrograma;
         this.descripcion = descripcion;
         this.vigenciaPrograma = vigenciaProg;
         this.cursos = cursos;
         this.fechaAlta = fechaAlta;
+        this.misCategorias = misCategorias;
     }
     
     public String getNombre() {
@@ -45,5 +47,8 @@ public class DTProgramaForm extends DTMaster {
     
     public Date getFechaAlta() {
         return fechaAlta;
+    }
+    public List<String> getMisCategorias(){
+        return this.misCategorias;
     }
 }

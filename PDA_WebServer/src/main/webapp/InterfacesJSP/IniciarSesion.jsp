@@ -1,11 +1,23 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%!
+    public String versionedUrl(ServletContext app, String relativePath) {
+        String realPath = app.getRealPath(relativePath);
+        if (realPath != null) {
+            java.io.File file = new java.io.File(realPath);
+            if (file.exists()) {
+                return relativePath + "?v=" + file.lastModified();
+            }
+        }
+        return relativePath;
+    }
+%>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <title>Iniciar Sesión</title>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css">
-    <script src="${pageContext.request.contextPath}/js/main.js"></script>
+    
 </head>
 <body>
     <div class="container">
@@ -22,5 +34,6 @@
             <button type="button" onclick="window.history.back();">Cancelar</button>
         </form>
     </div>
+    <script src="<%= request.getContextPath() %><%= versionedUrl(application, "/JavasScripts/main.js") %>"></script>
 </body>
 </html>
