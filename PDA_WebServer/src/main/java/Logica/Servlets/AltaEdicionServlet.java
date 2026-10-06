@@ -41,8 +41,8 @@ public class AltaEdicionServlet extends HttpServlet {
         // Para filtrar cursos del instituto del docente logueado
         String instituto = "";
         if (session != null && session.getAttribute("usuarioLogueado") instanceof DTDocente doc) {
-            if (!doc.getInstitutos().isEmpty()) {
-                instituto = doc.getInstitutos().get(0);
+            if (!doc.getInstituto().isEmpty()) {
+                instituto = doc.getInstituto();
             }
         }
 

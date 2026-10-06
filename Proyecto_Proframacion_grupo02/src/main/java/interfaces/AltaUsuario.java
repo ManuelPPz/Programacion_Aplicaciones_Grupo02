@@ -261,18 +261,11 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
             // Armar la fecha
 
             if ("Docente".equalsIgnoreCase(tipoUsuario)) {
-                List<String> institutos = new ArrayList();
-                int tam = comboInstituto.getItemCount();
-                for (int i = 1; i < tam; i++) {
-                    String text = (String) comboInstituto.getItemAt(i);
-                    if (text.contains("✓")) {
-                        String auxSubString = text.substring(2);
-                        institutos.add(auxSubString);
-                    }
-                }
-                ico.AgregarUsuario(nickname, nombre, apellido, email, fecha, true, institutos, imgPath);
+                String instituto = (String) comboInstituto.getSelectedItem();
+                
+                ico.AgregarUsuario(nickname, nombre, apellido, email, ico.GenerateRandPassword(), fecha, true, instituto, imgPath);
             } else {
-                ico.AgregarUsuario(nickname, nombre, apellido, email, fecha, false, null, imgPath);
+                ico.AgregarUsuario(nickname, nombre, apellido, email, ico.GenerateRandPassword(), fecha, false, null, imgPath);
             }
 
             // Mensaje de éxito

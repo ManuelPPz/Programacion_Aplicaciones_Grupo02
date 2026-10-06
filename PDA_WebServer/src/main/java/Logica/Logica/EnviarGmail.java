@@ -1,10 +1,13 @@
-
 package Logica.Logica;
 import Logica.DTsClasses.DTUsuarioBase;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 /**
  *
  * @author mateo
@@ -49,6 +52,18 @@ public class EnviarGmail {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+    }
+    
+    public void EnviarAsincrono(String destinatario, String asunto, String mensajeTexto){
+        CompletableFuture.runAsync(() -> {
+            try {
+                Enviar(destinatario, asunto, mensajeTexto);
+                System.out.println("Correo enviado exitosamente a: " + destinatario);
+            } catch (Exception e) {
+                System.err.println("Error al enviar el correo en segundo plano: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
     }
     
     public String CuerpoMensajeNuevoUsuario(DTUsuarioBase dt) {

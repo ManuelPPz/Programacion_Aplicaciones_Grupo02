@@ -3,7 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Manejadores;
-
 import Classes.Categoria;
 import DTsClasses.DTCategoria;
 import DTsClasses.DTMaster;

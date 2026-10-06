@@ -69,24 +69,18 @@ public class Controller implements IController{
     
     //Alta Usuario
     @Override
-    public void AgregarUsuario(String nickname, String nombre, String apellido, String correo, String password, Date fechaNac, boolean docente, List<String> institutos, String imgPath)throws Exception {
+    public void AgregarUsuario(String nickname, String nombre, String apellido, String correo, String password, Date fechaNac, boolean docente, String instituto, String imgPath)throws Exception {
         UsuarioBase auxUsuario = null;
-        List<Instituto> auxInstituto = new ArrayList<>();
-        if(institutos!=null){
-            for(int i = 0;i<institutos.size();i++){
-                auxInstituto.add(manInstituto.BuscarInstituto(institutos.get(i)));
-            }
-        }
-        //String password = GenerateRandPassword();
+        Instituto auxInstituto = manInstituto.BuscarInstituto(instituto);
         try {
-            
             auxUsuario = manUsuario.CrearUsuario(nickname, nombre, apellido, correo, password, docente, fechaNac, auxInstituto, imgPath);
+            manUsuario.Add(auxUsuario);
+            EnviarGmail eg = new EnviarGmail();
+            eg.EnviarAsincrono(correo, "Bienvenido a la plataforma de edEXT", eg.CuerpoMensajeNuevoUsuario(manUsuario.getDT(auxUsuario)));
         } catch (IOException ex) {
             System.getLogger("No se pudo crear el usuario(Error en Controller.AgregarUsuario())");
         }
-        manUsuario.Add(auxUsuario);
-        EnviarGmail eg = new EnviarGmail();
-        eg.Enviar(correo, "Bienvenido a la plataforma de edEXT", eg.CuerpoMensajeNuevoUsuario(manUsuario.getDT(auxUsuario)));
+        
     }
     
     //ConsultaUsuario
@@ -103,14 +97,9 @@ public class Controller implements IController{
     
     //Modificar Datos Usuario
     @Override
-    public void ModificarUsuario(String nickname, String newNombre, String newApellido, String newPassword,boolean docente, Date newFechaNac, List<String> institutos, String imgPath){
+    public void ModificarUsuario(String nickname, String newNombre, String newApellido, String newPassword,boolean docente, Date newFechaNac, String instituto, String imgPath){
         
-        List<Instituto> auxInstituto = new ArrayList<>();
-        if(institutos!=null){
-            for(int i = 0;i<institutos.size();i++){
-                auxInstituto.add(manInstituto.BuscarInstituto(institutos.get(i)));
-            }
-        }
+        Instituto auxInstituto = manInstituto.BuscarInstituto(instituto);
         try {
             manUsuario.ModificarDatosUsuario(nickname, newNombre, newApellido, newPassword, true, newFechaNac, auxInstituto, imgPath);
         } catch (IOException ex) {

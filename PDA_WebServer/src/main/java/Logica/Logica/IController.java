@@ -21,14 +21,14 @@ import javax.swing.ImageIcon;
  */
 public interface IController {
     //Alta Usuario
-    public abstract void AgregarUsuario(String nickname, String nombre, String apellido, String correo, String password, Date fechaNac, boolean docente, List<String> institutos, String imgPath)throws Exception;
+    public abstract void AgregarUsuario(String nickname, String nombre, String apellido, String correo, String password, Date fechaNac, boolean docente, String instituto, String imgPath)throws Exception;
     
     //Consultar Usuario, la funcion deberia devolver el tipo de dato usuario
     //Se modificara al crear el tipo de dato usuario retornando el tipo de dato "Usuario"
     public abstract DTUsuarioBase ConsultarUsuario(String nickname);
     
     //Modificar Datos Usuario
-    public abstract void ModificarUsuario(String nickname, String newNombre, String newApellido, String newPassword,boolean docente, Date newFechaNac, List<String> institutos, String imgPath);
+    public abstract void ModificarUsuario(String nickname, String newNombre, String newApellido, String newPassword,boolean docente, Date newFechaNac, String instituto, String imgPath);
     
     //Seguir a un usuario
     public abstract void SeguirUsuario(String nickname1, String nickname2);

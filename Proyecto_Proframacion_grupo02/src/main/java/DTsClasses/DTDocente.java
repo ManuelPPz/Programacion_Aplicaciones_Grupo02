@@ -14,15 +14,15 @@ import javax.swing.ImageIcon;
  * @author mateo
  */
 public class DTDocente extends DTUsuarioBase{
-    List<String> institutos = new ArrayList();
+    String instituto;
     List<String> cursos = new ArrayList();
-    public DTDocente(String nickname,String nombre,String apellido,String correo, String password,Date fNac, List<String> institutos, ImageIcon img, List<String> cursos, List<String> ediciones, List<String> programas){
+    public DTDocente(String nickname,String nombre,String apellido,String correo, String password,Date fNac, String instituto, ImageIcon img, List<String> cursos, List<String> ediciones, List<String> programas){
         super(nickname,nombre,apellido,correo, password,fNac,img, ediciones, programas);
-        this.institutos = institutos;
+        this.instituto = instituto;
         this.cursos = cursos;
     }
-    public List<String> getInstitutos(){
-        return this.institutos;
+    public String getInstituto(){
+        return this.instituto;
     }
     public List<String> getCursos(){
         return this.cursos;

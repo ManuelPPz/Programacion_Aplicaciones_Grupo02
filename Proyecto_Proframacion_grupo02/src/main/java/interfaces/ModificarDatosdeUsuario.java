@@ -115,13 +115,13 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
             }
         }
     }
-    private void CargarInstitutosParaEdicion(List<String> institutosDocente){
+    private void CargarInstitutosParaEdicion(String insOriginal){
         comboInstituto.removeAllItems();
         List<DTMaster> listIns = ico.ListarClase(EnumDT.DT_INSTITUTO);
         for(int i = 0;i<listIns.size();i++){
             DTInstituto dt = (DTInstituto) listIns.get(i);
             String nom = dt.getNombre();
-            if(institutosDocente!=null && institutosDocente.contains(nom)){
+            if(nom.equals(insOriginal) && insOriginal!=null){
                 comboInstituto.addItem("✓ " + nom);
             }else{
                 comboInstituto.addItem(nom);
@@ -148,7 +148,7 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
             lblTipo.setText("Docente");
             lblInstituto.setVisible(true);
             comboInstituto.setVisible(true);
-            CargarInstitutosParaEdicion(docenteDT.getInstitutos());
+            CargarInstitutosParaEdicion(docenteDT.getInstituto());
         }else{
             esDocenteActual = false;
             lblTipo.setText("Estudiante");
@@ -194,6 +194,8 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
         buttonChooser = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
         btnAceptar = new javax.swing.JButton();
+        passwordField = new javax.swing.JPasswordField();
+        jLabel9 = new javax.swing.JLabel();
 
         setClosable(true);
         setMaximizable(true);
@@ -327,51 +329,65 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
             }
         });
 
+        passwordField.setText("jPasswordField1");
+
+        jLabel9.setText("Nueva Imagen");
+
         javax.swing.GroupLayout panelEdicionLayout = new javax.swing.GroupLayout(panelEdicion);
         panelEdicion.setLayout(panelEdicionLayout);
         panelEdicionLayout.setHorizontalGroup(
             panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelEdicionLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelEdicionLayout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addGap(18, 18, 18)
-                        .addComponent(fieldPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(buttonChooser))
-                    .addGroup(panelEdicionLayout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addGap(240, 240, 240)
-                        .addComponent(btnCancelar)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnAceptar))
-                    .addGroup(panelEdicionLayout.createSequentialGroup()
-                        .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5))
-                        .addGap(36, 36, 36)
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelEdicionLayout.createSequentialGroup()
-                                .addComponent(spinnerFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblInstituto)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(comboInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel5))
+                                .addGap(36, 36, 36)
+                                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(panelEdicionLayout.createSequentialGroup()
+                                        .addComponent(spinnerFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(lblInstituto)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(comboInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(panelEdicionLayout.createSequentialGroup()
+                                        .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(55, 55, 55)
+                                        .addComponent(jLabel8)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(labelCorreo)
+                                    .addGroup(panelEdicionLayout.createSequentialGroup()
+                                        .addComponent(labelNickname)
+                                        .addGap(74, 74, 74)
+                                        .addComponent(jLabel7)
+                                        .addGap(62, 62, 62)
+                                        .addComponent(lblTipo))))
                             .addGroup(panelEdicionLayout.createSequentialGroup()
-                                .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(55, 55, 55)
-                                .addComponent(jLabel8)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(labelCorreo)
-                            .addGroup(panelEdicionLayout.createSequentialGroup()
-                                .addComponent(labelNickname)
-                                .addGap(74, 74, 74)
-                                .addComponent(jLabel7)
-                                .addGap(62, 62, 62)
-                                .addComponent(lblTipo))))))
+                                .addComponent(jLabel6)
+                                .addGap(18, 18, 18)
+                                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(panelEdicionLayout.createSequentialGroup()
+                                        .addComponent(jLabel3)
+                                        .addGap(145, 145, 145)
+                                        .addComponent(btnCancelar)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(btnAceptar))
+                                    .addGroup(panelEdicionLayout.createSequentialGroup()
+                                        .addComponent(fieldPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(buttonChooser))))))
+                    .addGroup(panelEdicionLayout.createSequentialGroup()
+                        .addComponent(jLabel9)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         panelEdicionLayout.setVerticalGroup(
             panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -403,7 +419,11 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
                     .addComponent(jLabel6)
                     .addComponent(fieldPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(buttonChooser))
-                .addGap(18, 18, 18)
+                .addGap(27, 27, 27)
+                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCancelar)
                     .addComponent(btnAceptar))
@@ -430,7 +450,7 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelEdicion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(36, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -508,18 +528,9 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
         String imgPath = fieldPath.getText();
 
         try{
-            List<String> institutos = null;
-            if(esDocenteActual){
-                institutos = new ArrayList();
-                for(int i = 0;i<comboInstituto.getItemCount();i++){
-                    String item = (String) comboInstituto.getItemAt(i);
-                    if(item.contains("✓")){
-                        institutos.add(item.substring(2));
-                    }
-                }
-            }
+            String instituto = (String)comboInstituto.getSelectedItem();
 
-            ico.ModificarUsuario(nicknameActual, nombre, apellido, correoActual, esDocenteActual, fecha, institutos, imgPath);
+            ico.ModificarUsuario(nicknameActual, nombre, apellido, correoActual, esDocenteActual, fecha, instituto, imgPath);
 
             JOptionPane.showMessageDialog(this,
                 "Los datos del usuario '" + nicknameActual + "' se actualizaron con éxito.",
@@ -563,6 +574,7 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel labelCorreo;
@@ -570,6 +582,7 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblInstituto;
     private javax.swing.JLabel lblTipo;
     private javax.swing.JPanel panelEdicion;
+    private javax.swing.JPasswordField passwordField;
     private javax.swing.JSpinner spinnerFecha;
     private javax.swing.JTable tableUsuarios;
     private javax.swing.JTextField txtApellido;

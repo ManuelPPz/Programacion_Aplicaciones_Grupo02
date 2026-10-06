@@ -22,22 +22,13 @@ public class Instituto implements Serializable {
 
     // Cambios clave: FetchType.EAGER para cargar la relación automáticamente
     // e inicializar la colección = new ArrayList<>()
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "Ins_Doc",
-        joinColumns = @JoinColumn(name = "Instituto"),
-        inverseJoinColumns = @JoinColumn(name = "Docente")
-    )
-    private List<Docente> misDocentes = new ArrayList<>();
 
     //==============Constructores=========================
     public Instituto() {
-        this.misDocentes = new ArrayList<>();
     }
 
     public Instituto(String nombre) {
         this.nombre = nombre;
-        this.misDocentes = new ArrayList<>();
     }
     //====================================================
 
@@ -50,29 +41,8 @@ public class Instituto implements Serializable {
         this.nombre = nombre;
     }
 
-    public List<Docente> getDocentes() {
-        if (this.misDocentes == null) {
-            this.misDocentes = new ArrayList<>();
-        }
-        return this.misDocentes;
-    }
 
-    public void setDocentes(List<Docente> docentes) {
-        this.misDocentes = (docentes != null) ? docentes : new ArrayList<>();
-    }
 
-    //===============Método Auxiliar=======================
-    // Permite agregar docentes de forma bidireccional y segura
-    public void addDocente(Docente doc) {
-        if (doc != null) {
-            if (this.misDocentes == null) {
-                this.misDocentes = new ArrayList<>();
-            }
-            if (!this.misDocentes.contains(doc)) {
-                this.misDocentes.add(doc);
-            }
-        }
-    }
     //====================================================
 
     @Override

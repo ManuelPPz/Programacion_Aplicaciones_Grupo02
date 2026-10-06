@@ -19,9 +19,10 @@ import java.util.List;
 @Table(name = "Docente")
 @PrimaryKeyJoinColumn(name = "nickname")
 public class Docente extends UsuarioBase {
-
-    @ManyToMany(mappedBy = "misDocentes", fetch = FetchType.EAGER)
-    private List<Instituto> misInstitutos;
+    
+    @ManyToOne
+    @JoinColumn(name="Instituto")
+    private Instituto miInstituto;
     
     // En la clase Docente.java
     @OneToMany(mappedBy = "miDocente", fetch = FetchType.EAGER)
@@ -34,40 +35,27 @@ public class Docente extends UsuarioBase {
     
     public Docente() {
         super();
-        misInstitutos = new ArrayList<>();
         misCursos = new ArrayList<>();
     }
 
-    public Docente(String nick, String nombre, String apellido, String correo, String contrasenia, Date fNac, byte[] img, List<Instituto> institutos) {
+    public Docente(String nick, String nombre, String apellido, String correo, String contrasenia, Date fNac, byte[] img, Instituto instituto) {
         super(nick, nombre, apellido, correo, contrasenia, fNac, img);
-        this.setInstitutos(institutos);
+        this.miInstituto = instituto;
         this.misCursos = new ArrayList<>();
     }
 
-    public void ModificarMisDatos(String nom, String apellido, String correo, Date fNac, byte[] img, List<Instituto> institutos) {
+    public void ModificarMisDatos(String nom, String apellido, String correo, Date fNac, byte[] img, Instituto instituto) {
         super.ModificarMisDatos(nom, apellido, correo, fNac, img);
-        this.setInstitutos(institutos);
+        this.miInstituto = instituto;
     }
 
-    public void setInstitutos(List<Instituto> institutos) {
-        this.misInstitutos = (institutos != null) ? institutos : new ArrayList<>();
-        
-        // Sincronización bidireccional:
-        // Como 'Instituto' es el dueño de la relación (posee la tabla de unión),
-        // debemos agregar este docente a la lista del instituto obligatoriamente.
-        if (institutos != null) {
-            for (Instituto inst : institutos) {
-                if (inst.getDocentes() != null && !inst.getDocentes().contains(this)) {
-                    inst.getDocentes().add(this);
-                }
-            }
-        }
-    }
 
-    public List<Instituto> getInstitutos() {
-        return this.misInstitutos;
+    public Instituto getInstituto() {
+        return this.miInstituto;
     }
-    
+    public void setInstituto(Instituto i){
+        this.miInstituto = i;
+    }
     
     public void AddCurso(Curso c){
         misCursos.add(c);

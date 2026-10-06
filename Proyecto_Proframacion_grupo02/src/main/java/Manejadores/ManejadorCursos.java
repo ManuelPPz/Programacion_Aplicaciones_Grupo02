@@ -1,13 +1,16 @@
 package Manejadores;
 
-import Classes.Categoria;
+
 import java.util.List;
 import java.util.ArrayList;
+
+import Classes.Categoria;
 import Classes.Curso;
-import Classes.EdicionCurso; 
+import Classes.EdicionCurso;
 import Classes.Instituto;
 import Classes.ProgramaDeFormacion;
 import Classes.UsuarioBase;
+
 import DTsClasses.DTCurso;
 import DTsClasses.DTMaster;
 import jakarta.persistence.EntityManager;
