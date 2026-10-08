@@ -50,31 +50,32 @@ public class ManejadorUsuario {
 
     public UsuarioBase CrearUsuario(String nick, String nombre, String apellido, String correo, String contrasenia, boolean docente, Date fNac, Instituto instituto, String imgPath) throws IOException {
         UsuarioBase returnUb;
-        byte[] imgByte = null;
-        if (imgPath != null && !imgPath.trim().isEmpty()) {
-            imgByte = ConvertirImageIconToByte(imgPath);
-        }
 
         if (docente) {
-            returnUb = new Docente(nick, nombre, apellido, correo, contrasenia, fNac, imgByte, instituto);
+            returnUb = new Docente(nick, nombre, apellido, correo, contrasenia, fNac, imgPath, instituto);
         } else {
-            returnUb = new Usuario(nick, nombre, apellido, correo, contrasenia, fNac, imgByte);
+            returnUb = new Usuario(nick, nombre, apellido, correo, contrasenia, fNac, imgPath);
         }
         return returnUb;
     }
 
     public void ModificarDatosUsuario(String nick, String nombre, String apellido, String password, boolean docente, Date fNac, Instituto instituto, String imgPath) throws IOException {
-        byte[] imgByte = null;
-        if (imgPath != null && !imgPath.trim().isEmpty()) {
-            imgByte = ConvertirImageIconToByte(imgPath);
-        }
-
+        
         UsuarioBase ub = BuscarUsuario(nick);
         if (ub != null) {
             if (docente && ub instanceof Docente d) {
-                d.ModificarMisDatos(nombre, apellido, password, fNac, imgByte, instituto);
+                if("".equals(password)){
+                    d.ModificarMisDatos(nombre, apellido, d.getPassword(), fNac, imgPath, instituto);
+                }else{
+                    d.ModificarMisDatos(nombre, apellido, password, fNac, imgPath, instituto);
+                }
             } else if (ub instanceof Usuario u) {
-                u.ModificarMisDatos(nombre, apellido, password, fNac, imgByte);
+                if("".equals(password)){
+                    u.ModificarMisDatos(nombre, apellido, u.getPassword(), fNac, imgPath);
+                }else{
+                    u.ModificarMisDatos(nombre, apellido, password, fNac, imgPath);
+                }
+                
             }
 
             // Sincronizar los cambios con JPA
@@ -181,10 +182,6 @@ public class ManejadorUsuario {
     public DTUsuarioBase getDT(UsuarioBase ub) {
         if (ub == null) return null;
 
-        ImageIcon img = null;
-        if (ub.getImage() != null && ub.getImage().length > 0) {
-            img = ConvertirByteToImageIcon(ub.getImage());
-        }
 
         if (ub instanceof Docente docente) {
             String auxInsStr = (docente.getInstituto() != null) ? docente.getInstituto().getNombre() : "";
@@ -220,7 +217,7 @@ public class ManejadorUsuario {
                 }
             }
 
-            return new DTDocente(ub.getNickname(), ub.getNombre(), ub.getApellido(), ub.getCorreo(), ub.getPassword(), ub.getFNac(), auxInsStr, img, auxCur, auxEdi, auxProg);
+            return new DTDocente(ub.getNickname(), ub.getNombre(), ub.getApellido(), ub.getCorreo(), ub.getPassword(), ub.getFNac(), auxInsStr, ub.getImage(), auxCur, auxEdi, auxProg);
 
         } else if (ub instanceof Usuario usuario) {
             List<String> auxEdi = new ArrayList<>();
@@ -245,7 +242,7 @@ public class ManejadorUsuario {
                     }
                 }
             }
-            return new DTUsuario(ub.getNickname(), ub.getNombre(), ub.getApellido(), ub.getCorreo(), ub.getPassword(), ub.getFNac(), img, auxEdi, auxProg);
+            return new DTUsuario(ub.getNickname(), ub.getNombre(), ub.getApellido(), ub.getCorreo(), ub.getPassword(), ub.getFNac(), ub.getImage(), auxEdi, auxProg);
         }
         return null;
     }
@@ -379,9 +376,6 @@ public class ManejadorUsuario {
         return null;
     }
 
-    private ImageIcon ConvertirByteToImageIcon(byte[] bytes) {
-        return new ImageIcon(bytes);
-    }
 
     private EntityManager getEntityManager() {
         return JPAUtil.getEntityManager();

@@ -200,15 +200,107 @@
                     </div>
                 </div>
 
+                        
+                <!---Columna despues de user interface default de la pagina-->
                 <div class="col-md-9 col-lg-10 ps-md-4">
-                    <ol class="list-group list-group-numbered">
-                        <li class="list-group-item">A list item</li>
-                        <li class="list-group-item">A list item</li>
-                        <li class="list-group-item">A list item</li>
-                      </ol>
+                    <% if (request.getAttribute("error") != null) { %>
+                        <div class="alert alert-danger"><%= request.getAttribute("error") %></div>
+                    <% } %>
+
+                    <% 
+                        DTUsuarioBase usuarioConsultado = (DTUsuarioBase) request.getAttribute("usuarioConsultado");
+                        if (usuarioConsultado != null) { 
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                            String fechaFormateada = (usuarioConsultado.getFNac() != null) ? sdf.format(usuarioConsultado.getFNac()) : "";
+                    %>
+                        <h3 class="fw-bold mb-3"><%= usuarioConsultado.getNombre() %> <%= usuarioConsultado.getApellido() %> (<%= usuarioConsultado.getNickname() %>)</h3>
+
+                        <%-- Imagen de Perfil del Usuario Consultado --%>
+                        <div class="foto-perfil-container mb-3">
+                            <% if (usuarioConsultado.getImg() != null && !usuarioConsultado.getImg().trim().isEmpty()) { 
+                                   String relPath = "/uploads/perfiles/" + usuarioConsultado.getImg();
+                                   String urlConVersion = versionedUrl(relPath);
+                            %>
+                                <img src="<%= request.getContextPath() %><%= urlConVersion %>" 
+                                     alt="Perfil" 
+                                     width="110" 
+                                     height="110" 
+                                     style="object-fit: cover;"
+                                     class="rounded-circle border">
+                            <% } else { %>
+                                <img src="<%= request.getContextPath() %>/Images/ImagenUserDefault.png" 
+                                     alt="Perfil Default" 
+                                     width="110" 
+                                     height="110" 
+                                     style="object-fit: cover;"
+                                     class="rounded-circle border">
+                            <% } %>
+                        </div>
+
+                        <div class="tab-header mb-3">
+                            <button class="btn btn-outline-primary active me-2" onclick="openTab(event, 'tabInfo')">Información General</button>
+                            <button class="btn btn-outline-primary" onclick="openTab(event, 'tabActividad')">Actividad (Cursos/Programas)</button>
+                        </div>
+
+                        <div id="tabInfo" class="tab-content active" style="display: block;">
+                            <p><strong>Nickname:</strong> <%= usuarioConsultado.getNickname() %></p>
+                            <p><strong>Nombre:</strong> <%= usuarioConsultado.getNombre() %></p>
+                            <p><strong>Apellido:</strong> <%= usuarioConsultado.getApellido() %></p>
+                            <p><strong>Email:</strong> <%= usuarioConsultado.getCorreo() %></p>
+                            <p><strong>Fecha Nacimiento:</strong> <%= fechaFormateada %></p>
+
+                            <% if (usuarioConsultado instanceof DTDocente) { 
+                                DTDocente docente = (DTDocente) usuarioConsultado;
+                            %>
+                                <p><strong>Tipo:</strong> Docente</p>
+                                <p><strong>Instituto:</strong> <%= docente.getInstituto() != null && !docente.getInstituto().isEmpty() ? docente.getInstituto() : "N/A" %></p>
+                            <% } else { %>
+                                <p><strong>Tipo:</strong> Estudiante</p>
+                            <% } %>
+                        </div>
+
+                        <div id="tabActividad" class="tab-content" style="display: none;">
+                            <% if (usuarioConsultado instanceof DTDocente) { 
+                                DTDocente doc = (DTDocente) usuarioConsultado;
+                            %>
+                                <h4>Ediciones de Cursos Impartidas:</h4>
+                                <ul>
+                                    <% if (doc.getEdiciones() != null && !doc.getEdiciones().isEmpty()) { 
+                                        for (String ed : doc.getEdiciones()) { %>
+                                            <li><%= ed %></li>
+                                        <% } 
+                                    } else { %>
+                                        <li>No imparte ediciones actualmente.</li>
+                                    <% } %>
+                                </ul>
+                            <% } else { %>
+                                <h4>Inscripciones a Ediciones:</h4>
+                                <ul>
+                                    <% if (usuarioConsultado.getEdiciones() != null && !usuarioConsultado.getEdiciones().isEmpty()) { 
+                                        for (String ed : usuarioConsultado.getEdiciones()) { %>
+                                            <li><%= ed %></li>
+                                        <% } 
+                                    } else { %>
+                                        <li>No está inscripto a ninguna edición.</li>
+                                    <% } %>
+                                </ul>
+                            <% } %>
+
+                            <h4>Programas de Formación:</h4>
+                            <ul>
+                                <% if (usuarioConsultado.getProgramas() != null && !usuarioConsultado.getProgramas().isEmpty()) { 
+                                    for (String prog : usuarioConsultado.getProgramas()) { %>
+                                        <li><%= prog %></li>
+                                    <% } 
+                                } else { %>
+                                    <li>No está vinculado a programas de formación.</li>
+                                <% } %>
+                            </ul>
+                        </div>
+                    <% } %>
                 </div>
 
-            </div> <%-- FIN DE LA FILA ROW --%>
+            </div>
         </div>
         
         <!-- Bootstrap JS -->

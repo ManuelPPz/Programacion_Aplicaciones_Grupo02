@@ -69,18 +69,46 @@ public class Controller implements IController{
     
     //Alta Usuario
     @Override
-    public void AgregarUsuario(String nickname, String nombre, String apellido, String correo, String password, Date fechaNac, boolean docente, String instituto, String imgPath)throws Exception {
+    public void AgregarUsuario(String nickname, String nombre, String apellido, String correo, String password, Date fechaNac, boolean docente, String instituto, String imgPath) throws Exception {
         UsuarioBase auxUsuario = null;
-        Instituto auxInstituto = manInstituto.BuscarInstituto(instituto);
-        //String password = GenerateRandPassword();
-        try {
-            auxUsuario = manUsuario.CrearUsuario(nickname, nombre, apellido, correo, password, docente, fechaNac, auxInstituto, imgPath);
-        } catch (IOException ex) {
-            System.getLogger("No se pudo crear el usuario(Error en Controller.AgregarUsuario())");
+        Instituto auxInstituto = null;
+
+        if (docente && instituto != null && !instituto.isBlank()) {
+            auxInstituto = manInstituto.BuscarInstituto(instituto);
         }
+
+        try {
+            // 1. Crear la entidad del usuario
+            auxUsuario = manUsuario.CrearUsuario(nickname, nombre, apellido, correo, password, docente, fechaNac, auxInstituto, imgPath);
+        } catch (Exception ex) {
+            System.err.println(">>> ERROR: No se pudo instanciar el usuario en AgregarUsuario(): " + ex.getMessage());
+            ex.printStackTrace();
+            throw ex; // Relanzar la excepción para evitar continuar con auxUsuario = null
+        }
+
+        if (auxUsuario == null) {
+            throw new Exception("No se pudo crear el objeto usuario.");
+        }
+
+        // 2. Guardar en Base de Datos
         manUsuario.Add(auxUsuario);
-        EnviarGmail eg = new EnviarGmail();
-        eg.EnviarAsincrono(correo, "Bienvenido a la plataforma de edEXT", eg.CuerpoMensajeNuevoUsuario(manUsuario.getDT(auxUsuario)));
+        System.out.println("CONTROLADOR: Usuario '" + nickname + "' guardado con éxito en la base de datos.");
+
+        // 3. Envío de Correo con manejo de excepciones aislado
+        try {
+            System.out.println("CONTROLADOR: Intentando enviar correo a: " + correo);
+
+            DTUsuarioBase dtUsuario = manUsuario.getDT(auxUsuario);
+            EnviarGmail eg = new EnviarGmail();
+            String mensajeHTML = eg.CuerpoMensajeNuevoUsuario(dtUsuario);
+
+            // Enviar el correo electrónico
+            eg.EnviarAsincrono(correo, "Bienvenido a la plataforma de edEXT", mensajeHTML);
+        } catch (Exception e) {
+            // Capturar error de correo para QUE NO REVIERTA el guardado del usuario
+            System.err.println("ERROR CONTROLADOR: El usuario se guardó pero falló el envío del correo: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
     
     //ConsultaUsuario

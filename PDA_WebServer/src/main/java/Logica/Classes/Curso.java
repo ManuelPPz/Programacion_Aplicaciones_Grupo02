@@ -59,7 +59,7 @@ public class Curso implements Serializable {
     @JoinColumn(name="Nombre_Doc")
     private Docente miDocente;
     
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "Categoria_Curso", 
         joinColumns = @JoinColumn(name="Nombre_Curso"), 

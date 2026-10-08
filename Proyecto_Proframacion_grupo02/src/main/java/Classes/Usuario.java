@@ -34,12 +34,12 @@ public class Usuario extends UsuarioBase {
         super();
     }
 
-    public Usuario(String nick, String nombre, String apellido, String correo,String contrasenia, Date fNac, byte[] img) {
+    public Usuario(String nick, String nombre, String apellido, String correo,String contrasenia, Date fNac, String img) {
         super(nick, nombre, apellido, correo,contrasenia, fNac, img);
     }
 
     @Override
-    public void ModificarMisDatos(String nom, String apellido, String correo, Date fNac, byte[] img) {
+    public void ModificarMisDatos(String nom, String apellido, String correo, Date fNac, String img) {
         super.ModificarMisDatos(nom, apellido, correo, fNac, img);
     }
 

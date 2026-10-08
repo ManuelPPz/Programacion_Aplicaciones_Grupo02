@@ -38,13 +38,13 @@ public class Docente extends UsuarioBase {
         misCursos = new ArrayList<>();
     }
 
-    public Docente(String nick, String nombre, String apellido, String correo, String contrasenia, Date fNac, byte[] img, Instituto instituto) {
+    public Docente(String nick, String nombre, String apellido, String correo, String contrasenia, Date fNac, String img, Instituto instituto) {
         super(nick, nombre, apellido, correo, contrasenia, fNac, img);
         this.miInstituto = instituto;
         this.misCursos = new ArrayList<>();
     }
 
-    public void ModificarMisDatos(String nom, String apellido, String correo, Date fNac, byte[] img, Instituto instituto) {
+    public void ModificarMisDatos(String nom, String apellido, String correo, Date fNac, String img, Instituto instituto) {
         super.ModificarMisDatos(nom, apellido, correo, fNac, img);
         this.miInstituto = instituto;
     }

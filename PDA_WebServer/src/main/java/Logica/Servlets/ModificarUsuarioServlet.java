@@ -1,30 +1,33 @@
 package Logica.Servlets;
 
-import Logica.DTsClasses.DTMaster;
+import Logica.DTsClasses.DTDocente;
 import Logica.DTsClasses.DTUsuarioBase;
 import Logica.DTsClasses.EnumDT;
 import Logica.Logica.Fabric;
 import Logica.Logica.IController;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
+import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.nio.file.Paths;
+import java.sql.Date;
 
 /**
  * ED-18 – Modificar Datos de Usuario
- * GET:  Muestra el formulario pre-cargado con los datos del usuario en sesión.
- * POST: Aplica los cambios permitidos (nombre, apellido, fechaNac, contraseña e instituto si aplica).
  */
+@MultipartConfig(
+    fileSizeThreshold = 1024 * 1024 * 2, // 2MB en memoria antes de guardar temporalmente
+    maxFileSize = 1024 * 1024 * 10,      // Tamaño máximo por archivo: 10MB
+    maxRequestSize = 1024 * 1024 * 50    // Tamaño máximo de la petición: 50MB
+)
 @WebServlet(name = "ModificarUsuarioServlet", urlPatterns = {"/ModificarUsuarioServlet"})
 public class ModificarUsuarioServlet extends HttpServlet {
-
-    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -39,8 +42,8 @@ public class ModificarUsuarioServlet extends HttpServlet {
         IController control = Fabric.GetInstance().GetIController();
         DTUsuarioBase usuario = (DTUsuarioBase) session.getAttribute("usuarioLogueado");
         
+        request.setAttribute("esDocente", usuario instanceof DTDocente);
         request.setAttribute("usuario", usuario);
-        // Carga la lista de institutos para el selector dropdown en caso de que sea docente
         request.setAttribute("institutos", control.ListarClase(EnumDT.DT_INSTITUTO));
         request.getRequestDispatcher("InterfacesJSP/ModificarDatosUsuario.jsp").forward(request, response);
     }
@@ -49,59 +52,115 @@ public class ModificarUsuarioServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        boolean isJavaClient = request.getHeader("User-Agent") != null && request.getHeader("User-Agent").contains("Java");
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("usuarioLogueado") == null) {
+
+        // 1. Control de acceso/sesión para clientes Web
+        if (!isJavaClient && (session == null || session.getAttribute("usuarioLogueado") == null)) {
             response.sendRedirect(request.getContextPath() + "/index.jsp");
             return;
         }
 
         IController control = Fabric.GetInstance().GetIController();
-        DTUsuarioBase usuarioSesion = (DTUsuarioBase) session.getAttribute("usuarioLogueado");
-        
-        String nickname = usuarioSesion.getNickname(); // Inmutable
+
+        // 2. Obtención de datos del usuario
+        DTUsuarioBase usuarioSesion = null;
+        String nickname = "";
+
+        if (isJavaClient) {
+            nickname = request.getParameter("nickname");
+            if (nickname != null && !nickname.isBlank()) {
+                usuarioSesion = control.ConsultarUsuario(nickname.trim());
+            }
+        } else {
+            usuarioSesion = (DTUsuarioBase) session.getAttribute("usuarioLogueado");
+            if (usuarioSesion != null) {
+                nickname = usuarioSesion.getNickname();
+            }
+        }
+
+        if (nickname == null || nickname.isBlank() || usuarioSesion == null) {
+            enviarError(request, response, "Usuario no especificado o inexistente.", usuarioSesion, control, isJavaClient, HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
         String nombre = request.getParameter("nombre");
         String apellido = request.getParameter("apellido");
         String fechaStr = request.getParameter("fechaNacimiento");
+        if (fechaStr == null) {
+            fechaStr = request.getParameter("fechaNac");
+        }
         String tipoUsuario = request.getParameter("tipoUsuario");
-        
-        // CAPTURA DEL INSTITUTO: Se lee como una sola cadena elegida en el dropdown
-        String institutoSeleccionado = request.getParameter("instituto");
-        
-        // Corrección en la obtención de la contraseña
         String newPassword = request.getParameter("password");
+        String institutoSeleccionado = request.getParameter("instituto");
 
-        // Validación de campos obligatorios
-        if (nombre == null || nombre.isBlank() || apellido == null || apellido.isBlank()
-                || fechaStr == null || fechaStr.isBlank()) {
-            
-            request.setAttribute("error", "Nombre, apellido y fecha de nacimiento son obligatorios.");
-            request.setAttribute("usuario", usuarioSesion);
-            request.setAttribute("institutos", control.ListarClase(EnumDT.DT_INSTITUTO));
-            request.getRequestDispatcher("InterfacesJSP/ModificarDatosUsuario.jsp").forward(request, response);
+        // 3. Validación de campos obligatorios
+        if (nombre == null || nombre.isBlank() || apellido == null || apellido.isBlank() || fechaStr == null || fechaStr.isBlank()) {
+            enviarError(request, response, "Nombre, apellido y fecha de nacimiento son obligatorios.", usuarioSesion, control, isJavaClient, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
+        // 4. Control de rol e instituto
+        boolean esDocente = "docente".equalsIgnoreCase(tipoUsuario);
+        if (esDocente && (institutoSeleccionado == null || institutoSeleccionado.isBlank())) {
+            enviarError(request, response, "Debe seleccionar un instituto para el docente.", usuarioSesion, control, isJavaClient, HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        // 5. Conversión de fecha
         Date fechaNac;
         try {
-            fechaNac = SDF.parse(fechaStr);
-        } catch (ParseException e) {
-            request.setAttribute("error", "Formato de fecha inválido.");
-            request.setAttribute("usuario", usuarioSesion);
-            request.setAttribute("institutos", control.ListarClase(EnumDT.DT_INSTITUTO));
-            request.getRequestDispatcher("InterfacesJSP/ModificarDatosUsuario.jsp").forward(request, response);
+            fechaNac = Date.valueOf(fechaStr.trim());
+        } catch (IllegalArgumentException e) {
+            enviarError(request, response, "Formato de fecha inválido. Utilice YYYY-MM-DD.", usuarioSesion, control, isJavaClient, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        boolean esDocente = "docente".equalsIgnoreCase(tipoUsuario);
-        
-        // Si es docente, se asigna el instituto seleccionado; de lo contrario, cadena vacía
-        String nombreInstituto = (esDocente && institutoSeleccionado != null) ? institutoSeleccionado.trim() : "";
-        
-        // Manejo por si no se modifica la contraseña
-        String passwordFinal = (newPassword != null && !newPassword.isBlank()) ? newPassword.trim() : "";
+        // 6. Procesamiento de Imagen y Borrado Anterior
+        String nombreFinalImagen = usuarioSesion.getImg(); // Mantiene la previa por defecto
 
         try {
-            // Invocación a la lógica pasando la cadena individual del instituto
+            Part filePart = request.getPart("imagen");
+
+            if (filePart != null && filePart.getSize() > 0) {
+                String originalFileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+
+                String extension = "";
+                int i = originalFileName.lastIndexOf('.');
+                if (i > 0) {
+                    extension = originalFileName.substring(i);
+                }
+
+                // Generar nuevo nombre para el archivo
+                nombreFinalImagen = nickname.trim().toLowerCase() + "_" + System.currentTimeMillis() + extension;
+                String uploadPath = "C:" + File.separator + "mi_proyecto_data" + File.separator + "uploads" + File.separator + "perfiles";
+
+                File uploadDir = new File(uploadPath);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdirs(); 
+                }
+
+                // Borrar imagen anterior del disco si existía
+                String imagenAnterior = usuarioSesion.getImg();
+                if (imagenAnterior != null && !imagenAnterior.isBlank()) {
+                    File archivoAnterior = new File(uploadPath + File.separator + imagenAnterior);
+                    if (archivoAnterior.exists() && archivoAnterior.isFile()) {
+                        archivoAnterior.delete();
+                    }
+                }
+
+                // Escribir nueva imagen
+                filePart.write(uploadPath + File.separator + nombreFinalImagen);
+            }
+        } catch (Exception e) {
+            System.err.println("Error al procesar la imagen: " + e.getMessage());
+        }
+
+        String nombreInstituto = esDocente ? institutoSeleccionado.trim() : "";
+        String passwordFinal = (newPassword != null && !newPassword.isBlank()) ? newPassword.trim() : "";
+
+        // 7. Modificación en la Lógica de Negocio
+        try {
             control.ModificarUsuario(
                 nickname, 
                 nombre.trim(), 
@@ -110,10 +169,17 @@ public class ModificarUsuarioServlet extends HttpServlet {
                 esDocente, 
                 fechaNac, 
                 nombreInstituto, 
-                ""
+                nombreFinalImagen
             );
 
-            // Actualizar la información en la sesión HTTP con los datos recién modificados
+            // Si la petición vino del cliente Swing, finaliza con éxito HTTP 200 OK
+            if (isJavaClient) {
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().write("OK");
+                return;
+            }
+
+            // Si la petición vino de la web, actualizar la sesión HTTP
             DTUsuarioBase usuarioActualizado = control.ConsultarUsuario(nickname);
             session.setAttribute("usuarioLogueado", usuarioActualizado);
 
@@ -123,10 +189,23 @@ public class ModificarUsuarioServlet extends HttpServlet {
             request.getRequestDispatcher("InterfacesJSP/ModificarDatosUsuario.jsp").forward(request, response);
 
         } catch (Exception e) {
-            request.setAttribute("error", "Error al modificar usuario: " + e.getMessage());
-            request.setAttribute("usuario", usuarioSesion);
-            request.setAttribute("institutos", control.ListarClase(EnumDT.DT_INSTITUTO));
-            request.getRequestDispatcher("InterfacesJSP/ModificarDatosUsuario.jsp").forward(request, response);
+            enviarError(request, response, "Error al modificar usuario: " + e.getMessage(), usuarioSesion, control, isJavaClient, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * Método auxiliar para centralizar el manejo de respuestas de error.
+     */
+    private void enviarError(HttpServletRequest request, HttpServletResponse response, String mensajeError, 
+                             DTUsuarioBase usuario, IController control, boolean isJavaClient, int statusCode) 
+                             throws ServletException, IOException {
+        if (isJavaClient) {
+            response.sendError(statusCode, mensajeError);
+            return;
+        }
+        request.setAttribute("error", mensajeError);
+        request.setAttribute("usuario", usuario);
+        request.setAttribute("institutos", control.ListarClase(EnumDT.DT_INSTITUTO));
+        request.getRequestDispatcher("InterfacesJSP/ModificarDatosUsuario.jsp").forward(request, response);
     }
 }

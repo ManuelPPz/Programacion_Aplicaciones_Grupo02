@@ -7,6 +7,7 @@
     <groupId>com.mycompany</groupId>
     <artifactId>proyecto_pda_grupo02</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <!-- Se mantiene como JAR porque es la App de Escritorio -->
     <packaging>jar</packaging>
     
     <properties>
@@ -18,12 +19,19 @@
     <name>proyecto_pda_grupo02</name>
 
     <dependencies>
-        <!-- Jakarta Servlet API -->
+        <!-- Jakarta Servlet API (Solo para usar los Data Transfer Objects o tipos shared si los comparten) -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
             <version>6.0.0</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- Apache HttpClient para enviar imágenes y formularios HTTP al Servidor -->
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>5.3.1</version>
         </dependency>
 
         <!-- MySQL Connector -->
@@ -48,6 +56,7 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Interfaz gráfica Swing / JCalendar -->
         <dependency>
             <groupId>com.toedter</groupId>
             <artifactId>jcalendar</artifactId>
@@ -60,6 +69,7 @@
             <version>RELEASE300</version>
         </dependency>
 
+        <!-- Email -->
         <dependency>
             <groupId>org.eclipse.angus</groupId>
             <artifactId>angus-mail</artifactId>
@@ -107,7 +117,7 @@
                 <version>3.11.0</version>
             </plugin>
 
-            <!-- Plugin para empaquetar con dependencias -->
+            <!-- Plugin para empaquetar en un ejecutable JAR con todas las dependencias asociadas -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>

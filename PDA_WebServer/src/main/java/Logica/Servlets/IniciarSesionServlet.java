@@ -1,5 +1,6 @@
 package Logica.Servlets;
 
+import Logica.DTsClasses.DTMaster;
 import Logica.DTsClasses.DTUsuarioBase;
 import Logica.Logica.Fabric;
 import Logica.Logica.IController;
@@ -23,7 +24,7 @@ public class IniciarSesionServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String id       = request.getParameter("id");          // nickname o correo
+        String id = request.getParameter("id");          // nickname o correo
         String password = request.getParameter("password");
 
         if (id == null || id.isBlank() || password == null || password.isBlank()) {
@@ -33,9 +34,9 @@ public class IniciarSesionServlet extends HttpServlet {
         }
 
         IController control = Fabric.GetInstance().GetIController();
-        DTUsuarioBase usuario = control.ConsultarUsuario(id.trim());
+        DTMaster usuario = (DTMaster) control.ConsultaUsuarioAvanzada(id, password);
 
-        if (usuario == null || !password.equals(usuario.getPassword())) {
+        if (usuario == null) {
             request.setAttribute("error", "Credenciales incorrectas. Intente nuevamente.");
             request.getRequestDispatcher("InterfacesJSP/IniciarSesion.jsp").forward(request, response);
             return;

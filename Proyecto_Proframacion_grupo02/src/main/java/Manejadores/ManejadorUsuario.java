@@ -50,15 +50,11 @@ public class ManejadorUsuario {
 
     public UsuarioBase CrearUsuario(String nick, String nombre, String apellido, String correo, String contrasenia, boolean docente, Date fNac, Instituto instituto, String imgPath) throws IOException {
         UsuarioBase returnUb;
-        byte[] imgByte = null;
-        if (imgPath != null && !imgPath.trim().isEmpty()) {
-            imgByte = ConvertirImageIconToByte(imgPath);
-        }
 
         if (docente) {
-            returnUb = new Docente(nick, nombre, apellido, correo, contrasenia, fNac, imgByte, instituto);
+            returnUb = new Docente(nick, nombre, apellido, correo, contrasenia, fNac, imgPath, instituto);
         } else {
-            returnUb = new Usuario(nick, nombre, apellido, correo, contrasenia, fNac, imgByte);
+            returnUb = new Usuario(nick, nombre, apellido, correo, contrasenia, fNac, imgPath);
         }
         return returnUb;
     }
@@ -72,9 +68,9 @@ public class ManejadorUsuario {
         UsuarioBase ub = BuscarUsuario(nick);
         if (ub != null) {
             if (docente && ub instanceof Docente d) {
-                d.ModificarMisDatos(nombre, apellido, password, fNac, imgByte, instituto);
+                d.ModificarMisDatos(nombre, apellido, password, fNac, imgPath, instituto);
             } else if (ub instanceof Usuario u) {
-                u.ModificarMisDatos(nombre, apellido, password, fNac, imgByte);
+                u.ModificarMisDatos(nombre, apellido, password, fNac, imgPath);
             }
 
             // Sincronizar los cambios con JPA
@@ -94,18 +90,19 @@ public class ManejadorUsuario {
         }
     }
 
+    // En ManejadorUsuario.java
     public void Add(UsuarioBase ub) throws Exception {
         EntityManager em = getEntityManager();
         try {
             em.getTransaction().begin();
-            em.persist(ub);
 
             if (ub instanceof Docente d && d.getInstituto() != null) {
-                Instituto inst = d.getInstituto();
-                Instituto instMerged = em.find(Instituto.class, inst.getNombre());
-                em.merge(instMerged);
+                // Se debe asociar el objeto gestionado por el EntityManager actual
+                Instituto instPersistente = em.find(Instituto.class, d.getInstituto().getNombre());
+                d.setInstituto(instPersistente);
             }
 
+            em.persist(ub);
             em.getTransaction().commit();
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
@@ -180,10 +177,6 @@ public class ManejadorUsuario {
     public DTUsuarioBase getDT(UsuarioBase ub) {
         if (ub == null) return null;
 
-        ImageIcon img = null;
-        if (ub.getImage() != null && ub.getImage().length > 0) {
-            img = ConvertirByteToImageIcon(ub.getImage());
-        }
 
         if (ub instanceof Docente docente) {
             String auxInsStr = (docente.getInstituto() != null) ? docente.getInstituto().getNombre() : "";
@@ -219,7 +212,7 @@ public class ManejadorUsuario {
                 }
             }
 
-            return new DTDocente(ub.getNickname(), ub.getNombre(), ub.getApellido(), ub.getCorreo(), ub.getPassword(), ub.getFNac(), auxInsStr, img, auxCur, auxEdi, auxProg);
+            return new DTDocente(ub.getNickname(), ub.getNombre(), ub.getApellido(), ub.getCorreo(), ub.getPassword(), ub.getFNac(), auxInsStr, ub.getImage(), auxCur, auxEdi, auxProg);
 
         } else if (ub instanceof Usuario usuario) {
             List<String> auxEdi = new ArrayList<>();
@@ -244,7 +237,7 @@ public class ManejadorUsuario {
                     }
                 }
             }
-            return new DTUsuario(ub.getNickname(), ub.getNombre(), ub.getApellido(), ub.getCorreo(), ub.getPassword(), ub.getFNac(), img, auxEdi, auxProg);
+            return new DTUsuario(ub.getNickname(), ub.getNombre(), ub.getApellido(), ub.getCorreo(), ub.getPassword(), ub.getFNac(), ub.getImage(), auxEdi, auxProg);
         }
         return null;
     }
@@ -378,9 +371,6 @@ public class ManejadorUsuario {
         return null;
     }
 
-    private ImageIcon ConvertirByteToImageIcon(byte[] bytes) {
-        return new ImageIcon(bytes);
-    }
 
     private EntityManager getEntityManager() {
         return JPAUtil.getEntityManager();

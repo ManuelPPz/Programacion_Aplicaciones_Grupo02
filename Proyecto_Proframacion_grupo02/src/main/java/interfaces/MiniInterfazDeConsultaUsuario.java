@@ -7,7 +7,9 @@ import DTsClasses.DTUsuarioBase;
 import DTsClasses.DTDocente;
 import DTsClasses.DTUsuario;
 import java.awt.Image;
+import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -26,41 +28,76 @@ public class MiniInterfazDeConsultaUsuario extends javax.swing.JInternalFrame {
     public MiniInterfazDeConsultaUsuario() {
         initComponents();
     }
-    public void ColocarDatos(DTUsuarioBase dt){
+    public void ColocarDatos(DTUsuarioBase dt) {
+    
+    labelNickname.setText(dt.getNickname());
+    labelNombre.setText(dt.getNombre());
+    labelApellido.setText(dt.getApellido());
+    
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    String fechaStr = (dt.getFNac() != null) ? sdf.format(dt.getFNac()) : "";
+    
+    labelFecha.setText(fechaStr);
+    String str = "<html><a href=''>" + dt.getCorreo() + "</a></html>";
+    labelCorreo.setText(str);
+    
+    // --- CARGA DE LA IMAGEN DESDE EL SERVIDOR ---
+    String nombreImagen = dt.getImg();
+    if (nombreImagen != null && !nombreImagen.isBlank()) {
+        cargarImagenDesdeServidor(nombreImagen);
+    } else {
+        labelIcon.setIcon(null); // Si no tiene foto, limpia la vista
+    }
+    
+    if (dt instanceof DTDocente dti) {
+        InfoExtraDocente ied = new InfoExtraDocente();
+        ColocarDatosEnListas(dti.getCursos(), ied.getListCursos());
+        ColocarDatosEnListas(dti.getEdiciones(), ied.getListEdiciones());
+        ColocarDatosEnListas(dti.getProgramas(), ied.getListProgramas());
         
-        labelNickname.setText(dt.getNickname());
-        labelNombre.setText(dt.getNombre());
-        labelApellido.setText(dt.getApellido());
-        
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        String fechaStr = sdf.format(dt.getFNac());
-        
-        labelFecha.setText(fechaStr);
-        String str = "<html><a href=''>"+dt.getCorreo()+"</a></html>";
-        labelCorreo.setText(str);
-        
-        ImageIcon icon = dt.getImg();
-        if(icon!=null){
-            Image imgEscalada = icon.getImage().getScaledInstance(labelIcon.getWidth(), labelIcon.getHeight(), Image.SCALE_SMOOTH);
-            labelIcon.setIcon(new ImageIcon(imgEscalada));
-        }
-        
-        
-        
-        if(dt instanceof DTDocente dti){
-            InfoExtraDocente ied = new InfoExtraDocente();
-            ColocarDatosEnListas(dti.getCursos(),ied.getListCursos());
-            ColocarDatosEnListas(dti.getEdiciones(),ied.getListEdiciones());
-            ColocarDatosEnListas(dti.getProgramas(),ied.getListProgramas());
-            
-            MostrarPanelInfoExtra(ied);
-        }else if(dt instanceof DTUsuario dtu){
-            InfoExtraUsuario ieu = new InfoExtraUsuario();
-            ColocarDatosEnListas(dtu.getEdiciones(),ieu.getListEdiciones());
-            ColocarDatosEnListas(dtu.getProgramas(),ieu.getListProgramas());
-            MostrarPanelInfoExtra(ieu);
-            
-        }
+        MostrarPanelInfoExtra(ied);
+    } else if (dt instanceof DTUsuario dtu) {
+        InfoExtraUsuario ieu = new InfoExtraUsuario();
+        ColocarDatosEnListas(dtu.getEdiciones(), ieu.getListEdiciones());
+        ColocarDatosEnListas(dtu.getProgramas(), ieu.getListProgramas());
+        MostrarPanelInfoExtra(ieu);
+    }
+}
+
+/**
+ * Carga y escala la imagen de perfil de forma asíncrona desde el servidor Tomcat o disco local
+ */
+    private void cargarImagenDesdeServidor(String nombreImagen) {
+        new Thread(() -> {
+            try {
+                Image img = null;
+
+                // Opción 1: Intentar leer desde la ruta absoluta del servidor (Si corre localmente)
+                File archivoLocal = new File("C:" + File.separator + "mi_proyecto_data" + File.separator + "uploads" + File.separator + "perfiles" + File.separator + nombreImagen);
+
+                if (archivoLocal.exists()) {
+                    img = javax.imageio.ImageIO.read(archivoLocal);
+                } else {
+                    // Opción 2: Si no está local o el servidor es remoto, solicitar por HTTP
+                    java.net.URL url = new java.net.URL("http://localhost:8080/PDA_WebServer/uploads/perfiles/" + nombreImagen);
+                    img = javax.imageio.ImageIO.read(url);
+                }
+
+                if (img != null) {
+                    int width = labelIcon.getWidth() > 0 ? labelIcon.getWidth() : 114;
+                    int height = labelIcon.getHeight() > 0 ? labelIcon.getHeight() : 114;
+
+                    Image imgEscalada = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+                    ImageIcon iconFinal = new ImageIcon(imgEscalada);
+
+                    // Actualizar el componente Swing en el EDT (Event Dispatch Thread)
+                    javax.swing.SwingUtilities.invokeLater(() -> labelIcon.setIcon(iconFinal));
+                }
+            } catch (Exception e) {
+                System.err.println("No se pudo cargar la imagen de perfil: " + e.getMessage());
+                javax.swing.SwingUtilities.invokeLater(() -> labelIcon.setIcon(null));
+            }
+        }).start();
     }
     private void ColocarDatosEnListas(List<String> list, JList jList){
         DefaultListModel<String> modelo = new DefaultListModel<>();
@@ -73,21 +110,17 @@ public class MiniInterfazDeConsultaUsuario extends javax.swing.JInternalFrame {
         }
     }
     
-    private List<String> OrdenarLista(List<String> listaParam){
-        List<String> auxStr = listaParam;
-        for(int i = 0;i<auxStr.size()-1;i++){
-            for(int j = 0;j<auxStr.size()-1;j++){
-                if(auxStr instanceof DTUsuarioBase){
-                    String aux = auxStr.get(j);
-                    String auxJMas = auxStr.get(j+1);
-                    if(aux.toLowerCase().compareTo(auxJMas.toLowerCase()) > 0){
-                        String temp = aux;
-                        auxStr.set(j, auxStr.get(j+1));
-                        auxStr.set(j+1,temp);  
-                    }
-                }
-            }
+    
+    //Metodo de ordenar mas simple, fue creado por la ia
+    private List<String> OrdenarLista(List<String> listaParam) {
+        if (listaParam == null || listaParam.isEmpty()) {
+            return new ArrayList<>();
         }
+
+        List<String> auxStr = new ArrayList<>(listaParam);
+
+        auxStr.sort((a, b) -> a.compareToIgnoreCase(b));
+
         return auxStr;
     }
     private void MostrarPanelInfoExtra(JPanel jp){
@@ -99,12 +132,9 @@ public class MiniInterfazDeConsultaUsuario extends javax.swing.JInternalFrame {
         panelInfoExtra.revalidate();
         panelInfoExtra.repaint();
     }
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
+
+    
+    
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 

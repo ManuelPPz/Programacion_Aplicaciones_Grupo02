@@ -35,8 +35,8 @@ public class UsuarioBase implements Serializable {
     private String contrasenia;
     @Column(name="fNac")
     private Date fNac;
-    @Column(name="Imagen", columnDefinition = "BLOB")
-    private byte[] image;
+    @Column(name="ImagePath", length=255)
+    private String image;
     
     @ManyToMany
     @JoinTable(
@@ -51,11 +51,11 @@ public class UsuarioBase implements Serializable {
     public String getApellido(){return this.apellido;}
     public String getCorreo(){return this.correo;}
     public Date getFNac(){return this.fNac;}
-    public byte[] getImage(){return this.image;}
+    public String getImage(){return this.image;}
     public String getPassword(){return this.contrasenia;}
     
     public UsuarioBase(){}
-    public UsuarioBase(String nick, String nom, String apellido, String correo,String contrasenia, Date fNac,byte[] img){
+    public UsuarioBase(String nick, String nom, String apellido, String correo,String contrasenia, Date fNac,String img){
         this.nickname = nick;
         this.nombre = nom;
         this.apellido = apellido;
@@ -65,7 +65,7 @@ public class UsuarioBase implements Serializable {
         this.image = img;
     }
 
-    public void ModificarMisDatos(String nom, String apellido, String password, Date fNac,byte[] img){
+    public void ModificarMisDatos(String nom, String apellido, String password, Date fNac,String img){
         this.nombre = nom;
         this.apellido = apellido;
         this.contrasenia = password;

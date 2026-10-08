@@ -35,6 +35,16 @@ import DTsClasses.DTUsuarioBase;
 import DTsClasses.EnumDT;
 import Logica.Fabric;
 import Logica.IController;
+import com.toedter.calendar.JCalendar;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.file.Files;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import javax.swing.JPopupMenu;
 /**
  *
  * @author leoli
@@ -47,6 +57,7 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
     String nicknameActual;
     String correoActual;
     boolean esDocenteActual;
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
     /**
      * Creates new form ModificarDatosdeUsuario
@@ -140,7 +151,7 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
         labelCorreo.setText(dt.getCorreo());
         txtNombre.setText(dt.getNombre());
         txtApellido.setText(dt.getApellido());
-        spinnerFecha.setValue(dt.getFNac());
+        fieldFecha.setText(String.valueOf(dt.getFNac()));
         fieldPath.setText("");
 
         if(dt instanceof DTDocente docenteDT){
@@ -188,14 +199,12 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
         lblTipo = new javax.swing.JLabel();
         txtNombre = new javax.swing.JTextField();
         txtApellido = new javax.swing.JTextField();
-        spinnerFecha = new javax.swing.JSpinner();
         comboInstituto = new javax.swing.JComboBox<>();
         fieldPath = new javax.swing.JTextField();
         buttonChooser = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
         btnAceptar = new javax.swing.JButton();
-        passwordField = new javax.swing.JPasswordField();
-        jLabel9 = new javax.swing.JLabel();
+        fieldFecha = new javax.swing.JTextField();
 
         setClosable(true);
         setMaximizable(true);
@@ -297,9 +306,6 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
         });
         txtNombre.setColumns(6);
 
-        spinnerFecha.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), new java.util.Date(652369140000L), new java.util.Date(), java.util.Calendar.DAY_OF_MONTH));
-        spinnerFecha.setEditor(new javax.swing.JSpinner.DateEditor(spinnerFecha, "dd/MM/yyyy"));
-
         comboInstituto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         comboInstituto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -329,65 +335,66 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
             }
         });
 
-        passwordField.setText("jPasswordField1");
-
-        jLabel9.setText("Nueva Imagen");
+        fieldFecha.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                fieldFechaMousePressed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panelEdicionLayout = new javax.swing.GroupLayout(panelEdicion);
         panelEdicion.setLayout(panelEdicionLayout);
         panelEdicionLayout.setHorizontalGroup(
             panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelEdicionLayout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelEdicionLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5))
+                        .addGap(36, 36, 36)
                         .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelEdicionLayout.createSequentialGroup()
-                                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel5))
-                                .addGap(36, 36, 36)
-                                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(panelEdicionLayout.createSequentialGroup()
-                                        .addComponent(spinnerFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(lblInstituto)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(comboInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(panelEdicionLayout.createSequentialGroup()
-                                        .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(55, 55, 55)
-                                        .addComponent(jLabel8)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(labelCorreo)
-                                    .addGroup(panelEdicionLayout.createSequentialGroup()
-                                        .addComponent(labelNickname)
-                                        .addGap(74, 74, 74)
-                                        .addComponent(jLabel7)
-                                        .addGap(62, 62, 62)
-                                        .addComponent(lblTipo))))
+                                .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(55, 55, 55)
+                                .addComponent(jLabel8)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(panelEdicionLayout.createSequentialGroup()
-                                .addComponent(jLabel6)
+                                .addComponent(labelNickname)
+                                .addGap(74, 74, 74)
+                                .addComponent(jLabel7)
+                                .addGap(62, 62, 62)
+                                .addComponent(lblTipo))
+                            .addGroup(panelEdicionLayout.createSequentialGroup()
+                                .addGap(1, 1, 1)
+                                .addComponent(fieldFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(lblInstituto)
+                                .addGap(18, 18, 18)
+                                .addComponent(comboInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(panelEdicionLayout.createSequentialGroup()
+                        .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel3))
+                        .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelEdicionLayout.createSequentialGroup()
                                 .addGap(18, 18, 18)
                                 .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(panelEdicionLayout.createSequentialGroup()
-                                        .addComponent(jLabel3)
-                                        .addGap(145, 145, 145)
+                                        .addGap(181, 181, 181)
                                         .addComponent(btnCancelar)
                                         .addGap(18, 18, 18)
                                         .addComponent(btnAceptar))
                                     .addGroup(panelEdicionLayout.createSequentialGroup()
                                         .addComponent(fieldPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
-                                        .addComponent(buttonChooser))))))
-                    .addGroup(panelEdicionLayout.createSequentialGroup()
-                        .addComponent(jLabel9)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                                        .addComponent(buttonChooser))))
+                            .addGroup(panelEdicionLayout.createSequentialGroup()
+                                .addGap(13, 13, 13)
+                                .addComponent(labelCorreo)))))
+                .addGap(124, 124, 124))
         );
         panelEdicionLayout.setVerticalGroup(
             panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -411,19 +418,15 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
                 .addGap(18, 18, 18)
                 .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(spinnerFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblInstituto)
-                    .addComponent(comboInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(comboInstituto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(fieldFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
                     .addComponent(fieldPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(buttonChooser))
-                .addGap(27, 27, 27)
-                .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9)
-                    .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(55, 55, 55)
                 .addGroup(panelEdicionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCancelar)
                     .addComponent(btnAceptar))
@@ -524,21 +527,44 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
             }
         }
 
-        Date fecha = (Date) spinnerFecha.getValue();
-        String imgPath = fieldPath.getText();
-
+        // Formatear la fecha al formato esperado por el Servlet (yyyy-MM-dd)
+        SimpleDateFormat sdfSql = new SimpleDateFormat("yyyy-MM-dd");
+        String fechaNacFormatted = "";
+        try {
+            Date fechaDate = sdf.parse(fieldFecha.getText());
+            fechaNacFormatted = sdfSql.format(fechaDate);
+        } catch (ParseException ex) {
+            fechaNacFormatted = "2000-01-01"; // Valor fallback
+        }
+        
+        File archivoImagen = null;
+        if (!fieldPath.getText().trim().isEmpty()) {
+            archivoImagen = new File(fieldPath.getText().trim());
+        }
         try{
             String instituto = (String)comboInstituto.getSelectedItem();
-
-            ico.ModificarUsuario(nicknameActual, nombre, apellido, correoActual, esDocenteActual, fecha, instituto, imgPath);
-
-            JOptionPane.showMessageDialog(this,
+            boolean resultado = false;
+            if(esDocenteActual){
+                resultado = EnviarAlServlet(nicknameActual,nombre,apellido,fechaNacFormatted,"Docente",instituto,archivoImagen);
+            }else{
+                resultado = EnviarAlServlet(nicknameActual,nombre,apellido,fechaNacFormatted,"Estudiante",instituto,archivoImagen);
+            }
+            if(resultado){
+                JOptionPane.showMessageDialog(this,
                 "Los datos del usuario '" + nicknameActual + "' se actualizaron con éxito.",
                 "Modificación Exitosa", JOptionPane.INFORMATION_MESSAGE);
 
-            CargarUsuarios();
-            panelEdicion.setVisible(false);
-            nicknameActual = null;
+                CargarUsuarios();
+                panelEdicion.setVisible(false);
+                nicknameActual = null;
+            }else{
+                javax.swing.JOptionPane.showMessageDialog(this,
+                        "Error al procesar el registro en el servidor Tomcat.",
+                        "Error",
+                        javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
+
+            
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
@@ -557,6 +583,92 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNombreActionPerformed
 
+    private void fieldFechaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fieldFechaMousePressed
+        JPopupMenu popupMenu = new JPopupMenu();
+        JCalendar popupCalendar = new JCalendar();
+        popupCalendar.setMaxSelectableDate(new Date());
+        // Configurar el evento al seleccionar una fecha
+        popupCalendar.getDayChooser().addPropertyChangeListener("day", evtc -> {
+            Date fechaSeleccionada = popupCalendar.getDate();
+
+            if (fechaSeleccionada != null) {
+                fieldFecha.setText(sdf.format(fechaSeleccionada));
+            }
+
+            // Cerramos el menú flotante al seleccionar el día
+            popupMenu.setVisible(false);
+        });
+
+        popupMenu.setLayout(new BorderLayout());
+        popupMenu.add(popupCalendar, BorderLayout.CENTER);
+
+        // DESPLEGAR EL POPUP (Muestra el calendario justo debajo del JTextField)
+        popupMenu.show(fieldFecha, 0, fieldFecha.getHeight());
+    }//GEN-LAST:event_fieldFechaMousePressed
+    private boolean EnviarAlServlet(String nickname, String newNombre, String newApellido, String newFechaNac, 
+        String tipoUsuario, String instituto, File archivoImagen) {
+        String boundary = "---Boundary" + System.currentTimeMillis();
+        String LINE_FEED = "\r\n";
+
+        try {
+            URL url = new URL("http://localhost:8080/PDA_WebServer/ModificarUsuarioServlet");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            conn.setRequestMethod("POST");
+
+            // --- CABECERAS (AQUÍ SE AGREGA USER-AGENT) ---
+            conn.setRequestProperty("User-Agent", "Java/SwingClient"); 
+            conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+            OutputStream outputStream = conn.getOutputStream();
+            PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream, "UTF-8"), true);
+
+            // --- Campos de texto ---
+            addFormField(writer, outputStream, "nickname", nickname, boundary, LINE_FEED);
+            addFormField(writer, outputStream, "nombre", newNombre, boundary, LINE_FEED);
+            addFormField(writer, outputStream, "apellido", newApellido, boundary, LINE_FEED);
+            addFormField(writer, outputStream, "fechaNacimiento", newFechaNac, boundary, LINE_FEED);
+            addFormField(writer, outputStream, "tipoUsuario", tipoUsuario, boundary, LINE_FEED);
+
+            // Limpiar el símbolo "✓ " si estaba seleccionado en el desplegable
+            if (instituto != null && instituto.contains("✓")) {
+                instituto = instituto.replace("✓", "").trim();
+            }
+            addFormField(writer, outputStream, "instituto", instituto, boundary, LINE_FEED);
+
+            // --- Adjuntar Imagen ---
+            if (archivoImagen != null && archivoImagen.exists()) {
+                writer.append("--" + boundary).append(LINE_FEED);
+                writer.append("Content-Disposition: form-data; name=\"imagen\"; filename=\"" + archivoImagen.getName() + "\"").append(LINE_FEED);
+                writer.append("Content-Type: " + Files.probeContentType(archivoImagen.toPath())).append(LINE_FEED);
+                writer.append(LINE_FEED).flush();
+
+                Files.copy(archivoImagen.toPath(), outputStream);
+                outputStream.flush();
+                writer.append(LINE_FEED).flush();
+            }
+
+            // Finalizar petición
+            writer.append("--" + boundary + "--").append(LINE_FEED).flush();
+            writer.close();
+
+            int responseCode = conn.getResponseCode();
+            return (responseCode == HttpURLConnection.HTTP_OK);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    private void addFormField(PrintWriter writer, OutputStream os, String name, String value, String boundary, String lineFeed) {
+        if (value == null) value = "";
+        writer.append("--" + boundary).append(lineFeed);
+        writer.append("Content-Disposition: form-data; name=\"" + name + "\"").append(lineFeed);
+        writer.append("Content-Type: text/plain; charset=UTF-8").append(lineFeed);
+        writer.append(lineFeed);
+        writer.append(value).append(lineFeed).flush();
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> boxTipoBusqueda;
@@ -565,6 +677,7 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
     private javax.swing.JButton buttonChooser;
     private javax.swing.JComboBox<String> comboInstituto;
     private javax.swing.JTextField fieldBusqueda;
+    private javax.swing.JTextField fieldFecha;
     private javax.swing.JTextField fieldPath;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -574,7 +687,6 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel labelCorreo;
@@ -582,8 +694,6 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblInstituto;
     private javax.swing.JLabel lblTipo;
     private javax.swing.JPanel panelEdicion;
-    private javax.swing.JPasswordField passwordField;
-    private javax.swing.JSpinner spinnerFecha;
     private javax.swing.JTable tableUsuarios;
     private javax.swing.JTextField txtApellido;
     private javax.swing.JTextField txtNombre;

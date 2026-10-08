@@ -1,24 +1,17 @@
 package Logica.Servlets;
 
-import Logica.DTsClasses.DTMaster;
 import Logica.DTsClasses.DTUsuarioBase;
-import Logica.DTsClasses.EnumDT;
 import Logica.Logica.Fabric;
 import Logica.Logica.IController;
+import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
 
-/**
- * ED-16 / ED-17 – Consulta de Usuario
- * Compatible con la interfaz Web (JSP) y cliente Swing.
- */
-@WebServlet(name = "ConsultaUsuarioServlet", urlPatterns = {"/ConsultaUsuarioServlet"})
-public class ConsultaUsuarioServlet extends HttpServlet {
+@WebServlet(name = "ConsultaUsuarioIndividualServlet", urlPatterns = {"/ConsultaUsuarioIndividualServlet"})
+public class ConsultaUsuarioIndividualServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -27,11 +20,6 @@ public class ConsultaUsuarioServlet extends HttpServlet {
         IController control = Fabric.GetInstance().GetIController();
         boolean isJavaClient = request.getHeader("User-Agent") != null && request.getHeader("User-Agent").contains("Java");
 
-        // 1. Cargar la lista completa de usuarios para el selector Web
-        List<DTMaster> usuarios = control.ListarClase(EnumDT.DT_USUARIO);
-        request.setAttribute("usuarios", usuarios);
-
-        // 2. Obtener parámetro de consulta
         String nickname = request.getParameter("nickname");
 
         if (nickname != null && !nickname.isBlank()) {
@@ -46,15 +34,20 @@ public class ConsultaUsuarioServlet extends HttpServlet {
             } else {
                 request.setAttribute("usuarioConsultado", usuario);
             }
+        } else {
+            if (isJavaClient) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parámetro nickname requerido.");
+                return;
+            }
+            request.setAttribute("error", "No se especificó un nickname para consultar.");
         }
 
-        // 3. Responder según el cliente
         if (isJavaClient) {
             response.setStatus(HttpServletResponse.SC_OK);
             return;
         }
 
-        request.getRequestDispatcher("InterfacesJSP/ConsultaUsuario.jsp").forward(request, response);
+        request.getRequestDispatcher("InterfacesJSP/ConsultaUsuarioIndividual.jsp").forward(request, response);
     }
 
     @Override

@@ -155,70 +155,105 @@ public class ManejadorEdicionCurso {
         }
     }
     
-    public List<EdicionCurso> getList(){
+    public List<EdicionCurso> getList() {
         List<EdicionCurso> auxListEdi = new ArrayList<>();
         EntityManager em = JPAUtil.getEntityManager();
         try {
-            TypedQuery<EdicionCurso> query = em.createQuery("SELECT e FROM EdicionCurso e", EdicionCurso.class);
+            // Carga explicita de la entidad Curso asociada a cada EdicionCurso
+            TypedQuery<EdicionCurso> query = em.createQuery(
+                "SELECT DISTINCT e FROM EdicionCurso e LEFT JOIN FETCH e.miCurso", 
+                EdicionCurso.class
+            );
             auxListEdi = query.getResultList();
+
+            // Forzamos la resolucion de colecciones dentro de la conexion abierta
+            for (EdicionCurso ec : auxListEdi) {
+                if (ec.getCurso() != null && ec.getCurso().getCategorias() != null) {
+                    ec.getCurso().getCategorias().size();
+                }
+                if (ec.getMisDocentes() != null) {
+                    ec.getMisDocentes().size();
+                }
+                if (ec.getMisInscripciones() != null) {
+                    ec.getMisInscripciones().size();
+                }
+            }
         } catch (Exception e) {
             System.err.println("Error al cargar las ediciones desde la BD: " + e.getMessage());
             auxListEdi = new ArrayList<>();
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
         return auxListEdi;
     }
     
     
-    public DTEdicionCurso getDT(EdicionCurso ec){
-        DTEdicionCurso auxDT;
+    public DTEdicionCurso getDT(EdicionCurso ec) {
+        if (ec == null) return null;
+
         String ins = (ec.getInstituto() != null) ? ec.getInstituto().getNombre() : "";
         String cur = (ec.getCurso() != null) ? ec.getCurso().getNombre() : "";
-        
+
         List<Docente> auxUsuarios = ec.getMisDocentes();
         List<String> auxDocentes = new ArrayList<>();
         if (auxUsuarios != null) {
-            for(int i = 0; i < auxUsuarios.size(); i++){
-                UsuarioBase ub = auxUsuarios.get(i);
-                if(ub instanceof Docente d){
+            for (Docente d : auxUsuarios) {
+                if (d != null) {
                     auxDocentes.add(d.getNickname());
                 }
             }
         }
+
         List<Edi_Usu> auxEdiUsu = ec.getMisInscripciones();
         List<DTEdi_Usu> auxDTEdiUsu = new ArrayList<>();
-        if(auxEdiUsu!=null){
-            for(int i = 0; i < auxEdiUsu.size(); i++){
-                Edi_Usu eu = auxEdiUsu.get(i);
-                auxDTEdiUsu.add((DTEdi_Usu) eu.getMyDT());
-            }
-        }
-        List<Categoria> auxCat = ec.getCurso().getCategorias();
-        List<String> auxCatStr = new ArrayList<>();
-        if (auxCat != null) {
-            for(int i = 0; i < auxCat.size(); i++){
-                Categoria c = auxCat.get(i);
-                auxCatStr.add(c.getNombre());
-            }
-        }
-        auxDT = new DTEdicionCurso(ins, cur, ec.getNombre(), ec.getFInicio(), ec.getFFin(), ec.getCupo(), ec.getCupoActual(), auxDocentes, ec.getFAlta(),auxDTEdiUsu, auxCatStr);
-        return auxDT;
-    }
-    
-    public List<DTMaster> getDTLIst(String curso){
-        List<EdicionCurso> auxListEdi = getList();
-        List<DTMaster> auxList = new ArrayList<>();
-        if(auxListEdi!=null){
-            for(int i = 0; i < auxListEdi.size(); i++){
-                EdicionCurso ec = auxListEdi.get(i);
-                if(ec.getCurso() != null && ec.getCurso().getNombre().equals(curso)){
-                    DTMaster dt = getDT(ec);
-                    auxList.add(dt);
+        if (auxEdiUsu != null) {
+            for (Edi_Usu eu : auxEdiUsu) {
+                if (eu != null) {
+                    auxDTEdiUsu.add((DTEdi_Usu) eu.getMyDT());
                 }
             }
         }
-        
+
+        List<String> auxCatStr = new ArrayList<>();
+        if (ec.getCurso() != null && ec.getCurso().getCategorias() != null) {
+            for (Categoria c : ec.getCurso().getCategorias()) {
+                if (c != null) {
+                    auxCatStr.add(c.getNombre());
+                }
+            }
+        }
+
+        return new DTEdicionCurso(
+            ins, cur, ec.getNombre(), ec.getFInicio(), ec.getFFin(), 
+            ec.getCupo(), ec.getCupoActual(), auxDocentes, ec.getFAlta(), 
+            auxDTEdiUsu, auxCatStr
+        );
+    }
+    
+    public List<DTMaster> getDTLIst(String curso) {
+        List<DTMaster> auxList = new ArrayList<>();
+
+        if (curso == null || curso.isBlank()) {
+            return auxList;
+        }
+
+        String cursoLimpio = curso.trim();
+        List<EdicionCurso> edicionesTodas = getList();
+
+        if (edicionesTodas != null) {
+            for (EdicionCurso ec : edicionesTodas) {
+                if (ec != null && ec.getCurso() != null && ec.getCurso().getNombre() != null) {
+                    // Normaliza espacios y mayúsculas para evitar falsos negativos
+                    if (ec.getCurso().getNombre().trim().equalsIgnoreCase(cursoLimpio)) {
+                        DTMaster dt = getDT(ec);
+                        auxList.add(dt);
+                    }
+                }
+            }
+        }
+
         return auxList;
     }
     

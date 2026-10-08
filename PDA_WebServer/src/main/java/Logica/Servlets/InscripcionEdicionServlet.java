@@ -64,7 +64,7 @@ public class InscripcionEdicionServlet extends HttpServlet {
         }
 
         try {
-            control.InscripcionAEdicionCurso(curso.trim(), usuario.getNickname(), new Date());
+            control.InscripcionAEdicionCurso(edicion.trim(), usuario.getNickname(), new Date());
             request.setAttribute("exito", "Inscripción al curso '" + curso + "' registrada correctamente.");
         } catch (Exception e) {
             request.setAttribute("error", "Error al inscribirse: " + e.getMessage());

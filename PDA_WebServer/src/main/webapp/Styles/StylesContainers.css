@@ -9,3 +9,24 @@
     padding-right: 2.75rem !important; /* Mantiene solo el espacio necesario para el botón del ojo */
 }
 
+.navbar-search-form {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    margin: 0 auto;
+}
+
+.navbar-search-form input[type="search"] {
+    display: inline-block !important;
+    width: 350px !important;
+    margin-right: 8px !important;
+    margin-bottom: 0 !important; /* Anula margenes inferiores globales de inputs */
+}
+
+.navbar-search-form button {
+    display: inline-block !important;
+    white-space: nowrap !important;
+    margin: 0 !important; /* Anula margenes globales que fuerzan saltos de línea */
+}
+
+

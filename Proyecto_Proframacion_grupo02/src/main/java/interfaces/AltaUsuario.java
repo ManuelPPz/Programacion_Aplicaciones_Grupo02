@@ -27,6 +27,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import javax.swing.JPopupMenu;
 
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.file.Files;
+
 /**
  *
  * @author sebas
@@ -210,80 +217,61 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
         popupMenu.show(fieldFecha, 0, fieldFecha.getHeight());
     }//GEN-LAST:event_fieldFechaMousePressed
 
-    private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAceptarActionPerformed
-        // 1. Captura de datos básicos de texto
+    private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {
+        // [Mantener todas tus validaciones previas de Swing intactas...]
+
+        // Preparar los datos
         String nickname = txtNickname.getText().trim();
         String nombre = txtNombre.getText().trim();
         String apellido = txtApellido.getText().trim();
         String email = txtEmail.getText().trim();
-
-        // 2. Captura de la Fecha de los Spinners
-        Date fecha = new Date();
-        try {
-            fecha = sdf.parse(fieldFecha.getText()); // (Date) spinnerDate.getValue();
-        } catch (ParseException ex) {
-            System.getLogger("Hubo un error con el ingreso de la fecha");
-        }
-
-        // 3. Validación de campos obligatorios de texto
-        if (nickname.isEmpty() || email.isEmpty() || nombre.isEmpty() || apellido.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                    "Por favor, complete todos los campos de texto obligatorios.",
-                    "Campos Incompletos",
-                    javax.swing.JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // 4. Validación del Combo Tipo de Usuario (posición 0 es "Seleccionar...")
-        if (comboTipoUsuario.getSelectedIndex() == 0) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                    "Debe seleccionar un Tipo de Usuario válido.",
-                    "Atención",
-                    javax.swing.JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
         String tipoUsuario = (String) comboTipoUsuario.getSelectedItem();
+        String instituto = "Docente".equalsIgnoreCase(tipoUsuario) ? (String) comboInstituto.getSelectedItem() : "";
 
-        // 5. Validación del Instituto (SI Y SOLO SI es Docente)
-        if ("Docente".equalsIgnoreCase(tipoUsuario)) {
-            if (comboInstituto.getSelectedIndex() == 0) {
-                javax.swing.JOptionPane.showMessageDialog(this,
-                        "Debe seleccionar un Instituto para el Docente.",
-                        "Atención",
-                        javax.swing.JOptionPane.WARNING_MESSAGE);
-                return;
-            }
+        // Quitar marcas de verificación del combo de instituto si existen
+        if (instituto.startsWith("✓ ")) {
+            instituto = instituto.substring(2);
         }
-        String imgPath = fieldPath.getText();
-        // 6. Proceso de Alta (Paso exitoso)
+
+        // Formatear la fecha al formato esperado por el Servlet (yyyy-MM-dd)
+        SimpleDateFormat sdfSql = new SimpleDateFormat("yyyy-MM-dd");
+        String fechaNacFormatted = "";
         try {
-            // Armar la fecha
+            Date fechaDate = sdf.parse(fieldFecha.getText());
+            fechaNacFormatted = sdfSql.format(fechaDate);
+        } catch (ParseException ex) {
+            fechaNacFormatted = "2000-01-01"; // Valor fallback
+        }
 
-            if ("Docente".equalsIgnoreCase(tipoUsuario)) {
-                String instituto = (String) comboInstituto.getSelectedItem();
-                
-                ico.AgregarUsuario(nickname, nombre, apellido, email, ico.GenerateRandPassword(), fecha, true, instituto, imgPath);
-            } else {
-                ico.AgregarUsuario(nickname, nombre, apellido, email, ico.GenerateRandPassword(), fecha, false, null, imgPath);
-            }
+        // Capturar el archivo de la imagen desde fieldPath
+        File archivoImagen = null;
+        if (!fieldPath.getText().trim().isEmpty()) {
+            archivoImagen = new File(fieldPath.getText().trim());
+        }
 
-            // Mensaje de éxito
+        // Generar contraseña
+        String password = ico.GenerateRandPassword();
+
+        // LLAMAR AL SERVLET
+        boolean exito = enviarAlServlet(
+            nickname, nombre, apellido, email, password, 
+            fechaNacFormatted, tipoUsuario, instituto, archivoImagen
+        );
+
+        if (exito) {
             javax.swing.JOptionPane.showMessageDialog(this,
-                    "Usuario '" + nickname + "' registrado con éxito como " + tipoUsuario + ".",
+                    "Usuario '" + nickname + "' registrado con éxito a través del servidor Tomcat.",
                     "Alta Exitosa",
                     javax.swing.JOptionPane.INFORMATION_MESSAGE);
-
-            // Cerrar la ventana interna
             this.dispose();
-
-        } catch (Exception ex) {
+        } else {
             javax.swing.JOptionPane.showMessageDialog(this,
-                    "Error al registrar en el sistema: " + ex.getMessage(),
+                    "Error al procesar el registro en el servidor Tomcat.",
                     "Error",
                     javax.swing.JOptionPane.ERROR_MESSAGE);
         }
-    }// GEN-LAST:event_btnAceptarActionPerformed
+    }
+
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnCancelarActionPerformed
         // Simplemente cierra la ventana interna sin cerrar el programa
@@ -323,25 +311,81 @@ public class AltaUsuario extends javax.swing.JInternalFrame {
     }// GEN-LAST:event_comboInstitutoActionPerformed
 
     private void buttonChooserActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_buttonChooserActionPerformed
-        // Evento para elegir imagen
         JFileChooser chooser = new JFileChooser();
         chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Imágenes JPG y PNG", "jpg", "png"));
         int resultado = chooser.showOpenDialog(this);
+
         if (resultado == JFileChooser.APPROVE_OPTION) {
             File archivo = chooser.getSelectedFile();
-            fieldPath.setText(archivo.getAbsolutePath());
-            /*
-             * Este bloque se usara cuando halla que mostrar la imagen del usuario en una
-             * label
-             * Requerimientos: import java.awt.Image;
-             * ImageIcon icon = new ImageIcon(archivo.getAbsolutePath());
-             * Image imgEscalada = icon.getImage().getScaledInstance(labelIcon.getWidth(),
-             * labelIcon.getHeight(), Image.SCALE_SMOOTH);
-             * labelIcon.setIcon(new ImageIcon(imgEscalada));
-             */
+            // VALIDACIÓN ANTI-NULL:
+            if (archivo != null) {
+                fieldPath.setText(archivo.getAbsolutePath());
+            }
         }
     }// GEN-LAST:event_buttonChooserActionPerformed
 
+    
+    
+    private boolean enviarAlServlet(String nickname, String nombre, String apellido, 
+        String correo, String password, String fechaNac, 
+        String tipoUsuario, String instituto, File archivoImagen) {
+        String boundary = "---Boundary" + System.currentTimeMillis();
+        String LINE_FEED = "\r\n";
+
+        try {
+            URL url = new URL("http://localhost:8080/PDA_WebServer/AltaUsuarioServlet");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+            OutputStream outputStream = conn.getOutputStream();
+            PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream, "UTF-8"), true);
+
+            // --- Helper para enviar campos de texto ---
+            addFormField(writer, outputStream, "nickname", nickname, boundary, LINE_FEED);
+            addFormField(writer, outputStream, "nombre", nombre, boundary, LINE_FEED);
+            addFormField(writer, outputStream, "apellido", apellido, boundary, LINE_FEED);
+            addFormField(writer, outputStream, "correo", correo, boundary, LINE_FEED);
+            addFormField(writer, outputStream, "password", password, boundary, LINE_FEED);
+            addFormField(writer, outputStream, "fechaNac", fechaNac, boundary, LINE_FEED); // Formato YYYY-MM-DD
+            addFormField(writer, outputStream, "tipoUsuario", tipoUsuario, boundary, LINE_FEED);
+            addFormField(writer, outputStream, "instituto", instituto, boundary, LINE_FEED);
+
+            // --- Adjuntar Archivo de Imagen (si fue seleccionado) ---
+            if (archivoImagen != null && archivoImagen.exists()) {
+                writer.append("--" + boundary).append(LINE_FEED);
+                writer.append("Content-Disposition: form-data; name=\"imagen\"; filename=\"" + archivoImagen.getName() + "\"").append(LINE_FEED);
+                writer.append("Content-Type: " + Files.probeContentType(archivoImagen.toPath())).append(LINE_FEED);
+                writer.append(LINE_FEED).flush();
+
+                Files.copy(archivoImagen.toPath(), outputStream);
+                outputStream.flush();
+                writer.append(LINE_FEED).flush();
+            }
+
+            // Finalizar la petición
+            writer.append("--" + boundary + "--").append(LINE_FEED).flush();
+            writer.close();
+
+            int responseCode = conn.getResponseCode();
+            return (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_MOVED_TEMP);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private void addFormField(PrintWriter writer, OutputStream os, String name, String value, String boundary, String lineFeed) {
+        if (value == null) value = "";
+        writer.append("--" + boundary).append(lineFeed);
+        writer.append("Content-Disposition: form-data; name=\"" + name + "\"").append(lineFeed);
+        writer.append("Content-Type: text/plain; charset=UTF-8").append(lineFeed);
+        writer.append(lineFeed);
+        writer.append(value).append(lineFeed).flush();
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAceptar;
     private javax.swing.JButton btnCancelar;

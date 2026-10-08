@@ -91,12 +91,12 @@
                 <div class="row">
                     <div class="col-6">
                         <div class="mb-3 text-center">
-                            <p class="mb-2"><a class="link-offset-2 link-underline link-underline-opacity-0" href="MainMenu">Ingresar como visitante</a></p>
+                            <p class="mb-2"><a class="link-offset-2 link-underline link-underline-opacity-0" href="MainMenu?action=ingVisitante">Ingresar como visitante</a></p>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="mb-3 text-center">
-                            <p class="mb-2"><a class="link-offset-2 link-underline link-underline-opacity-0" href="#">Crear una cuenta</a></p>
+                            <p class="mb-2"><a class="link-offset-2 link-underline link-underline-opacity-0" href="AltaUsuarioServlet">Crear una cuenta</a></p>
                         </div>
                     </div>
                 </div>
