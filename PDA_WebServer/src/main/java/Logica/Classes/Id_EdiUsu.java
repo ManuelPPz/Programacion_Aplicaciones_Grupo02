@@ -1,34 +1,40 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Logica.Classes;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
-/**
- *
- * @author mateo
- */
 @Embeddable
 public class Id_EdiUsu implements Serializable {
 
-    @ManyToOne
-    private Usuario miUsuario;
-    @ManyToOne
-    private EdicionCurso miEdicion;
-    public Usuario getUsuario() {
-        return miUsuario;
+    @Column(name = "usuario_nickname")
+    private String miUsuarioNickname;
+
+    @Column(name = "edicion_nombre")
+    private String miEdicionNombre;
+
+    public Id_EdiUsu() {}
+
+    public Id_EdiUsu(String miUsuarioNickname, String miEdicionNombre) {
+        this.miUsuarioNickname = miUsuarioNickname;
+        this.miEdicionNombre = miEdicionNombre;
     }
-    public EdicionCurso getEdicion(){
-        return miEdicion;
+
+    public String getMiUsuarioNickname() {
+        return miUsuarioNickname;
     }
-    public Id_EdiUsu(){}
-    public Id_EdiUsu(Usuario ub, EdicionCurso ec){
-        this.miUsuario = ub;
-        this.miEdicion = ec;
+
+    public void setMiUsuarioNickname(String miUsuarioNickname) {
+        this.miUsuarioNickname = miUsuarioNickname;
+    }
+
+    public String getMiEdicionNombre() {
+        return miEdicionNombre;
+    }
+
+    public void setMiEdicionNombre(String miEdicionNombre) {
+        this.miEdicionNombre = miEdicionNombre;
     }
 
     @Override
@@ -36,13 +42,12 @@ public class Id_EdiUsu implements Serializable {
         if (this == o) return true;
         if (!(o instanceof Id_EdiUsu)) return false;
         Id_EdiUsu that = (Id_EdiUsu) o;
-        return Objects.equals(miUsuario, that.miUsuario) &&
-               Objects.equals(miEdicion, that.miEdicion);
+        return Objects.equals(miUsuarioNickname, that.miUsuarioNickname) &&
+               Objects.equals(miEdicionNombre, that.miEdicionNombre);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(miUsuario, miEdicion);
+        return Objects.hash(miUsuarioNickname, miEdicionNombre);
     }
-    
 }

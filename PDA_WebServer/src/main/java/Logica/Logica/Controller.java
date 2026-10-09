@@ -223,18 +223,22 @@ public class Controller implements IController{
         return null; 
     }
     
-    //Inscripcion a Edicion Curso
+    // Inscripcion a Edicion Curso
     @Override
-    public void InscripcionAEdicionCurso(String nomCurso, String nickname, Date fIns){
-        Usuario u = (Usuario)manUsuario.BuscarUsuario(nickname);
-        EdicionCurso ec = manEdicion.BuscarEdicion(nomCurso);
-        Id_EdiUsu ieu = new Id_EdiUsu(u, ec);
-        Edi_Usu eu = new Edi_Usu(ieu, fIns);
+    public void InscripcionAEdicionCurso(String nomEdicion, String nickname, Date fIns) {
+        Usuario u = (Usuario) manUsuario.BuscarUsuario(nickname);
+        EdicionCurso ec = manEdicion.BuscarEdicion(nomEdicion);
 
-        manUsuario.InscribirUsuarioAEdicion(eu);
+        if (u == null || ec == null) {
+            System.err.println("Error: Usuario o Edición de Curso no encontrados.");
+            return;
+        }
+
+        Edi_Usu eu = new Edi_Usu(u, ec, fIns);
 
         try {
-            manEdicion.AddUsuarioInscripto(eu); // Linea 220
+            // Guardar la inscripción y sincronizar entidades dentro de la transacción
+            manEdicion.AddUsuarioInscripto(eu);
         } catch (Exception e) {
             System.err.println("Error al agregar usuario inscripto: " + e.getMessage());
             e.printStackTrace();

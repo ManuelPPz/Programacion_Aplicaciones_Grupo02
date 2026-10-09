@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Classes;
 
 import DTsClasses.DTEdi_Usu;
@@ -9,57 +5,78 @@ import DTsClasses.DTMaster;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
+@Table(name = "edi_usu")
 public class Edi_Usu implements Serializable {
 
     @EmbeddedId
     private Id_EdiUsu id;
-    @Column(name="Fecha_inscripcion")
+
+    @ManyToOne
+    @MapsId("miUsuarioNickname") // Se vincula con el campo miUsuarioNickname en Id_EdiUsu
+    @JoinColumn(name = "usuario_nickname")
+    private Usuario usuario;
+
+    @ManyToOne
+    @MapsId("miEdicionNombre") // Se vincula con el campo miEdicionNombre en Id_EdiUsu
+    @JoinColumn(name = "edicion_nombre")
+    private EdicionCurso edicion;
+
+    @Column(name = "Fecha_inscripcion")
+    @Temporal(TemporalType.DATE)
     private Date fInscripcion;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", length = 20)
-    private Enum_Estado_inscripcion estadoIns;
-    
-    
-    public Id_EdiUsu getId() {
-        return id;
-    }
-    public Date getFIns(){
-        return this.fInscripcion;
-    }
-    public Edi_Usu(){}
-    public Edi_Usu(Id_EdiUsu id, Date fIns){
-        this.id = id;
+    private Enum_Estado_inscripcion estadoIns = Enum_Estado_inscripcion.INSCRIPTO;
+
+    public Edi_Usu() {}
+
+    public Edi_Usu(Usuario usuario, EdicionCurso edicion, Date fIns) {
+        this.usuario = usuario;
+        this.edicion = edicion;
         this.fInscripcion = fIns;
+        this.estadoIns = Enum_Estado_inscripcion.INSCRIPTO;
+        // Construimos el ID usando las claves de los objetos
+        this.id = new Id_EdiUsu(
+            usuario != null ? usuario.getNickname() : null,
+            edicion != null ? edicion.getNombre() : null
+        );
     }
-    public Enum_Estado_inscripcion getMiEstado(){return this.estadoIns;}
+
+    public Id_EdiUsu getId() { return id; }
+    public void setId(Id_EdiUsu id) { this.id = id; }
+
+    public Usuario getUsuario() { return usuario; }
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+
+    public EdicionCurso getEdicion() { return edicion; }
+    public void setEdicion(EdicionCurso edicion) { this.edicion = edicion; }
+
+    public Date getFIns() { return this.fInscripcion; }
+    public Enum_Estado_inscripcion getMiEstado() { return this.estadoIns; }
+    public void setEstado(Enum_Estado_inscripcion estado) { this.estadoIns = estado; }
+
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
+        return (id != null ? id.hashCode() : 0);
     }
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Edi_Usu)) {
-            return false;
-        }
+        if (!(object instanceof Edi_Usu)) return false;
         Edi_Usu other = (Edi_Usu) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.id, other.id);
     }
 
-    @Override
-    public String toString() {
-        return "Classes.Edi_Usu[ id=" + id + " ]";
+    public DTMaster getMyDT() {
+        return new DTEdi_Usu(
+            usuario != null ? usuario.getNickname() : "",
+            edicion != null ? edicion.getNombre() : "",
+            fInscripcion,
+            estadoIns
+        );
     }
-    public DTMaster getMyDT(){
-        return new DTEdi_Usu(id.getUsuario().getNickname(),id.getEdicion().getNombre(), fInscripcion,estadoIns);
-    }
-    
 }

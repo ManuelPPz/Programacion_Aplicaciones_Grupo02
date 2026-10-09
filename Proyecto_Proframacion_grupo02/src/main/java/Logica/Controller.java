@@ -69,46 +69,18 @@ public class Controller implements IController{
     
     //Alta Usuario
     @Override
-    public void AgregarUsuario(String nickname, String nombre, String apellido, String correo, String password, Date fechaNac, boolean docente, String instituto, String imgPath) throws Exception {
+    public void AgregarUsuario(String nickname, String nombre, String apellido, String correo, String password, Date fechaNac, boolean docente, String instituto, String imgPath)throws Exception {
         UsuarioBase auxUsuario = null;
-        Instituto auxInstituto = null;
-
-        if (docente && instituto != null && !instituto.isBlank()) {
-            auxInstituto = manInstituto.BuscarInstituto(instituto);
-        }
-
+        Instituto auxInstituto = manInstituto.BuscarInstituto(instituto);
         try {
-            // 1. Crear la entidad del usuario
             auxUsuario = manUsuario.CrearUsuario(nickname, nombre, apellido, correo, password, docente, fechaNac, auxInstituto, imgPath);
-        } catch (Exception ex) {
-            System.err.println(">>> ERROR: No se pudo instanciar el usuario en AgregarUsuario(): " + ex.getMessage());
-            ex.printStackTrace();
-            throw ex; // Relanzar la excepción para evitar continuar con auxUsuario = null
-        }
-
-        if (auxUsuario == null) {
-            throw new Exception("No se pudo crear el objeto usuario.");
-        }
-
-        // 2. Guardar en Base de Datos
-        manUsuario.Add(auxUsuario);
-        System.out.println("CONTROLADOR: Usuario '" + nickname + "' guardado con éxito en la base de datos.");
-
-        // 3. Envío de Correo con manejo de excepciones aislado
-        try {
-            System.out.println("CONTROLADOR: Intentando enviar correo a: " + correo);
-
-            DTUsuarioBase dtUsuario = manUsuario.getDT(auxUsuario);
+            manUsuario.Add(auxUsuario);
             EnviarGmail eg = new EnviarGmail();
-            String mensajeHTML = eg.CuerpoMensajeNuevoUsuario(dtUsuario);
-
-            // Enviar el correo electrónico
-            eg.EnviarAsincrono(correo, "Bienvenido a la plataforma de edEXT", mensajeHTML);
-        } catch (Exception e) {
-            // Capturar error de correo para QUE NO REVIERTA el guardado del usuario
-            System.err.println("ERROR CONTROLADOR: El usuario se guardó pero falló el envío del correo: " + e.getMessage());
-            e.printStackTrace();
+            eg.EnviarAsincrono(correo, "Bienvenido a la plataforma de edEXT", eg.CuerpoMensajeNuevoUsuario(manUsuario.getDT(auxUsuario)));
+        } catch (IOException ex) {
+            System.getLogger("No se pudo crear el usuario(Error en Controller.AgregarUsuario())");
         }
+        
     }
     
     //ConsultaUsuario
@@ -251,18 +223,22 @@ public class Controller implements IController{
         return null; 
     }
     
-    //Inscripcion a Edicion Curso
+    // Inscripcion a Edicion Curso
     @Override
-    public void InscripcionAEdicionCurso(String nomCurso, String nickname, Date fIns){
-        Usuario u = (Usuario)manUsuario.BuscarUsuario(nickname);
-        EdicionCurso ec = manEdicion.BuscarEdicion(nomCurso);
-        Id_EdiUsu ieu = new Id_EdiUsu(u, ec);
-        Edi_Usu eu = new Edi_Usu(ieu, fIns);
+    public void InscripcionAEdicionCurso(String nomEdicion, String nickname, Date fIns) {
+        Usuario u = (Usuario) manUsuario.BuscarUsuario(nickname);
+        EdicionCurso ec = manEdicion.BuscarEdicion(nomEdicion);
 
-        manUsuario.InscribirUsuarioAEdicion(eu);
+        if (u == null || ec == null) {
+            System.err.println("Error: Usuario o Edición de Curso no encontrados.");
+            return;
+        }
+
+        Edi_Usu eu = new Edi_Usu(u, ec, fIns);
 
         try {
-            manEdicion.AddUsuarioInscripto(eu); // Linea 220
+            // Guardar la inscripción y sincronizar entidades dentro de la transacción
+            manEdicion.AddUsuarioInscripto(eu);
         } catch (Exception e) {
             System.err.println("Error al agregar usuario inscripto: " + e.getMessage());
             e.printStackTrace();

@@ -60,17 +60,22 @@ public class ManejadorUsuario {
     }
 
     public void ModificarDatosUsuario(String nick, String nombre, String apellido, String password, boolean docente, Date fNac, Instituto instituto, String imgPath) throws IOException {
-        byte[] imgByte = null;
-        if (imgPath != null && !imgPath.trim().isEmpty()) {
-            imgByte = ConvertirImageIconToByte(imgPath);
-        }
-
+        
         UsuarioBase ub = BuscarUsuario(nick);
         if (ub != null) {
             if (docente && ub instanceof Docente d) {
-                d.ModificarMisDatos(nombre, apellido, password, fNac, imgPath, instituto);
+                if("".equals(password)){
+                    d.ModificarMisDatos(nombre, apellido, d.getPassword(), fNac, imgPath, instituto);
+                }else{
+                    d.ModificarMisDatos(nombre, apellido, password, fNac, imgPath, instituto);
+                }
             } else if (ub instanceof Usuario u) {
-                u.ModificarMisDatos(nombre, apellido, password, fNac, imgPath);
+                if("".equals(password)){
+                    u.ModificarMisDatos(nombre, apellido, u.getPassword(), fNac, imgPath);
+                }else{
+                    u.ModificarMisDatos(nombre, apellido, password, fNac, imgPath);
+                }
+                
             }
 
             // Sincronizar los cambios con JPA
@@ -219,7 +224,7 @@ public class ManejadorUsuario {
             if (usuario.getMisInscripciones() != null) {
                 for (Edi_Usu eu : usuario.getMisInscripciones()) {
                     if (eu != null && eu.getId() != null) {
-                        EdicionCurso ec = eu.getId().getEdicion();
+                        EdicionCurso ec = eu.getEdicion();
                         if (ec != null && ec.getNombre() != null) {
                             auxEdi.add(ec.getNombre());
                         }
@@ -337,8 +342,8 @@ public class ManejadorUsuario {
     }
 
     public void InscribirUsuarioAEdicion(Edi_Usu eu) {
-        if (eu != null && eu.getId() != null && eu.getId().getUsuario() != null) {
-            eu.getId().getUsuario().AddEdicionCurso(eu);
+        if (eu != null && eu.getId() != null && eu.getUsuario() != null) {
+            eu.getUsuario().AddEdicionCurso(eu);
         }
     }
 

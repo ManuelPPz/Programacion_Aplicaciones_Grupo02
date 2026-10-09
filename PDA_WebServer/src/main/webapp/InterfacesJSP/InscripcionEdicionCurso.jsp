@@ -24,82 +24,84 @@
 <html lang="es">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Consulta de Perfil</title>
+        <title>Alta de Curso</title>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css">
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/Styles/StylesContainers.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <script src="${pageContext.request.contextPath}/js/main.js"></script>
     </head>
-    <body>
+    <body class="bg-light">
         <%
             DTMaster dtm = (DTMaster)session.getAttribute("usuarioLogueado");
         %>
-        <div class="container-fluid px-4 mt-3">
-            <%-- BARRA DE NAVEGACIÓN --%>
-            <nav class="navbar bg-body-tertiary px-3 rounded border">
-                <div class="container-fluid d-flex flex-nowrap align-items-center justify-content-between">
 
-                    <!-- Logo -->
-                    <a class="navbar-brand me-3 d-flex align-items-center" href="${pageContext.request.contextPath}/MainMenu">
-                        <img src="<%= request.getContextPath() %>/Images/Logo edEXT sin fondo.png" 
-                             alt="LogoApp" 
-                             width="52" 
-                             height="52" 
-                             class="rounded-circle border">
-                    </a>
+        <%-- BARRA DE NAVEGACIÓN FIJA (sticky-top) --%>
+        <nav class="navbar bg-body-tertiary px-4 border-bottom sticky-top shadow-sm z-3">
+            <div class="container-fluid d-flex flex-nowrap align-items-center justify-content-between">
 
-                    <!-- Buscador -->
-                    <form class="navbar-search-form my-0" role="search">
-                        <input class="form-control" type="search" placeholder="Cursos, Programas" aria-label="Search"/>
-                        <button class="btn btn-outline-success" type="submit">Buscar</button>
-                    </form>
+                <!-- Logo -->
+                <a class="navbar-brand me-3 d-flex align-items-center" href="${pageContext.request.contextPath}/MainMenu">
+                    <img src="<%= request.getContextPath() %>/Images/Logo edEXT sin fondo.png" 
+                         alt="LogoApp" 
+                         width="52" 
+                         height="52" 
+                         class="rounded-circle border">
+                </a>
 
-                    <!-- Perfil / Sesión -->
-                    <%
-                        if (dtm instanceof DTUsuarioBase) {
-                            DTUsuarioBase dtu = (DTUsuarioBase) dtm;
-                            String nombreImagen = dtu.getImg(); 
-                    %>
-                        <div class="d-flex align-items-center ms-3">
-                            <span class="fw-bold me-3 text-nowrap text-dark fs-5"><%=dtu.getNickname()%></span>    
-                            <a class="navbar-brand p-0 m-0 d-flex align-items-center" href="${pageContext.request.contextPath}/ConsultaUsuarioIndividualServlet?nickname=<%= dtu.getNickname() %>">
-                                <% if (nombreImagen != null && !nombreImagen.trim().isEmpty()) { 
-                                       String relPath = "/uploads/perfiles/" + nombreImagen;
-                                       String urlConVersion = versionedUrl(relPath);
-                                %>
-                                    <img src="<%= request.getContextPath() %><%= urlConVersion %>" 
-                                         alt="Perfil" 
-                                         width="52" 
-                                         height="52" 
-                                         class="rounded-circle border">
-                                <% } else { %>
-                                    <img src="<%= request.getContextPath() %>/Images/ImagenUserDefault.png" 
-                                         alt="Perfil" 
-                                         width="52" 
-                                         height="52" 
-                                         class="rounded-circle border">
-                                <% } %>
-                            </a>
-                        </div>
-                    <%
-                        } else {
-                    %>
-                        <div class="d-flex align-items-center ms-3">
-                            <a class="link-opacity-100-hover me-3 text-nowrap" href="IniciarSesionServlet">Iniciar Sesion</a>
-                            <div class="vr text-dark opacity-100 me-3" style="height: 1.5rem; width: 2px;"></div>
-                            <a class="link-opacity-100-hover text-nowrap" href="AltaUsuarioServlet">Registrarse</a>
-                        </div>
-                    <%
-                        }
-                    %>
-                </div>
-            </nav>
-            <hr class="border border-dark border-1 opacity-100 mb-4">
-            
+                <!-- Buscador -->
+                <form class="navbar-search-form my-0 d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Cursos, Programas" aria-label="Search"/>
+                    <button class="btn btn-outline-success" type="submit">Buscar</button>
+                </form>
+
+                <!-- Perfil / Sesión -->
+                <%
+                    if (dtm instanceof DTUsuarioBase) {
+                        DTUsuarioBase dtu = (DTUsuarioBase) dtm;
+                        String nombreImagen = dtu.getImg(); 
+                %>
+                    <div class="d-flex align-items-center ms-3">
+                        <span class="fw-bold me-3 text-nowrap text-dark fs-5"><%=dtu.getNickname()%></span>    
+                        <a class="navbar-brand p-0 m-0 d-flex align-items-center" href="${pageContext.request.contextPath}/ConsultaUsuarioIndividualServlet?nickname=<%= dtu.getNickname() %>">
+                            <% if (nombreImagen != null && !nombreImagen.trim().isEmpty()) { 
+                                   String relPath = "/uploads/perfiles/" + nombreImagen;
+                                   String urlConVersion = versionedUrl(relPath);
+                            %>
+                                <img src="<%= request.getContextPath() %><%= urlConVersion %>" 
+                                     alt="Perfil" 
+                                     width="52" 
+                                     height="52" 
+                                     class="rounded-circle border">
+                            <% } else { %>
+                                <img src="<%= request.getContextPath() %>/Images/ImagenUserDefault.png" 
+                                     alt="Perfil" 
+                                     width="52" 
+                                     height="52" 
+                                     class="rounded-circle border">
+                            <% } %>
+                        </a>
+                    </div>
+                <%
+                    } else {
+                %>
+                    <div class="d-flex align-items-center ms-3">
+                        <a class="link-opacity-100-hover me-3 text-nowrap" href="IniciarSesionServlet">Iniciar Sesion</a>
+                        <div class="vr text-dark opacity-100 me-3" style="height: 1.5rem; width: 2px;"></div>
+                        <a class="link-opacity-100-hover text-nowrap" href="AltaUsuarioServlet">Registrarse</a>
+                    </div>
+                <%
+                    }
+                %>
+            </div>
+        </nav>
+
+        <%-- CONTENIDO PRINCIPAL --%>
+        <div class="container-fluid px-4 mt-4">
             <div class="row">
 
-                <div class="col-md-3 col-lg-2">
-                    <div class="card border-dark w-100">
+                <%-- MENÚ LATERAL IZQUIERDO --%>
+                <div class="col-md-3 col-lg-2 mb-4">
+                    <div class="card border-dark w-100 shadow-sm">
                         <ul class="list-group list-group-flush">
                             <%
                             if (dtm != null) {
@@ -181,16 +183,14 @@
                             <%
                             if (dtm != null) {
                                 if (dtm instanceof DTUsuarioBase) {
-                                    DTUsuarioBase dtu = (DTUsuarioBase) dtm;
                                     %>
                                     <li class="list-group-item text-dark fw-bold text-center fs-5">
-                                        
                                         <a href="#" class="text-dark text-decoration-none d-block">
                                             <img src="<%= request.getContextPath() %>/Images/Exit_Simbol.png" 
                                                 alt="Perfil" 
                                                 width="22" 
                                                 height="22" 
-                                                class="border border-0">
+                                                class="border border-0 me-1">
                                             Salir
                                         </a>
                                     </li>
@@ -202,9 +202,7 @@
                     </div>
                 </div>
 
-                        
-                <!---Columna despues de user interface default de la pagina-->
-    <div class="col-md-9 col-lg-10 ps-md-4 d-flex flex-column align-items-center">
+                <div class="col-md-9 col-lg-10 ps-md-4 d-flex flex-column align-items-center">
 
         <div class="card border-dark shadow-sm p-4 w-100" style="max-width: 550px;">
             <h2 class="text-center fw-bold mb-4 fs-3">Inscripción a Edición de Curso</h2>
@@ -291,7 +289,7 @@
 
             </div>
         </div>
-        
+
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     </body>

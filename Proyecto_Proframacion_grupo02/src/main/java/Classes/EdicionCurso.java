@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Classes;
 
 import Classes.Edi_Usu;
@@ -12,7 +8,6 @@ import java.util.Date;
 import java.util.List;
 
 /**
- *
  * @author mateoa
  */
 @Entity
@@ -20,28 +15,35 @@ import java.util.List;
 public class EdicionCurso implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @Id
     @Column(name="Nombre", unique=true, nullable=false)
     private String nombre;
+
     @ManyToOne
     @JoinColumn(name="Instituto")
     private Instituto miInstituto;
+
     @ManyToOne
     @JoinColumn(name="Curso")
     private Curso miCurso;
+
     @Temporal(TemporalType.DATE) 
     @Column(name="F_Inicio")
     private Date fInicio;
+
     @Temporal(TemporalType.DATE) 
     @Column(name="F_Fin")
     private Date fFin;
+
     @Column(name="Cupo")
     private int cupo;
+
     @Column(name="Cupo_actual")
     private int cupoActual;
 
-    // Se corrige mappedBy apuntando a la propiedad edicion de Edi_Usu
-    @OneToMany(mappedBy = "id.miEdicion", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    // Se corrige mappedBy apuntando a la propiedad "edicion" en Edi_Usu
+    @OneToMany(mappedBy = "edicion", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Edi_Usu> misUsuarios = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -56,18 +58,19 @@ public class EdicionCurso implements Serializable {
     @Column(name = "F_Alta")
     private Date fAlta;
     
-    public String getNombre(){return nombre;}
-    public Instituto getInstituto() {return miInstituto;}
-    public Curso getCurso() {return miCurso;}
-    public Date getFInicio() {return fInicio;}
-    public Date getFFin() {return fFin;}
-    public int getCupo() {return cupo;}
-    public int getCupoActual(){return this.cupoActual;}
-    public List<Docente> getMisDocentes() {return misDocentes;}
-    public Date getFAlta() {return fAlta;}
-    public List<Edi_Usu> getMisInscripciones(){return this.misUsuarios;}
+    public String getNombre(){ return nombre; }
+    public Instituto getInstituto() { return miInstituto; }
+    public Curso getCurso() { return miCurso; }
+    public Date getFInicio() { return fInicio; }
+    public Date getFFin() { return fFin; }
+    public int getCupo() { return cupo; }
+    public List<Docente> getMisDocentes() { return misDocentes; }
+    public Date getFAlta() { return fAlta; }
+    public List<Edi_Usu> getMisInscripciones(){ return this.misUsuarios; }
 
-    public EdicionCurso() { this.misUsuarios = new ArrayList<>();}
+    public EdicionCurso() { 
+        this.misUsuarios = new ArrayList<>();
+    }
     
     public EdicionCurso(String nombre, Instituto miInstituto, Curso miCurso, Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> docentes) {
         this.nombre = nombre;
@@ -100,6 +103,7 @@ public class EdicionCurso implements Serializable {
         }
         misDocentes.add(ub);
     }
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
@@ -113,7 +117,6 @@ public class EdicionCurso implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof EdicionCurso)) {
             return false;
         }
@@ -125,8 +128,15 @@ public class EdicionCurso implements Serializable {
     public String toString() {
         return "Classes.EdicionCurso[ id=" + nombre + " ]";
     }
+
     public void setCupoActual(int nuevoCupo){
-        this.cupoActual=nuevoCupo;
+        this.cupoActual = nuevoCupo;
     }
-    
+    public int getCupoActual() {
+        // Si cupoActual es 0 pero nunca se han registrado inscripciones, se inicializa al cupo máximo
+        if (this.cupoActual == 0 && (this.misUsuarios == null || this.misUsuarios.isEmpty()) && this.cupo > 0) {
+            return this.cupo;
+        }
+        return this.cupoActual;
+    }
 }

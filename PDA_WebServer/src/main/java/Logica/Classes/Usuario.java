@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Logica.Classes;
 
 import Logica.Classes.Edi_Usu;
@@ -20,22 +16,22 @@ import org.hibernate.annotations.FetchMode;
 @PrimaryKeyJoinColumn(name = "nickname")
 public class Usuario extends UsuarioBase {
 
-    @OneToMany(mappedBy = "id.miUsuario", fetch = FetchType.EAGER)
+    // Relación con Edi_Usu (Refactorizada con @MapsId)
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT) 
     private List<Edi_Usu> misInscripciones;
     
+    // Relación con Prog_Usu (Sigue usando la clave compuesta embebida tradicional)
     @OneToMany(mappedBy = "id.miUsuario", fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
     private List<Prog_Usu> misInscripcionesProg;
-    
-    
-    
+
     public Usuario() {
         super();
     }
 
-    public Usuario(String nick, String nombre, String apellido, String correo,String contrasenia, Date fNac, String img) {
-        super(nick, nombre, apellido, correo,contrasenia, fNac, img);
+    public Usuario(String nick, String nombre, String apellido, String correo, String contrasenia, Date fNac, String img) {
+        super(nick, nombre, apellido, correo, contrasenia, fNac, img);
     }
 
     @Override
@@ -49,7 +45,8 @@ public class Usuario extends UsuarioBase {
         }
         misInscripciones.add(ec);
     }
-    public void AddPrograma(Prog_Usu pu){
+
+    public void AddPrograma(Prog_Usu pu) {
         if (misInscripcionesProg == null) {
             misInscripcionesProg = new ArrayList<>();
         }
@@ -63,20 +60,26 @@ public class Usuario extends UsuarioBase {
     public List<Prog_Usu> getMisInscripcionesPro() {
         return this.misInscripcionesProg;
     }
-    
-    
-    public int getCantMisInscripcionesRechazadas(String nomCurso){
+
+    public int getCantMisInscripcionesRechazadas(String nomCurso) {
+        if (misInscripciones == null || nomCurso == null || nomCurso.isBlank()) {
+            return 0;
+        }
+
         int cant = 0;
-        for(Edi_Usu eu : misInscripciones){
-            if(eu.getMiEstado() == Enum_Estado_inscripcion.RECHAZADO){
-                if(nomCurso!=null && nomCurso.equals(eu.getId().getEdicion().getCurso().getNombre())){
-                    cant++;
+        for (Edi_Usu eu : misInscripciones) {
+            if (eu != null && eu.getMiEstado() == Enum_Estado_inscripcion.RECHAZADO) {
+                if (eu.getEdicion() != null 
+                        && eu.getEdicion().getCurso() != null 
+                        && eu.getEdicion().getCurso().getNombre() != null) {
+                    
+                    String nombreCursoInscripcion = eu.getEdicion().getCurso().getNombre().trim();
+                    if (nombreCursoInscripcion.equalsIgnoreCase(nomCurso.trim())) {
+                        cant++;
+                    }
                 }
-               
             }
         }
         return cant;
     }
-    
-    
 }

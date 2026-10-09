@@ -47,6 +47,7 @@ public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
         //Tener lista de usuarios en la plataforma
         List<DTMaster> auxUsuarios = ico.ListarClase(EnumDT.DT_USUARIO);
         if(auxUsuarios!=null){
+            System.out.println("estoy en auxUsuarios");
             auxUsuarios = OrdenarLista(auxUsuarios);           
             IniciarRows(auxUsuarios);
             IniciarTable(EnumDT.DT_USUARIO);
@@ -151,7 +152,7 @@ public class InscripcionEdicionCurso extends javax.swing.JInternalFrame {
                 modelo.addRow(rowsEdiciones.get(i));
             }
         }else if(enumType == EnumDT.DT_USUARIO){
-            if(rowsUsuario!=null){
+            if(rowsUsuario==null){
                 return;
             }
             DefaultTableModel modelo = (DefaultTableModel) tableUsuarios.getModel();

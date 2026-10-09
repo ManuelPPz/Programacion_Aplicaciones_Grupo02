@@ -363,7 +363,7 @@ public class Presentacion extends javax.swing.JFrame {
 
     private void InscripcionEdicionMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InscripcionEdicionMenuItemActionPerformed
         InscripcionEdicionCurso vInscripcionEdicion = new InscripcionEdicionCurso();
-        vInscripcionEdicion.setSize(400,300);
+        vInscripcionEdicion.setSize(400,500);
         jDesktopPane1.add(vInscripcionEdicion);
          java.awt.Dimension desktopSize = jDesktopPane1.getSize();
         java.awt.Dimension frameSize = vInscripcionEdicion.getSize();

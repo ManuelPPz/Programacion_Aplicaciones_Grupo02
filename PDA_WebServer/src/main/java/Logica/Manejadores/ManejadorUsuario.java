@@ -224,7 +224,7 @@ public class ManejadorUsuario {
             if (usuario.getMisInscripciones() != null) {
                 for (Edi_Usu eu : usuario.getMisInscripciones()) {
                     if (eu != null && eu.getId() != null) {
-                        EdicionCurso ec = eu.getId().getEdicion();
+                        EdicionCurso ec = eu.getEdicion();
                         if (ec != null && ec.getNombre() != null) {
                             auxEdi.add(ec.getNombre());
                         }
@@ -342,8 +342,8 @@ public class ManejadorUsuario {
     }
 
     public void InscribirUsuarioAEdicion(Edi_Usu eu) {
-        if (eu != null && eu.getId() != null && eu.getId().getUsuario() != null) {
-            eu.getId().getUsuario().AddEdicionCurso(eu);
+        if (eu != null && eu.getId() != null && eu.getUsuario() != null) {
+            eu.getUsuario().AddEdicionCurso(eu);
         }
     }
 

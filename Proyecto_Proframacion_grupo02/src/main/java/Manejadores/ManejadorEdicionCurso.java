@@ -8,6 +8,7 @@ import Classes.Docente;
 import Classes.UsuarioBase;
 import Classes.Edi_Usu;
 import Classes.Enum_Estado_inscripcion;
+import Classes.Id_EdiUsu;
 import Classes.Usuario;
 import DTsClasses.DTEdi_Usu;
 import java.util.ArrayList;
@@ -17,12 +18,10 @@ import DTsClasses.DTEdicionCurso;
 import DTsClasses.DTMaster;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import util.JPAUtil; // Import de la utilería centralizada
+import util.JPAUtil;
 
 public class ManejadorEdicionCurso {
 
-    
-    //=================Codigo de Singleton=================
     private static ManejadorEdicionCurso instance;    
     public static ManejadorEdicionCurso GetInstance(){
         if(instance == null){
@@ -33,13 +32,9 @@ public class ManejadorEdicionCurso {
     
     private ManejadorEdicionCurso(){  
     }
-    //=======================================================
 
-    
     public EdicionCurso CrearEdicion(Instituto instituto, Curso curso, String nombre, Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> docentes){
-        EdicionCurso returnEdicion;
-        returnEdicion = new EdicionCurso(nombre, instituto, curso, fInicio, fFin, cupo, fAlta,docentes);
-        return returnEdicion;
+        return new EdicionCurso(nombre, instituto, curso, fInicio, fFin, cupo, fAlta, docentes);
     }
     
     public void ModificarDatos(EdicionCurso ec, Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> misUsuarios){
@@ -47,20 +42,19 @@ public class ManejadorEdicionCurso {
             ec.ModificarDatos(fInicio, fFin, cupo, fAlta, misUsuarios);
         }
         
-        // Sincronizar los cambios con JPA
-            EntityManager em = getEntityManager();
-            try {
-                em.getTransaction().begin();
-                em.merge(ec);
-                em.getTransaction().commit();
-            } catch (Exception e) {
-                if (em.getTransaction().isActive()) {
-                    em.getTransaction().rollback();
-                }
-                System.err.println("Error al actualizar curso en BD: " + e.getMessage());
-            } finally {
-                em.close();
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(ec);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
             }
+            System.err.println("Error al actualizar curso en BD: " + e.getMessage());
+        } finally {
+            em.close();
+        }
     }
     
     public void Add(EdicionCurso ec) throws Exception {
@@ -68,7 +62,6 @@ public class ManejadorEdicionCurso {
         try {
             em.getTransaction().begin();
 
-            // 1. Asegurar la relación bidireccional en memoria
             if (ec.getMisDocentes() != null) {
                 for (Docente d : ec.getMisDocentes()) {
                     if (d.getEdiciones() != null && !d.getEdiciones().contains(ec)) {
@@ -77,11 +70,7 @@ public class ManejadorEdicionCurso {
                 }
             }
 
-            // 2. Usar merge(ec) en lugar de persist(ec).
-            // merge() busca los docentes por su ID (nickname), los asocia y genera las inserciones 
-            // en la tabla intermedia "Docente_EdicionCurso" automáticamente.
-            EdicionCurso ecManaged = em.merge(ec);
-
+            em.merge(ec);
             em.getTransaction().commit();
             System.out.println(">>> [DEBUG] Transacción COMMIT ejecutada con éxito.");
         } catch (Exception e) {
@@ -114,32 +103,61 @@ public class ManejadorEdicionCurso {
     }
     
     public void AddUsuarioInscripto(Edi_Usu eu) throws Exception {
-        if (eu == null || eu.getId() == null) {
-            return;
+        if (eu == null || eu.getEdicion() == null || eu.getUsuario() == null) {
+            throw new Exception("La inscripción debe contener un usuario y una edición válidos.");
         }
 
         EntityManager em = JPAUtil.getEntityManager();
         try {
             em.getTransaction().begin();
 
-            // 1. Guardar/Actualizar la entidad de asociación en la BD
-            Edi_Usu euManaged = em.merge(eu);
+            // 1. Obtener entidades limpias y gestionadas en la transacción actual
+            EdicionCurso edicionManaged = em.find(EdicionCurso.class, eu.getEdicion().getNombre());
+            Usuario usuarioManaged = em.find(Usuario.class, eu.getUsuario().getNickname());
 
-            // 2. Sincronizar el modelo en memoria RAM y actualizar el cupo
-            EdicionCurso edicion = eu.getId().getEdicion();
-            if (edicion != null) {
-                // Validar que queden cupos disponibles
-                if (edicion.getCupoActual() <= 0) {
+            if (edicionManaged == null || usuarioManaged == null) {
+                throw new Exception("Usuario o Edición no encontrados en la base de datos.");
+            }
+
+            // 2. Control de cupos
+            // Si el cupo total es mayor a 0, se valida que queden cupos disponibles.
+            // Si cupoActual es 0 pero no hay inscripciones previas, se inicializa al cupo máximo.
+            int cupoMaximo = edicionManaged.getCupo();
+            int cupoActual = edicionManaged.getCupoActual();
+
+            if (cupoMaximo > 0) {
+                if (cupoActual == 0 && (edicionManaged.getMisInscripciones() == null || edicionManaged.getMisInscripciones().isEmpty())) {
+                    cupoActual = cupoMaximo;
+                    edicionManaged.setCupoActual(cupoActual);
+                }
+
+                if (cupoActual <= 0) {
                     throw new Exception("No hay cupos disponibles para esta edición.");
                 }
-                edicion.setCupoActual(edicion.getCupoActual() - 1);
-
-                // Actualizar la entidad EdicionCurso en la base de datos
-                em.merge(edicion);
-
-                // Sincronizar en memoria RAM
-                edicion.AddUsuarioInscripto(euManaged);
             }
+
+            // 3. Verificar si ya existe la inscripción
+            Id_EdiUsu idCompuesto = new Id_EdiUsu(usuarioManaged.getNickname(), edicionManaged.getNombre());
+            Edi_Usu euExistente = em.find(Edi_Usu.class, idCompuesto);
+            if (euExistente != null) {
+                throw new Exception("El usuario ya se encuentra inscripto a esta edición.");
+            }
+
+            // 4. Instanciar la nueva entidad a guardar usando el constructor completo
+            // Copia la fecha fInscripcion recibida en 'eu'
+            Date fechaInscripcion = (eu.getFIns() != null) ? eu.getFIns() : new Date();
+            Edi_Usu nuevaInscripcion = new Edi_Usu(usuarioManaged, edicionManaged, fechaInscripcion);
+            nuevaInscripcion.setEstado(eu.getMiEstado());
+
+            // 5. Persistir en la BD
+            em.persist(nuevaInscripcion);
+
+            // 6. Actualizar cupo y colecciones en memoria activa dentro de la transacción
+            if (cupoMaximo > 0) {
+                edicionManaged.setCupoActual(cupoActual - 1);
+            }
+            edicionManaged.AddUsuarioInscripto(nuevaInscripcion);
+            usuarioManaged.AddEdicionCurso(nuevaInscripcion);
 
             em.getTransaction().commit();
             System.out.println(">>> [DEBUG] Inscripción registrada y cupo actualizado con éxito.");
@@ -151,74 +169,107 @@ public class ManejadorEdicionCurso {
             e.printStackTrace();
             throw new Exception("Error al guardar la inscripción: " + e.getMessage());
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
     }
     
-    public List<EdicionCurso> getList(){
+    public List<EdicionCurso> getList() {
         List<EdicionCurso> auxListEdi = new ArrayList<>();
         EntityManager em = JPAUtil.getEntityManager();
         try {
-            TypedQuery<EdicionCurso> query = em.createQuery("SELECT e FROM EdicionCurso e", EdicionCurso.class);
+            TypedQuery<EdicionCurso> query = em.createQuery(
+                "SELECT DISTINCT e FROM EdicionCurso e LEFT JOIN FETCH e.miCurso", 
+                EdicionCurso.class
+            );
             auxListEdi = query.getResultList();
+
+            for (EdicionCurso ec : auxListEdi) {
+                if (ec.getCurso() != null && ec.getCurso().getCategorias() != null) {
+                    ec.getCurso().getCategorias().size();
+                }
+                if (ec.getMisDocentes() != null) {
+                    ec.getMisDocentes().size();
+                }
+                if (ec.getMisInscripciones() != null) {
+                    ec.getMisInscripciones().size();
+                }
+            }
         } catch (Exception e) {
             System.err.println("Error al cargar las ediciones desde la BD: " + e.getMessage());
             auxListEdi = new ArrayList<>();
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
         return auxListEdi;
     }
     
-    
-    public DTEdicionCurso getDT(EdicionCurso ec){
-        DTEdicionCurso auxDT;
+    public DTEdicionCurso getDT(EdicionCurso ec) {
+        if (ec == null) return null;
+
         String ins = (ec.getInstituto() != null) ? ec.getInstituto().getNombre() : "";
         String cur = (ec.getCurso() != null) ? ec.getCurso().getNombre() : "";
-        
+
         List<Docente> auxUsuarios = ec.getMisDocentes();
         List<String> auxDocentes = new ArrayList<>();
         if (auxUsuarios != null) {
-            for(int i = 0; i < auxUsuarios.size(); i++){
-                UsuarioBase ub = auxUsuarios.get(i);
-                if(ub instanceof Docente d){
+            for (Docente d : auxUsuarios) {
+                if (d != null) {
                     auxDocentes.add(d.getNickname());
                 }
             }
         }
+
         List<Edi_Usu> auxEdiUsu = ec.getMisInscripciones();
         List<DTEdi_Usu> auxDTEdiUsu = new ArrayList<>();
-        if(auxEdiUsu!=null){
-            for(int i = 0; i < auxEdiUsu.size(); i++){
-                Edi_Usu eu = auxEdiUsu.get(i);
-                auxDTEdiUsu.add((DTEdi_Usu) eu.getMyDT());
-            }
-        }
-        List<Categoria> auxCat = ec.getCurso().getCategorias();
-        List<String> auxCatStr = new ArrayList<>();
-        if (auxCat != null) {
-            for(int i = 0; i < auxCat.size(); i++){
-                Categoria c = auxCat.get(i);
-                auxCatStr.add(c.getNombre());
-            }
-        }
-        auxDT = new DTEdicionCurso(ins, cur, ec.getNombre(), ec.getFInicio(), ec.getFFin(), ec.getCupo(), ec.getCupoActual(), auxDocentes, ec.getFAlta(),auxDTEdiUsu, auxCatStr);
-        return auxDT;
-    }
-    
-    public List<DTMaster> getDTLIst(String curso){
-        List<EdicionCurso> auxListEdi = getList();
-        List<DTMaster> auxList = new ArrayList<>();
-        if(auxListEdi!=null){
-            for(int i = 0; i < auxListEdi.size(); i++){
-                EdicionCurso ec = auxListEdi.get(i);
-                if(ec.getCurso() != null && ec.getCurso().getNombre().equals(curso)){
-                    DTMaster dt = getDT(ec);
-                    auxList.add(dt);
+        if (auxEdiUsu != null) {
+            for (Edi_Usu eu : auxEdiUsu) {
+                if (eu != null) {
+                    auxDTEdiUsu.add((DTEdi_Usu) eu.getMyDT());
                 }
             }
         }
-        
+
+        List<String> auxCatStr = new ArrayList<>();
+        if (ec.getCurso() != null && ec.getCurso().getCategorias() != null) {
+            for (Categoria c : ec.getCurso().getCategorias()) {
+                if (c != null) {
+                    auxCatStr.add(c.getNombre());
+                }
+            }
+        }
+
+        return new DTEdicionCurso(
+            ins, cur, ec.getNombre(), ec.getFInicio(), ec.getFFin(), 
+            ec.getCupo(), ec.getCupoActual(), auxDocentes, ec.getFAlta(), 
+            auxDTEdiUsu, auxCatStr
+        );
+    }
+    
+    public List<DTMaster> getDTLIst(String curso) {
+        List<DTMaster> auxList = new ArrayList<>();
+
+        if (curso == null || curso.isBlank()) {
+            return auxList;
+        }
+
+        String cursoLimpio = curso.trim();
+        List<EdicionCurso> edicionesTodas = getList();
+
+        if (edicionesTodas != null) {
+            for (EdicionCurso ec : edicionesTodas) {
+                if (ec != null && ec.getCurso() != null && ec.getCurso().getNombre() != null) {
+                    if (ec.getCurso().getNombre().trim().equalsIgnoreCase(cursoLimpio)) {
+                        DTMaster dt = getDT(ec);
+                        auxList.add(dt);
+                    }
+                }
+            }
+        }
+
         return auxList;
     }
     
@@ -228,8 +279,8 @@ public class ManejadorEdicionCurso {
     
     public List<DTMaster> OrdenarInscripcionesPorPrioridad(List<Edi_Usu> eu, Curso c){      
         List<Edi_Usu> auxEuList = eu;
-        auxEuList = OrdenarListaPrioritaria(auxEuList,c.getNombre());
-        if(auxEuList!=null){
+        auxEuList = OrdenarListaPrioritaria(auxEuList, c.getNombre());
+        if(auxEuList != null){
             List<DTMaster> auxDt = new ArrayList<>();
             for(Edi_Usu auxEu : auxEuList){
                 auxDt.add(auxEu.getMyDT());
@@ -243,32 +294,37 @@ public class ManejadorEdicionCurso {
         return eu.getMisInscripciones();
     }
     
-    private List<Edi_Usu> OrdenarListaPrioritaria(List<Edi_Usu> listaParam, String curso){
-        List<Edi_Usu> auxList = listaParam;
-        for(int i = 0;i<auxList.size()-1;i++){
-            for(int j = 0;j<auxList.size()-1;j++){
-                Edi_Usu aux = auxList.get(j);
-                Edi_Usu auxJMas = auxList.get(j+1);
-                
-                int rankAux = (int) (aux.getId().getUsuario().getCantMisInscripcionesRechazadas(curso)*0.5);
-                int rankJMas = (int) (auxJMas.getId().getUsuario().getCantMisInscripcionesRechazadas(curso)*0.5);
-                
-                //En caso de que la lista no muestre los datos de la manera correcta dar vuelta las consultas de los if(si funciona borrar este comentario)
-                if(rankAux < rankJMas){
-                    Edi_Usu temp = aux;
-                    auxList.set(j, auxList.get(j+1));
-                    auxList.set(j+1,temp);
-                }else {
-                    if(rankAux==rankJMas){
-                        if(aux.getFIns().before(auxJMas.getFIns())){
-                            Edi_Usu temp = aux;
-                            auxList.set(j, auxList.get(j+1));
-                            auxList.set(j+1,temp);
-                        }
-                    }
-                }
-            }
+    private List<Edi_Usu> OrdenarListaPrioritaria(List<Edi_Usu> listaParam, String curso) {
+        if (listaParam == null || listaParam.isEmpty()) {
+            return new ArrayList<>();
         }
+        List<Edi_Usu> auxList = new ArrayList<>(listaParam);
+
+        auxList.sort((eu1, eu2) -> {
+            if (eu1 == null || eu1.getUsuario() == null) return 1;
+            if (eu2 == null || eu2.getUsuario() == null) return -1;
+
+            int rechazos1 = eu1.getUsuario().getCantMisInscripcionesRechazadas(curso);
+            int rechazos2 = eu2.getUsuario().getCantMisInscripcionesRechazadas(curso);
+
+            int rank1 = (int) (rechazos1 * 0.5);
+            int rank2 = (int) (rechazos2 * 0.5);
+
+            int rankCompare = Integer.compare(rank2, rank1);
+            if (rankCompare != 0) {
+                return rankCompare;
+            }
+
+            Date f1 = eu1.getFIns();
+            Date f2 = eu2.getFIns();
+
+            if (f1 == null && f2 == null) return 0;
+            if (f1 == null) return 1;
+            if (f2 == null) return -1;
+
+            return f1.compareTo(f2);
+        });
+
         return auxList;
     }
     
@@ -278,8 +334,8 @@ public class ManejadorEdicionCurso {
         try {
             em.getTransaction().begin();
 
-            // Usamos JPQL navegando por los nombres de las propiedades en la entidad Java
-            String jpql = "UPDATE Edi_Usu e SET e.estado = :nuevoEstado WHERE e.id.miEdicionNombre = :nombreEdicion AND e.id.miUsuarioNickname = :nickname";
+            // Corregido: e.estadoIns en lugar de e.estado
+            String jpql = "UPDATE Edi_Usu e SET e.estadoIns = :nuevoEstado WHERE e.id.miEdicionNombre = :nombreEdicion AND e.id.miUsuarioNickname = :nickname";
 
             int filasAfectadas = em.createQuery(jpql)
                     .setParameter("nuevoEstado", estado)

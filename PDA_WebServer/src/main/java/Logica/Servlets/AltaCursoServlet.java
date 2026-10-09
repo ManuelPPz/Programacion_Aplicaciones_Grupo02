@@ -33,9 +33,12 @@ public class AltaCursoServlet extends HttpServlet {
             throws ServletException, IOException {
 
         IController control = Fabric.GetInstance().GetIController();
-        request.setAttribute("institutos",  control.ListarClase(EnumDT.DT_INSTITUTO));
-        request.setAttribute("categorias",  control.ListarClase(EnumDT.DT_CATEGORIA));
-        request.setAttribute("cursos",      control.ListarClase(EnumDT.DT_CURSO));
+
+        // Capturar si se seleccionó un instituto desde la vista
+        String institutoParam = request.getParameter("instituto");
+
+        cargarListas(request, control, institutoParam);
+
         request.getRequestDispatcher("InterfacesJSP/AltaCurso.jsp").forward(request, response);
     }
 
@@ -54,10 +57,9 @@ public class AltaCursoServlet extends HttpServlet {
         String[] prevArr  = request.getParameterValues("previas");
         String[] catArr   = request.getParameterValues("categorias");
 
-        // El docente responsable lo tomamos de sesión
         HttpSession session = request.getSession(false);
         String docente = (session != null && session.getAttribute("usuarioLogueado") != null)
-                ? ((DTMaster) session.getAttribute("usuarioLogueado")).getClass().getSimpleName()  // placeholder
+                ? ((DTMaster) session.getAttribute("usuarioLogueado")).getClass().getSimpleName()
                 : "";
 
         IController control = Fabric.GetInstance().GetIController();
@@ -65,7 +67,7 @@ public class AltaCursoServlet extends HttpServlet {
         if (instituto == null || nombre == null || descripcion == null || url == null
                 || instituto.isBlank() || nombre.isBlank() || descripcion.isBlank() || url.isBlank()) {
             request.setAttribute("error", "Todos los campos son obligatorios.");
-            cargarListas(request, control);
+            cargarListas(request, control, instituto);
             request.getRequestDispatcher("InterfacesJSP/AltaCurso.jsp").forward(request, response);
             return;
         }
@@ -80,7 +82,7 @@ public class AltaCursoServlet extends HttpServlet {
             fechaIngreso = (fechaStr != null && !fechaStr.isBlank()) ? SDF.parse(fechaStr) : new Date();
         } catch (NumberFormatException | ParseException e) {
             request.setAttribute("error", "Valores numéricos o de fecha inválidos.");
-            cargarListas(request, control);
+            cargarListas(request, control, instituto);
             request.getRequestDispatcher("InterfacesJSP/AltaCurso.jsp").forward(request, response);
             return;
         }
@@ -97,13 +99,22 @@ public class AltaCursoServlet extends HttpServlet {
             request.setAttribute("error", "Error al registrar el curso: " + e.getMessage());
         }
 
-        cargarListas(request, control);
+        cargarListas(request, control, instituto);
         request.getRequestDispatcher("InterfacesJSP/AltaCurso.jsp").forward(request, response);
     }
 
-    private void cargarListas(HttpServletRequest req, IController ctrl) {
+    private void cargarListas(HttpServletRequest req, IController ctrl, String instituto) {
         req.setAttribute("institutos", ctrl.ListarClase(EnumDT.DT_INSTITUTO));
         req.setAttribute("categorias", ctrl.ListarClase(EnumDT.DT_CATEGORIA));
-        req.setAttribute("cursos",     ctrl.ListarClase(EnumDT.DT_CURSO));
+
+        // Solo cargamos los cursos si realmente hay un instituto seleccionado
+        if (instituto != null && !instituto.isBlank()) {
+            req.setAttribute("cursos", ctrl.ListarCursos(instituto.trim()));
+            req.setAttribute("institutoSeleccionado", instituto.trim());
+        } else {
+            // Si no hay instituto seleccionado, enviamos una lista vacía
+            req.setAttribute("cursos", new ArrayList<DTMaster>());
+            req.setAttribute("institutoSeleccionado", null);
+        }
     }
 }
