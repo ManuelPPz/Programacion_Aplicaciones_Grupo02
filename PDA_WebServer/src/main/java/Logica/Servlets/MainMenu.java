@@ -1,5 +1,7 @@
 package Logica.Servlets;
 
+import Logica.DTsClasses.DTCurso;
+import Logica.DTsClasses.DTEdicionCurso;
 import Logica.DTsClasses.DTMaster;
 import Logica.DTsClasses.EnumDT;
 import Logica.Logica.Fabric;
@@ -12,6 +14,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @WebServlet(name = "MainMenu", urlPatterns = {"/MainMenu"})
@@ -26,12 +30,60 @@ public class MainMenu extends HttpServlet {
             request.getSession().setAttribute("AuxListInstituto", auxListInstituto);
         }
     }
+    
     private void CargarCategoriasEnSesion(HttpServletRequest request){
         ico = Fabric.GetInstance().GetIController();
         List<DTMaster> auxListCategoria = ico.ListarClase(EnumDT.DT_CATEGORIA);
         if (auxListCategoria != null) {
             request.getSession().setAttribute("AuxListCategoria", auxListCategoria);
         }
+    }
+
+    /**
+     * Filtra los elementos (cursos y ediciones) creados en los últimos 30 días
+     */
+    private void CargarNovedadesRecientes(HttpServletRequest request) {
+        ico = Fabric.GetInstance().GetIController();
+        List<DTMaster> novedades = new ArrayList<>();
+        long treintaDiasMillis = 30L * 24L * 60L * 60L * 1000L;
+        long ahora = System.currentTimeMillis();
+
+        // 1. Filtrar Cursos recientes (< 30 días)
+        List<DTMaster> listaCursos = ico.ListarClase(EnumDT.DT_CURSO);
+        if (listaCursos != null) {
+            for (DTMaster m : listaCursos) {
+                if (m instanceof DTCurso curso) {
+                    Date fAlta = curso.getFechaAlta();
+                    if (fAlta != null && (ahora - fAlta.getTime()) <= treintaDiasMillis) {
+                        novedades.add(curso);
+                    }
+                }
+            }
+        }
+
+        // 2. Filtrar Ediciones recientes recorriendo los cursos
+        if (listaCursos != null) {
+            for (DTMaster m : listaCursos) {
+                if (m instanceof DTCurso curso) {
+                    List<DTMaster> listaEdicionesCurso = ico.ListarEdiciones(curso.getNombre());
+                    if (listaEdicionesCurso != null) {
+                        for (DTMaster edMaster : listaEdicionesCurso) {
+                            if (edMaster instanceof DTEdicionCurso edicion) {
+                                Date fAltaEd = edicion.getFechaAlta();
+                                if (fAltaEd != null && (ahora - fAltaEd.getTime()) <= treintaDiasMillis) {
+                                    // Evitamos duplicados si ya se añadió
+                                    if (!novedades.contains(edicion)) {
+                                        novedades.add(edicion);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        request.setAttribute("novedadesRecientes", novedades);
     }
     /*--------------------------------------------------------------------------------------*/
     
@@ -42,12 +94,14 @@ public class MainMenu extends HttpServlet {
         if ("ingVisitantes".equals(action)) {
             HttpSession session = request.getSession(false);
             if (session != null) {
-                session.invalidate(); // O session.removeAttribute("usuarioLogueado");
+                session.invalidate();
             }
         }
-        // Cargar listas de institutos y categorías en la sesión
+        
+        // Cargar listas y novedades en la sesión/request
         CargarInstitutosEnSesion(request);
         CargarCategoriasEnSesion(request);
+        CargarNovedadesRecientes(request);
 
         // Despachar al JSP respetando la sesión actual
         request.getRequestDispatcher("/InterfacesJSP/MenuInicio.jsp").forward(request, response);
@@ -67,8 +121,9 @@ public class MainMenu extends HttpServlet {
             HttpSession session = request.getSession();
             session.setAttribute("usuarioLogueado", dt);
             
-           CargarInstitutosEnSesion(request);
+            CargarInstitutosEnSesion(request);
             CargarCategoriasEnSesion(request);
+            CargarNovedadesRecientes(request);
             
             request.getRequestDispatcher("/InterfacesJSP/MenuInicio.jsp").forward(request, response);
         } else {

@@ -1,196 +1,126 @@
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="java.util.List"%>
 <%@page import="Logica.DTsClasses.DTEdicionCurso"%>
 <%@page import="Logica.DTsClasses.DTCurso"%>
-<%@page import="Logica.DTsClasses.DTUsuario"%>
-<%@page import="Logica.DTsClasses.DTInstituto"%>
-<%@page import="Logica.DTsClasses.DTMaster"%>
-<%@page import="Logica.DTsClasses.DTCategoria"%>
-<%@page import="java.util.List"%>
-<%@page import="Logica.DTsClasses.DTDocente"%>
-<%@page import="java.text.SimpleDateFormat"%>
-<%@page import="Logica.DTsClasses.DTUsuarioBase"%>
-<%!
-    // Funci�n helper para evadir cach� apuntando a la carpeta f�sica real
-    public String versionedUrl(String relativePath) {
-        String discoPath = "C:/mi_proyecto_data" + relativePath;
-        java.io.File file = new java.io.File(discoPath);
-        
-        if (file.exists()) {
-            return relativePath + "?v=" + file.lastModified();
-        }
-        return relativePath;
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%-- 
+    Aquí importas la estructura base estáticamente. 
+    Esto hace que todo el HTML de la InterfazBase se pegue aquí al compilarse.
+--%>
+<%@ include file="/InterfacesJSP/InterfazBase.jsp" %>
+
+<%-- 
+    Aquí se escribe ÚNICAMENTE el contenido específico y exclusivo 
+    que va en el centro de tu Menú Principal 
+--%>
+<!-- SECCIÓN CENTRAL: NOVEDADES RECIENTES (ÚLTIMOS 30 DÍAS) -->
+<!-- ESTILO PERSONALIZADO PARA EL FEED TIPO BLOG -->
+<style>
+    .blog-feed-container {
+        max-width: 750px; /* Ancho cómodo de lectura tipo blog */
+        margin: 0 auto;
     }
-%>
-<!DOCTYPE html>
-<html lang="es">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Alta Edici�n de Curso</title>
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css">
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/Styles/StylesContainers.css">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <script src="${pageContext.request.contextPath}/js/main.js"></script>
-    </head>
-    <body class="bg-light">
+    .blog-card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    .blog-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+    }
+</style>
+
+<!-- CONTENEDOR PRINCIPAL DEL BLOG / FEED -->
+<div class="container my-5 blog-feed-container">
+    
+    <!-- Cabecera del Blog -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-dark display-6">📰 Novedades de la Comunidad</h2>
+        <p class="text-muted">Explora el contenido, cursos y ediciones publicados recientemente.</p>
+        <hr class="w-25 mx-auto border-dark">
+    </div>
+
+    <!-- Lista de Publicaciones en formato Feed Vertical -->
+    <div class="d-flex flex-column gap-4">
         <%
-            DTMaster dtm = (DTMaster)session.getAttribute("usuarioLogueado");
+            List<DTMaster> novedades = (List<DTMaster>) request.getAttribute("novedadesRecientes");
+            if (novedades != null && !novedades.isEmpty()) {
+                SimpleDateFormat sdf = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy");
+                for (DTMaster item : novedades) {
+                    String tipo = "Publicación";
+                    String badgeColor = "bg-secondary";
+                    String nombre = "";
+                    String descripcion = "";
+                    String fechaAltaStr = "";
+                    String linkConsulta = "#";
+                    String imagenUrl = request.getContextPath() + "/Images/ImagenUserDefault.png";
+                    String instituto = "";
+
+                    if (item instanceof DTCurso curso) {
+                        tipo = "Nuevo Curso";
+                        badgeColor = "bg-primary";
+                        nombre = curso.getNombre();
+                        descripcion = curso.getDescripcion();
+                        instituto = curso.getInstituto();
+                        if (curso.getFechaAlta() != null) fechaAltaStr = sdf.format(curso.getFechaAlta());
+                        linkConsulta = request.getContextPath() + "/ConsultaCursoServlet?nombre=" + java.net.URLEncoder.encode(nombre, "UTF-8");
+                        if (curso.getImage() != null && !curso.getImage().isBlank()) {
+                            imagenUrl = ImagenUtil.versionedUrl(ImagenUtil.CARPETA_CURSOS, curso.getImage(), request.getContextPath());
+                        }
+                    } else if (item instanceof DTEdicionCurso edicion) {
+                        tipo = "Nueva Edición";
+                        badgeColor = "bg-success";
+                        nombre = edicion.getNombre();
+                        instituto = edicion.getInstituto();
+                        descripcion = "Edición correspondiente al curso principal. Inicio previsto: " + (edicion.getFInicio() != null ? new SimpleDateFormat("dd/MM/yyyy").format(edicion.getFInicio()) : "A confirmar");
+                        if (edicion.getFechaAlta() != null) fechaAltaStr = sdf.format(edicion.getFechaAlta());
+                        linkConsulta = request.getContextPath() + "/ConsultaEdicionServlet?nombre=" + java.net.URLEncoder.encode(nombre, "UTF-8");
+                        if (edicion.getImage() != null && !edicion.getImage().isBlank()) {
+                            imagenUrl = ImagenUtil.versionedUrl(ImagenUtil.CARPETA_EDICIONCURSOS, edicion.getImage(), request.getContextPath());
+                        }
+                    }
         %>
 
-        <%-- BARRA DE NAVEGACI�N FIJA (sticky-top) --%>
-        <nav class="navbar bg-body-tertiary px-4 border-bottom sticky-top shadow-sm z-3">
-            <div class="container-fluid d-flex flex-nowrap align-items-center justify-content-between">
-
-                <!-- Logo -->
-                <a class="navbar-brand me-3 d-flex align-items-center" href="${pageContext.request.contextPath}/MainMenu">
-                    <img src="<%= request.getContextPath() %>/Images/Logo edEXT sin fondo.png" 
-                         alt="LogoApp" 
-                         width="52" 
-                         height="52" 
-                         class="rounded-circle border">
-                </a>
-
-                <!-- Buscador -->
-                <form class="navbar-search-form my-0 d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Cursos, Programas" aria-label="Search"/>
-                    <button class="btn btn-outline-success" type="submit">Buscar</button>
-                </form>
-
-                <!-- Perfil / Sesi�n -->
-                <%
-                    if (dtm instanceof DTUsuarioBase) {
-                        DTUsuarioBase dtu = (DTUsuarioBase) dtm;
-                        String nombreImagen = dtu.getImg(); 
-                %>
-                    <div class="d-flex align-items-center ms-3">
-                        <span class="fw-bold me-3 text-nowrap text-dark fs-5"><%=dtu.getNickname()%></span>    
-                        <a class="navbar-brand p-0 m-0 d-flex align-items-center" href="${pageContext.request.contextPath}/ConsultaUsuarioIndividualServlet?nickname=<%= dtu.getNickname() %>">
-                            <% if (nombreImagen != null && !nombreImagen.trim().isEmpty()) { 
-                                   String relPath = "/uploads/perfiles/" + nombreImagen;
-                                   String urlConVersion = versionedUrl(relPath);
-                            %>
-                                <img src="<%= request.getContextPath() %><%= urlConVersion %>" 
-                                     alt="Perfil" 
-                                     width="52" 
-                                     height="52" 
-                                     class="rounded-circle border">
-                            <% } else { %>
-                                <img src="<%= request.getContextPath() %>/Images/ImagenUserDefault.png" 
-                                     alt="Perfil" 
-                                     width="52" 
-                                     height="52" 
-                                     class="rounded-circle border">
-                            <% } %>
-                        </a>
-                    </div>
-                <%
-                    } else {
-                %>
-                    <div class="d-flex align-items-center ms-3">
-                        <a class="link-opacity-100-hover me-3 text-nowrap" href="IniciarSesionServlet">Iniciar Sesion</a>
-                        <div class="vr text-dark opacity-100 me-3" style="height: 1.5rem; width: 2px;"></div>
-                        <a class="link-opacity-100-hover text-nowrap" href="AltaUsuarioServlet">Registrarse</a>
-                    </div>
-                <%
-                    }
-                %>
+        <!-- ARTÍCULO / POST DEL BLOG -->
+        <div class="card blog-card border-dark shadow-sm bg-white rounded-3 overflow-hidden">
+            
+            <!-- Imagen de cabecera del post -->
+            <div class="position-relative">
+                <img src="<%= imagenUrl %>" class="w-100" alt="<%= nombre %>" style="height: 280px; object-fit: cover;">
+                <span class="position-absolute top-0 start-0 m-3 badge <%= badgeColor %> fs-6 px-3 py-2 shadow"><%= tipo %></span>
             </div>
-        </nav>
 
-        <%-- CONTENIDO PRINCIPAL --%>
-        <div class="container-fluid px-4 mt-4">
-            <div class="row">
-
-                <%-- MEN� LATERAL IZQUIERDO --%>
-                <div class="col-md-3 col-lg-2 mb-4">
-                    <div class="card border-dark w-100 shadow-sm">
-                        <ul class="list-group list-group-flush">
-                            <%
-                            if (dtm != null) {
-                                if (dtm instanceof DTDocente) {
-                                    DTDocente dtd = (DTDocente) dtm;
-                                    %>
-                                    <li class="list-group-item text-dark fw-bold text-center fs-5">
-                                        <a href="${pageContext.request.contextPath}/ConsultaUsuarioIndividualServlet?nickname=<%= dtd.getNickname() %>" class="text-dark text-decoration-none d-block">
-                                            Mi Perfil
-                                        </a>
-                                    </li>
-                                    <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">CURSOS</li>
-                                    <li class="list-group-item text-dark fw-semibold">Alta Curso</li>
-                                    <li class="list-group-item text-dark fw-semibold">Alta Edicion</li>
-                                    <li class="list-group-item text-dark fw-semibold">Alta Programa de Formacion</li>
-                                    <%
-                                } else if (dtm instanceof DTUsuario) {
-                                    DTUsuario dtu = (DTUsuario) dtm;
-                                    %>
-                                    <li class="list-group-item text-dark fw-bold text-center fs-5">
-                                        <a href="${pageContext.request.contextPath}/ConsultaUsuarioIndividualServlet?nickname=<%= dtu.getNickname() %>" class="text-dark text-decoration-none d-block">
-                                            Mi Perfil
-                                        </a>
-                                    </li>
-                                    <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">Inscripciones</li>
-                                    <li class="list-group-item text-dark fw-semibold">Inscribirme</li>
-                                    <li class="list-group-item text-dark fw-semibold">Ver Resultados</li>
-                                    <%
-                                }
-                            }
-                            %>
-                        </ul>
-                        <div class="card-header text-center fw-bold border-top border-dark fs-5">
-                            Institutos
-                        </div>
-                        <ul class="list-group list-group-flush">
-                            <%
-                                List<DTMaster> listInstitutos = (List<DTMaster>) session.getAttribute("AuxListInstituto");
-                                if (listInstitutos != null && !listInstitutos.isEmpty()) {
-                                    for (int i = 0; i < listInstitutos.size(); i++) {
-                                        if (listInstitutos.get(i) != null) {
-                                            DTInstituto auxDt = (DTInstituto) listInstitutos.get(i);
-                                            %>
-                                            <li class="list-group-item text-dark fw-semibold"><%= auxDt.getNombre() %></li>
-                                            <%
-                                        }
-                                    }
-                                } else {
-                                    %>
-                                    <li class="list-group-item text-muted small fw-semibold">Sin institutos</li>
-                                    <%
-                                }
-                            %>
-                        </ul>
-
-                        <div class="card-header text-center fw-bold border-top border-dark fs-5">
-                            Categorias
-                        </div>
-                        <ul class="list-group list-group-flush">
-                            <%
-                                List<DTMaster> listCategorias = (List<DTMaster>) session.getAttribute("AuxListCategoria");
-                                if (listCategorias != null && !listCategorias.isEmpty()) {
-                                    for (int i = 0; i < listCategorias.size(); i++) {
-                                        if (listCategorias.get(i) != null) {
-                                            DTCategoria auxDt = (DTCategoria) listCategorias.get(i);
-                                            %>
-                                            <li class="list-group-item text-dark fw-semibold"><%= auxDt.getNombre() %></li>
-                                            <%
-                                        }
-                                    }
-                                } else {
-                                    %>
-                                    <li class="list-group-item text-muted small">Sin Categorias</li>
-                                    <%
-                                }
-                            %>
-                        </ul>
-                    </div>
+            <!-- Cuerpo del Post -->
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center text-muted small mb-2">
+                    <span>🏛️ <%= instituto != null ? instituto : "Institución educativa" %></span>
+                    <span>📅 Publicado el <%= fechaAltaStr %></span>
                 </div>
 
-                <%-- FORMULARIO PRINCIPAL DE ALTA DE EDICI�N DE CURSO --%>
-                <div class="col-md-9 col-lg-10 ps-md-4 d-flex flex-column align-items-center mb-5">
-                    </--ACA VA SU CASO DE USO--->
-                </div>
+                <h3 class="card-title fw-bold text-dark mb-3"><%= nombre %></h3>
+                
+                <p class="card-text text-secondary mb-4" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                    <%= descripcion != null && !descripcion.isBlank() ? descripcion : "Sin descripción detallada disponible para esta publicación." %>
+                </p>
 
+                <div class="text-end">
+                    <a href="<%= linkConsulta %>" class="btn btn-dark px-4 fw-bold shadow-sm">
+                        Leer más &rarr;
+                    </a>
+                </div>
+            </div>
+
+        </div>
+        <% 
+                }
+            } else { 
+        %>
+        <!-- Estado Vacío -->
+        <div class="card border-dark shadow-sm bg-white text-center py-5 rounded-3">
+            <div class="card-body">
+                <h4 class="fw-bold text-muted mb-2">No hay publicaciones recientes</h4>
+                <p class="text-muted mb-0">Vuelve más tarde para enterarte de los nuevos cursos y ediciones lanzados este mes.</p>
             </div>
         </div>
-
-        <!-- Bootstrap JS -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    </body>
-</html>
+        <% } %>
+    </div>
+</div>

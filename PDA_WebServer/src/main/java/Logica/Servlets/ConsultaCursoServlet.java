@@ -13,20 +13,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * ED-20 – Consulta de Curso
- * GET sin parámetros:      Carga la lista completa de institutos y categorías para filtrar.
- * GET con ?filtroTipo+filtroValor: Carga los cursos del instituto o categoría elegida.
- * GET con ?curso=X:        Muestra el detalle completo del curso seleccionado.
  */
 @WebServlet(name = "ConsultaCursoServlet", urlPatterns = {"/ConsultaCursoServlet"})
 public class ConsultaCursoServlet extends HttpServlet {
+
     IController ico;
-    /*----------------Funciones de carga de lista de datos para el request-----------------*/
+
     private void CargarInstitutosEnSesion(HttpServletRequest request) {
         ico = Fabric.GetInstance().GetIController();
         List<DTMaster> auxListInstituto = ico.ListarClase(EnumDT.DT_INSTITUTO);
@@ -34,14 +30,15 @@ public class ConsultaCursoServlet extends HttpServlet {
             request.getSession().setAttribute("AuxListInstituto", auxListInstituto);
         }
     }
-    private void CargarCategoriasEnSesion(HttpServletRequest request){
+
+    private void CargarCategoriasEnSesion(HttpServletRequest request) {
         ico = Fabric.GetInstance().GetIController();
         List<DTMaster> auxListCategoria = ico.ListarClase(EnumDT.DT_CATEGORIA);
         if (auxListCategoria != null) {
             request.getSession().setAttribute("AuxListCategoria", auxListCategoria);
         }
     }
-    
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -50,19 +47,36 @@ public class ConsultaCursoServlet extends HttpServlet {
         if ("ingVisitantes".equals(action)) {
             HttpSession session = request.getSession(false);
             if (session != null) {
-                session.invalidate(); // O session.removeAttribute("usuarioLogueado");
+                session.invalidate();
             }
         }
+
         // Cargar listas de institutos y categorías en la sesión
         CargarInstitutosEnSesion(request);
         CargarCategoriasEnSesion(request);
 
+        ico = Fabric.GetInstance().GetIController();
 
-        String curso = "Principio de Programacion";
-        request.setAttribute("cursoElegido", ico.ConsultaCurso(curso));
+        // 1. OBLIGATORIO: Cargar la lista completa de cursos para que el <select> tenga opciones
+        request.setAttribute("cursos", ico.ListarClase(EnumDT.DT_CURSO));
 
+        // Obtener el curso de la petición (soporta tanto ?curso=X como ?nombre=X)
+        String nombreCurso = request.getParameter("curso");
+        if (nombreCurso == null || nombreCurso.isBlank()) {
+            nombreCurso = request.getParameter("nombre");
+        }
 
-        request.getRequestDispatcher("InterfacesJSP/ConsultaCurso.jsp").forward(request, response);
+        if (nombreCurso != null && !nombreCurso.isBlank()) {
+            String cursoTrim = nombreCurso.trim();
+            request.setAttribute("cursoSeleccionado", cursoTrim);
+            request.setAttribute("cursoElegido", ico.ConsultaCurso(cursoTrim));
+            
+            // 2. CARGAR LAS EDICIONES DEL CURSO SELECCIONADO PARA EL PANEL DERECHO
+            List<DTMaster> listaEdiciones = ico.ListarEdiciones(cursoTrim);
+            request.setAttribute("ediciones", listaEdiciones);
+        } 
+
+        request.getRequestDispatcher("/InterfacesJSP/ConsultaCurso.jsp").forward(request, response);
     }
 
     @Override

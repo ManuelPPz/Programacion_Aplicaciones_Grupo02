@@ -1,3 +1,4 @@
+<%@page import="Logica.util.ImagenUtil"%>
 <%@page import="Logica.DTsClasses.DTEdicionCurso"%>
 <%@page import="Logica.DTsClasses.DTCurso"%>
 <%@page import="Logica.DTsClasses.DTUsuario"%>
@@ -63,11 +64,8 @@
                     <div class="d-flex align-items-center ms-3">
                         <span class="fw-bold me-3 text-nowrap text-dark fs-5"><%=dtu.getNickname()%></span>    
                         <a class="navbar-brand p-0 m-0 d-flex align-items-center" href="${pageContext.request.contextPath}/ConsultaUsuarioIndividualServlet?nickname=<%= dtu.getNickname() %>">
-                            <% if (nombreImagen != null && !nombreImagen.trim().isEmpty()) { 
-                                   String relPath = "/uploads/perfiles/" + nombreImagen;
-                                   String urlConVersion = versionedUrl(relPath);
-                            %>
-                                <img src="<%= request.getContextPath() %><%= urlConVersion %>" 
+                            <% if (nombreImagen != null && !nombreImagen.trim().isEmpty()) { %>
+                                <img src="<%= ImagenUtil.versionedUrl(ImagenUtil.CARPETA_EDICIONCURSOS, nombreImagen, request.getContextPath()) %>" 
                                      alt="Perfil" 
                                      width="52" 
                                      height="52" 

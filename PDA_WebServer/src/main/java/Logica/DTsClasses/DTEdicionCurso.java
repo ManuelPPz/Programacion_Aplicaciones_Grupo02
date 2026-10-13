@@ -44,7 +44,7 @@ public class DTEdicionCurso extends DTMaster{
     public Date getFInicio(){return this.fInicio;}
     public Date getFFin(){return this.fFin;}
     public int getCupo(){return this.cupo;}
-    public int getCupoActual;
+    public int getCupoActual(){return this.cupoActual;}
     public List<String> getDocentes(){return this.listDocentes;}
     public Date getFechaAlta(){return this.fechaAlta;}
     public List<DTEdi_Usu> getMisInscripciones(){return this.misIscripciones;}

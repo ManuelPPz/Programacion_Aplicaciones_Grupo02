@@ -1,3 +1,4 @@
+<%@page import="java.io.File"%>
 <%@page import="Logica.DTsClasses.DTEdicionCurso"%>
 <%@page import="Logica.DTsClasses.DTCurso"%>
 <%@page import="Logica.DTsClasses.DTUsuario"%>
@@ -8,303 +9,175 @@
 <%@page import="Logica.DTsClasses.DTDocente"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="Logica.DTsClasses.DTUsuarioBase"%>
-<%!
-    // Función helper para evadir caché apuntando a la carpeta física real
-    public String versionedUrl(String relativePath) {
-        String discoPath = "C:/mi_proyecto_data" + relativePath;
-        java.io.File file = new java.io.File(discoPath);
-        
-        if (file.exists()) {
-            return relativePath + "?v=" + file.lastModified();
-        }
-        return relativePath;
-    }
-%>
+<%@ page import="jakarta.servlet.ServletContext" %>
+<%@ page import="jakarta.servlet.http.HttpServletRequest" %>
+<%@page import="Logica.util.ImagenUtil"%>
 <!DOCTYPE html>
 <html lang="es">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Alta Edición de Curso</title>
+        <title>Consulta Usuario</title>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css">
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/Styles/StylesContainers.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <script src="${pageContext.request.contextPath}/js/main.js"></script>
+        
+        <%-- Script para el funcionamiento de las pestañas --%>
+        <script>
+            function openTab(evt, tabName) {
+                // Ocultar todos los contenidos de pestañas
+                var tabcontent = document.getElementsByClassName("tab-content");
+                for (var i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].style.display = "none";
+                }
+
+                // Quitar la clase 'active' de todos los botones de las pestañas
+                var tablinks = document.getElementsByClassName("tab-btn");
+                for (var i = 0; i < tablinks.length; i++) {
+                    tablinks[i].classList.remove("active", "btn-primary");
+                    tablinks[i].classList.add("btn-outline-primary");
+                }
+
+                // Mostrar la pestaña actual y agregar la clase active al botón seleccionado
+                document.getElementById(tabName).style.display = "block";
+                evt.currentTarget.classList.add("active", "btn-primary");
+                evt.currentTarget.classList.remove("btn-outline-primary");
+            }
+        </script>
     </head>
     <body class="bg-light">
-        <%
-            DTMaster dtm = (DTMaster)session.getAttribute("usuarioLogueado");
-        %>
+        <%-- Cargamos toda la estructura visual y el menú lateral desde la base --%>
+        <%@ include file="/InterfacesJSP/InterfazBase.jsp" %>
 
-        <%-- BARRA DE NAVEGACIÓN FIJA (sticky-top) --%>
-        <nav class="navbar bg-body-tertiary px-4 border-bottom sticky-top shadow-sm z-3">
-            <div class="container-fluid d-flex flex-nowrap align-items-center justify-content-between">
+        <%-- FORMULARIO PRINCIPAL DE CONSULTA DE USUARIO --%>
+        <div class="col-md-9 col-lg-10 ps-md-4 d-flex flex-column align-items-center mb-5">
 
-                <!-- Logo -->
-                <a class="navbar-brand me-3 d-flex align-items-center" href="${pageContext.request.contextPath}/MainMenu">
-                    <img src="<%= request.getContextPath() %>/Images/Logo edEXT sin fondo.png" 
-                         alt="LogoApp" 
-                         width="52" 
-                         height="52" 
+            <div class="card border-dark shadow p-4 w-100" style="max-width: 850px;">
+                <h2 class="card-title text-center mb-4 fw-bold">Consulta Usuario</h2>
+
+                <% if (request.getAttribute("error") != null) {%>
+                <div class="alert alert-danger"><%= request.getAttribute("error")%></div>
+                <% } %>
+
+                <%
+                    DTUsuarioBase usuarioConsultado = (DTUsuarioBase) request.getAttribute("usuarioConsultado");
+                    if (usuarioConsultado != null) {
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                        String fechaFormateada = (usuarioConsultado.getFNac() != null) ? sdf.format(usuarioConsultado.getFNac()) : "";
+                %>
+                <h3 class="fw-bold mb-3"><%= usuarioConsultado.getNombre()%> <%= usuarioConsultado.getApellido()%> (<%= usuarioConsultado.getNickname()%>)</h3>
+
+                <%-- Imagen de Perfil del Usuario Consultado --%>
+                <div class="foto-perfil-container mb-3">
+                    <% if (usuarioConsultado.getImg() != null && !usuarioConsultado.getImg().trim().isEmpty()) {%>
+                    <img src="<%= ImagenUtil.versionedUrl(ImagenUtil.CARPETA_PERFILES, usuarioConsultado.getImg(), request.getContextPath())%>" 
+                         alt="Perfil" 
+                         width="110" 
+                         height="110" 
+                         style="object-fit: cover;"
                          class="rounded-circle border">
-                </a>
-
-                <!-- Buscador -->
-                <form class="navbar-search-form my-0 d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Cursos, Programas" aria-label="Search"/>
-                    <button class="btn btn-outline-success" type="submit">Buscar</button>
-                </form>
-
-                <!-- Perfil / Sesión -->
-                <%
-                    if (dtm instanceof DTUsuarioBase) {
-                        DTUsuarioBase dtu = (DTUsuarioBase) dtm;
-                        String nombreImagen = dtu.getImg(); 
-                %>
-                    <div class="d-flex align-items-center ms-3">
-                        <span class="fw-bold me-3 text-nowrap text-dark fs-5"><%=dtu.getNickname()%></span>    
-                        <a class="navbar-brand p-0 m-0 d-flex align-items-center" href="${pageContext.request.contextPath}/ConsultaUsuarioIndividualServlet?nickname=<%= dtu.getNickname() %>">
-                            <% if (nombreImagen != null && !nombreImagen.trim().isEmpty()) { 
-                                   String relPath = "/uploads/perfiles/" + nombreImagen;
-                                   String urlConVersion = versionedUrl(relPath);
-                            %>
-                                <img src="<%= request.getContextPath() %><%= urlConVersion %>" 
-                                     alt="Perfil" 
-                                     width="52" 
-                                     height="52" 
-                                     class="rounded-circle border">
-                            <% } else { %>
-                                <img src="<%= request.getContextPath() %>/Images/ImagenUserDefault.png" 
-                                     alt="Perfil" 
-                                     width="52" 
-                                     height="52" 
-                                     class="rounded-circle border">
-                            <% } %>
-                        </a>
-                    </div>
-                <%
-                    } else {
-                %>
-                    <div class="d-flex align-items-center ms-3">
-                        <a class="link-opacity-100-hover me-3 text-nowrap" href="IniciarSesionServlet">Iniciar Sesion</a>
-                        <div class="vr text-dark opacity-100 me-3" style="height: 1.5rem; width: 2px;"></div>
-                        <a class="link-opacity-100-hover text-nowrap" href="AltaUsuarioServlet">Registrarse</a>
-                    </div>
-                <%
-                    }
-                %>
-            </div>
-        </nav>
-
-        <%-- CONTENIDO PRINCIPAL --%>
-        <div class="container-fluid px-4 mt-4">
-            <div class="row">
-
-                <%-- MENÚ LATERAL IZQUIERDO --%>
-                <div class="col-md-3 col-lg-2 mb-4">
-                    <div class="card border-dark w-100 shadow-sm">
-                        <ul class="list-group list-group-flush">
-                            <%
-                            if (dtm != null) {
-                                if (dtm instanceof DTDocente) {
-                                    DTDocente dtd = (DTDocente) dtm;
-                                    %>
-                                    <li class="list-group-item text-dark fw-bold text-center fs-5">
-                                        <a href="${pageContext.request.contextPath}/ConsultaUsuarioIndividualServlet?nickname=<%= dtd.getNickname() %>" class="text-dark text-decoration-none d-block">
-                                            Mi Perfil
-                                        </a>
-                                    </li>
-                                    <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">CURSOS</li>
-                                    <li class="list-group-item text-dark fw-semibold">Alta Curso</li>
-                                    <li class="list-group-item text-dark fw-semibold">Alta Edicion</li>
-                                    <li class="list-group-item text-dark fw-semibold">Alta Programa de Formacion</li>
-                                    <%
-                                } else if (dtm instanceof DTUsuario) {
-                                    DTUsuario dtu = (DTUsuario) dtm;
-                                    %>
-                                    <li class="list-group-item text-dark fw-bold text-center fs-5">
-                                        <a href="${pageContext.request.contextPath}/ConsultaUsuarioIndividualServlet?nickname=<%= dtu.getNickname() %>" class="text-dark text-decoration-none d-block">
-                                            Mi Perfil
-                                        </a>
-                                    </li>
-                                    <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">Inscripciones</li>
-                                    <li class="list-group-item text-dark fw-semibold">Inscribirme</li>
-                                    <li class="list-group-item text-dark fw-semibold">Ver Resultados</li>
-                                    <%
-                                }
-                            }
-                            %>
-                        </ul>
-                        <div class="card-header text-center fw-bold border-top border-dark fs-5">
-                            Institutos
-                        </div>
-                        <ul class="list-group list-group-flush">
-                            <%
-                                List<DTMaster> listInstitutos = (List<DTMaster>) session.getAttribute("AuxListInstituto");
-                                if (listInstitutos != null && !listInstitutos.isEmpty()) {
-                                    for (int i = 0; i < listInstitutos.size(); i++) {
-                                        if (listInstitutos.get(i) != null) {
-                                            DTInstituto auxDt = (DTInstituto) listInstitutos.get(i);
-                                            %>
-                                            <li class="list-group-item text-dark fw-semibold"><%= auxDt.getNombre() %></li>
-                                            <%
-                                        }
-                                    }
-                                } else {
-                                    %>
-                                    <li class="list-group-item text-muted small fw-semibold">Sin institutos</li>
-                                    <%
-                                }
-                            %>
-                        </ul>
-
-                        <div class="card-header text-center fw-bold border-top border-dark fs-5">
-                            Categorias
-                        </div>
-                        <ul class="list-group list-group-flush">
-                            <%
-                                List<DTMaster> listCategorias = (List<DTMaster>) session.getAttribute("AuxListCategoria");
-                                if (listCategorias != null && !listCategorias.isEmpty()) {
-                                    for (int i = 0; i < listCategorias.size(); i++) {
-                                        if (listCategorias.get(i) != null) {
-                                            DTCategoria auxDt = (DTCategoria) listCategorias.get(i);
-                                            %>
-                                            <li class="list-group-item text-dark fw-semibold"><%= auxDt.getNombre() %></li>
-                                            <%
-                                        }
-                                    }
-                                } else {
-                                    %>
-                                    <li class="list-group-item text-muted small">Sin Categorias</li>
-                                    <%
-                                }
-                            %>
-                        </ul>
-                    </div>
+                    <% } else {%>
+                    <img src="<%= request.getContextPath()%>/Images/ImagenUserDefault.png" 
+                         alt="Perfil Default" 
+                         width="110" 
+                         height="110" 
+                         style="object-fit: cover;"
+                         class="rounded-circle border">
+                    <% }%>
                 </div>
 
-                <%-- FORMULARIO PRINCIPAL DE ALTA DE EDICIÓN DE CURSO --%>
-                <div class="col-md-9 col-lg-10 ps-md-4 d-flex flex-column align-items-center mb-5">
+                <div class="tab-header mb-3">
+                    <button class="tab-btn btn btn-primary active me-2" onclick="openTab(event, 'tabInfo')">Información General</button>
+                    <button class="tab-btn btn btn-outline-primary" onclick="openTab(event, 'tabActividad')">Actividad (Cursos/Programas)</button>
+                </div>
 
-                    <div class="card border-dark shadow p-4 w-100" style="max-width: 850px;">
-                        <h2 class="card-title text-center mb-4 fw-bold">Consulta Usuario</h2>
-                        
-                        <% if (request.getAttribute("error") != null) { %>
-                        <div class="alert alert-danger"><%= request.getAttribute("error") %></div>
-                    <% } %>
-
-                    <% 
-                        DTUsuarioBase usuarioConsultado = (DTUsuarioBase) request.getAttribute("usuarioConsultado");
-                        if (usuarioConsultado != null) { 
-                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                            String fechaFormateada = (usuarioConsultado.getFNac() != null) ? sdf.format(usuarioConsultado.getFNac()) : "";
+                <div id="tabInfo" class="tab-content" style="display: block;">
+                    <p><strong>Nickname:</strong> <%= usuarioConsultado.getNickname()%></p>
+                    <p><strong>Nombre:</strong> <%= usuarioConsultado.getNombre()%></p>
+                    <p><strong>Apellido:</strong> <%= usuarioConsultado.getApellido()%></p>
+                    <p><strong>Email:</strong> <%= usuarioConsultado.getCorreo()%></p>
+                    <p><strong>Fecha Nacimiento:</strong> <%= fechaFormateada%></p>
+                    <% if (usuarioConsultado instanceof DTDocente) {
+                            DTDocente docente = (DTDocente) usuarioConsultado;
                     %>
-                        <h3 class="fw-bold mb-3"><%= usuarioConsultado.getNombre() %> <%= usuarioConsultado.getApellido() %> (<%= usuarioConsultado.getNickname() %>)</h3>
-
-                        <%-- Imagen de Perfil del Usuario Consultado --%>
-                        <div class="foto-perfil-container mb-3">
-                            <% if (usuarioConsultado.getImg() != null && !usuarioConsultado.getImg().trim().isEmpty()) { 
-                                   String relPath = "/uploads/perfiles/" + usuarioConsultado.getImg();
-                                   String urlConVersion = versionedUrl(relPath);
-                            %>
-                                <img src="<%= request.getContextPath() %><%= urlConVersion %>" 
-                                     alt="Perfil" 
-                                     width="110" 
-                                     height="110" 
-                                     style="object-fit: cover;"
-                                     class="rounded-circle border">
-                            <% } else { %>
-                                <img src="<%= request.getContextPath() %>/Images/ImagenUserDefault.png" 
-                                     alt="Perfil Default" 
-                                     width="110" 
-                                     height="110" 
-                                     style="object-fit: cover;"
-                                     class="rounded-circle border">
-                            <% } %>
-                        </div>
-
-                        <div class="tab-header mb-3">
-                            <button class="btn btn-outline-primary active me-2" onclick="openTab(event, 'tabInfo')">Información General</button>
-                            <button class="btn btn-outline-primary" onclick="openTab(event, 'tabActividad')">Actividad (Cursos/Programas)</button>
-                        </div>
-
-                        <div id="tabInfo" class="tab-content active" style="display: block;">
-                            <p><strong>Nickname:</strong> <%= usuarioConsultado.getNickname() %></p>
-                            <p><strong>Nombre:</strong> <%= usuarioConsultado.getNombre() %></p>
-                            <p><strong>Apellido:</strong> <%= usuarioConsultado.getApellido() %></p>
-                            <p><strong>Email:</strong> <%= usuarioConsultado.getCorreo() %></p>
-                            <p><strong>Fecha Nacimiento:</strong> <%= fechaFormateada %></p>
-                            <% if (usuarioConsultado instanceof DTDocente) { 
-                                DTDocente docente = (DTDocente) usuarioConsultado;
-                            %>
-                                <p><strong>Tipo:</strong> Docente</p>
-                                <p><strong>Instituto:</strong> <%= docente.getInstituto() != null && !docente.getInstituto().isEmpty() ? docente.getInstituto() : "N/A" %></p>
-                            <% } else { %>
-                                <p><strong>Tipo:</strong> Estudiante</p>
-                            <% } 
-                            if(dtm != null){
-                                if(dtm instanceof DTUsuarioBase){
-                                    DTUsuarioBase dtu = (DTUsuarioBase)dtm;
-                                    if(usuarioConsultado.getNickname().equals(dtu.getNickname())){
-                                        %>
-                                        <form action="${pageContext.request.contextPath}/ModificarUsuarioServlet" method="GET" class="d-inline">
-                                            <button type="submit" class="btn-solid btn-styled theme-primary">Modificar Datos</button>
-                                        </form>
-                                        <%
-                                    }
+                    <p><strong>Tipo:</strong> Docente</p>
+                    <p><strong>Instituto:</strong> <%= docente.getInstituto() != null && !docente.getInstituto().isEmpty() ? docente.getInstituto() : "N/A"%></p>
+                    <% } else { %>
+                    <p><strong>Tipo:</strong> Estudiante</p>
+                    <% }
+                        if (dtm != null) {
+                            if (dtm instanceof DTUsuarioBase) {
+                                DTUsuarioBase dtu = (DTUsuarioBase) dtm;
+                                if (usuarioConsultado.getNickname().equals(dtu.getNickname())) {
+                    %>
+                    <form action="${pageContext.request.contextPath}/ModificarUsuarioServlet" method="GET" class="d-inline">
+                        <button type="submit" class="btn-solid btn-styled theme-primary">Modificar Datos</button>
+                    </form>
+                    <%
                                 }
                             }
-                            
-                            
-                            %>
-                            
-                        </div>
-                            
-                        <div id="tabActividad" class="tab-content" style="display: none;">
-                            <% if (usuarioConsultado instanceof DTDocente) { 
-                                DTDocente doc = (DTDocente) usuarioConsultado;
-                            %>
-                                <h4>Ediciones de Cursos Impartidas:</h4>
-                                <ul>
-                                    <% if (doc.getEdiciones() != null && !doc.getEdiciones().isEmpty()) { 
-                                        for (String ed : doc.getEdiciones()) { %>
-                                            <li><%= ed %></li>
-                                        <% } 
-                                    } else { %>
-                                        <li>No imparte ediciones actualmente.</li>
-                                    <% } %>
-                                </ul>
-                            <% } else { %>
-                                <h4>Inscripciones a Ediciones:</h4>
-                                <ul>
-                                    <% if (usuarioConsultado.getEdiciones() != null && !usuarioConsultado.getEdiciones().isEmpty()) { 
-                                        for (String ed : usuarioConsultado.getEdiciones()) { %>
-                                            <li><%= ed %></li>
-                                        <% } 
-                                    } else { %>
-                                        <li>No está inscripto a ninguna edición.</li>
-                                    <% } %>
-                                </ul>
-                            <% } %>
-
-                            <h4>Programas de Formación:</h4>
-                            <ul>
-                                <% if (usuarioConsultado.getProgramas() != null && !usuarioConsultado.getProgramas().isEmpty()) { 
-                                    for (String prog : usuarioConsultado.getProgramas()) { %>
-                                        <li><%= prog %></li>
-                                    <% } 
-                                } else { %>
-                                    <li>No está vinculado a programas de formación.</li>
-                                <% } %>
-                            </ul>
-                        </div>
-                    <% } %>
-                    </div>
+                        }
+                    %>
                 </div>
 
+                <div id="tabActividad" class="tab-content" style="display: none;">
+                    <% if (usuarioConsultado instanceof DTDocente) {
+                            DTDocente doc = (DTDocente) usuarioConsultado;
+                    %>
+                    <h4 class="fw-bold mt-2">Ediciones de Cursos Impartidas:</h4>
+                    <ul>
+                        <% if (doc.getEdiciones() != null && !doc.getEdiciones().isEmpty()) {
+                                for (String ed : doc.getEdiciones()) {%>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/ConsultaEdicionServlet?nombre=<%= java.net.URLEncoder.encode(ed, "UTF-8") %>" class="text-decoration-none">
+                                <%= ed %>
+                            </a>
+                        </li>
+                        <% }
+                            } else { %>
+                        <li>No imparte ediciones actualmente.</li>
+                        <% } %>
+                    </ul>
+                    <% } else { %>
+                    <h4 class="fw-bold mt-2">Inscripciones a Ediciones:</h4>
+                    <ul>
+                        <% if (usuarioConsultado.getEdiciones() != null && !usuarioConsultado.getEdiciones().isEmpty()) {
+                                for (String ed : usuarioConsultado.getEdiciones()) {%>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/ConsultaEdicionServlet?nombre=<%= java.net.URLEncoder.encode(ed, "UTF-8") %>" class="text-decoration-none">
+                                <%= ed %>
+                            </a>
+                        </li>
+                        <% }
+                            } else { %>
+                        <li>No está inscripto a ninguna edición.</li>
+                        <% } %>
+                    </ul>
+                    <% } %>
+
+                    <h4 class="fw-bold mt-3">Programas de Formación:</h4>
+                    <ul>
+                        <% if (usuarioConsultado.getProgramas() != null && !usuarioConsultado.getProgramas().isEmpty()) {
+                                for (String prog : usuarioConsultado.getProgramas()) {%>
+                        <li>
+                            <a href="${pageContext.request.contextPath}/ConsultaProgramaServlet?nombre=<%= java.net.URLEncoder.encode(prog, "UTF-8") %>" class="text-decoration-none">
+                                <%= prog %>
+                            </a>
+                        </li>
+                        <% }
+                            } else { %>
+                        <li>No está vinculado a programas de formación.</li>
+                        <% } %>
+                    </ul>
+                </div>
+                <% }%>
             </div>
         </div>
 
-        <!-- Bootstrap JS -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    </body>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>

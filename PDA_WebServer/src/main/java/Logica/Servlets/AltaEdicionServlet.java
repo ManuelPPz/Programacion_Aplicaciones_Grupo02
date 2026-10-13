@@ -6,6 +6,7 @@ import Logica.DTsClasses.DTDocente;
 import Logica.DTsClasses.EnumDT;
 import Logica.Logica.Fabric;
 import Logica.Logica.IController;
+import Logica.util.ImagenUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -47,7 +48,6 @@ public class AltaEdicionServlet extends HttpServlet {
         IController control = Fabric.GetInstance().GetIController();
         HttpSession session  = request.getSession(false);
 
-        // Para filtrar cursos del instituto del docente logueado
         String instituto = "";
         if (session != null && session.getAttribute("usuarioLogueado") instanceof DTDocente doc) {
             if (!doc.getInstituto().isEmpty()) {
@@ -64,6 +64,8 @@ public class AltaEdicionServlet extends HttpServlet {
 
         request.setAttribute("cursos",     cursos);
         request.setAttribute("docentes",   control.ListarDocentes(instituto));
+        
+        // ¡Asegúrate de que este nombre sea exactamente el del archivo JSP físico que estás editando!
         request.getRequestDispatcher("InterfacesJSP/AltaEdicionCurso.jsp").forward(request, response);
     }
 
@@ -100,35 +102,11 @@ public class AltaEdicionServlet extends HttpServlet {
 
         // Procesar subida de la imagen
         String nombreFinalImagen = ""; 
-        try {
-            Part filePart = request.getPart("imagen");
-
-            if (filePart != null && filePart.getSize() > 0) {
-                String originalFileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-
-                String extension = "";
-                int i = originalFileName.lastIndexOf('.');
-                if (i > 0) {
-                    extension = originalFileName.substring(i);
-                }
-
-                // LIMPIEZA DE NOMBRE: Reemplaza espacios y caracteres especiales por guiones bajos
-                String nombreLimpio = nombre.trim().toLowerCase().replaceAll("[^a-z0-9_-]", "_");
-                nombreFinalImagen = nombreLimpio + "_" + System.currentTimeMillis() + extension;
-
-                String uploadPath = "C:" + File.separator + "mi_proyecto_data" + File.separator + "uploads" + File.separator + "ediciones";
-
-                File uploadDir = new File(uploadPath);
-                if (!uploadDir.exists()) {
-                    uploadDir.mkdirs(); // Crea toda la estructura de carpetas si no existe
-                }
-
-                String filePath = uploadPath + File.separator + nombreFinalImagen;
-                filePart.write(filePath); // Guarda el archivo físicamente en disco
-            }
-        } catch (Exception e) {
+        try{
+            nombreFinalImagen = ImagenUtil.guardar(request.getPart("imagen"), nombre, ImagenUtil.CARPETA_EDICIONCURSOS);
+        }catch (Exception e) {
             System.err.println("Error grave al guardar la imagen en disco:");
-            e.printStackTrace(); // Ver el error exacto en la consola de Tomcat
+             e.printStackTrace();
         }
 
         Date fInicio, fFin;
