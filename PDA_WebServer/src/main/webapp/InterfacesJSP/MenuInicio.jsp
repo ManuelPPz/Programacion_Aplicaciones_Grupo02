@@ -114,9 +114,15 @@
                                         </a>
                                     </li>
                                     <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">CURSOS</li>
-                                    <li class="list-group-item text-dark fw-semibold">Alta Curso</li>
-                                    <li class="list-group-item text-dark fw-semibold">Alta Edicion</li>
-                                    <li class="list-group-item text-dark fw-semibold">Alta Programa de Formacion</li>
+                                    <li class="list-group-item text-dark fw-semibold">
+                                        <a href="${pageContext.request.contextPath}/AltaCursoServlet"class="text-decoration-none text-dark d-block">Alta Curso</a>
+                                    </li>
+                                    <li class="list-group-item text-dark fw-semibold">
+                                        <a href="${pageContext.request.contextPath}/AltaEdicionServlet"class="text-decoration-none text-dark d-block">Alta Edicion</a>
+                                    </li>
+                                    <li class="list-group-item text-dark fw-semibold">
+                                        <a href="${pageContext.request.contextPath}/CrearProgramaServlet"class="text-decoration-none text-dark d-block">Alta Programa de Formacion</a>
+                                    </li>
                                     <%
                                 } else if (dtm instanceof DTUsuario) {
                                     DTUsuario dtu = (DTUsuario) dtm;
@@ -127,7 +133,12 @@
                                         </a>
                                     </li>
                                     <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">Inscripciones</li>
-                                    <li class="list-group-item text-dark fw-semibold">Inscribirme</li>
+                                    <li class="list-group-item text-dark fw-semibold">
+                                        <a href="${pageContext.request.contextPath}/ConsultaCursoServlet" class="text-decoration-none text-dark d-block">Inscribirme a Edicion</a>
+                                    </li>
+                                    <li class="list-group-item text-dark fw-semibold">
+                                        <a href="${pageContext.request.contextPath}/InscripcionProgramaServlet" class="text-decoration-none text-dark d-block">Inscribirme a Programa</a>
+                                    </li>
                                     <li class="list-group-item text-dark fw-semibold">Ver Resultados</li>
                                     <%
                                 }
@@ -177,6 +188,28 @@
                                     <li class="list-group-item text-muted small">Sin Categorias</li>
                                     <%
                                 }
+                            %>
+                        </ul>
+                        <ul class="list-group list-group-flush">
+                            <%
+                            if (dtm != null) {
+                                if (dtm instanceof DTUsuarioBase) {
+                                    DTUsuarioBase dtu = (DTUsuarioBase) dtm;
+                                    %>
+                                    <li class="list-group-item text-dark fw-bold text-center fs-5">
+                                        
+                                        <a href="#" class="text-dark text-decoration-none d-block">
+                                            <img src="<%= request.getContextPath() %>/Images/Exit_Simbol.png" 
+                                                alt="Perfil" 
+                                                width="22" 
+                                                height="22" 
+                                                class="border border-0">
+                                            Salir
+                                        </a>
+                                    </li>
+                                    <%
+                                }
+                            }
                             %>
                         </ul>
                     </div>

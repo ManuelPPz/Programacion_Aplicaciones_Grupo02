@@ -27,7 +27,7 @@ public class ConsultaProgramaServlet extends HttpServlet {
             throws ServletException, IOException {
 
         IController control = Fabric.GetInstance().GetIController();
-        request.setAttribute("programas", control.ListarProgramaDeForm());
+        request.setAttribute("programas", control.ListarClase(EnumDT.DT_PROGRAMA));
 
         String programa = request.getParameter("programa");
         if (programa != null && !programa.isBlank()) {

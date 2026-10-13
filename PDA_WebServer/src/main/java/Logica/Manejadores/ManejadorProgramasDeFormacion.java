@@ -114,46 +114,45 @@ public class ManejadorProgramasDeFormacion {
         return pdf; 
     }
     
-    public void AddCurso(ProgramaDeFormacion pdf, Curso c){
+    public void AddCurso(ProgramaDeFormacion pdf, Curso c) {
         if (pdf == null || c == null) return;
-        
-        // 1. Actualizar en memoria RAM local
-        pdf.AddCurso(c);
-        
-        // 2. Persistir la relación ManyToMany en la base de datos
+
         EntityManager em = JPAUtil.getEntityManager();
         try {
             em.getTransaction().begin();
-            
-            // Unir o buscar los objetos dentro de la sesión activa de JPA
+
+            // 1. Cargar/gestionar ambas entidades dentro de la sesión activa
             ProgramaDeFormacion pdfMerged = em.find(ProgramaDeFormacion.class, pdf.getNombre());
             Curso cMerged = em.find(Curso.class, c.getNombre());
-            
+
             if (pdfMerged != null && cMerged != null) {
-                // Sincronizar bidireccionalmente en las entidades gestionadas por JPA
+                // 2. Forzar la inicialización perezosa de la lista si es necesario dentro de la sesión
+                pdfMerged.getCursos().size(); 
+
+                // 3. Asociar en las entidades gestionadas por JPA
                 pdfMerged.AddCurso(cMerged);
-                cMerged.AddPrograma(pdfMerged);
 
                 em.merge(pdfMerged);
                 em.merge(cMerged);
             }
-            
+
             em.getTransaction().commit();
+
+            // 4. Sincronizar los objetos desasociados que tenías en memoria Swing
+            pdf.AddCurso(c);
+
         } catch (Exception e) {
-            if (em.getTransaction().isActive()){
+            if (em.getTransaction() != null && em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
             throw new RuntimeException("Error al asociar el curso al programa de formación: " + e.getMessage(), e);
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
-        // 2. CRUCIAL: Sincronizar AMBOS objetos en la memoria RAM local (fuera del EM)
-        // Para que los Manejadores en memoria vean los cambios AL INSTANTE
-        pdf.AddCurso(c);
-        c.AddPrograma(pdf);
     }
-    
-        private ManejadorProgramasDeFormacion(){  
+    private ManejadorProgramasDeFormacion(){  
     }
     //=======================================================
     
@@ -204,7 +203,7 @@ public class ManejadorProgramasDeFormacion {
                 }
             }
         }
-        return new DTProgramaForm(nom, desc, v, auxList, fAlta, auxListCat);
+        return new DTProgramaForm(nom, desc, v, auxList, fAlta, auxListCat, pdf.getImage());
     }
     
     public List<DTMaster> getDTList(){
@@ -220,5 +219,23 @@ public class ManejadorProgramasDeFormacion {
         }
         
         return auxList;
+    }
+    
+    
+    public List<DTMaster> ListarProgramasDeCurso(String curso){
+        List<ProgramaDeFormacion> auxList = getList();
+        List<DTMaster> listReturn = new ArrayList<>();
+        for(ProgramaDeFormacion pdf : auxList){
+            List<Curso> auxListCur = pdf.getCursos();
+            for(Curso c : auxListCur){
+                if(c.getNombre()!=null){
+                    if(curso.equals(c.getNombre())){
+                        listReturn.add(getDT(pdf));
+                    }
+                }
+                
+            }
+        }
+        return listReturn;
     }
 }

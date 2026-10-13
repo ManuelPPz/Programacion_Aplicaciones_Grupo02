@@ -108,8 +108,8 @@ public interface IController {
     public abstract List<DTMaster>ListarDocentes(String nomInstituto);
     //Devolver lista de inscripciones a ediciones de curso de un usuario
     public abstract List<DTMaster> ListarInscripciones(String nicknameEstudiante);
+    public abstract List<DTMaster> ListarProgramasDeCurso(String curso);
     
-    public abstract List<DTMaster>ListarProgramaDeForm();
     public abstract String GenerateRandPassword();
     
     public abstract void AltaCategoria(String nombre);

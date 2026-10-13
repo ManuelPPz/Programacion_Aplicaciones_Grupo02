@@ -27,7 +27,7 @@ public class AgregarCursoProgramaServlet extends HttpServlet {
             throws ServletException, IOException {
 
         IController control = Fabric.GetInstance().GetIController();
-        request.setAttribute("programas", control.ListarProgramaDeForm());
+        request.setAttribute("programas", control.ListarClase(EnumDT.DT_PROGRAMA));
         request.setAttribute("cursos",    control.ListarClase(EnumDT.DT_CURSO));
         request.getRequestDispatcher("InterfacesJSP/AgregarCursoProgramaFormacion.jsp").forward(request, response);
     }
@@ -43,7 +43,7 @@ public class AgregarCursoProgramaServlet extends HttpServlet {
 
         if (programa == null || programa.isBlank() || cursArr == null || cursArr.length == 0) {
             request.setAttribute("error", "Debe seleccionar un programa y al menos un curso.");
-            request.setAttribute("programas", control.ListarProgramaDeForm());
+            request.setAttribute("programas", control.ListarClase(EnumDT.DT_PROGRAMA));
             request.setAttribute("cursos",    control.ListarClase(EnumDT.DT_CURSO));
             request.getRequestDispatcher("InterfacesJSP/AgregarCursoProgramaFormacion.jsp").forward(request, response);
             return;
@@ -57,7 +57,7 @@ public class AgregarCursoProgramaServlet extends HttpServlet {
             request.setAttribute("error", "Error al agregar curso(s): " + e.getMessage());
         }
 
-        request.setAttribute("programas", control.ListarProgramaDeForm());
+        request.setAttribute("programas", control.ListarClase(EnumDT.DT_PROGRAMA));
         request.setAttribute("cursos",    control.ListarClase(EnumDT.DT_CURSO));
         request.getRequestDispatcher("InterfacesJSP/AgregarCursoProgramaFormacion.jsp").forward(request, response);
     }

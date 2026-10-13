@@ -62,14 +62,25 @@ public ProgramaDeFormacion() {}
     }
     
     
-    public void AddCurso(Curso c){
+    public void AddCurso(Curso c) {
         if (c != null) {
             if (this.cursos == null) {
                 this.cursos = new ArrayList<>();
             }
-            if (!this.cursos.contains(c)) {
+
+            // Si la lista es un proxy perezoso no inicializado y no hay sesión activa,
+            // evitamos el .contains() capturando la excepción.
+            boolean yaExiste = false;
+            try {
+                yaExiste = this.cursos.contains(c);
+            } catch (org.hibernate.LazyInitializationException e) {
+                // Si la colección está desconectada, inicializamos localmente
+                this.cursos = new ArrayList<>();
+            }
+
+            if (!yaExiste) {
                 this.cursos.add(c);
-                c.AddPrograma(this); // OBLIGATORIO: Actualiza la referencia en el Curso
+                c.AddPrograma(this);
             }
         }
     }

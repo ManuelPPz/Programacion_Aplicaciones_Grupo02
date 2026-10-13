@@ -58,9 +58,10 @@ public class ConsultaCursoServlet extends HttpServlet {
         CargarCategoriasEnSesion(request);
 
 
-        String curso = "Principio de Programacion";
+        String curso = "PDA";
         request.setAttribute("cursoElegido", ico.ConsultaCurso(curso));
-
+        request.setAttribute("edicionesDelCurso", ico.ListarEdiciones(curso));
+        request.setAttribute("programasDelCurso", ico.ListarProgramasDeCurso(curso));
 
         request.getRequestDispatcher("InterfacesJSP/ConsultaCurso.jsp").forward(request, response);
     }

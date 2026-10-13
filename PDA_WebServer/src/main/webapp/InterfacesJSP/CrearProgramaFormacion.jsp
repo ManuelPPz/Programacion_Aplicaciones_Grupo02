@@ -24,7 +24,7 @@
 <html lang="es">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Alta Edición de Curso</title>
+        <title>Alta Programa de Formacion</title>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css">
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/Styles/StylesContainers.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -114,9 +114,15 @@
                                         </a>
                                     </li>
                                     <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">CURSOS</li>
-                                    <li class="list-group-item text-dark fw-semibold">Alta Curso</li>
-                                    <li class="list-group-item text-dark fw-semibold">Alta Edicion</li>
-                                    <li class="list-group-item text-dark fw-semibold">Alta Programa de Formacion</li>
+                                    <li class="list-group-item text-dark fw-semibold">
+                                        <a href="${pageContext.request.contextPath}/AltaCursoServlet"class="text-decoration-none text-dark d-block">Alta Curso</a>
+                                    </li>
+                                    <li class="list-group-item text-dark fw-semibold">
+                                        <a href="${pageContext.request.contextPath}/AltaEdicionServlet"class="text-decoration-none text-dark d-block">Alta Edicion</a>
+                                    </li>
+                                    <li class="list-group-item text-dark fw-semibold">
+                                        <a href="${pageContext.request.contextPath}/CrearProgramaServlet"class="text-decoration-none text-dark d-block">Alta Programa de Formacion</a>
+                                    </li>
                                     <%
                                 } else if (dtm instanceof DTUsuario) {
                                     DTUsuario dtu = (DTUsuario) dtm;
@@ -127,8 +133,12 @@
                                         </a>
                                     </li>
                                     <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">Inscripciones</li>
-                                    <li class="list-group-item text-dark fw-semibold">Inscribirme</li>
-                                    <li class="list-group-item text-dark fw-semibold">Ver Resultados</li>
+                                    <li class="list-group-item text-dark fw-semibold">
+                                        <a href="${pageContext.request.contextPath}/InscripcionEdicionServlet" class="text-decoration-none text-dark d-block">Inscribirme a Edicion</a>
+                                    </li>
+                                    <li class="list-group-item text-dark fw-semibold">
+                                        <a href="${pageContext.request.contextPath}/InscripcionProgramaServlet" class="text-decoration-none text-dark d-block">Inscribirme a Programa</a>
+                                    </li>
                                     <%
                                 }
                             }
