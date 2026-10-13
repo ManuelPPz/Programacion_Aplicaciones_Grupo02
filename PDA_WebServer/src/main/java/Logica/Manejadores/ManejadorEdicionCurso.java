@@ -33,11 +33,11 @@ public class ManejadorEdicionCurso {
     private ManejadorEdicionCurso(){  
     }
 
-    public EdicionCurso CrearEdicion(Instituto instituto, Curso curso, String nombre, Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> docentes){
-        return new EdicionCurso(nombre, instituto, curso, fInicio, fFin, cupo, fAlta, docentes);
+    public EdicionCurso CrearEdicion(Instituto instituto, Curso curso, String nombre, Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> docentes, String imgPath){
+        return new EdicionCurso(nombre, instituto, curso, fInicio, fFin, cupo, fAlta, docentes, imgPath);
     }
     
-    public void ModificarDatos(EdicionCurso ec, Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> misUsuarios){
+    public void ModificarDatos(EdicionCurso ec, Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> misUsuarios, String imgPath){
         if (ec != null) {
             ec.ModificarDatos(fInicio, fFin, cupo, fAlta, misUsuarios);
         }
@@ -245,7 +245,7 @@ public class ManejadorEdicionCurso {
         return new DTEdicionCurso(
             ins, cur, ec.getNombre(), ec.getFInicio(), ec.getFFin(), 
             ec.getCupo(), ec.getCupoActual(), auxDocentes, ec.getFAlta(), 
-            auxDTEdiUsu, auxCatStr
+            auxDTEdiUsu, auxCatStr, ec.getImage()
         );
     }
     

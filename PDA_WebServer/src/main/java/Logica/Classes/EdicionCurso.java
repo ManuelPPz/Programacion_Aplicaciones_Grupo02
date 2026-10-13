@@ -41,7 +41,10 @@ public class EdicionCurso implements Serializable {
 
     @Column(name="Cupo_actual")
     private int cupoActual;
-
+    
+    @Column(name="ImagePath", columnDefinition = "BLOB")
+    private String image;
+    
     // Se corrige mappedBy apuntando a la propiedad "edicion" en Edi_Usu
     @OneToMany(mappedBy = "edicion", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Edi_Usu> misUsuarios = new ArrayList<>();
@@ -67,12 +70,13 @@ public class EdicionCurso implements Serializable {
     public List<Docente> getMisDocentes() { return misDocentes; }
     public Date getFAlta() { return fAlta; }
     public List<Edi_Usu> getMisInscripciones(){ return this.misUsuarios; }
-
+    public String getImage(){return this.image;}
+    
     public EdicionCurso() { 
         this.misUsuarios = new ArrayList<>();
     }
     
-    public EdicionCurso(String nombre, Instituto miInstituto, Curso miCurso, Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> docentes) {
+    public EdicionCurso(String nombre, Instituto miInstituto, Curso miCurso, Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> docentes, String imgPath) {
         this.nombre = nombre;
         this.miInstituto = miInstituto;
         this.miCurso = miCurso;
@@ -83,6 +87,7 @@ public class EdicionCurso implements Serializable {
         this.misUsuarios = new ArrayList<>();
         this.misDocentes = docentes;
         this.cupoActual = cupo;
+        this.image = imgPath;
     }
     
     public void ModificarDatos(Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> newUsuarios){

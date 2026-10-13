@@ -24,8 +24,9 @@ public class DTCurso extends DTMaster{
     private List<String> listProgCursos;
     private List<String> listCategorias;
     private String docente;
+    String imgPath;
     
-    public DTCurso(String nomInstituto, String nom, String descripcion, int duracion,float cantHoras,int cantCreditos, String URL, Date fecha, List<String> listPrevias, List<String> listEdiCursos, List<String> listProgCursos, List<String> categorias, String docente){
+    public DTCurso(String nomInstituto, String nom, String descripcion, int duracion,float cantHoras,int cantCreditos, String URL, Date fecha, List<String> listPrevias, List<String> listEdiCursos, List<String> listProgCursos, List<String> categorias, String docente, String imgPath){
         this.instituto = nomInstituto;
         this.nombre = nom;
         this.descripcion = descripcion;
@@ -39,6 +40,7 @@ public class DTCurso extends DTMaster{
         this.listProgCursos = listProgCursos;
         this.listCategorias = categorias;
         this.docente = docente;
+        this.imgPath=imgPath;
     }
     public String getInstituto(){return this.instituto;}
     public String getNombre(){return this.nombre;}
@@ -53,5 +55,6 @@ public class DTCurso extends DTMaster{
     public List<String> getProgFormacion(){return this.listProgCursos;}
     public List<String> getCategorias(){return this.listCategorias;}
     public String getDocente(){return this.docente;}
+    public String getImage(){return this.imgPath;}
     
 }

@@ -11,8 +11,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * ED-20 – Consulta de Curso
@@ -22,39 +25,42 @@ import java.util.List;
  */
 @WebServlet(name = "ConsultaCursoServlet", urlPatterns = {"/ConsultaCursoServlet"})
 public class ConsultaCursoServlet extends HttpServlet {
-
+    IController ico;
+    /*----------------Funciones de carga de lista de datos para el request-----------------*/
+    private void CargarInstitutosEnSesion(HttpServletRequest request) {
+        ico = Fabric.GetInstance().GetIController();
+        List<DTMaster> auxListInstituto = ico.ListarClase(EnumDT.DT_INSTITUTO);
+        if (auxListInstituto != null) {
+            request.getSession().setAttribute("AuxListInstituto", auxListInstituto);
+        }
+    }
+    private void CargarCategoriasEnSesion(HttpServletRequest request){
+        ico = Fabric.GetInstance().GetIController();
+        List<DTMaster> auxListCategoria = ico.ListarClase(EnumDT.DT_CATEGORIA);
+        if (auxListCategoria != null) {
+            request.getSession().setAttribute("AuxListCategoria", auxListCategoria);
+        }
+    }
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        IController control = Fabric.GetInstance().GetIController();
-
-        // Siempre cargamos listas de filtros
-        request.setAttribute("institutos", control.ListarClase(EnumDT.DT_INSTITUTO));
-        request.setAttribute("categorias", control.ListarClase(EnumDT.DT_CATEGORIA));
-
-        String instituto = request.getParameter("instituto");
-        String curso     = request.getParameter("curso");
-
-        // Si filtra por instituto → listar cursos de ese instituto
-        if (instituto != null && !instituto.isBlank()) {
-            List<DTMaster> cursosFiltrados = control.ListarCursos(instituto.trim());
-            request.setAttribute("cursosFiltrados", cursosFiltrados);
-            request.setAttribute("institutoSeleccionado", instituto);
-        } else {
-            // Sin filtro → mostrar todos
-            request.setAttribute("cursosFiltrados", control.ListarClase(EnumDT.DT_CURSO));
-        }
-
-        // Si eligió un curso concreto → traer su detalle
-        if (curso != null && !curso.isBlank()) {
-            DTMaster detalle = control.ConsultaCurso(curso.trim());
-            if (detalle instanceof DTCurso dtc) {
-                request.setAttribute("cursoDetalle", dtc);
-            } else {
-                request.setAttribute("error", "No se encontró el curso '" + curso + "'.");
+        String action = request.getParameter("action");
+        if ("ingVisitantes".equals(action)) {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.invalidate(); // O session.removeAttribute("usuarioLogueado");
             }
         }
+        // Cargar listas de institutos y categorías en la sesión
+        CargarInstitutosEnSesion(request);
+        CargarCategoriasEnSesion(request);
+
+
+        String curso = "Principio de Programacion";
+        request.setAttribute("cursoElegido", ico.ConsultaCurso(curso));
+
 
         request.getRequestDispatcher("InterfacesJSP/ConsultaCurso.jsp").forward(request, response);
     }

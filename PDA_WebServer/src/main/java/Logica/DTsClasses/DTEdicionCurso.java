@@ -22,8 +22,9 @@ public class DTEdicionCurso extends DTMaster{
     private Date fechaAlta;
     private List<DTEdi_Usu> misIscripciones;
     private List<String> misCategorias;
+    private String imgPath;
     
-    public DTEdicionCurso(String nomInstituto, String curso, String nombre, Date fInicio, Date fFin, int cupo, int cupoActual, List<String> listDocentes,Date fechaAlta, List<DTEdi_Usu> misInscripciones, List<String> misCategorias){
+    public DTEdicionCurso(String nomInstituto, String curso, String nombre, Date fInicio, Date fFin, int cupo, int cupoActual, List<String> listDocentes,Date fechaAlta, List<DTEdi_Usu> misInscripciones, List<String> misCategorias, String imgPath){
         this.instituto = nomInstituto;
         this.curso = curso;
         this.nombre = nombre;
@@ -35,6 +36,7 @@ public class DTEdicionCurso extends DTMaster{
         this.fechaAlta = fechaAlta;
         this.misIscripciones = misInscripciones;
         this.misCategorias = misCategorias;
+        this.imgPath=imgPath;
     }
     public String getInstituto(){return this.instituto;}
     public String getCurso(){return this.curso;}
@@ -47,4 +49,5 @@ public class DTEdicionCurso extends DTMaster{
     public Date getFechaAlta(){return this.fechaAlta;}
     public List<DTEdi_Usu> getMisInscripciones(){return this.misIscripciones;}
     public List<String> getMisCategorias(){return this.misCategorias;}
+    public String getImage(){return this.imgPath;}
 }

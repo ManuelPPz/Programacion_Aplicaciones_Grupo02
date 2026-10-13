@@ -40,6 +40,9 @@ public class Curso implements Serializable {
     @Column(name="F_Alta")
     private Date fAlta;
     
+    @Column(name="ImagePath", columnDefinition = "BLOB")
+    private String image;
+    
     @ManyToMany
     @JoinTable(
         name = "Previa", 
@@ -80,11 +83,12 @@ public class Curso implements Serializable {
     public List<ProgramaDeFormacion> getProgramas(){ return this.misProgramas; }
     public UsuarioBase getDocente(){ return this.miDocente; }
     public List<Categoria> getCategorias(){return this.misCategorias;}
+    public String getImage(){return this.image;}
     
     public Curso() {
     }
     
-    public Curso(Instituto instituto, String nombre, String descripcion, Integer duracion, Float cantHoras, Integer cantCreditos, String URL, Date fAlta, List<Curso> previas, UsuarioBase ub, List<Categoria> categorias){
+    public Curso(Instituto instituto, String nombre, String descripcion, Integer duracion, Float cantHoras, Integer cantCreditos, String URL, Date fAlta, List<Curso> previas, UsuarioBase ub, List<Categoria> categorias, String imgPath){
         this.miInstituto = instituto;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -98,9 +102,10 @@ public class Curso implements Serializable {
         this.misCategorias = categorias;
         this.misProgramas = new ArrayList<>();
         this.misEdiciones = new ArrayList<>();
+        this.image = imgPath;
     }
 
-    public void ModificarMisDatos(String descripcion, Integer duracion, Float cantHoras, Integer cantCreditos, String URL, Date fAlta, List<Curso> previas, UsuarioBase ub, List<Categoria> newCategoria){
+    public void ModificarMisDatos(String descripcion, Integer duracion, Float cantHoras, Integer cantCreditos, String URL, Date fAlta, List<Curso> previas, UsuarioBase ub, List<Categoria> newCategoria, String imgPath){
         this.descripcion = descripcion;
         this.duracion = duracion;
         this.cantHoras = cantHoras;
@@ -110,6 +115,7 @@ public class Curso implements Serializable {
         this.previas = previas;
         this.miDocente = (Docente)ub;
         this.misCategorias = newCategoria;
+        this.image=imgPath;
     }
     
     public void AddEdicion(EdicionCurso ec){

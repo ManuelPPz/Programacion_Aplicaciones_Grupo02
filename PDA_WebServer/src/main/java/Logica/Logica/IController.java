@@ -36,14 +36,14 @@ public interface IController {
     public abstract void DejarDeSeguir(String nickname1, String nickname2);
     
     //Alta Curso
-    public abstract void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso, String docente, List<String> categorias) throws Exception;
+    public abstract void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso, String docente, List<String> categorias, String imgPath) throws Exception;
     
     //Consulta Curso
     //Se modificara al crear el tipo de dato curso retornando el tipo de dato "Curso"
     public abstract DTMaster ConsultaCurso(String nomCurso);
     
     //Alta Edicion Curso
-    public abstract void AltaEdicionCurso(String instituto, String nomCurso, String nomEdicion,Date fInicio, Date fFin,int cupo, List<String>docentes, Date fAlta)throws Exception;
+    public abstract void AltaEdicionCurso(String instituto, String nomCurso, String nomEdicion,Date fInicio, Date fFin,int cupo, List<String>docentes, Date fAlta, String imgPath)throws Exception;
     
     //Consulta Edicion Curso
     //Se modificara al crear el tipo de dato EdicionCurso retornando el tipo de dato "EdicionCurso"
@@ -56,7 +56,7 @@ public interface IController {
     public abstract void AceptarEstudiantesAEdicionCurso(List<Object[]> estudiantesYCambios, String nomEdicion);
     //Crear Programa de Formacion
     //El tipo de dato FechaType sera añadido cuando se cree el tipo de dato "FechaType" o alguno con nombre parecido
-    public abstract void CrearProgramasDeFormacion(String nomPrograma, String descripcion, Date fInicio, Date fFin,Date fAlta)throws Exception;
+    public abstract void CrearProgramasDeFormacion(String nomPrograma, String descripcion, Date fInicio, Date fFin,Date fAlta, String imgPath)throws Exception;
     
     //Agregar programa
     public abstract void AgregarCursoAProgramas(String nomPrograma, List<String> cursos);

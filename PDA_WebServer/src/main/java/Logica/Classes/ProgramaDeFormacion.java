@@ -30,6 +30,8 @@ public class ProgramaDeFormacion implements Serializable {
     private Vigencia vigenciaPrograma;
     @Column(name="F_Alta")
     private Date fAlta;
+    @Column(name="ImagePath", columnDefinition = "BLOB")
+    private String image;
     @ManyToMany
     @JoinTable(
         name = "programa_curso",
@@ -43,18 +45,20 @@ public class ProgramaDeFormacion implements Serializable {
     // Requerido por JPA/Hibernate
 public ProgramaDeFormacion() {}
 
-    public ProgramaDeFormacion(String nombre, String descripcion, Vigencia vigenciaPrograma, Date fAlta) {
+    public ProgramaDeFormacion(String nombre, String descripcion, Vigencia vigenciaPrograma, Date fAlta, String imgPath) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.vigenciaPrograma = vigenciaPrograma;
         this.fAlta = fAlta;
         cursos  = new ArrayList<>();
+        this.image=imgPath;
     }
     
-    public void ModificarDatos(String descripcion, Vigencia vigenciaPrograma, Date fAlta){
+    public void ModificarDatos(String descripcion, Vigencia vigenciaPrograma, Date fAlta, String imgPath){
         this.descripcion = descripcion;
         this.vigenciaPrograma = vigenciaPrograma;
         this.fAlta = fAlta;
+        this.image=imgPath;
     }
     
     
@@ -96,6 +100,9 @@ public ProgramaDeFormacion() {}
     }
     public Date getFAlta(){
         return fAlta;
+    }
+    public String getImage(){
+        return this.image;
     }
     
 

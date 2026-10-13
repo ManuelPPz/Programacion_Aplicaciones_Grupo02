@@ -26,15 +26,15 @@ public class ManejadorProgramasDeFormacion {
     }
     
     
-    public ProgramaDeFormacion CrearPrograma(String nombre, String descripcion, Vigencia vigencia, Date fAlta){
-        ProgramaDeFormacion auxPDF = new ProgramaDeFormacion(nombre, descripcion, vigencia, fAlta);
+    public ProgramaDeFormacion CrearPrograma(String nombre, String descripcion, Vigencia vigencia, Date fAlta, String imgPath){
+        ProgramaDeFormacion auxPDF = new ProgramaDeFormacion(nombre, descripcion, vigencia, fAlta, imgPath);
         return auxPDF;
     }
     
-    public void ModificarDatos(String nombre, String descripcion, Vigencia vigenciaPrograma, Date fAlta){
+    public void ModificarDatos(String nombre, String descripcion, Vigencia vigenciaPrograma, Date fAlta, String imgPath){
         ProgramaDeFormacion auxPDF = BuscarPrograma(nombre);
         if (auxPDF != null) {
-            auxPDF.ModificarDatos(descripcion, vigenciaPrograma, fAlta);
+            auxPDF.ModificarDatos(descripcion, vigenciaPrograma, fAlta, imgPath);
             
             EntityManager em = JPAUtil.getEntityManager();
             try {

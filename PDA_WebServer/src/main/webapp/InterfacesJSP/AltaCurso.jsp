@@ -216,14 +216,14 @@
                             <div class="alert alert-success"><%= request.getAttribute("exito") %></div>
                         <% } %>
 
-                        <form action="${pageContext.request.contextPath}/AltaCursoServlet" method="POST">
+                        <form action="${pageContext.request.contextPath}/AltaCursoServlet" method="POST" enctype="multipart/form-data">
                             <div class="row g-3">
                                 
                                 <!-- Instituto -->
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Instituto:</label>
                                     <select name="instituto" class="form-select" required onchange="cargarCursosPorInstituto(this.value)">
-                                        <option value="" disabled <%= (instSel == null) ? "selected" : "" %>>Seleccione un instituto...</option>
+                                        <option value="" disabled selected>Seleccione un instituto...</option>
                                         <%
                                         List<DTMaster> auxListIns = (List<DTMaster>) request.getAttribute("institutos");
                                         if (auxListIns == null) {
@@ -261,7 +261,7 @@
 
                                 <!-- Duración -->
                                 <div class="col-md-4">
-                                    <label class="form-label fw-bold">Duración (meses):</label>
+                                    <label class="form-label fw-bold">Duración (Semanas):</label>
                                     <input type="number" name="duracion" class="form-control" min="1" required>
                                 </div>
 
@@ -282,7 +282,9 @@
                                     <label class="form-label fw-bold">URL:</label>
                                     <input type="url" name="url" class="form-control" placeholder="https://ejemplo.com/curso" required>
                                 </div>
-
+                                <!--Imagen-->
+                                <label>Imagen del curso:</label><br>
+                                <input type="file" name="imagen" accept="image/png, image/jpeg"><br><br>
                                 <!-- Categorías -->
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Categorías:</label>
@@ -312,19 +314,7 @@
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">Previas (Opcional):</label>
                                     <select name="previas" class="form-select" multiple style="height: 120px;">
-                                        <%
-                                        List<DTMaster> auxListPre = (List<DTMaster>) request.getAttribute("cursos");
-                                        if (auxListPre != null) {
-                                            for (int i = 0; i < auxListPre.size(); i++) {
-                                                if (auxListPre.get(i) instanceof DTCurso) {
-                                                    DTCurso dtp = (DTCurso) auxListPre.get(i);
-                                        %>
-                                                    <option value="<%= dtp.getNombre() %>"><%= dtp.getNombre() %></option>
-                                        <%
-                                                }
-                                            }
-                                        }
-                                        %>
+                                        <option value="" disabled selected>Seleccione primero un instituto...</option>
                                     </select>
                                     <div class="form-text">Usa Ctrl + Clic para selección múltiple.</div>
                                 </div>
@@ -343,15 +333,34 @@
 
         <script>
             function cargarCursosPorInstituto(nombreInstituto) {
-                if (nombreInstituto) {
-                    window.location.href = "${pageContext.request.contextPath}/AltaCursoServlet?instituto=" + encodeURIComponent(nombreInstituto);
-                }
-            }
+                const selectPrevias = document.querySelector('select[name="previas"]');
+                selectPrevias.innerHTML = ''; // Limpiar opciones anteriores
 
-            function cargarEdiciones(nombreCurso) {
-                if (nombreCurso) {
-                    window.location.href = "${pageContext.request.contextPath}/InscripcionEdicionServlet?curso=" + encodeURIComponent(nombreCurso);
+                // Si no hay instituto seleccionado o es una cadena vacía/espacios, limpiar y salir
+                if (!nombreInstituto || nombreInstituto.trim() === "" || nombreInstituto === "null") {
+                    selectPrevias.innerHTML = '<option value="" disabled selected>Seleccione primero un instituto...</option>';
+                    return;
                 }
+
+                fetch("${pageContext.request.contextPath}/AltaCursoServlet?instituto=" + encodeURIComponent(nombreInstituto))
+                    .then(response => response.json())
+                    .then(cursos => {
+                        if (cursos.length === 0) {
+                            selectPrevias.innerHTML = '<option value="" disabled>Sin cursos previos disponibles en este instituto</option>';
+                            return;
+                        }
+
+                        cursos.forEach(curso => {
+                            const option = document.createElement('option');
+                            option.value = curso.nombre;
+                            option.textContent = curso.nombre;
+                            selectPrevias.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error al cargar cursos:', error);
+                        selectPrevias.innerHTML = '<option value="" disabled>Error al cargar cursos previos</option>';
+                    });
             }
         </script>
 

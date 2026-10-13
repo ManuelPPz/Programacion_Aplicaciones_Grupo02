@@ -33,22 +33,22 @@ public class ManejadorCursos {
     }
     //=======================================================
     
-    public Curso CrearCurso(Instituto instituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<String> previas, UsuarioBase ub, List<Categoria> categorias){
+    public Curso CrearCurso(Instituto instituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<String> previas, UsuarioBase ub, List<Categoria> categorias, String imgPath){
         Curso returnCurso;
         List<Curso> auxPrevias = new ArrayList<>();
         for(int i = 0; i < previas.size(); i++){
             auxPrevias.add(BuscarCurso(previas.get(i)));
         }
-        returnCurso = new Curso(instituto, nombre, descripcion, duracion, cantHoras, cantCreditos, URL, fAlta, auxPrevias, ub, categorias);
+        returnCurso = new Curso(instituto, nombre, descripcion, duracion, cantHoras, cantCreditos, URL, fAlta, auxPrevias, ub, categorias, imgPath);
         return returnCurso;
     }
 
-    public void ModificarCurso(Curso c, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<String> previas, UsuarioBase ub, List<Categoria> categorias){
+    public void ModificarCurso(Curso c, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, Date fAlta, List<String> previas, UsuarioBase ub, List<Categoria> categorias, String imgPath){
         List<Curso> auxPrevias = new ArrayList<>();
         for(int i = 0; i < previas.size(); i++){
             auxPrevias.add(BuscarCurso(previas.get(i)));
         }
-        c.ModificarMisDatos(descripcion, duracion, cantHoras, cantCreditos, URL, fAlta, auxPrevias, ub, categorias);
+        c.ModificarMisDatos(descripcion, duracion, cantHoras, cantCreditos, URL, fAlta, auxPrevias, ub, categorias, imgPath);
         
         // Sincronizar los cambios con JPA
             EntityManager em = getEntityManager();
@@ -230,7 +230,8 @@ public class ManejadorCursos {
             auxEdicionesStr,
             auxProgramasStr,
             auxCategoriaStr,
-            c.getDocente().getNickname()
+            c.getDocente().getNickname(),
+            c.getImage()
         );
     }
 

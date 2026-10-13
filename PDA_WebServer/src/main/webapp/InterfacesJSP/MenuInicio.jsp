@@ -24,7 +24,7 @@
 <html lang="es">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Alta de Curso</title>
+        <title>Alta Edición de Curso</title>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css">
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/Styles/StylesContainers.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -114,11 +114,7 @@
                                         </a>
                                     </li>
                                     <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">CURSOS</li>
-                                    <li class="list-group-item">
-                                        <a href="${pageContext.request.contextPath}/AltaCursoServlet" class="text-dark fw-semibold text-decoration-none d-block">
-                                            Alta Curso
-                                        </a>
-                                    </li>
+                                    <li class="list-group-item text-dark fw-semibold">Alta Curso</li>
                                     <li class="list-group-item text-dark fw-semibold">Alta Edicion</li>
                                     <li class="list-group-item text-dark fw-semibold">Alta Programa de Formacion</li>
                                     <%
@@ -131,11 +127,7 @@
                                         </a>
                                     </li>
                                     <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">Inscripciones</li>
-                                    <li class="list-group-item">
-                                        <a href="${pageContext.request.contextPath}/InscripcionEdicionServlet" class="text-dark fw-semibold text-decoration-none d-block">
-                                            Inscribirme
-                                        </a>
-                                    </li>
+                                    <li class="list-group-item text-dark fw-semibold">Inscribirme</li>
                                     <li class="list-group-item text-dark fw-semibold">Ver Resultados</li>
                                     <%
                                 }
@@ -187,29 +179,16 @@
                                 }
                             %>
                         </ul>
-                        <ul class="list-group list-group-flush">
-                            <%
-                            if (dtm != null) {
-                                if (dtm instanceof DTUsuarioBase) {
-                                    %>
-                                    <li class="list-group-item text-dark fw-bold text-center fs-5">
-                                        <a href="#" class="text-dark text-decoration-none d-block">
-                                            <img src="<%= request.getContextPath() %>/Images/Exit_Simbol.png" 
-                                                alt="Perfil" 
-                                                width="22" 
-                                                height="22" 
-                                                class="border border-0 me-1">
-                                            Salir
-                                        </a>
-                                    </li>
-                                    <%
-                                }
-                            }
-                            %>
-                        </ul>
                     </div>
                 </div>
 
+                <%-- FORMULARIO PRINCIPAL DE ALTA DE EDICIÓN DE CURSO --%>
+                <div class="col-md-9 col-lg-10 ps-md-4 d-flex flex-column align-items-center mb-5">
+                    </--ACA VA SU CASO DE USO--->
+                </div>
+
+            </div>
+        </div>
 
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

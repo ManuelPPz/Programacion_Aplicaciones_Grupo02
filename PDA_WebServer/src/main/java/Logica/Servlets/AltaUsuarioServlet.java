@@ -61,7 +61,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
             institutoSeleccionado = request.getParameter("instituto"); 
         }
 
-        // PROCESAMIENTO Y GUARDADO DE LA IMAGEN EN DISCO
+        //guardar imagen
         String nombreFinalImagen = ""; 
         try {
             Part filePart = request.getPart("imagen");
@@ -75,20 +75,23 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
                     extension = originalFileName.substring(i);
                 }
 
-                nombreFinalImagen = nickname.trim().toLowerCase() + "_" + System.currentTimeMillis() + extension;
+                // LIMPIEZA DE NOMBRE: Reemplaza espacios y caracteres especiales por guiones bajos
+                String nombreLimpio = nombre.trim().toLowerCase().replaceAll("[^a-z0-9_-]", "_");
+                nombreFinalImagen = nombreLimpio + "_" + System.currentTimeMillis() + extension;
 
                 String uploadPath = "C:" + File.separator + "mi_proyecto_data" + File.separator + "uploads" + File.separator + "perfiles";
 
                 File uploadDir = new File(uploadPath);
                 if (!uploadDir.exists()) {
-                    uploadDir.mkdirs(); 
+                    uploadDir.mkdirs(); // Crea toda la estructura de carpetas si no existe
                 }
 
                 String filePath = uploadPath + File.separator + nombreFinalImagen;
-                filePart.write(filePath);
+                filePart.write(filePath); // Guarda el archivo físicamente en disco
             }
         } catch (Exception e) {
-            System.err.println("Error al procesar la imagen: " + e.getMessage());
+            System.err.println("Error grave al guardar la imagen en disco:");
+            e.printStackTrace(); // Ver el error exacto en la consola de Tomcat
         }
 
         try {
