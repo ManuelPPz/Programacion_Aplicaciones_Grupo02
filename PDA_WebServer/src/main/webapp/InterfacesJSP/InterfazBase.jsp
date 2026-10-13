@@ -10,6 +10,46 @@
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/Styles/StylesContainers.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <script src="${pageContext.request.contextPath}/js/main.js"></script>
+        
+        <%-- Estilos para la cajita flotante de autocompletado del buscador --%>
+        <style>
+            .search-container {
+                position: relative;
+            }
+            #searchResults {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                z-index: 1050;
+                max-height: 350px;
+                overflow-y: auto;
+                background: white;
+                border: 1px solid rgba(0,0,0,.15);
+                border-radius: 0.375rem;
+                box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+                display: none;
+            }
+            .search-item {
+                padding: 10px 15px;
+                border-bottom: 1px solid #f1f1f1;
+                cursor: pointer;
+                text-decoration: none;
+                display: block;
+                color: #333;
+            }
+            .search-item:hover {
+                background-color: #f8f9fa;
+                color: #000;
+            }
+            .search-badge {
+                font-size: 0.75rem;
+                padding: 3px 6px;
+                border-radius: 4px;
+                font-weight: bold;
+                float: right;
+            }
+        </style>
     </head>
     <body class="bg-light">
         <%
@@ -22,10 +62,15 @@
                 <a class="navbar-brand me-3 d-flex align-items-center" href="${pageContext.request.contextPath}/MainMenu">
                     <img src="<%= request.getContextPath() %>/Images/Logo edEXT sin fondo.png" alt="LogoApp" width="52" height="52" class="rounded-circle border">
                 </a>
-                <form class="navbar-search-form my-0 d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Cursos, Programas" aria-label="Search"/>
-                    <button class="btn btn-outline-success" type="submit">Buscar</button>
-                </form>
+                
+                <%-- BARRA DE BÚSQUEDA INTELIGENTE EN TIEMPO REAL --%>
+                <div class="search-container my-0 flex-grow-1 mx-4" style="max-width: 500px;">
+                    <form class="d-flex" role="search" onsubmit="return false;">
+                        <input id="searchInput" class="form-control me-2" type="search" placeholder="Buscar cursos, programas, ediciones, usuarios..." aria-label="Search" autocomplete="off"/>
+                    </form>
+                    <div id="searchResults"></div>
+                </div>
+
                 <%
                     if (dtm instanceof DTUsuarioBase) {
                         DTUsuarioBase dtu = (DTUsuarioBase) dtm;
@@ -54,6 +99,64 @@
                 %>
             </div>
         </nav>
+
+        <%-- SCRIPT JAVASCRIPT PARA EL AUTOCOMPLETADO DINÁMICO --%>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const searchInput = document.getElementById("searchInput");
+                const searchResults = document.getElementById("searchResults");
+                let timeout = null;
+
+                searchInput.addEventListener("input", function () {
+                    clearTimeout(timeout);
+                    const query = this.value.trim();
+
+                    if (query.length < 2) {
+                        searchResults.style.display = "none";
+                        searchResults.innerHTML = "";
+                        return;
+                    }
+
+                    timeout = setTimeout(() => {
+                        fetch(`${pageContext.request.contextPath}/BuscadorLiveServlet?q=` + encodeURIComponent(query))
+                            .then(response => response.json())
+                            .then(data => {
+                                searchResults.innerHTML = "";
+                                if (data.length > 0) {
+                                    data.forEach(item => {
+                                        let badgeClass = "bg-secondary";
+                                        if (item.tipo === "Curso") badgeClass = "bg-primary text-white";
+                                        else if (item.tipo === "Programa") badgeClass = "bg-info text-dark";
+                                        else if (item.tipo === "Edición") badgeClass = "bg-success text-white";
+                                        else if (item.tipo === "Usuario") badgeClass = "bg-warning text-dark";
+
+                                        const link = document.createElement("a");
+                                        link.className = "search-item";
+                                        link.href = item.url;
+                                        link.innerHTML = `<span>\${item.nombre}</span> <span class="search-badge \${badgeClass}">\${item.tipo}</span>`;
+                                        searchResults.appendChild(link);
+                                    });
+                                    searchResults.style.display = "block";
+                                } else {
+                                    searchResults.innerHTML = '<div class="p-3 text-muted small text-center">No se encontraron resultados</div>';
+                                    searchResults.style.display = "block";
+                                }
+                            })
+                            .catch(err => {
+                                console.error("Error en la búsqueda:", err);
+                                searchResults.style.display = "none";
+                            });
+                    }, 300); // 300ms de retraso para optimizar peticiones
+                });
+
+                // Ocultar resultados si se hace clic fuera del buscador
+                document.addEventListener("click", function (e) {
+                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                        searchResults.style.display = "none";
+                    }
+                });
+            });
+        </script>
 
         <%-- CONTENEDOR Y FILA PRINCIPAL QUE AGRUPA TODO --%>
         <div class="container-fluid px-4 mt-4">

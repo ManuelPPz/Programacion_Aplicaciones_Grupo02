@@ -107,19 +107,19 @@ public class Controller implements IController{
         }
     }
     
-    @Override
+@Override
     public void SeguirUsuario(String nickname1, String nickname2){
         UsuarioBase ub1 = manUsuario.BuscarUsuario(nickname1);
         UsuarioBase ub2 = manUsuario.BuscarUsuario(nickname2);
-        manUsuario.SeguirUsuarios(ub1, ub2);
+        manUsuario.SeguirUsuarios(ub1, ub2); // El manejador se encarga de modificar y hacer el merge en la BD
     }
+    
     @Override
     public void DejarDeSeguir(String nickname1, String nickname2){
         UsuarioBase ub1 = manUsuario.BuscarUsuario(nickname1);
         UsuarioBase ub2 = manUsuario.BuscarUsuario(nickname2);
         manUsuario.DejarDeSeguir(ub1, ub2);
     }
-    
     
     //Alta Curso
     @Override

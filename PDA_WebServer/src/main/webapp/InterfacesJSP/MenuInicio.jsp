@@ -1,7 +1,11 @@
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="java.util.List"%>
+<%@page import="java.util.Collections"%>
+<%@page import="java.util.Comparator"%>
+<%@page import="java.util.Date"%>
 <%@page import="Logica.DTsClasses.DTEdicionCurso"%>
 <%@page import="Logica.DTsClasses.DTCurso"%>
+<%@page import="Logica.DTsClasses.DTMaster"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%-- 
     Aquí importas la estructura base estáticamente. 
@@ -43,7 +47,31 @@
     <div class="d-flex flex-column gap-4">
         <%
             List<DTMaster> novedades = (List<DTMaster>) request.getAttribute("novedadesRecientes");
+            
             if (novedades != null && !novedades.isEmpty()) {
+                
+                // ORDENAMIENTO CRONOLÓGICO (De más reciente a más antiguo)
+                Collections.sort(novedades, new Comparator<DTMaster>() {
+                    @Override
+                    public int compare(DTMaster o1, DTMaster o2) {
+                        Date f1 = null;
+                        Date f2 = null;
+
+                        if (o1 instanceof DTCurso c1) f1 = c1.getFechaAlta();
+                        else if (o1 instanceof DTEdicionCurso e1) f1 = e1.getFechaAlta();
+
+                        if (o2 instanceof DTCurso c2) f2 = c2.getFechaAlta();
+                        else if (o2 instanceof DTEdicionCurso e2) f2 = e2.getFechaAlta();
+
+                        if (f1 == null && f2 == null) return 0;
+                        if (f1 == null) return 1; // Los nulos van al final
+                        if (f2 == null) return -1;
+                        
+                        // Para ordenar de más antiguo a más reciente, invierte f2 y f1 (f1.compareTo(f2))
+                        return f2.compareTo(f1); 
+                    }
+                });
+
                 SimpleDateFormat sdf = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy");
                 for (DTMaster item : novedades) {
                     String tipo = "Publicación";

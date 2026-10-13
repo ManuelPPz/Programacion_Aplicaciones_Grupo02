@@ -1,14 +1,20 @@
 package Logica.Servlets;
 
+import Logica.Classes.UsuarioBase;
+import Logica.DTsClasses.DTMaster;
 import Logica.DTsClasses.DTUsuarioBase;
 import Logica.Logica.Fabric;
 import Logica.Logica.IController;
+import Logica.Manejadores.ManejadorUsuario;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
 
 @WebServlet(name = "ConsultaUsuarioIndividualServlet", urlPatterns = {"/ConsultaUsuarioIndividualServlet"})
 public class ConsultaUsuarioIndividualServlet extends HttpServlet {
@@ -18,36 +24,56 @@ public class ConsultaUsuarioIndividualServlet extends HttpServlet {
             throws ServletException, IOException {
 
         IController control = Fabric.GetInstance().GetIController();
-        boolean isJavaClient = request.getHeader("User-Agent") != null && request.getHeader("User-Agent").contains("Java");
+        String nicknameConsultado = request.getParameter("nickname");
 
-        String nickname = request.getParameter("nickname");
+        if (nicknameConsultado != null && !nicknameConsultado.isBlank()) {
+            DTUsuarioBase usuarioConsultado = control.ConsultarUsuario(nicknameConsultado.trim());
 
-        if (nickname != null && !nickname.isBlank()) {
-            DTUsuarioBase usuario = control.ConsultarUsuario(nickname.trim());
-            
-            if (usuario == null) {
-                if (isJavaClient) {
-                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Usuario no encontrado.");
-                    return;
+            if (usuarioConsultado != null) {
+                request.setAttribute("usuarioConsultado", usuarioConsultado);
+
+                // 1. CARGAR LISTA DE SEGUIDORES REALES DESDE LA BASE DE DATOS
+                List<DTUsuarioBase> listaSeguidores = new ArrayList<>();
+                UsuarioBase ubReal = ManejadorUsuario.GetInstance().BuscarUsuario(nicknameConsultado.trim());
+                
+                if (ubReal != null) {
+                    // CORRECCIÓN: Usamos getList() para obtener todos los usuarios y evaluar quiénes lo siguen
+                    List<UsuarioBase> todosLosUsuarios = ManejadorUsuario.GetInstance().getList();
+                    if (todosLosUsuarios != null) {
+                        for (UsuarioBase u : todosLosUsuarios) {
+                            if (u.getSeguidos() != null && u.getSeguidos().contains(ubReal)) {
+                                DTUsuarioBase dtSeg = control.ConsultarUsuario(u.getNickname());
+                                if (dtSeg != null) {
+                                    listaSeguidores.add(dtSeg);
+                                }
+                            }
+                        }
+                    }
                 }
-                request.setAttribute("error", "No se encontró el usuario '" + nickname + "'.");
+                request.setAttribute("listaSeguidores", listaSeguidores);
+
+                // 2. VERIFICAR SI EL USUARIO LOGUEADO YA SIGUE A ESTE PERFIL
+                HttpSession session = request.getSession(false);
+                DTMaster dtmLogueado = (session != null) ? (DTMaster) session.getAttribute("usuarioLogueado") : null;
+
+                boolean loSigue = false;
+                if (dtmLogueado instanceof DTUsuarioBase userLog && ubReal != null) {
+                    UsuarioBase ubLogueadoReal = ManejadorUsuario.GetInstance().BuscarUsuario(userLog.getNickname());
+                    if (ubLogueadoReal != null && ubLogueadoReal.getSeguidos() != null) {
+                        // Si el usuario logueado sigue al usuario consultado, cambiamos a true
+                        if (ubLogueadoReal.getSeguidos().contains(ubReal)) {
+                            loSigue = true;
+                        }
+                    }
+                }
+                request.setAttribute("loSigue", loSigue);
+                
             } else {
-                request.setAttribute("usuarioConsultado", usuario);
+                request.setAttribute("error", "No se encontró al usuario.");
             }
-        } else {
-            if (isJavaClient) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parámetro nickname requerido.");
-                return;
-            }
-            request.setAttribute("error", "No se especificó un nickname para consultar.");
         }
 
-        if (isJavaClient) {
-            response.setStatus(HttpServletResponse.SC_OK);
-            return;
-        }
-
-        request.getRequestDispatcher("InterfacesJSP/ConsultaUsuarioIndividual.jsp").forward(request, response);
+        request.getRequestDispatcher("/InterfacesJSP/ConsultaUsuarioIndividual.jsp").forward(request, response);
     }
 
     @Override
