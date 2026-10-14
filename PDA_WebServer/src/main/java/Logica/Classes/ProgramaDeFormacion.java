@@ -24,14 +24,20 @@ public class ProgramaDeFormacion implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     private String nombre;
+    
     @Column(name="Descripcion")
     private String descripcion;
+    
     @Embedded
     private Vigencia vigenciaPrograma;
+    
     @Column(name="F_Alta")
     private Date fAlta;
-    @Column(name="ImagePath", columnDefinition = "BLOB")
+    
+    // CORREGIDO: Se quitó el columnDefinition = "BLOB" para que se guarde como texto plano (VARCHAR)
+    @Column(name="ImagePath")
     private String image;
+    
     @ManyToMany
     @JoinTable(
         name = "programa_curso",
@@ -39,40 +45,53 @@ public class ProgramaDeFormacion implements Serializable {
         inverseJoinColumns = @JoinColumn(name = "curso_nombre")
     )
     private List<Curso> cursos;
+    
     // Se corrige mappedBy apuntando a la propiedad edicion de Edi_Usu
     @OneToMany(mappedBy = "id.miPrograma", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Prog_Usu> misUsuarios = new ArrayList<>();
+    
     // Requerido por JPA/Hibernate
-public ProgramaDeFormacion() {}
+    public ProgramaDeFormacion() {}
 
     public ProgramaDeFormacion(String nombre, String descripcion, Vigencia vigenciaPrograma, Date fAlta, String imgPath) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.vigenciaPrograma = vigenciaPrograma;
         this.fAlta = fAlta;
-        cursos  = new ArrayList<>();
-        this.image=imgPath;
+        this.cursos = new ArrayList<>();
+        this.image = imgPath;
     }
     
     public void ModificarDatos(String descripcion, Vigencia vigenciaPrograma, Date fAlta, String imgPath){
         this.descripcion = descripcion;
         this.vigenciaPrograma = vigenciaPrograma;
         this.fAlta = fAlta;
-        this.image=imgPath;
+        this.image = imgPath;
     }
     
-    
-    public void AddCurso(Curso c){
+    public void AddCurso(Curso c) {
         if (c != null) {
             if (this.cursos == null) {
                 this.cursos = new ArrayList<>();
             }
-            if (!this.cursos.contains(c)) {
+
+            // Si la lista es un proxy perezoso no inicializado y no hay sesión activa,
+            // evitamos el .contains() capturando la excepción.
+            boolean yaExiste = false;
+            try {
+                yaExiste = this.cursos.contains(c);
+            } catch (org.hibernate.LazyInitializationException e) {
+                // Si la colección está desconectada, inicializamos localmente
+                this.cursos = new ArrayList<>();
+            }
+
+            if (!yaExiste) {
                 this.cursos.add(c);
-                c.AddPrograma(this); // OBLIGATORIO: Actualiza la referencia en el Curso
+                c.AddPrograma(this);
             }
         }
     }
+    
     public void RemoveCurso(Curso c){
         if (c != null && this.cursos != null) {
             if (this.cursos.remove(c)) {
@@ -85,26 +104,29 @@ public ProgramaDeFormacion() {}
         misUsuarios.add(pu);
     }
     
-    
     public String getNombre() {
         return nombre;
     }
+    
     public String getDescripcion(){
         return descripcion;
     }
+    
     public Vigencia getVigencia(){
         return vigenciaPrograma;
     }
+    
     public List<Curso> getCursos(){
         return cursos;
     }
+    
     public Date getFAlta(){
         return fAlta;
     }
+    
     public String getImage(){
         return this.image;
     }
-    
 
     public void setId(String nombre) {
         this.nombre = nombre;
@@ -119,7 +141,6 @@ public ProgramaDeFormacion() {}
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof ProgramaDeFormacion)) {
             return false;
         }
@@ -134,5 +155,4 @@ public ProgramaDeFormacion() {}
     public String toString() {
         return "Classes.ProgramaDeFormacion[ id=" + nombre + " ]";
     }
-    
 }

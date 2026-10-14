@@ -1,7 +1,6 @@
 package Logica.Servlets;
 
 import Logica.DTsClasses.DTMaster;
-import Logica.DTsClasses.DTInstituto;
 import Logica.DTsClasses.DTProgramaForm;
 import Logica.DTsClasses.EnumDT;
 import Logica.Logica.Fabric;
@@ -12,12 +11,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  * ED-26 – Consulta de Programa de Formación
- * GET sin parámetros:   Carga la lista de todos los programas.
- * GET con ?programa=X:  Muestra el detalle del programa seleccionado (nombre, descripción,
- *                       vigencia y lista de cursos que contiene).
  */
 @WebServlet(name = "ConsultaProgramaServlet", urlPatterns = {"/ConsultaProgramaServlet"})
 public class ConsultaProgramaServlet extends HttpServlet {
@@ -27,14 +25,27 @@ public class ConsultaProgramaServlet extends HttpServlet {
             throws ServletException, IOException {
 
         IController control = Fabric.GetInstance().GetIController();
-        request.setAttribute("programas", control.ListarProgramaDeForm());
+        request.setAttribute("programas", control.ListarClase(EnumDT.DT_PROGRAMA));
 
-        String programa = request.getParameter("programa");
-        if (programa != null && !programa.isBlank()) {
-            DTMaster detalle = control.ConsultaProgramaFormacion(programa.trim());
+        // Obtenemos tanto "programa" como "nombre" por seguridad y decodificamos caracteres especiales
+        String programaRaw = request.getParameter("programa");
+        if (programaRaw == null || programaRaw.isBlank()) {
+            programaRaw = request.getParameter("nombre");
+        }
+
+        if (programaRaw != null && !programaRaw.isBlank()) {
+            // Decodificar por si viene con codificación URL (%20, etc.) y hacer trim
+            String programa = URLDecoder.decode(programaRaw, StandardCharsets.UTF_8).trim();
+            
+            System.out.println(">>> [DEBUG SERVLET] Buscando detalle para el programa: [" + programa + "]");
+            
+            DTMaster detalle = control.ConsultaProgramaFormacion(programa);
+            
             if (detalle instanceof DTProgramaForm dtp) {
+                System.out.println(">>> [DEBUG SERVLET] ¡Programa encontrado con éxito!");
                 request.setAttribute("programaDetalle", dtp);
             } else {
+                System.out.println(">>> [DEBUG SERVLET] control.ConsultaProgramaFormacion devolvió null o un tipo incorrecto.");
                 request.setAttribute("error", "No se encontró el programa '" + programa + "'.");
             }
         }

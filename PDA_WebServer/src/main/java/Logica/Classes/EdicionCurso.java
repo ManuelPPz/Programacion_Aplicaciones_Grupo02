@@ -42,7 +42,7 @@ public class EdicionCurso implements Serializable {
     @Column(name="Cupo_actual")
     private int cupoActual;
     
-    @Column(name="ImagePath", columnDefinition = "BLOB")
+    @Column(name="ImagePath")
     private String image;
     
     // Se corrige mappedBy apuntando a la propiedad "edicion" en Edi_Usu
@@ -70,7 +70,8 @@ public class EdicionCurso implements Serializable {
     public List<Docente> getMisDocentes() { return misDocentes; }
     public Date getFAlta() { return fAlta; }
     public List<Edi_Usu> getMisInscripciones(){ return this.misUsuarios; }
-    public String getImage(){return this.image;}
+    public String getImage(){ return this.image; }
+    public void setImage(String image){ this.image = image; }
     
     public EdicionCurso() { 
         this.misUsuarios = new ArrayList<>();
@@ -90,12 +91,15 @@ public class EdicionCurso implements Serializable {
         this.image = imgPath;
     }
     
-    public void ModificarDatos(Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> newUsuarios){
+    public void ModificarDatos(Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> newUsuarios, String imgPath){
         this.fInicio = fInicio;
         this.fFin = fFin;
         this.cupo = cupo;
         this.fAlta = fAlta;
         this.misDocentes = newUsuarios;
+        if (imgPath != null && !imgPath.isBlank()) {
+            this.image = imgPath;
+        }
     }
     
     public void AddUsuarioInscripto(Edi_Usu eu){
@@ -137,6 +141,7 @@ public class EdicionCurso implements Serializable {
     public void setCupoActual(int nuevoCupo){
         this.cupoActual = nuevoCupo;
     }
+    
     public int getCupoActual() {
         // Si cupoActual es 0 pero nunca se han registrado inscripciones, se inicializa al cupo máximo
         if (this.cupoActual == 0 && (this.misUsuarios == null || this.misUsuarios.isEmpty()) && this.cupo > 0) {

@@ -6,43 +6,41 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
-
 @Entity
 @Table(name = "Curso")
 public class Curso implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @Column(name="Nombre", unique=true, nullable=false)
     private String nombre;
-    
+
     @ManyToOne
     @JoinColumn(name="Instituto")
     private Instituto miInstituto;
-    
+
     @Column(name="Descripcion", length = 750)
     private String descripcion;
-    
+
     @Column(name="Duracion")
     private Integer duracion;
-    
+
     @Column(name="Cant_Horas")
     private Float cantHoras;
-    
+
     @Column(name="Cant_Creditos")
     private Integer cantCreditos;
-    
+
     @Column(name="URL")
     private String URL;
-    
+
     @Column(name="F_Alta")
     private Date fAlta;
-    
-    @Column(name="ImagePath", columnDefinition = "BLOB")
+
+    @Column(name="ImagePath")
     private String image;
-    
+
     @ManyToMany
     @JoinTable(
         name = "Previa", 
@@ -50,18 +48,17 @@ public class Curso implements Serializable {
         inverseJoinColumns = @JoinColumn(name="Previa_Nombre")
     )
     private List<Curso> previas = new ArrayList<>();
-    
+
     @OneToMany(mappedBy="miCurso")
     private List<EdicionCurso> misEdiciones = new ArrayList<>();
-    
-    // Si la relación la esclavitza ProgramaDeFormacion, usamos mappedBy
+
     @ManyToMany(mappedBy = "cursos", fetch = FetchType.EAGER)
     private List<ProgramaDeFormacion> misProgramas = new ArrayList<>();
-    
+
     @ManyToOne
     @JoinColumn(name="Nombre_Doc")
     private Docente miDocente;
-    
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "Categoria_Curso", 
@@ -69,7 +66,7 @@ public class Curso implements Serializable {
         inverseJoinColumns = @JoinColumn(name="Categoria_Nombre")
     )
     private List<Categoria> misCategorias;
-    
+
     public Instituto getInstituto() { return miInstituto; }
     public String getNombre() { return nombre; }
     public String getDescripcion(){ return descripcion; }
@@ -82,12 +79,13 @@ public class Curso implements Serializable {
     public List<EdicionCurso> getEdiciones(){ return misEdiciones; }
     public List<ProgramaDeFormacion> getProgramas(){ return this.misProgramas; }
     public UsuarioBase getDocente(){ return this.miDocente; }
-    public List<Categoria> getCategorias(){return this.misCategorias;}
-    public String getImage(){return this.image;}
-    
+    public List<Categoria> getCategorias(){ return this.misCategorias; }
+    public String getImage(){ return this.image; }
+    public void setImage(String image){ this.image = image; }
+
     public Curso() {
     }
-    
+
     public Curso(Instituto instituto, String nombre, String descripcion, Integer duracion, Float cantHoras, Integer cantCreditos, String URL, Date fAlta, List<Curso> previas, UsuarioBase ub, List<Categoria> categorias, String imgPath){
         this.miInstituto = instituto;
         this.nombre = nombre;
@@ -115,33 +113,35 @@ public class Curso implements Serializable {
         this.previas = previas;
         this.miDocente = (Docente)ub;
         this.misCategorias = newCategoria;
-        this.image=imgPath;
+        if (imgPath != null && !imgPath.isBlank()) {
+            this.image = imgPath;
+        }
     }
-    
+
     public void AddEdicion(EdicionCurso ec){
         if (this.misEdiciones == null) this.misEdiciones = new ArrayList<>();
         this.misEdiciones.add(ec);
     }
-    
+
     public void RemoveEdicion(EdicionCurso ec){
         if (this.misEdiciones != null) this.misEdiciones.remove(ec);
     }
-    
+
     public void AddPrograma(ProgramaDeFormacion pdf){
         if (this.misProgramas == null) this.misProgramas = new ArrayList<>();
         if (!this.misProgramas.contains(pdf)) {
             this.misProgramas.add(pdf);
         }
     }
-    
+
     public void RemovePrograma(ProgramaDeFormacion pdf){
         if (this.misProgramas != null) this.misProgramas.remove(pdf);
     }
-    
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-    
+
     public void setDuracion(Integer duracion) {
         this.duracion = duracion;
     }
@@ -153,7 +153,7 @@ public class Curso implements Serializable {
     public void setCantCreditos(Integer cantCreditos) {
         this.cantCreditos = cantCreditos;
     }
-    
+
     public Docente getMiDocente(){
         return this.miDocente;
     }

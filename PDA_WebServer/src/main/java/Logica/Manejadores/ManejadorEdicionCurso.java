@@ -23,6 +23,7 @@ import Logica.util.JPAUtil;
 public class ManejadorEdicionCurso {
 
     private static ManejadorEdicionCurso instance;    
+    
     public static ManejadorEdicionCurso GetInstance(){
         if(instance == null){
             instance = new ManejadorEdicionCurso();
@@ -39,7 +40,8 @@ public class ManejadorEdicionCurso {
     
     public void ModificarDatos(EdicionCurso ec, Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> misUsuarios, String imgPath){
         if (ec != null) {
-            ec.ModificarDatos(fInicio, fFin, cupo, fAlta, misUsuarios);
+            // Se agregó imgPath al llamado de modificación en la entidad
+            ec.ModificarDatos(fInicio, fFin, cupo, fAlta, misUsuarios, imgPath);
         }
         
         EntityManager em = getEntityManager();
@@ -120,8 +122,6 @@ public class ManejadorEdicionCurso {
             }
 
             // 2. Control de cupos
-            // Si el cupo total es mayor a 0, se valida que queden cupos disponibles.
-            // Si cupoActual es 0 pero no hay inscripciones previas, se inicializa al cupo máximo.
             int cupoMaximo = edicionManaged.getCupo();
             int cupoActual = edicionManaged.getCupoActual();
 
@@ -144,7 +144,6 @@ public class ManejadorEdicionCurso {
             }
 
             // 4. Instanciar la nueva entidad a guardar usando el constructor completo
-            // Copia la fecha fInscripcion recibida en 'eu'
             Date fechaInscripcion = (eu.getFIns() != null) ? eu.getFIns() : new Date();
             Edi_Usu nuevaInscripcion = new Edi_Usu(usuarioManaged, edicionManaged, fechaInscripcion);
             nuevaInscripcion.setEstado(eu.getMiEstado());
@@ -334,7 +333,6 @@ public class ManejadorEdicionCurso {
         try {
             em.getTransaction().begin();
 
-            // Corregido: e.estadoIns en lugar de e.estado
             String jpql = "UPDATE Edi_Usu e SET e.estadoIns = :nuevoEstado WHERE e.id.miEdicionNombre = :nombreEdicion AND e.id.miUsuarioNickname = :nickname";
 
             int filasAfectadas = em.createQuery(jpql)

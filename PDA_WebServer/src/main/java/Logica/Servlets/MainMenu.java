@@ -40,7 +40,7 @@ public class MainMenu extends HttpServlet {
     }
 
     /**
-     * Filtra los elementos (cursos y ediciones) creados en los últimos 30 días
+     * Filtra los elementos (cursos, ediciones y programas) creados en los últimos 30 días
      */
     private void CargarNovedadesRecientes(HttpServletRequest request) {
         ico = Fabric.GetInstance().GetIController();
@@ -71,7 +71,6 @@ public class MainMenu extends HttpServlet {
                             if (edMaster instanceof DTEdicionCurso edicion) {
                                 Date fAltaEd = edicion.getFechaAlta();
                                 if (fAltaEd != null && (ahora - fAltaEd.getTime()) <= treintaDiasMillis) {
-                                    // Evitamos duplicados si ya se añadió
                                     if (!novedades.contains(edicion)) {
                                         novedades.add(edicion);
                                     }
@@ -81,6 +80,44 @@ public class MainMenu extends HttpServlet {
                     }
                 }
             }
+        }
+
+        // 3. Filtrar Programas de Formación recientes (< 30 días)
+        try {
+            EnumDT enumProg = null;
+            for (EnumDT e : EnumDT.values()) {
+                if (e.name().contains("PROGRAMA")) {
+                    enumProg = e;
+                    break;
+                }
+            }
+            if (enumProg != null) {
+                List<DTMaster> listaProgramas = ico.ListarClase(enumProg);
+                if (listaProgramas != null) {
+                    for (DTMaster progMaster : listaProgramas) {
+                        if (progMaster != null) {
+                            Date fAltaProg = null;
+                            for (String mFecha : new String[]{"getFechaAlta", "getFechaCreacion", "getFechaIngresado", "getFecha"}) {
+                                try {
+                                    Object fObj = progMaster.getClass().getMethod(mFecha).invoke(progMaster);
+                                    if (fObj instanceof Date) {
+                                        fAltaProg = (Date) fObj;
+                                        break;
+                                    }
+                                } catch (Exception ex) {}
+                            }
+
+                            if (fAltaProg == null || (ahora - fAltaProg.getTime()) <= treintaDiasMillis) {
+                                if (!novedades.contains(progMaster)) {
+                                    novedades.add(progMaster);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         request.setAttribute("novedadesRecientes", novedades);

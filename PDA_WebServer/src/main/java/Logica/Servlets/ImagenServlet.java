@@ -11,8 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 /**
- * Sirve las imágenes guardadas en <user.home>/mi_proyecto_data.
- * Ejemplo: /imagenes/uploads/perfiles/foto_123.png
+ * Sirve las imágenes guardadas en <user.home>/mi_proyecto_data/uploads/
  */
 @WebServlet(name = "ImagenServlet", urlPatterns = {"/imagenes/*"})
 public class ImagenServlet extends HttpServlet {
@@ -21,18 +20,24 @@ public class ImagenServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String path = request.getPathInfo(); // ej: /uploads/perfiles/foto_123.png
+        String path = request.getPathInfo(); // ej: /programas/foto_123.png
         if (path == null || path.equals("/")) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
-        File base = ImagenUtil.getBaseDir().getCanonicalFile();
-        File archivo = new File(base, path).getCanonicalFile();
+        // Si por compatibilidad viene con /uploads/ al inicio, se limpia correctamente
+        if (path.startsWith("/uploads/")) {
+            path = path.substring(8); // "/uploads" tiene 8 caracteres
+        }
 
-        // Seguridad: impide salir de la carpeta base con ../
-        boolean dentroDeBase = archivo.getPath().startsWith(base.getPath() + File.separator);
-        if (!dentroDeBase || !archivo.isFile()) {
+        File baseUploads = new File(ImagenUtil.getBaseDir(), "uploads").getCanonicalFile();
+        
+        // Construcción limpia del archivo destino
+        File archivo = new File(baseUploads, path).getCanonicalFile();
+
+        // Seguridad: impide salir de la carpeta uploads mediante ../ y verifica la existencia del archivo
+        if (!archivo.getPath().startsWith(baseUploads.getPath() + File.separator) || !archivo.isFile()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
@@ -40,7 +45,6 @@ public class ImagenServlet extends HttpServlet {
         String mime = getServletContext().getMimeType(archivo.getName());
         response.setContentType(mime != null ? mime : "application/octet-stream");
         response.setContentLengthLong(archivo.length());
-        // La URL lleva ?v=<lastModified>, así que se puede cachear sin problema
         response.setHeader("Cache-Control", "public, max-age=31536000");
 
         Files.copy(archivo.toPath(), response.getOutputStream());

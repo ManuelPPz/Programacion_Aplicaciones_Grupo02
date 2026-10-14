@@ -57,7 +57,7 @@ public class CrearProgramaServlet extends HttpServlet {
         // Procesar subida de la imagen
         String nombreFinalImagen = ""; 
         try{
-            nombreFinalImagen = ImagenUtil.guardar(request.getPart("imagen"), nombre, ImagenUtil.CARPETA_PERFILES);
+            nombreFinalImagen = ImagenUtil.guardar(request.getPart("imagen"), nombre, ImagenUtil.CARPETA_PROGRAMAS);
         }catch (Exception e) {
             System.err.println("Error grave al guardar la imagen en disco:");
              e.printStackTrace();

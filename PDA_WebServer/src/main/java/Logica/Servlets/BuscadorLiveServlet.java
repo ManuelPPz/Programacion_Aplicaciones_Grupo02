@@ -100,7 +100,7 @@ public class BuscadorLiveServlet extends HttpServlet {
 
             // También aseguramos incluir los programas mediante ListarProgramaDeForm()
             try {
-                List<DTMaster> programas = control.ListarProgramaDeForm();
+                List<DTMaster> programas = control.ListarClase(EnumDT.DT_PROGRAMA);
                 if (programas != null) {
                     for (DTMaster m : programas) {
                         try {

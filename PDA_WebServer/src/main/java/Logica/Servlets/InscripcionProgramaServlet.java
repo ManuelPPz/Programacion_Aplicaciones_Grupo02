@@ -1,6 +1,7 @@
 package Logica.Servlets;
 
 import Logica.DTsClasses.DTUsuarioBase;
+import Logica.DTsClasses.EnumDT;
 import Logica.Logica.Fabric;
 import Logica.Logica.IController;
 import jakarta.servlet.ServletException;
@@ -25,7 +26,7 @@ public class InscripcionProgramaServlet extends HttpServlet {
             throws ServletException, IOException {
 
         IController control = Fabric.GetInstance().GetIController();
-        request.setAttribute("programas", control.ListarProgramaDeForm());
+        request.setAttribute("programas", control.ListarClase(EnumDT.DT_PROGRAMA));
         request.getRequestDispatcher("InterfacesJSP/InscripcionProgramaFormacion.jsp").forward(request, response);
     }
 
@@ -46,7 +47,7 @@ public class InscripcionProgramaServlet extends HttpServlet {
 
         if (programa == null || programa.isBlank()) {
             request.setAttribute("error", "Debe seleccionar un programa de formación.");
-            request.setAttribute("programas", control.ListarProgramaDeForm());
+            request.setAttribute("programas", control.ListarClase(EnumDT.DT_PROGRAMA));
             request.getRequestDispatcher("InterfacesJSP/InscripcionProgramaFormacion.jsp").forward(request, response);
             return;
         }
@@ -58,7 +59,7 @@ public class InscripcionProgramaServlet extends HttpServlet {
             request.setAttribute("error", "Error al inscribirse: " + e.getMessage());
         }
 
-        request.setAttribute("programas", control.ListarProgramaDeForm());
+        request.setAttribute("programas", control.ListarClase(EnumDT.DT_PROGRAMA));
         request.getRequestDispatcher("InterfacesJSP/InscripcionProgramaFormacion.jsp").forward(request, response);
     }
 }

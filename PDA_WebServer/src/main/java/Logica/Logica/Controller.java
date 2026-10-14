@@ -439,11 +439,6 @@ public class Controller implements IController{
         return listReturn;
     }
     @Override
-    public List<DTMaster>ListarProgramaDeForm(){
-        List<DTMaster> listReturn = manProgramas.getDTList();
-        return listReturn;
-    }
-    @Override
     public List<DTMaster>ListarInscripciones(String nickEstudiante){
         UsuarioBase ub = manUsuario.BuscarUsuario(nickEstudiante);
         List<DTMaster> auxDT = new ArrayList<>();
@@ -457,6 +452,14 @@ public class Controller implements IController{
         }
         return auxDT;
     }
+    
+    @Override
+    public List<DTMaster> ListarProgramasDeCurso(String curso){
+        return manProgramas.ListarProgramasDeCurso(curso);
+    }
+    
+    
+    
     @Override
     public String GenerateRandPassword(){
         Random random = new Random();
