@@ -60,22 +60,22 @@ public class ManejadorUsuario {
     }
 
     public void ModificarDatosUsuario(String nick, String nombre, String apellido, String password, boolean docente, Date fNac, Instituto instituto, String imgPath) throws IOException {
-        
+
         UsuarioBase ub = BuscarUsuario(nick);
         if (ub != null) {
             if (docente && ub instanceof Docente d) {
-                if("".equals(password)){
+                if ("".equals(password)) {
                     d.ModificarMisDatos(nombre, apellido, d.getPassword(), fNac, imgPath, instituto);
-                }else{
+                } else {
                     d.ModificarMisDatos(nombre, apellido, password, fNac, imgPath, instituto);
                 }
             } else if (ub instanceof Usuario u) {
-                if("".equals(password)){
+                if ("".equals(password)) {
                     u.ModificarMisDatos(nombre, apellido, u.getPassword(), fNac, imgPath);
-                }else{
+                } else {
                     u.ModificarMisDatos(nombre, apellido, password, fNac, imgPath);
                 }
-                
+
             }
 
             // Sincronizar los cambios con JPA
@@ -134,6 +134,12 @@ public class ManejadorUsuario {
                 em.refresh(ubBD);
 
                 // HIDRATACIÓN DENTRO DE LA SESIÓN ABIERTA
+                
+                // >>> AGREGA ESTA LÍNEA PARA CARGAR LOS SEGUIDOS DE LA BD <<<
+                if (ubBD.getSeguidos() != null) {
+                    ubBD.getSeguidos().size();
+                }
+
                 if (ubBD instanceof Docente d) {
                     // 1. Cargar Instituto
                     if (d.getInstituto() != null) {
@@ -180,8 +186,9 @@ public class ManejadorUsuario {
     }
 
     public DTUsuarioBase getDT(UsuarioBase ub) {
-        if (ub == null) return null;
-
+        if (ub == null) {
+            return null;
+        }
 
         if (ub instanceof Docente docente) {
             String auxInsStr = (docente.getInstituto() != null) ? docente.getInstituto().getNombre() : "";
@@ -253,7 +260,7 @@ public class ManejadorUsuario {
         try {
             // Usamos 'd.miInstituto' que coincide exactamente con el atributo de Docente
             List<Docente> docentes = em.createQuery(
-                "SELECT DISTINCT d FROM Docente d LEFT JOIN FETCH d.miInstituto", Docente.class
+                    "SELECT DISTINCT d FROM Docente d LEFT JOIN FETCH d.miInstituto", Docente.class
             ).getResultList();
 
             // Cargar colecciones para evitar LazyInitializationException fuera del em
@@ -268,7 +275,7 @@ public class ManejadorUsuario {
 
             // Cargar estudiantes
             List<Usuario> estudiantes = em.createQuery(
-                "SELECT DISTINCT u FROM Usuario u LEFT JOIN FETCH u.misInscripciones", Usuario.class
+                    "SELECT DISTINCT u FROM Usuario u LEFT JOIN FETCH u.misInscripciones", Usuario.class
             ).getResultList();
 
             auxList.addAll(docentes);
@@ -355,12 +362,65 @@ public class ManejadorUsuario {
     }
 
     /*-------------------------Funciones para la lista de usuarios seguidos--------------------------------*/
-    public void SeguirUsuarios(UsuarioBase ub1, UsuarioBase ub2) {
-        ub1.SeguirUsuario(ub2);
+public void SeguirUsuarios(UsuarioBase ub1, UsuarioBase ub2) {
+        if (ub1 != null && ub2 != null) {
+            EntityManager em = getEntityManager();
+            try {
+                em.getTransaction().begin();
+                
+                // Buscamos las entidades dentro de la misma transacción para asegurarnos que estén 'managed'
+                UsuarioBase user1 = em.find(UsuarioBase.class, ub1.getNickname());
+                UsuarioBase user2 = em.find(UsuarioBase.class, ub2.getNickname());
+
+                if (user1 != null && user2 != null) {
+                    user1.SeguirUsuario(user2);
+                    em.merge(user1); // Actualiza la tabla intermedia 'Seguidos'
+                    
+                    em.getTransaction().commit();
+                    System.out.println("[BD] ¡Relación guardada con éxito: " + user1.getNickname() + " sigue a " + user2.getNickname() + "!");
+                } else {
+                    if (em.getTransaction().isActive()) em.getTransaction().rollback();
+                }
+            } catch (Exception e) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                System.err.println("Error al persistir 'SeguirUsuario': " + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                em.close();
+            }
+        }
     }
 
     public void DejarDeSeguir(UsuarioBase ub1, UsuarioBase ub2) {
-        ub1.DejarDeSeguir(ub2);
+        if (ub1 != null && ub2 != null) {
+            EntityManager em = getEntityManager();
+            try {
+                em.getTransaction().begin();
+                
+                UsuarioBase user1 = em.find(UsuarioBase.class, ub1.getNickname());
+                UsuarioBase user2 = em.find(UsuarioBase.class, ub2.getNickname());
+
+                if (user1 != null && user2 != null) {
+                    user1.DejarDeSeguir(user2);
+                    em.merge(user1);
+                    
+                    em.getTransaction().commit();
+                    System.out.println("[BD] ¡Relación eliminada: " + user1.getNickname() + " dejó de seguir a " + user2.getNickname() + "!");
+                } else {
+                    if (em.getTransaction().isActive()) em.getTransaction().rollback();
+                }
+            } catch (Exception e) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                System.err.println("Error al persistir 'DejarDeSeguir': " + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                em.close();
+            }
+        }
     }
 
     private byte[] ConvertirImageIconToByte(String imgPath) throws IOException {
@@ -375,7 +435,6 @@ public class ManejadorUsuario {
 
         return null;
     }
-
 
     private EntityManager getEntityManager() {
         return JPAUtil.getEntityManager();
@@ -439,4 +498,5 @@ public class ManejadorUsuario {
             em.close();
         }
     }
+
 }

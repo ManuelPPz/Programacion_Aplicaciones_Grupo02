@@ -1,3 +1,4 @@
+<%@page import="Logica.util.ImagenUtil"%>
 <%@page import="Logica.DTsClasses.DTEdicionCurso"%>
 <%@page import="Logica.DTsClasses.DTCurso"%>
 <%@page import="Logica.DTsClasses.DTUsuario"%>
@@ -63,11 +64,8 @@
                     <div class="d-flex align-items-center ms-3">
                         <span class="fw-bold me-3 text-nowrap text-dark fs-5"><%=dtu.getNickname()%></span>    
                         <a class="navbar-brand p-0 m-0 d-flex align-items-center" href="${pageContext.request.contextPath}/ConsultaUsuarioIndividualServlet?nickname=<%= dtu.getNickname() %>">
-                            <% if (nombreImagen != null && !nombreImagen.trim().isEmpty()) { 
-                                   String relPath = "/uploads/perfiles/" + nombreImagen;
-                                   String urlConVersion = versionedUrl(relPath);
-                            %>
-                                <img src="<%= request.getContextPath() %><%= urlConVersion %>" 
+                            <% if (nombreImagen != null && !nombreImagen.trim().isEmpty()) { %>
+                                <img src="<%= ImagenUtil.versionedUrl(ImagenUtil.CARPETA_EDICIONCURSOS, nombreImagen, request.getContextPath()) %>" 
                                      alt="Perfil" 
                                      width="52" 
                                      height="52" 
@@ -114,9 +112,15 @@
                                         </a>
                                     </li>
                                     <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">CURSOS</li>
-                                    <li class="list-group-item text-dark fw-semibold">Alta Curso</li>
-                                    <li class="list-group-item text-dark fw-semibold">Alta Edicion</li>
-                                    <li class="list-group-item text-dark fw-semibold">Alta Programa de Formacion</li>
+                                    <li class="list-group-item text-dark fw-semibold">
+                                        <a href="${pageContext.request.contextPath}/AltaCursoServlet"class="text-decoration-none text-dark d-block">Alta Curso</a>
+                                    </li>
+                                    <li class="list-group-item text-dark fw-semibold">
+                                        <a href="${pageContext.request.contextPath}/AltaEdicionServlet"class="text-decoration-none text-dark d-block">Alta Edicion</a>
+                                    </li>
+                                    <li class="list-group-item text-dark fw-semibold">
+                                        <a href="${pageContext.request.contextPath}/CrearProgramaServlet"class="text-decoration-none text-dark d-block">Alta Programa de Formacion</a>
+                                    </li>
                                     <%
                                 } else if (dtm instanceof DTUsuario) {
                                     DTUsuario dtu = (DTUsuario) dtm;
@@ -127,8 +131,12 @@
                                         </a>
                                     </li>
                                     <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">Inscripciones</li>
-                                    <li class="list-group-item text-dark fw-semibold">Inscribirme</li>
-                                    <li class="list-group-item text-dark fw-semibold">Ver Resultados</li>
+                                    <li class="list-group-item text-dark fw-semibold">
+                                        <a href="${pageContext.request.contextPath}/InscripcionEdicionServlet" class="text-decoration-none text-dark d-block">Inscribirme a Edicion</a>
+                                    </li>
+                                    <li class="list-group-item text-dark fw-semibold">
+                                        <a href="${pageContext.request.contextPath}/InscripcionProgramaServlet" class="text-decoration-none text-dark d-block">Inscribirme a Programa</a>
+                                    </li>
                                     <%
                                 }
                             }
@@ -246,6 +254,7 @@
                 <div class="mb-4">
                     <label class="form-label fw-bold">Edición Vigente / Disponible:</label>
                     <select name="edicion" class="form-select border-dark" required>
+                        <option value="" disabled selected>Seleccione una edicion...</option>
                         <%
                             List<DTMaster> listEdiciones = (List<DTMaster>) request.getAttribute("ediciones");
                             if (listEdiciones != null && !listEdiciones.isEmpty()) {

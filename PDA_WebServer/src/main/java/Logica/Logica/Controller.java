@@ -107,12 +107,13 @@ public class Controller implements IController{
         }
     }
     
-    @Override
+@Override
     public void SeguirUsuario(String nickname1, String nickname2){
         UsuarioBase ub1 = manUsuario.BuscarUsuario(nickname1);
         UsuarioBase ub2 = manUsuario.BuscarUsuario(nickname2);
-        manUsuario.SeguirUsuarios(ub1, ub2);
+        manUsuario.SeguirUsuarios(ub1, ub2); // El manejador se encarga de modificar y hacer el merge en la BD
     }
+    
     @Override
     public void DejarDeSeguir(String nickname1, String nickname2){
         UsuarioBase ub1 = manUsuario.BuscarUsuario(nickname1);
@@ -120,10 +121,9 @@ public class Controller implements IController{
         manUsuario.DejarDeSeguir(ub1, ub2);
     }
     
-    
     //Alta Curso
     @Override
-    public void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso, String docente, List<String> categorias) throws Exception {
+    public void AltaCurso(String nomInstituto, String nombre, String descripcion, int duracion, float cantHoras, int cantCreditos, String URL, List<String> previas, Date fechaIngreso, String docente, List<String> categorias, String imgPath) throws Exception {
         Curso auxC = manCursos.BuscarCurso(nombre);
         UsuarioBase auxUb = manUsuario.BuscarUsuario(docente);
         List<Categoria> auxCategorias = new ArrayList<>();
@@ -133,13 +133,13 @@ public class Controller implements IController{
         if(auxC==null){
             Instituto ins = new Instituto();
             ins.setNombre(nomInstituto);     
-            Curso c = manCursos.CrearCurso(ins, nombre, descripcion, duracion, cantHoras, cantCreditos, URL, fechaIngreso,previas, auxUb, auxCategorias);
+            Curso c = manCursos.CrearCurso(ins, nombre, descripcion, duracion, cantHoras, cantCreditos, URL, fechaIngreso,previas, auxUb, auxCategorias, imgPath);
             manUsuario.AddCurso(auxUb, c);
             manCursos.Add(c);
         }else{
             manUsuario.RemoveCurso(auxC.getMiDocente(), auxC);
             manUsuario.AddCurso(auxUb, auxC);
-            manCursos.ModificarCurso(auxC, descripcion, duracion, cantHoras, cantCreditos, URL, fechaIngreso,previas, auxUb, auxCategorias);
+            manCursos.ModificarCurso(auxC, descripcion, duracion, cantHoras, cantCreditos, URL, fechaIngreso,previas, auxUb, auxCategorias, imgPath);
         }
         
     }
@@ -158,7 +158,7 @@ public class Controller implements IController{
     
     //Alta Edicion Curso
     @Override
-    public void AltaEdicionCurso(String instituto, String nomCurso, String nomEdicion, Date fInicio, Date fFin, int cupo, List<String> docentes, Date fAlta) throws Exception {
+    public void AltaEdicionCurso(String instituto, String nomCurso, String nomEdicion, Date fInicio, Date fFin, int cupo, List<String> docentes, Date fAlta, String imgPath) throws Exception {
         Instituto ins = manInstituto.BuscarInstituto(instituto);
         Curso c = manCursos.BuscarCurso(nomCurso);
         EdicionCurso auxEc = manEdicion.BuscarEdicion(nomEdicion);
@@ -175,7 +175,7 @@ public class Controller implements IController{
                     }
                 }
             }
-            EdicionCurso ec = manEdicion.CrearEdicion(ins, c, nomEdicion, fInicio, fFin, cupo, fAlta,auxListDocentes);
+            EdicionCurso ec = manEdicion.CrearEdicion(ins, c, nomEdicion, fInicio, fFin, cupo, fAlta,auxListDocentes, imgPath);
             
             // 2. Guardar la edición en su manejador / BD
             
@@ -209,7 +209,7 @@ public class Controller implements IController{
                     manUsuario.AddEdicion(d, auxEc);
                 }
             }
-            manEdicion.ModificarDatos(auxEc, fInicio, fFin, cupo, fAlta, auxListDocentes);
+            manEdicion.ModificarDatos(auxEc, fInicio, fFin, cupo, fAlta, auxListDocentes, imgPath);
         }
     }
     //Consulta Edicion Curso
@@ -257,14 +257,14 @@ public class Controller implements IController{
     
     //Crear Programa de Formacion (Versión por parámetros sueltos)
     @Override
-    public void CrearProgramasDeFormacion(String nomPrograma, String descripcion, Date fInicio, Date fFin,Date fAlta)throws Exception{
+    public void CrearProgramasDeFormacion(String nomPrograma, String descripcion, Date fInicio, Date fFin,Date fAlta, String imgPath)throws Exception{
         ProgramaDeFormacion auxProg = manProgramas.BuscarPrograma(nomPrograma);
         Vigencia v = new Vigencia(fInicio, fFin);
         if(auxProg==null){
-            ProgramaDeFormacion pdf = manProgramas.CrearPrograma(nomPrograma, descripcion, v, fAlta);
+            ProgramaDeFormacion pdf = manProgramas.CrearPrograma(nomPrograma, descripcion, v, fAlta, imgPath);
             manProgramas.Add(pdf);
         }else{
-            manProgramas.ModificarDatos(nomPrograma, descripcion, v, fAlta);
+            manProgramas.ModificarDatos(nomPrograma, descripcion, v, fAlta, imgPath);
         }
     }
    
@@ -439,11 +439,6 @@ public class Controller implements IController{
         return listReturn;
     }
     @Override
-    public List<DTMaster>ListarProgramaDeForm(){
-        List<DTMaster> listReturn = manProgramas.getDTList();
-        return listReturn;
-    }
-    @Override
     public List<DTMaster>ListarInscripciones(String nickEstudiante){
         UsuarioBase ub = manUsuario.BuscarUsuario(nickEstudiante);
         List<DTMaster> auxDT = new ArrayList<>();
@@ -457,6 +452,14 @@ public class Controller implements IController{
         }
         return auxDT;
     }
+    
+    @Override
+    public List<DTMaster> ListarProgramasDeCurso(String curso){
+        return manProgramas.ListarProgramasDeCurso(curso);
+    }
+    
+    
+    
     @Override
     public String GenerateRandPassword(){
         Random random = new Random();

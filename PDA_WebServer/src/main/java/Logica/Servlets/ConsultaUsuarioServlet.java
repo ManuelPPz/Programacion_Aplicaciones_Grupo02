@@ -1,7 +1,6 @@
 package Logica.Servlets;
 
 import Logica.DTsClasses.DTMaster;
-import Logica.DTsClasses.DTUsuarioBase;
 import Logica.DTsClasses.EnumDT;
 import Logica.Logica.Fabric;
 import Logica.Logica.IController;
@@ -14,7 +13,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * ED-16 / ED-17 – Consulta de Usuario
+ * ED-16 / ED-17 – Consulta de Usuario (Listado General)
  * Compatible con la interfaz Web (JSP) y cliente Swing.
  */
 @WebServlet(name = "ConsultaUsuarioServlet", urlPatterns = {"/ConsultaUsuarioServlet"})
@@ -31,29 +30,13 @@ public class ConsultaUsuarioServlet extends HttpServlet {
         List<DTMaster> usuarios = control.ListarClase(EnumDT.DT_USUARIO);
         request.setAttribute("usuarios", usuarios);
 
-        // 2. Obtener parámetro de consulta
-        String nickname = request.getParameter("nickname");
-
-        if (nickname != null && !nickname.isBlank()) {
-            DTUsuarioBase usuario = control.ConsultarUsuario(nickname.trim());
-            
-            if (usuario == null) {
-                if (isJavaClient) {
-                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Usuario no encontrado.");
-                    return;
-                }
-                request.setAttribute("error", "No se encontró el usuario '" + nickname + "'.");
-            } else {
-                request.setAttribute("usuarioConsultado", usuario);
-            }
-        }
-
-        // 3. Responder según el cliente
+        // 2. Responder según el cliente
         if (isJavaClient) {
             response.setStatus(HttpServletResponse.SC_OK);
             return;
         }
 
+        // Redirigimos a la vista que muestra la lista de selección
         request.getRequestDispatcher("InterfacesJSP/ConsultaUsuario.jsp").forward(request, response);
     }
 

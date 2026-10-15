@@ -5,6 +5,7 @@ import Logica.DTsClasses.DTUsuarioBase;
 import Logica.DTsClasses.EnumDT;
 import Logica.Logica.Fabric;
 import Logica.Logica.IController;
+import Logica.util.ImagenUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -22,9 +23,9 @@ import java.sql.Date;
  * ED-18 – Modificar Datos de Usuario
  */
 @MultipartConfig(
-    fileSizeThreshold = 1024 * 1024 * 2, // 2MB en memoria antes de guardar temporalmente
-    maxFileSize = 1024 * 1024 * 10,      // Tamaño máximo por archivo: 10MB
-    maxRequestSize = 1024 * 1024 * 50    // Tamaño máximo de la petición: 50MB
+        fileSizeThreshold = 1024 * 1024 * 2, // 2MB en memoria antes de guardar temporalmente
+        maxFileSize = 1024 * 1024 * 10, // Tamaño máximo por archivo: 10MB
+        maxRequestSize = 1024 * 1024 * 50 // Tamaño máximo de la petición: 50MB
 )
 @WebServlet(name = "ModificarUsuarioServlet", urlPatterns = {"/ModificarUsuarioServlet"})
 public class ModificarUsuarioServlet extends HttpServlet {
@@ -41,7 +42,7 @@ public class ModificarUsuarioServlet extends HttpServlet {
 
         IController control = Fabric.GetInstance().GetIController();
         DTUsuarioBase usuario = (DTUsuarioBase) session.getAttribute("usuarioLogueado");
-        
+
         request.setAttribute("esDocente", usuario instanceof DTDocente);
         request.setAttribute("usuario", usuario);
         request.setAttribute("institutos", control.ListarClase(EnumDT.DT_INSTITUTO));
@@ -120,56 +121,34 @@ public class ModificarUsuarioServlet extends HttpServlet {
         String nombreFinalImagen = usuarioSesion.getImg(); // Mantiene la previa por defecto
 
         try {
-            Part filePart = request.getPart("imagen");
+            String nuevaImg = ImagenUtil.guardar(
+                    request.getPart("imagen"), nickname, ImagenUtil.CARPETA_PERFILES);
 
-            if (filePart != null && filePart.getSize() > 0) {
-                String originalFileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-
-                String extension = "";
-                int i = originalFileName.lastIndexOf('.');
-                if (i > 0) {
-                    extension = originalFileName.substring(i);
-                }
-
-                // Generar nuevo nombre para el archivo
-                nombreFinalImagen = nickname.trim().toLowerCase() + "_" + System.currentTimeMillis() + extension;
-                String uploadPath = "C:" + File.separator + "mi_proyecto_data" + File.separator + "uploads" + File.separator + "perfiles";
-
-                File uploadDir = new File(uploadPath);
-                if (!uploadDir.exists()) {
-                    uploadDir.mkdirs(); 
-                }
-
-                // Borrar imagen anterior del disco si existía
-                String imagenAnterior = usuarioSesion.getImg();
-                if (imagenAnterior != null && !imagenAnterior.isBlank()) {
-                    File archivoAnterior = new File(uploadPath + File.separator + imagenAnterior);
-                    if (archivoAnterior.exists() && archivoAnterior.isFile()) {
-                        archivoAnterior.delete();
-                    }
-                }
-
-                // Escribir nueva imagen
-                filePart.write(uploadPath + File.separator + nombreFinalImagen);
+            if (!nuevaImg.isEmpty()) {
+                // Se guardó la nueva: ahora sí se borra la anterior
+                ImagenUtil.borrar(ImagenUtil.CARPETA_PERFILES, usuarioSesion.getImg());
+                nombreFinalImagen = nuevaImg;
             }
         } catch (Exception e) {
             System.err.println("Error al procesar la imagen: " + e.getMessage());
+            e.printStackTrace();
         }
 
-        String nombreInstituto = esDocente ? institutoSeleccionado.trim() : "";
-        String passwordFinal = (newPassword != null && !newPassword.isBlank()) ? newPassword.trim() : "";
+        
 
         // 7. Modificación en la Lógica de Negocio
+        String nombreInstituto = esDocente ? institutoSeleccionado.trim() : "";
+        String passwordFinal = (newPassword != null && !newPassword.isBlank()) ? newPassword.trim() : "";
         try {
             control.ModificarUsuario(
-                nickname, 
-                nombre.trim(), 
-                apellido.trim(),
-                passwordFinal, 
-                esDocente, 
-                fechaNac, 
-                nombreInstituto, 
-                nombreFinalImagen
+                    nickname,
+                    nombre.trim(),
+                    apellido.trim(),
+                    passwordFinal,
+                    esDocente,
+                    fechaNac,
+                    nombreInstituto,
+                    nombreFinalImagen
             );
 
             // Si la petición vino del cliente Swing, finaliza con éxito HTTP 200 OK
@@ -196,9 +175,9 @@ public class ModificarUsuarioServlet extends HttpServlet {
     /**
      * Método auxiliar para centralizar el manejo de respuestas de error.
      */
-    private void enviarError(HttpServletRequest request, HttpServletResponse response, String mensajeError, 
-                             DTUsuarioBase usuario, IController control, boolean isJavaClient, int statusCode) 
-                             throws ServletException, IOException {
+    private void enviarError(HttpServletRequest request, HttpServletResponse response, String mensajeError,
+            DTUsuarioBase usuario, IController control, boolean isJavaClient, int statusCode)
+            throws ServletException, IOException {
         if (isJavaClient) {
             response.sendError(statusCode, mensajeError);
             return;
