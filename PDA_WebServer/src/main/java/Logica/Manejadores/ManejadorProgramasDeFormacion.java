@@ -2,6 +2,7 @@ package Logica.Manejadores;
 
 import Logica.Classes.Categoria;
 import Logica.Classes.Curso;
+import Logica.Classes.Instituto;
 import Logica.Classes.Prog_Usu;
 import Logica.Classes.ProgramaDeFormacion;
 import Logica.DTsClasses.DTMaster;
@@ -25,8 +26,8 @@ public class ManejadorProgramasDeFormacion {
         return instance;
     }
 
-    public ProgramaDeFormacion CrearPrograma(String nombre, String descripcion, Vigencia vigencia, Date fAlta, String imgPath) {
-        ProgramaDeFormacion auxPDF = new ProgramaDeFormacion(nombre, descripcion, vigencia, fAlta, imgPath);
+    public ProgramaDeFormacion CrearPrograma(String nombre, String descripcion, Vigencia vigencia, Date fAlta, String imgPath, Instituto instituto) {
+        ProgramaDeFormacion auxPDF = new ProgramaDeFormacion(nombre, descripcion, vigencia, fAlta, imgPath, instituto);
         return auxPDF;
     }
 

@@ -9,6 +9,7 @@
     List<DTMaster> listaUsuarios = (List<DTMaster>) request.getAttribute("usuarios");
 %>
 
+<%-- Cargamos la plantilla base global (Barra superior y menú lateral) --%>
 <%@ include file="/InterfacesJSP/InterfazBase.jsp" %>
 
 <div class="col-md-9 col-lg-10 ps-md-4 d-flex flex-column align-items-center mb-5">
@@ -25,6 +26,7 @@
                             ? ImagenUtil.versionedUrl(ImagenUtil.CARPETA_PERFILES, u.getImg(), request.getContextPath()) 
                             : request.getContextPath() + "/Images/ImagenUserDefault.png";
                 %>
+                        <%-- Al hacer clic, redirige al servlet individual pasando el nickname codificado de forma segura --%>
                         <a href="${pageContext.request.contextPath}/ConsultaUsuarioIndividualServlet?nickname=<%= java.net.URLEncoder.encode(u.getNickname(), "UTF-8") %>" 
                             class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
                             <img src="<%= imgPerfil %>" alt="Avatar" width="50" height="50" class="rounded-circle border" style="object-fit: cover;">
@@ -47,7 +49,7 @@
     </div>
 </div>
 
-</div></div></div>
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

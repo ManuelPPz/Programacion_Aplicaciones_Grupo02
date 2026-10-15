@@ -176,7 +176,7 @@
                         <%
                             List<String> docentesAsociados = null;
                             try {
-                                docentesAsociados = detalleEdicion.getDocentes(); // Ajusta el método si se llama diferente en tu DT
+                                docentesAsociados = detalleEdicion.getDocentes();
                             } catch (Exception e) {}
 
                             if (docentesAsociados != null && !docentesAsociados.isEmpty()) {
@@ -221,7 +221,6 @@
                         <% } %>
                     </ul>
                 </div>
-
                 <% } %>
             </div>
         </div>

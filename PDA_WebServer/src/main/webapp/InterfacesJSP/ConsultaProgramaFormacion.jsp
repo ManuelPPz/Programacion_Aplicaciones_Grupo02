@@ -81,6 +81,7 @@
                         } catch (Exception e) {}
                     }
                     
+                    // Validación de imagen del programa
                     String imgNombreProg = programaDetalle.getImage();
                     String imgPrograma = (imgNombreProg != null && !imgNombreProg.trim().isEmpty()) 
                         ? ImagenUtil.versionedUrl(ImagenUtil.CARPETA_PROGRAMAS, imgNombreProg, request.getContextPath())
@@ -205,6 +206,7 @@
                                             for (String nomCurso : listaCursosNom) {
                                                 String linkCurso = request.getContextPath() + "/ConsultaCursoServlet?nombre=" + java.net.URLEncoder.encode(nomCurso, "UTF-8");
                                                 
+                                                // Se busca la entidad Curso para obtener el nombre real de su imagen
                                                 String imgCurso = request.getContextPath() + "/Images/ImagenUserDefault.png";
                                                 Curso cAux = ManejadorCursos.GetInstance().BuscarCurso(nomCurso);
                                                 if (cAux != null && cAux.getImage() != null && !cAux.getImage().trim().isEmpty()) {
@@ -232,9 +234,9 @@
                                             }
                                         } else {
                                     %>
-                                        <li class="list-group-item text-muted px-0 bg-transparent text-center">
-                                            Este programa no tiene cursos asociados actualmente.
-                                        </li>
+                                            <li class="list-group-item text-muted px-0 bg-transparent text-center">
+                                                Este programa no tiene cursos asociados actualmente.
+                                            </li>
                                     <% } %>
                                 </ul>
                             </div>

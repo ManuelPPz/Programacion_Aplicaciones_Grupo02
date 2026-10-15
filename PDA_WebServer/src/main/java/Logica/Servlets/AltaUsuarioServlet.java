@@ -12,7 +12,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.sql.Date;
 import java.util.List;
 
@@ -72,6 +75,7 @@ public class AltaUsuarioServlet extends HttpServlet {
             Date fechaNac = Date.valueOf(fechaNacStr);
 
             if (esDocente && (institutoSeleccionado == null || institutoSeleccionado.isBlank())) {
+                // Si la petición viene de la app de escritorio responder con código HTTP 400
                 if (request.getHeader("User-Agent") != null && request.getHeader("User-Agent").contains("Java")) {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Debe seleccionar un instituto para el docente.");
                     return;

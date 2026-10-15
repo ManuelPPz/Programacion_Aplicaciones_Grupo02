@@ -262,7 +262,7 @@ public class ManejadorCursos {
         return auxList;
     }
 
-    public List<DTMaster> getDTLIst(String instituto){
+    public List<DTMaster> getDTListIns(String instituto){
         List<Curso> auxListCur = getList();
         List<DTMaster> auxList = new ArrayList<>();
         if(auxListCur != null){
@@ -282,5 +282,18 @@ public class ManejadorCursos {
 
     private EntityManager getEntityManager() {
         return JPAUtil.getEntityManager();
+    }
+    
+    public List<DTMaster> getDTListCat(String categoria){
+        List<Curso> auxList = getList();
+        List<DTMaster> auxReturnList = new ArrayList<>();
+        for(int i = 0; i < auxList.size(); i++){
+            for(Categoria c : auxList.get(i).getCategorias()){
+                if(c.getNombre() != null && c.getNombre().equals(categoria)){
+                    auxReturnList.add(getDT(auxList.get(i)));
+                }
+            }
+        }
+        return auxReturnList;
     }
 }

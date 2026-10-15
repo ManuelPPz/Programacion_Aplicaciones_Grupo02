@@ -36,7 +36,7 @@ public class ConsultaEdicionServlet extends HttpServlet {
         String curso    = request.getParameter("curso");
         String edicion = request.getParameter("edicion");
         
-        // Soporte adicional por si viene como ?nombre=... desde los enlaces
+        // Soporte adicional por si viene como ?nombre=... desde los enlaces de perfil
         if (edicion == null || edicion.isBlank()) {
             edicion = request.getParameter("nombre");
         }
@@ -45,6 +45,12 @@ public class ConsultaEdicionServlet extends HttpServlet {
         if (edicion != null && !edicion.isBlank()) {
             DTMaster detalle = control.ConsultaEdicionCurso(edicion.trim());
             if (detalle instanceof DTEdicionCurso dte) {
+                // Depuración para verificar en la consola si la imagen viaja desde el controlador
+                System.out.println("--- CONSULTA EDICIÓN SERVLET ---");
+                System.out.println("Edición consultada: " + dte.getNombre());
+                System.out.println("Imagen obtenida del DTE: [" + dte.getImage() + "]");
+                System.out.println("---------------------------------");
+
                 request.setAttribute("edicionDetalle", dte);
                 request.setAttribute("edicionSeleccionada", dte.getNombre());
                 

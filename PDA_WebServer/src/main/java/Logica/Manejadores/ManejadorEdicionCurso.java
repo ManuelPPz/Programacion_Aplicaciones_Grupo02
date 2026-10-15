@@ -212,7 +212,7 @@ public class ManejadorEdicionCurso {
         String ins = (ec.getInstituto() != null) ? ec.getInstituto().getNombre() : "";
         String cur = (ec.getCurso() != null) ? ec.getCurso().getNombre() : "";
 
-        // Cambiamos a List<?> para evitar el ClassCastException directo si la entidad devuelve Usuario
+        // Usamos List<?> para evitar ClassCastException si la entidad devuelve colecciones heterogéneas o genéricas
         List<?> auxUsuarios = ec.getMisDocentes();
         List<String> auxDocentes = new ArrayList<>();
         if (auxUsuarios != null) {

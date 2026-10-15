@@ -141,17 +141,10 @@
 
                                         let badgeClass = "bg-secondary";
                                         let tipoLower = tipo.toLowerCase();
-                                        
-                                        if (tipoLower.includes("curso")) {
-                                            badgeClass = "bg-primary text-white";
-                                        } else if (tipoLower.includes("programa")) {
-                                            badgeClass = "bg-info text-dark";
-                                        } else if (tipoLower.includes("edicion") || tipoLower.includes("edición") || tipoLower.includes("dtedicion")) {
-                                            badgeClass = "bg-success text-white";
-                                            tipo = "Edición"; // Normaliza la etiqueta visualmente
-                                        } else if (tipoLower.includes("usuario") || tipoLower.includes("docente") || tipoLower.includes("estudiante")) {
-                                            badgeClass = "bg-warning text-dark";
-                                        }
+                                        if (tipoLower.includes("curso")) badgeClass = "bg-primary text-white";
+                                        else if (tipoLower.includes("programa")) badgeClass = "bg-info text-dark";
+                                        else if (tipoLower.includes("edicion") || tipoLower.includes("edición")) badgeClass = "bg-success text-white";
+                                        else if (tipoLower.includes("usuario") || tipoLower.includes("docente") || tipoLower.includes("estudiante")) badgeClass = "bg-warning text-dark";
 
                                         const link = document.createElement("a");
                                         link.className = "search-item";
@@ -294,7 +287,9 @@
                                         if (listInstitutos.get(i) != null) {
                                             Logica.DTsClasses.DTInstituto auxDt = (Logica.DTsClasses.DTInstituto) listInstitutos.get(i);
                             %>
-                                            <li class="list-group-item text-dark fw-semibold"><%= auxDt.getNombre() %></li>
+                                            <a href="${pageContext.request.contextPath}/ListaCurEdiProgServlet?dato=<%= auxDt.getNombre() %>&tipoDeBusqueda=Instituto" class="text-decoration-none">
+                                                <li class="list-group-item text-dark fw-semibold"><%= auxDt.getNombre() %></li>
+                                            </a>            
                             <%
                                         }
                                     }
@@ -318,7 +313,9 @@
                                         if (listCategorias.get(i) != null) {
                                             Logica.DTsClasses.DTCategoria auxDt = (Logica.DTsClasses.DTCategoria) listCategorias.get(i);
                             %>
-                                            <li class="list-group-item text-dark fw-semibold"><%= auxDt.getNombre() %></li>
+                                            <a href="${pageContext.request.contextPath}/ListaCurEdiProgServlet?dato=<%= auxDt.getNombre() %>&tipoDeBusqueda=Categoria" class="text-decoration-none">
+                                                <li class="list-group-item text-dark fw-semibold"><%= auxDt.getNombre() %></li>
+                                            </a> 
                             <%
                                         }
                                     }

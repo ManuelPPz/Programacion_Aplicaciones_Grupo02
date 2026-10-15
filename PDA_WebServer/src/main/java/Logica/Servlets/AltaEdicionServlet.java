@@ -48,7 +48,7 @@ public class AltaEdicionServlet extends HttpServlet {
 
         IController control = Fabric.GetInstance().GetIController();
         HttpSession session  = request.getSession(false);
-       List<DTMaster> cursos = new ArrayList<>();
+        List<DTMaster> cursos = new ArrayList<>();
         String instituto = "";
         if (session != null && session.getAttribute("usuarioLogueado") instanceof DTDocente doc) {
             if (!doc.getInstituto().isEmpty()) {

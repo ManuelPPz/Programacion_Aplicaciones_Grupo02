@@ -1,5 +1,7 @@
 package Logica.Servlets;
 
+import Logica.DTsClasses.DTDocente;
+import Logica.DTsClasses.DTUsuarioBase;
 import Logica.Logica.Fabric;
 import Logica.Logica.IController;
 import Logica.util.ImagenUtil;
@@ -9,6 +11,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
@@ -41,12 +44,20 @@ public class CrearProgramaServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        HttpSession session = request.getSession(false);
         String nombre      = request.getParameter("nombre");
         String descripcion = request.getParameter("descripcion");
         String inicioStr   = request.getParameter("fechaInicio");
         String finStr      = request.getParameter("fechaFin");
-
+        
+        DTDocente dtd = null;
+        if(session!=null){
+            DTUsuarioBase dtu = (DTUsuarioBase) session.getAttribute("usuarioLogueado");
+            if(dtu instanceof DTDocente){
+                dtd = (DTDocente)dtu;
+            }
+        }
+        
         if (nombre == null || descripcion == null || inicioStr == null || finStr == null
                 || nombre.isBlank() || descripcion.isBlank() || inicioStr.isBlank() || finStr.isBlank()) {
             request.setAttribute("error", "Todos los campos son obligatorios.");
@@ -62,9 +73,6 @@ public class CrearProgramaServlet extends HttpServlet {
             System.err.println("Error grave al guardar la imagen en disco:");
              e.printStackTrace();
         }
-        
-        
-        
 
         Date fInicio, fFin;
         try {
@@ -84,7 +92,9 @@ public class CrearProgramaServlet extends HttpServlet {
 
         IController control = Fabric.GetInstance().GetIController();
         try {
-            control.CrearProgramasDeFormacion(nombre.trim(), descripcion.trim(), fInicio, fFin, new Date(), nombreFinalImagen);
+            // Nota: Se pasa el instituto del docente logueado para asociar correctamente el programa de formación
+            String institutoDocente = (dtd != null) ? dtd.getInstituto() : "";
+            control.CrearProgramasDeFormacion(nombre.trim(), descripcion.trim(), fInicio, fFin, new Date(), nombreFinalImagen, institutoDocente);
             request.setAttribute("exito", "Programa '" + nombre + "' creado correctamente.");
         } catch (Exception e) {
             request.setAttribute("error", "Error al crear el programa: " + e.getMessage());

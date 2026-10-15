@@ -56,7 +56,7 @@ public interface IController {
     public abstract void AceptarEstudiantesAEdicionCurso(List<Object[]> estudiantesYCambios, String nomEdicion);
     //Crear Programa de Formacion
     //El tipo de dato FechaType sera añadido cuando se cree el tipo de dato "FechaType" o alguno con nombre parecido
-    public abstract void CrearProgramasDeFormacion(String nomPrograma, String descripcion, Date fInicio, Date fFin,Date fAlta, String imgPath)throws Exception;
+    public abstract void CrearProgramasDeFormacion(String nomPrograma, String descripcion, Date fInicio, Date fFin,Date fAlta, String imgPath, String instituto)throws Exception;
     
     //Agregar programa
     public abstract void AgregarCursoAProgramas(String nomPrograma, List<String> cursos);
@@ -109,6 +109,9 @@ public interface IController {
     //Devolver lista de inscripciones a ediciones de curso de un usuario
     public abstract List<DTMaster> ListarInscripciones(String nicknameEstudiante);
     public abstract List<DTMaster> ListarProgramasDeCurso(String curso);
+    
+    public abstract List<DTMaster> ListarCursosXCategoria(String categoria);
+    public abstract List<DTMaster> ListarCurEdiProg(EnumDT tipoBusqueda, String dato);
     
     public abstract String GenerateRandPassword();
     

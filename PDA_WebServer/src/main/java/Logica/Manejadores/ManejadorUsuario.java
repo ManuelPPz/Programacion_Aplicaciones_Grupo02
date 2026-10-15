@@ -101,6 +101,7 @@ public class ManejadorUsuario {
             em.getTransaction().begin();
 
             if (ub instanceof Docente d && d.getInstituto() != null) {
+                // Se debe asociar el objeto gestionado por el EntityManager actual
                 Instituto instPersistente = em.find(Instituto.class, d.getInstituto().getNombre());
                 d.setInstituto(instPersistente);
             }
@@ -128,19 +129,24 @@ public class ManejadorUsuario {
         try {
             UsuarioBase ubBD = em.find(UsuarioBase.class, nickLimpio);
             if (ubBD != null) {
+                // Refrescar para traer los últimos cambios
                 em.refresh(ubBD);
 
+                // HIDRATACIÓN DENTRO DE LA SESIÓN ABIERTA
                 if (ubBD.getSeguidos() != null) {
                     ubBD.getSeguidos().size();
                 }
 
                 if (ubBD instanceof Docente d) {
+                    // 1. Cargar Instituto
                     if (d.getInstituto() != null) {
                         d.getInstituto().getNombre();
                     }
+                    // 2. Cargar Ediciones
                     if (d.getEdiciones() != null) {
                         d.getEdiciones().size();
                     }
+                    // 3. Cargar Cursos y sus Programas
                     if (d.getCursos() != null) {
                         for (Curso c : d.getCursos()) {
                             em.refresh(c);
@@ -150,6 +156,7 @@ public class ManejadorUsuario {
                         }
                     }
                 } else if (ubBD instanceof Usuario u) {
+                    // Cargar inscripciones para estudiantes
                     if (u.getMisInscripciones() != null) {
                         u.getMisInscripciones().size();
                         for (Edi_Usu eu : u.getMisInscripciones()) {
@@ -173,9 +180,10 @@ public class ManejadorUsuario {
         } catch (Exception e) {
             System.err.println("Error al buscar usuario en BD: " + e.getMessage());
         } finally {
-            em.close();
+            em.close(); // Se cierra la sesión solo después de haber cargado todo en memoria
         }
 
+        // Fallback a la memoria local si no está en BD
         List<UsuarioBase> auxList = getList();
         if (auxList != null) {
             for (UsuarioBase ub : auxList) {
@@ -260,46 +268,30 @@ public class ManejadorUsuario {
         List<UsuarioBase> auxList = new ArrayList<>();
         EntityManager em = getEntityManager();
         try {
-            // Consultamos todos los usuarios base para evitar cruces de cast en las consultas específicas
-            List<UsuarioBase> todos = em.createQuery(
-                    "SELECT u FROM UsuarioBase u", UsuarioBase.class
+            // Usamos 'd.miInstituto' que coincide exactamente con el atributo de Docente
+            List<Docente> docentes = em.createQuery(
+                    "SELECT DISTINCT d FROM Docente d LEFT JOIN FETCH d.miInstituto", Docente.class
             ).getResultList();
 
-            if (todos != null) {
-                for (UsuarioBase ub : todos) {
-                    if (ub instanceof Docente d) {
-                        if (d.getCursos() != null) {
-                            d.getCursos().size();
-                        }
-                        if (d.getEdiciones() != null) {
-                            d.getEdiciones().size();
-                        }
-                    } else if (ub instanceof Usuario u) {
-                        if (u.getMisInscripciones() != null) {
-                            u.getMisInscripciones().size();
-                            for (Edi_Usu eu : u.getMisInscripciones()) {
-                                if (eu.getEdicion() != null) {
-                                    eu.getEdicion().getNombre();
-                                }
-                            }
-                        }
-                        if (u.getMisInscripcionesPro() != null) {
-                            u.getMisInscripcionesPro().size();
-                            for (Prog_Usu pu : u.getMisInscripcionesPro()) {
-                                if (pu.getId() != null && pu.getId().getPrograma() != null) {
-                                    pu.getId().getPrograma().getNombre();
-                                }
-                            }
-                        }
-                    }
-                    auxList.add(ub);
+            // Cargar colecciones para evitar LazyInitializationException fuera del em
+            for (Docente d : docentes) {
+                if (d.getCursos() != null) {
+                    d.getCursos().size();
+                }
+                if (d.getEdiciones() != null) {
+                    d.getEdiciones().size();
                 }
             }
 
+            // Cargar estudiantes
+            List<Usuario> estudiantes = em.createQuery(
+                    "SELECT DISTINCT u FROM Usuario u LEFT JOIN FETCH u.misInscripciones", Usuario.class
+            ).getResultList();
+
+            auxList.addAll(docentes);
+            auxList.addAll(estudiantes);
         } finally {
-            if (em != null && em.isOpen()) {
-                em.close();
-            }
+            em.close();
         }
         return auxList;
     }
@@ -340,6 +332,7 @@ public class ManejadorUsuario {
         return auxList;
     }
 
+    /*-----------------------------------Funciones para la lista de cursos del docente--------------------*/
     public void AddCurso(UsuarioBase ub, Curso c) {
         if (ub instanceof Docente docente) {
             docente.AddCurso(c);
@@ -352,6 +345,7 @@ public class ManejadorUsuario {
         }
     }
 
+    /*-----------------------------Funciones para la lista de ediciones de cursos de los usuarios---------------*/
     public void AddEdicion(UsuarioBase ub, EdicionCurso ec) {
         if (ub instanceof Docente docente) {
             docente.AddEdicion(ec);
@@ -370,26 +364,30 @@ public class ManejadorUsuario {
         }
     }
 
+    /*-------------------------Funciones para la lista de programas de cursos de los usuarios--------------*/
     public void InscribirUsuarioAPrograma(Prog_Usu pu) {
         if (pu != null && pu.getId() != null && pu.getId().getUsuario() != null) {
             pu.getId().getUsuario().AddPrograma(pu);
         }
     }
 
+    /*-------------------------Funciones para la lista de usuarios seguidos--------------------------------*/
     public void SeguirUsuarios(UsuarioBase ub1, UsuarioBase ub2) {
         if (ub1 != null && ub2 != null) {
             EntityManager em = getEntityManager();
             try {
                 em.getTransaction().begin();
                 
+                // Buscamos las entidades dentro de la misma transacción para asegurarnos que estén 'managed'
                 UsuarioBase user1 = em.find(UsuarioBase.class, ub1.getNickname());
                 UsuarioBase user2 = em.find(UsuarioBase.class, ub2.getNickname());
 
                 if (user1 != null && user2 != null) {
                     user1.SeguirUsuario(user2);
-                    em.merge(user1);
+                    em.merge(user1); // Actualiza la tabla intermedia 'Seguidos'
                     
                     em.getTransaction().commit();
+                    System.out.println("[BD] ¡Relación guardada con éxito: " + user1.getNickname() + " sigue a " + user2.getNickname() + "!");
                 } else {
                     if (em.getTransaction().isActive()) em.getTransaction().rollback();
                 }
@@ -397,6 +395,7 @@ public class ManejadorUsuario {
                 if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
+                System.err.println("Error al persistir 'SeguirUsuario': " + e.getMessage());
                 e.printStackTrace();
             } finally {
                 em.close();
@@ -418,6 +417,7 @@ public class ManejadorUsuario {
                     em.merge(user1);
                     
                     em.getTransaction().commit();
+                    System.out.println("[BD] ¡Relación eliminada: " + user1.getNickname() + " dejó de seguir a " + user2.getNickname() + "!");
                 } else {
                     if (em.getTransaction().isActive()) em.getTransaction().rollback();
                 }
@@ -425,11 +425,25 @@ public class ManejadorUsuario {
                 if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
+                System.err.println("Error al persistir 'DejarDeSeguir': " + e.getMessage());
                 e.printStackTrace();
             } finally {
                 em.close();
             }
         }
+    }
+
+    private byte[] ConvertirImageIconToByte(String imgPath) throws IOException {
+        if (imgPath == null || imgPath.trim().isEmpty()) {
+            return null;
+        }
+
+        java.io.File archivo = new java.io.File(imgPath);
+        if (archivo.exists() && archivo.isFile()) {
+            return java.nio.file.Files.readAllBytes(archivo.toPath());
+        }
+
+        return null;
     }
 
     private EntityManager getEntityManager() {

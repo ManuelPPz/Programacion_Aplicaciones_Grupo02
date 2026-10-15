@@ -38,6 +38,10 @@ public class ProgramaDeFormacion implements Serializable {
     @Column(name="ImagePath")
     private String image;
     
+    @ManyToOne
+    @JoinColumn(name="Instituto")
+    private Instituto miInstituto;
+    
     @ManyToMany
     @JoinTable(
         name = "programa_curso",
@@ -53,13 +57,14 @@ public class ProgramaDeFormacion implements Serializable {
     // Requerido por JPA/Hibernate
     public ProgramaDeFormacion() {}
 
-    public ProgramaDeFormacion(String nombre, String descripcion, Vigencia vigenciaPrograma, Date fAlta, String imgPath) {
+    public ProgramaDeFormacion(String nombre, String descripcion, Vigencia vigenciaPrograma, Date fAlta, String imgPath, Instituto instituto) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.vigenciaPrograma = vigenciaPrograma;
         this.fAlta = fAlta;
         this.cursos = new ArrayList<>();
         this.image = imgPath;
+        this.miInstituto = instituto;
     }
     
     public void ModificarDatos(String descripcion, Vigencia vigenciaPrograma, Date fAlta, String imgPath){
@@ -126,6 +131,10 @@ public class ProgramaDeFormacion implements Serializable {
     
     public String getImage(){
         return this.image;
+    }
+
+    public Instituto getInstituo(){
+        return this.miInstituto;
     }
 
     public void setId(String nombre) {
