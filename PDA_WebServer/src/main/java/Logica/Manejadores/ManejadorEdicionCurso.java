@@ -212,12 +212,16 @@ public class ManejadorEdicionCurso {
         String ins = (ec.getInstituto() != null) ? ec.getInstituto().getNombre() : "";
         String cur = (ec.getCurso() != null) ? ec.getCurso().getNombre() : "";
 
-        List<Docente> auxUsuarios = ec.getMisDocentes();
+        // Cambiamos a List<?> para evitar el ClassCastException directo si la entidad devuelve Usuario
+        List<?> auxUsuarios = ec.getMisDocentes();
         List<String> auxDocentes = new ArrayList<>();
         if (auxUsuarios != null) {
-            for (Docente d : auxUsuarios) {
-                if (d != null) {
-                    auxDocentes.add(d.getNickname());
+            for (Object obj : auxUsuarios) {
+                if (obj instanceof Docente) {
+                    Docente d = (Docente) obj;
+                    if (d != null) {
+                        auxDocentes.add(d.getNickname());
+                    }
                 }
             }
         }

@@ -3,6 +3,7 @@
 <%@page import="Logica.util.ImagenUtil"%>
 <%@page import="Logica.DTsClasses.DTProgramaForm"%>
 <%@page import="Logica.DTsClasses.DTMaster"%>
+<%@page import="Logica.DTsClasses.DTUsuario"%>
 <%@page import="java.util.List"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -23,6 +24,10 @@
         <div class="col-md-9 col-lg-10 ps-md-4 mb-5">
             <% if (request.getAttribute("error") != null) { %>
                 <div class="alert alert-danger"><%= request.getAttribute("error") %></div>
+            <% } %>
+
+            <% if (request.getAttribute("exito") != null) { %>
+                <div class="alert alert-success"><%= request.getAttribute("exito") %></div>
             <% } %>
 
             <%
@@ -76,7 +81,6 @@
                         } catch (Exception e) {}
                     }
                     
-                    // Validación de imagen del programa
                     String imgNombreProg = programaDetalle.getImage();
                     String imgPrograma = (imgNombreProg != null && !imgNombreProg.trim().isEmpty()) 
                         ? ImagenUtil.versionedUrl(ImagenUtil.CARPETA_PROGRAMAS, imgNombreProg, request.getContextPath())
@@ -85,7 +89,7 @@
                     <h2>Consulta de Programa de Formacion</h2>
 
                     <div class="row g-4 mt-1">
-                        <%-- COLUMNA IZQUIERDA: Imagen, Datos básicos, Categorías y Descripción --%>
+                        <%-- COLUMNA IZQUIERDA: Imagen, Datos básicos, Categorías, Descripción y Botón de Inscripción AJAX --%>
                         <div class="col-md-7 col-lg-8">
                             <div class="d-flex align-items-start gap-3 mb-3">
                                 <img src="<%= imgPrograma %>" 
@@ -125,6 +129,65 @@
                                 </p>
                             </div>
 
+                            <%-- BOTÓN DINÁMICO CON AJAX PARA INSCRIBIRSE AL PROGRAMA --%>
+                            <%
+                                DTMaster usuarioActual = (DTMaster) session.getAttribute("usuarioLogueado");
+                                if (usuarioActual != null) {
+                                    String tipoClase = usuarioActual.getClass().getSimpleName().toLowerCase();
+                                    if (!tipoClase.contains("docente")) {
+
+                                        Boolean yaInscriptoObj = (Boolean) request.getAttribute("yaInscripto");
+                                        boolean yaInscripto = (yaInscriptoObj != null && yaInscriptoObj);
+                            %>
+                            <div class="mt-4 pt-3 border-top d-flex align-items-center" id="contenedorInscripcionProg">
+                                <% if (!yaInscripto) { %>
+                                <button type="button" id="btnInscribirProg" onclick="inscribirProgramaDirectamente('<%= programaDetalle.getNombre() %>')" class="btn fw-bold w-100 py-2 shadow-sm text-white" style="background-color: #198754 !important; border-color: #198754 !important;">
+                                    Solicitar Inscripción a este Programa
+                                </button>
+                                <% } else { %>
+                                <button type="button" class="btn btn-secondary fw-bold w-100 py-2 shadow-sm" disabled>
+                                    Ya estás inscripto en este Programa
+                                </button>
+                                <% } %>
+                            </div>
+
+                            <%-- SCRIPT AJAX PARA PROCESAR LA INSCRIPCIÓN AL PROGRAMA --%>
+                            <script>
+                                function inscribirProgramaDirectamente(programa) {
+                                    const btn = document.getElementById("btnInscribirProg");
+                                    btn.disabled = true;
+                                    btn.innerText = "Inscribiendo...";
+
+                                    fetch('${pageContext.request.contextPath}/InscripcionProgramaServlet', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/x-www-form-urlencoded',
+                                        },
+                                        body: 'action=inscribirDirecto&programa=' + encodeURIComponent(programa)
+                                    })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            const contenedor = document.getElementById("contenedorInscripcionProg");
+                                            contenedor.innerHTML = '<button type="button" class="btn btn-secondary fw-bold w-100 py-2 shadow-sm" disabled>Ya estás inscripto en este Programa</button>';
+                                        } else {
+                                            alert("Ocurrió un error al procesar la inscripción al programa.");
+                                            btn.disabled = false;
+                                            btn.innerText = "Solicitar Inscripción a este Programa";
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error:', error);
+                                        alert("Error de conexión al intentar inscribir.");
+                                        btn.disabled = false;
+                                        btn.innerText = "Solicitar Inscripción a este Programa";
+                                    });
+                                }
+                            </script>
+                            <% 
+                                    }
+                                } 
+                            %>
+
                             <div class="mt-3">
                                 <a href="${pageContext.request.contextPath}/ConsultaProgramaServlet" class="btn btn-outline-secondary fw-bold">Volver al listado</a>
                             </div>
@@ -142,7 +205,6 @@
                                             for (String nomCurso : listaCursosNom) {
                                                 String linkCurso = request.getContextPath() + "/ConsultaCursoServlet?nombre=" + java.net.URLEncoder.encode(nomCurso, "UTF-8");
                                                 
-                                                // Se busca la entidad Curso para obtener el nombre real de su imagen
                                                 String imgCurso = request.getContextPath() + "/Images/ImagenUserDefault.png";
                                                 Curso cAux = ManejadorCursos.GetInstance().BuscarCurso(nomCurso);
                                                 if (cAux != null && cAux.getImage() != null && !cAux.getImage().trim().isEmpty()) {

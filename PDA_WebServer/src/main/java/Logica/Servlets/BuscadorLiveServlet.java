@@ -1,5 +1,6 @@
 package Logica.Servlets;
 
+import Logica.DTsClasses.DTCurso;
 import Logica.DTsClasses.DTMaster;
 import Logica.DTsClasses.DTUsuarioBase;
 import Logica.DTsClasses.EnumDT;
@@ -12,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Method;
 import java.util.List;
 
 @WebServlet(name = "BuscadorLiveServlet", urlPatterns = {"/BuscadorLiveServlet"})
@@ -35,8 +37,7 @@ public class BuscadorLiveServlet extends HttpServlet {
             StringBuilder json = new StringBuilder("[");
             boolean first = true;
 
-            // Recorremos los enums disponibles en EnumDT que maneja tu controlador con ListarClase
-            // (Ej: Buscamos usuarios, cursos y programas usando los listados generales del IController)
+            // 1. Búsqueda general en los Enums estándar (Usuarios, Cursos, Programas, etc.)
             for (EnumDT enumType : EnumDT.values()) {
                 try {
                     List<DTMaster> elementos = control.ListarClase(enumType);
@@ -44,81 +45,107 @@ public class BuscadorLiveServlet extends HttpServlet {
                         for (DTMaster m : elementos) {
                             if (m == null) continue;
                             
-                            String nombreItem = "";
-                            String tipoItem = "Elemento";
-                            String urlItem = "#";
-
-                            // Identificamos el tipo de objeto según sus propiedades o instancia
-                            if (m instanceof DTUsuarioBase u) {
-                                String nombreCompleto = u.getNombre() + " " + u.getApellido() + " (" + u.getNickname() + ")";
-                                if (nombreCompleto.toLowerCase().contains(q) || u.getNickname().toLowerCase().contains(q)) {
-                                    tipoItem = "Usuario";
-                                    nombreItem = u.getNombre() + " " + u.getApellido() + " (@" + u.getNickname() + ")";
-                                    urlItem = request.getContextPath() + "/ConsultaUsuarioIndividualServlet?nickname=" + java.net.URLEncoder.encode(u.getNickname(), "UTF-8");
-                                }
-                            } else {
-                                // Para Cursos, Ediciones o Programas que tengan el método getNombre()
+                            // Si es un curso, aprovechamos para buscar también sus ediciones asociadas
+                            if (m instanceof DTCurso curso) {
+                                procesarItem(curso, q, request, json, first);
+                                if (json.length() > 1 && first) first = false;
+                                
+                                // Buscar ediciones de este curso (igual que en MainMenu)
                                 try {
-                                    java.lang.reflect.Method getNombreMethod = m.getClass().getMethod("getNombre");
-                                    String nombre = (String) getNombreMethod.invoke(m);
-                                    
-                                    if (nombre != null && nombre.toLowerCase().contains(q)) {
-                                        nombreItem = nombre;
-                                        String className = m.getClass().getSimpleName();
-                                        
-                                        if (className.contains("Curso")) {
-                                            tipoItem = "Curso";
-                                            urlItem = request.getContextPath() + "/ConsultaCursoServlet?nombre=" + java.net.URLEncoder.encode(nombre, "UTF-8");
-                                        } else if (className.contains("Edicion")) {
-                                            tipoItem = "Edición";
-                                            urlItem = request.getContextPath() + "/ConsultaEdicionServlet?nombre=" + java.net.URLEncoder.encode(nombre, "UTF-8");
-                                        } else if (className.contains("Programa") || className.contains("DTProgram")) {
-                                            tipoItem = "Programa";
-                                            urlItem = request.getContextPath() + "/ConsultaProgramaServlet?nombre=" + java.net.URLEncoder.encode(nombre, "UTF-8");
-                                        } else {
-                                            tipoItem = "General";
-                                            urlItem = "#";
+                                    List<DTMaster> listaEdiciones = control.ListarEdiciones(curso.getNombre());
+                                    if (listaEdiciones != null) {
+                                        for (DTMaster edMaster : listaEdiciones) {
+                                            if (edMaster != null) {
+                                                procesarItemEdicion(edMaster, q, request, json, first);
+                                                if (json.length() > 1 && first) first = false;
+                                            }
                                         }
                                     }
-                                } catch (Exception ex) {
-                                    // Si el DTMaster no tiene getNombre, se ignora de forma segura
-                                }
-                            }
-
-                            // Si encontró coincidencia y no se ha agregado antes en este ciclo
-                            if (!nombreItem.isEmpty()) {
-                                if (!first) json.append(",");
-                                json.append("{\"tipo\":\"").append(tipoItem).append("\", \"nombre\":\"").append(escapeJson(nombreItem)).append("\", \"url\":\"").append(urlItem).append("\"}");
-                                first = false;
+                                } catch (Exception ignored) {}
+                            } else {
+                                procesarItem(m, q, request, json, first);
+                                if (json.length() > 1 && first) first = false;
                             }
                         }
                     }
                 } catch (Exception e) {
-                    // Ignora si un Enum específico da error en ListarClase
+                    // Ignorar errores individuales por enum
                 }
             }
-
-            // También aseguramos incluir los programas mediante ListarProgramaDeForm()
-            try {
-                List<DTMaster> programas = control.ListarClase(EnumDT.DT_PROGRAMA);
-                if (programas != null) {
-                    for (DTMaster m : programas) {
-                        try {
-                            java.lang.reflect.Method getNombreMethod = m.getClass().getMethod("getNombre");
-                            String nombre = (String) getNombreMethod.invoke(m);
-                            if (nombre != null && nombre.toLowerCase().contains(q)) {
-                                if (!first) json.append(",");
-                                json.append("{\"tipo\":\"Programa\", \"nombre\":\"").append(escapeJson(nombre)).append("\", \"url\":\"").append(request.getContextPath()).append("/ConsultaProgramaServlet?nombre=").append(java.net.URLEncoder.encode(nombre, "UTF-8")).append("\"}");
-                                first = false;
-                            }
-                        } catch (Exception e) {}
-                    }
-                }
-            } catch (Exception e) {}
 
             json.append("]");
             out.print(json.toString());
         }
+    }
+
+    private void procesarItem(DTMaster m, String q, HttpServletRequest request, StringBuilder json, boolean first) {
+        try {
+            String nombreItem = "";
+            String tipoItem = "Elemento";
+            String urlItem = "#";
+
+            if (m instanceof DTUsuarioBase u) {
+                String nombreCompleto = u.getNombre() + " " + u.getApellido() + " (" + u.getNickname() + ")";
+                if (nombreCompleto.toLowerCase().contains(q) || u.getNickname().toLowerCase().contains(q)) {
+                    tipoItem = "Usuario";
+                    nombreItem = u.getNombre() + " " + u.getApellido() + " (@" + u.getNickname() + ")";
+                    urlItem = request.getContextPath() + "/ConsultaUsuarioIndividualServlet?nickname=" + java.net.URLEncoder.encode(u.getNickname(), "UTF-8");
+                }
+            } else {
+                String nombre = obtenerNombreObjeto(m);
+                if (nombre != null && nombre.toLowerCase().contains(q)) {
+                    nombreItem = nombre;
+                    String classSimpleName = m.getClass().getSimpleName().toLowerCase();
+                    
+                    if (classSimpleName.contains("curso")) {
+                        tipoItem = "Curso";
+                        urlItem = request.getContextPath() + "/ConsultaCursoServlet?nombre=" + java.net.URLEncoder.encode(nombre, "UTF-8");
+                    } else if (classSimpleName.contains("programa") || classSimpleName.contains("dtprogram")) {
+                        tipoItem = "Programa";
+                        urlItem = request.getContextPath() + "/ConsultaProgramaServlet?nombre=" + java.net.URLEncoder.encode(nombre, "UTF-8");
+                    } else {
+                        tipoItem = "General";
+                        urlItem = "#";
+                    }
+                }
+            }
+
+            if (!nombreItem.isEmpty()) {
+                String itemJson = "{\"tipo\":\"" + tipoItem + "\", \"nombre\":\"" + escapeJson(nombreItem) + "\", \"url\":\"" + urlItem + "\"}";
+                if (!json.toString().contains(itemJson)) {
+                    if (!first && json.length() > 2) json.append(",");
+                    json.append(itemJson);
+                }
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private void procesarItemEdicion(DTMaster edMaster, String q, HttpServletRequest request, StringBuilder json, boolean first) {
+        try {
+            String nombre = obtenerNombreObjeto(edMaster);
+            if (nombre != null && nombre.toLowerCase().contains(q)) {
+                String urlItem = request.getContextPath() + "/ConsultaEdicionServlet?nombre=" + java.net.URLEncoder.encode(nombre, "UTF-8");
+                String itemJson = "{\"tipo\":\"Edición\", \"nombre\":\"" + escapeJson(nombre) + "\", \"url\":\"" + urlItem + "\"}";
+                if (!json.toString().contains(itemJson)) {
+                    if (!first && json.length() > 2) json.append(",");
+                    json.append(itemJson);
+                }
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private String obtenerNombreObjeto(Object m) {
+        String[] metodosAGestionar = {"getNombre", "getNombreEdicion", "getTitulo"};
+        for (String nombreMetodo : metodosAGestionar) {
+            try {
+                Method method = m.getClass().getMethod(nombreMetodo);
+                Object resultado = method.invoke(m);
+                if (resultado != null) {
+                    return resultado.toString();
+                }
+            } catch (Exception ignored) {}
+        }
+        return null;
     }
 
     private String escapeJson(String str) {

@@ -141,10 +141,17 @@
 
                                         let badgeClass = "bg-secondary";
                                         let tipoLower = tipo.toLowerCase();
-                                        if (tipoLower.includes("curso")) badgeClass = "bg-primary text-white";
-                                        else if (tipoLower.includes("programa")) badgeClass = "bg-info text-dark";
-                                        else if (tipoLower.includes("edicion") || tipoLower.includes("edición")) badgeClass = "bg-success text-white";
-                                        else if (tipoLower.includes("usuario") || tipoLower.includes("docente") || tipoLower.includes("estudiante")) badgeClass = "bg-warning text-dark";
+                                        
+                                        if (tipoLower.includes("curso")) {
+                                            badgeClass = "bg-primary text-white";
+                                        } else if (tipoLower.includes("programa")) {
+                                            badgeClass = "bg-info text-dark";
+                                        } else if (tipoLower.includes("edicion") || tipoLower.includes("edición") || tipoLower.includes("dtedicion")) {
+                                            badgeClass = "bg-success text-white";
+                                            tipo = "Edición"; // Normaliza la etiqueta visualmente
+                                        } else if (tipoLower.includes("usuario") || tipoLower.includes("docente") || tipoLower.includes("estudiante")) {
+                                            badgeClass = "bg-warning text-dark";
+                                        }
 
                                         const link = document.createElement("a");
                                         link.className = "search-item";
