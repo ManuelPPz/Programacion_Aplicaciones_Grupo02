@@ -43,29 +43,30 @@ public class AltaEdicionServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            
             throws ServletException, IOException {
 
         IController control = Fabric.GetInstance().GetIController();
         HttpSession session  = request.getSession(false);
-
+       List<DTMaster> cursos = new ArrayList<>();
         String instituto = "";
         if (session != null && session.getAttribute("usuarioLogueado") instanceof DTDocente doc) {
             if (!doc.getInstituto().isEmpty()) {
                 instituto = doc.getInstituto();
-            }
-        }
-
-        List<DTMaster> cursos;
-        if (!instituto.isBlank()) {
+                        if (!instituto.isBlank()) {
             cursos = control.ListarCursos(instituto);
+            
+            
+            
         } else {
             cursos = control.ListarClase(EnumDT.DT_CURSO);
+        }
+            }
         }
 
         request.setAttribute("cursos",     cursos);
         request.setAttribute("docentes",   control.ListarDocentes(instituto));
         
-        // ¡Asegúrate de que este nombre sea exactamente el del archivo JSP físico que estás editando!
         request.getRequestDispatcher("InterfacesJSP/AltaEdicionCurso.jsp").forward(request, response);
     }
 
