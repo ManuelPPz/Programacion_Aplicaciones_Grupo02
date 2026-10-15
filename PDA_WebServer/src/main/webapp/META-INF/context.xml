@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/PDA_WebServer">
+  <!-- Mapea la ruta web /uploads a una carpeta física en el home del usuario -->
+  <Resources>
+    <PreResources base="${user.home}/mi_proyecto_data/uploads"
+                  className="org.apache.catalina.webresources.DirResourceSet"
+                  webAppMount="/uploads"/>
+  </Resources>
+</Context>

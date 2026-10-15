@@ -1,0 +1,19 @@
+services:
+  db:
+    image: mysql:8.0
+    command: --lower_case_table_names=1
+    container_name: mi_proyecto_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: edEXT_db
+      MYSQL_USER: UserLab
+      MYSQL_PASSWORD: userlab
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  mysql_data:

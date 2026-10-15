@@ -1,0 +1,267 @@
+package Logica.Manejadores;
+
+import Logica.Classes.Categoria;
+import Logica.Classes.Curso;
+import Logica.Classes.Instituto;
+import Logica.Classes.Prog_Usu;
+import Logica.Classes.ProgramaDeFormacion;
+import Logica.DTsClasses.DTMaster;
+import Logica.DTsClasses.DTProgramaForm;
+import Logica.DTsClasses.Vigencia;
+import jakarta.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import Logica.util.JPAUtil;
+
+public class ManejadorProgramasDeFormacion {
+
+    //=================Codigo de Singleton=================
+    private static ManejadorProgramasDeFormacion instance;
+
+    public static ManejadorProgramasDeFormacion GetInstance() {
+        if (instance == null) {
+            instance = new ManejadorProgramasDeFormacion();
+        }
+        return instance;
+    }
+
+    public ProgramaDeFormacion CrearPrograma(String nombre, String descripcion, Vigencia vigencia, Date fAlta, String imgPath, Instituto instituto) {
+        ProgramaDeFormacion auxPDF = new ProgramaDeFormacion(nombre, descripcion, vigencia, fAlta, imgPath, instituto);
+        return auxPDF;
+    }
+
+    public void ModificarDatos(String nombre, String descripcion, Vigencia vigenciaPrograma, Date fAlta, String imgPath) {
+        ProgramaDeFormacion auxPDF = BuscarPrograma(nombre);
+        if (auxPDF != null) {
+            auxPDF.ModificarDatos(descripcion, vigenciaPrograma, fAlta, imgPath);
+
+            EntityManager em = JPAUtil.getEntityManager();
+            try {
+                em.getTransaction().begin();
+                em.merge(auxPDF);
+                em.getTransaction().commit();
+            } catch (Exception e) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                throw new RuntimeException("Error al actualizar el programa: " + e.getMessage(), e);
+            } finally {
+                em.close();
+            }
+        }
+    }
+
+    public void Add(ProgramaDeFormacion pdf) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(pdf);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RuntimeException("Error al guardar el programa: " + e.getMessage(), e);
+        } finally {
+            em.close();
+        }
+    }
+
+    public void AddUsuarioInscripto(Prog_Usu pu) throws Exception {
+        if (pu == null || pu.getId() == null) {
+            return;
+        }
+
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+
+            // 1. Guardar/Actualizar la entidad de asociación en la BD
+            Prog_Usu euManaged = em.merge(pu);
+
+            // 2. Sincronizar el modelo en memoria RAM
+            if (pu.getId().getPrograma() != null) {
+                pu.getId().getPrograma().AddUsuarioInscripto(euManaged);
+            }
+
+            em.getTransaction().commit();
+            System.out.println(">>> [DEBUG] Inscripción registrada con éxito.");
+
+        } catch (Exception e) {
+            if (em.getTransaction() != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            e.printStackTrace();
+            throw new Exception("Error al guardar la inscripción: " + e.getMessage());
+        } finally {
+            em.close();
+        }
+    }
+
+    public ProgramaDeFormacion BuscarPrograma(String nombre) {
+        EntityManager em = JPAUtil.getEntityManager();
+        ProgramaDeFormacion pdf = null;
+        try {
+            // 1. Buscamos el programa por su clave primaria de forma limpia
+            pdf = em.find(ProgramaDeFormacion.class, nombre);
+            
+            // 2. Si se encuentra, inicializamos sus colecciones de forma segura dentro de la sesión
+            if (pdf != null) {
+                if (pdf.getCursos() != null) {
+                    pdf.getCursos().size(); // Fuerza la carga de cursos
+                    for (Curso c : pdf.getCursos()) {
+                        if (c != null) {
+                            try {
+                                if (c.getCategorias() != null) {
+                                    c.getCategorias().size(); // Fuerza la carga de categorías por curso de forma segura
+                                }
+                            } catch (Exception ex) {
+                                // Ignoramos si un curso particular no tiene categorías o da error de inicialización
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error al buscar el programa de formacion en el manejador: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close(); 
+            }
+        }
+        return pdf; 
+    }
+
+    public void AddCurso(ProgramaDeFormacion pdf, Curso c) {
+        if (pdf == null || c == null) {
+            return;
+        }
+
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+
+            // 1. Cargar/gestionar ambas entidades dentro de la sesión activa
+            ProgramaDeFormacion pdfMerged = em.find(ProgramaDeFormacion.class, pdf.getNombre());
+            Curso cMerged = em.find(Curso.class, c.getNombre());
+
+            if (pdfMerged != null && cMerged != null) {
+                // 2. Forzar la inicialización perezosa de la lista si es necesario dentro de la sesión
+                pdfMerged.getCursos().size();
+
+                // 3. Asociar en las entidades gestionadas por JPA
+                pdfMerged.AddCurso(cMerged);
+
+                em.merge(pdfMerged);
+                em.merge(cMerged);
+            }
+
+            em.getTransaction().commit();
+
+            // 4. Sincronizar los objetos desasociados que tenías en memoria
+            pdf.AddCurso(c);
+
+        } catch (Exception e) {
+            if (em.getTransaction() != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new RuntimeException("Error al asociar el curso al programa de formación: " + e.getMessage(), e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    private ManejadorProgramasDeFormacion() {
+    }
+    //=======================================================
+
+    private List<ProgramaDeFormacion> getList() {
+        List<ProgramaDeFormacion> auxList = new ArrayList<>();
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            auxList.clear();
+
+            // Cargar programas e hidratar la lista de cursos
+            List<ProgramaDeFormacion> programas = em.createQuery(
+                    "SELECT DISTINCT p FROM ProgramaDeFormacion p LEFT JOIN FETCH p.cursos",
+                    ProgramaDeFormacion.class
+            ).getResultList();
+
+            auxList.addAll(programas);
+        } finally {
+            em.close();
+        }
+        return auxList;
+    }
+
+    public DTProgramaForm getDT(ProgramaDeFormacion pdf) {
+        if (pdf == null) {
+            return null;
+        }
+
+        String nom = pdf.getNombre();
+        String desc = pdf.getDescripcion();
+        Vigencia v = pdf.getVigencia();
+        List<Curso> cursos = pdf.getCursos();
+        Date fAlta = pdf.getFAlta();
+        List<String> auxList = new ArrayList<>();
+
+        List<String> auxListCat = new ArrayList<>();
+        if (cursos != null) {
+            for (int i = 0; i < cursos.size(); i++) {
+                if (cursos.get(i) != null) {
+                    auxList.add(cursos.get(i).getNombre());
+                    List<Categoria> auxCat = cursos.get(i).getCategorias();
+                    if (auxCat != null) {
+                        for (Categoria c : auxCat) {
+                            if (c != null && c.getNombre() != null) {
+                                String nomCat = c.getNombre();
+                                if (!auxListCat.contains(nomCat)) {
+                                    auxListCat.add(nomCat);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return new DTProgramaForm(nom, desc, v, auxList, fAlta, auxListCat, pdf.getImage());
+    }
+
+    public List<DTMaster> getDTList() {
+        List<ProgramaDeFormacion> auxListPdf = getList();
+        List<DTMaster> auxList = new ArrayList<>();
+        if (auxListPdf != null) {
+            for (int i = 0; i < auxListPdf.size(); i++) {
+                DTMaster dt = getDT(auxListPdf.get(i));
+                if (dt != null) {
+                    auxList.add(dt);
+                }
+            }
+        }
+
+        return auxList;
+    }
+
+    public List<DTMaster> ListarProgramasDeCurso(String curso) {
+        List<ProgramaDeFormacion> auxList = getList();
+        List<DTMaster> listReturn = new ArrayList<>();
+        for (ProgramaDeFormacion pdf : auxList) {
+            List<Curso> auxListCur = pdf.getCursos();
+            if (auxListCur != null) {
+                for (Curso c : auxListCur) {
+                    if (c != null && c.getNombre() != null) {
+                        if (curso.equals(c.getNombre())) {
+                            listReturn.add(getDT(pdf));
+                        }
+                    }
+                }
+            }
+        }
+        return listReturn;
+    }
+}
