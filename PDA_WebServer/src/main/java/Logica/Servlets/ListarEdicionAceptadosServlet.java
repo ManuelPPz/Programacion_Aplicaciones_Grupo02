@@ -29,7 +29,7 @@ import java.util.List;
  * Servlet para el Caso de Uso: Listar aceptados a una edición de curso
  * @author leoli
  */
-@WebServlet(name = "ListarAceptadosEdicionServlet", urlPatterns = {"/ListarAceptadosEdicionServlet", "/listar-aceptados-edicion"})
+@WebServlet(name = "ListarAceptadosEdicionServlet", urlPatterns = {"/ListarAceptadosEdicionServlet"})
 public class ListarEdicionAceptadosServlet extends HttpServlet {
 
     /**
@@ -77,7 +77,7 @@ public class ListarEdicionAceptadosServlet extends HttpServlet {
         }
 
         // Redirigir la petición a la vista JSP
-        request.getRequestDispatcher("/WEB-INF/views/listar-aceptados-edicion.jsp").forward(request, response);
+        request.getRequestDispatcher("InterfacesJSP/ListarEdicionAceptados.jsp").forward(request, response);
     }
 
     /**
