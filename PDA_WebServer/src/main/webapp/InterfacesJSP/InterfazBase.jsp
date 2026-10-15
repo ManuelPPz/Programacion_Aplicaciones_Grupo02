@@ -210,6 +210,12 @@
                                     <li class="list-group-item text-dark fw-semibold p-0">
                                         <a href="<%= request.getContextPath() %>/ConsultaUsuarioServlet" class="text-dark text-decoration-none d-block p-2">Consulta de Usuarios</a>
                                     </li>
+                                    <li class="list-group-item text-dark fw-semibold p-0">
+                                        <a href="<%= request.getContextPath() %>/SeleccionarEstudiantesEdicionServlet" class="text-dark text-decoration-none d-block p-2">Seleccionarestudiantesedicionservlet</a>
+                                    </li>
+                                    <li class="list-group-item text-dark fw-semibold p-0">
+                                        <a href="<%= request.getContextPath() %>/ListarAceptadosEdicionServlet" class="text-dark text-decoration-none d-block p-2">listaredicionaceptados</a>
+                                    </li>
 
                                     <%-- SECCIÓN CURSOS --%>
                                     <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">CURSOS</li>

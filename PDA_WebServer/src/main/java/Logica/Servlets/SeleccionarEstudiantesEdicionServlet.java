@@ -28,7 +28,7 @@ import java.util.List;
  *
  * @author leoli
  */
-@WebServlet(name = "SeleccionarEstudiantesEdicionServlet", urlPatterns = {"/SeleccionarEstudiantesEdicionServlet", "/seleccionar-estudiantes"})
+@WebServlet(name = "SeleccionarEstudiantesEdicionServlet", urlPatterns = {"/SeleccionarEstudiantesEdicionServlet"})
 public class SeleccionarEstudiantesEdicionServlet extends HttpServlet {
 
     /**
@@ -84,7 +84,7 @@ public class SeleccionarEstudiantesEdicionServlet extends HttpServlet {
         }
 
         // Redirigir la petición a la vista JSP
-        request.getRequestDispatcher("/WEB-INF/views/seleccionar-estudiantes.jsp").forward(request, response);
+        request.getRequestDispatcher("InterfacesJSP/SeleccionarEstudiantesEdicion.jsp").forward(request, response);
     }
 
     /**
@@ -120,6 +120,6 @@ public class SeleccionarEstudiantesEdicionServlet extends HttpServlet {
         }
 
         // Se vuelve a invocar doGet para mantener los filtros y refrescar los datos en pantalla
-        doGet(request, response);
+        request.getRequestDispatcher("InterfacesJSP/SeleccionarEstudiantesEdicion.jsp").forward(request, response);
     }
 }

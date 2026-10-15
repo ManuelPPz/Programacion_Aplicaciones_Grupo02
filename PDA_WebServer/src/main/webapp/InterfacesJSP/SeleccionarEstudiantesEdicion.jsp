@@ -21,7 +21,7 @@
         
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-success text-white">
-                <h3 class="card-title m-0">Inscripciones Aceptadas a Edición de Curso</h3>
+                <h3 class="card-title m-0">Seleccionar estudiantes para una edición de curso</h3>
             </div>
             <div class="card-body">
 
@@ -94,7 +94,7 @@
                     </div>
 
                     <!-- LISTADO EXCLUSIVO DE INSCRIPCIONES ACEPTADAS -->
-                    <h4 class="mb-3 text-secondary">Estudiantes con Inscripción Aceptada</h4>
+                    <h4 class="mb-3 text-secondary">Estudiantes Inscriptos</h4>
                     
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped align-middle">
