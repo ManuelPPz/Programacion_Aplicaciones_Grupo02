@@ -222,6 +222,15 @@
                                     <li class="list-group-item text-dark fw-semibold p-0">
                                         <a href="<%= request.getContextPath() %>/CrearProgramaServlet" class="text-dark text-decoration-none d-block p-2">Alta Programa Formación</a>
                                     </li>
+
+                                    <%-- NUEVO: SECCIÓN INSCRIPCIONES (DOCENTE) --%>
+                                    <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">INSCRIPCIONES</li>
+                                    <li class="list-group-item text-dark fw-semibold p-0">
+                                        <a href="<%= request.getContextPath() %>/SeleccionarEstudiantesEdicionServlet" class="text-dark text-decoration-none d-block p-2">Seleccionar Estudiantes</a>
+                                    </li>
+                                    <li class="list-group-item text-dark fw-semibold p-0">
+                                        <a href="<%= request.getContextPath() %>/ListarAceptadosEdicionServlet" class="text-dark text-decoration-none d-block p-2">Listar Aceptados</a>
+                                    </li>
                             <%
                                 } else if (dtm instanceof Logica.DTsClasses.DTUsuario) {
                                     Logica.DTsClasses.DTUsuario dtu = (Logica.DTsClasses.DTUsuario) dtm;
@@ -247,10 +256,14 @@
                                     <%-- SECCIÓN INSCRIPCIONES --%>
                                     <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">INSCRIPCIONES</li>
                                     <li class="list-group-item text-dark fw-semibold p-0">
-                                        <span class="d-block p-2">Inscribirme</span>
+                                        <a href="<%= request.getContextPath() %>/InscripcionEdicionServlet" class="text-dark text-decoration-none d-block p-2">Inscribirme a Edición</a>
                                     </li>
                                     <li class="list-group-item text-dark fw-semibold p-0">
-                                        <span class="d-block p-2">Ver Resultados</span>
+                                        <a href="<%= request.getContextPath() %>/InscripcionProgramaServlet" class="text-dark text-decoration-none d-block p-2">Inscribirme a Programa</a>
+                                    </li>
+                                    <%-- NUEVO: enlace a los resultados de inscripciones del estudiante --%>
+                                    <li class="list-group-item text-dark fw-semibold p-0">
+                                        <a href="<%= request.getContextPath() %>/ListarResultadosInscripcionesServlet" class="text-dark text-decoration-none d-block p-2">Ver Resultados</a>
                                     </li>
                             <%
                                 }

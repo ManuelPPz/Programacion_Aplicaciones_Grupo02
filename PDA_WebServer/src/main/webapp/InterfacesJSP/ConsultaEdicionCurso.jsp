@@ -1,231 +1,290 @@
-<%@page import="Logica.util.ImagenUtil"%>
-<%@page import="Logica.DTsClasses.DTEdicionCurso"%>
-<%@page import="Logica.DTsClasses.DTCurso"%>
-<%@page import="Logica.DTsClasses.DTMaster"%>
-<%@page import="Logica.DTsClasses.DTUsuario"%>
-<%@page import="Logica.DTsClasses.DTUsuarioBase"%>
-<%@page import="java.util.List"%>
-<%@page import="java.text.SimpleDateFormat"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%-- 
+    Document   : SeleccionarEstudiantesEdicion
+    Created on : Oct 12, 2026, 7:29:27 PM
+    Author     : leoli
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Consulta de Edición de Curso</title>
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css">
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/Styles/StylesContainers.css">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <script src="${pageContext.request.contextPath}/js/main.js"></script>
-    </head>
-    <body class="bg-light">
-        <%-- Cargamos la estructura global (Barra de navegación + Menú lateral izquierdo) --%>
-        <%@ include file="/InterfacesJSP/InterfazBase.jsp" %>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleccionar Estudiantes de Edición de Curso</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        #contenido { transition: opacity .15s; }
+        #contenido.cargando { opacity: .5; pointer-events: none; }
+    </style>
+</head>
+<body class="bg-light">
+    <%@ include file="/InterfacesJSP/InterfazBase.jsp" %>
 
-        <%-- CONTENIDO PRINCIPAL: CONSULTA DE EDICIÓN DE CURSO --%>
-        <div class="col-md-9 col-lg-10 ps-md-4 d-flex flex-column align-items-center mb-5">
-            <div class="w-100 px-3" style="max-width: 900px;">
-                <h2 class="mb-4 fw-bold text-center">Consulta de Edición de Curso</h2>
+    <div class="container my-4">
 
-                <% if (request.getAttribute("error") != null) {%>
-                <div class="alert alert-danger"><%= request.getAttribute("error")%></div>
-                <% } %>
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-success text-white">
+                <h3 class="card-title m-0">Seleccionar estudiantes para una edición de curso</h3>
+            </div>
+            <div class="card-body">
 
-                <% if (request.getAttribute("exito") != null) {%>
-                <div class="alert alert-success"><%= request.getAttribute("exito")%></div>
-                <% } %>
+                <!-- Todo lo que cambia dinámicamente vive dentro de #contenido -->
+                <div id="contenido">
 
-                <%
-                    DTEdicionCurso detalleEdicion = (DTEdicionCurso) request.getAttribute("edicionDetalle");
-                    if (detalleEdicion == null) {
-                        // CASO 1: Listado general de ediciones si no hay una seleccionada
-                %>
-                <div class="card border-dark shadow p-4 w-100 mx-auto bg-white" style="max-width: 850px;">
-                    <h4 class="card-title text-center mb-4 fw-bold">Listado de Ediciones de Cursos</h4>
-                    <div class="list-group">
-                        <%
-                            List<DTMaster> listaEdiciones = (List<DTMaster>) request.getAttribute("ediciones");
-                            if (listaEdiciones != null && !listaEdiciones.isEmpty()) {
-                                for (DTMaster master : listaEdiciones) {
-                                    if (master instanceof DTEdicionCurso) {
-                                        DTEdicionCurso ed = (DTEdicionCurso) master;
-                                        String linkConsultaEd = request.getContextPath() + "/ConsultaEdicionServlet?nombre=" + java.net.URLEncoder.encode(ed.getNombre(), "UTF-8");
-                        %>
-                                        <a href="<%= linkConsultaEd %>" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
-                                            <div>
-                                                <h5 class="mb-1 fw-bold text-dark"><%= ed.getNombre() %></h5>
-                                                <small class="text-muted">Curso: <%= ed.getCurso() %> | Instituto: <%= ed.getInstituto() %></small>
-                                            </div>
-                                            <span class="btn btn-outline-dark btn-sm fw-bold">Ver</span>
-                                        </a>
-                        <%
-                                    }
-                                }
-                            } else {
-                        %>
-                            <div class="alert alert-secondary text-center mb-0" role="alert">
-                                No hay ediciones de cursos registradas en el sistema.
-                            </div>
-                        <% } %>
-                    </div>
-                </div>
-                <%
-                    } else {
-                        // CASO 2: Detalle específico de la edición seleccionada
-                        SimpleDateFormat sdfEd = new SimpleDateFormat("dd/MM/yyyy");
-                        String fInicio = (detalleEdicion.getFInicio() != null) ? sdfEd.format(detalleEdicion.getFInicio()) : "";
-                        String fFin = (detalleEdicion.getFFin() != null) ? sdfEd.format(detalleEdicion.getFFin()) : "";
-                        String fAlta = (detalleEdicion.getFechaAlta() != null) ? sdfEd.format(detalleEdicion.getFechaAlta()) : "";
-
-                        String nombreImagen = null;
-                        try {
-                            nombreImagen = detalleEdicion.getImage();
-                        } catch (Exception e) {
-                            nombreImagen = null;
-                        }
-
-                        String imgEdicion = (nombreImagen != null && !nombreImagen.trim().isEmpty())
-                                ? ImagenUtil.versionedUrl(ImagenUtil.CARPETA_EDICIONCURSOS, nombreImagen, request.getContextPath())
-                                : request.getContextPath() + "/Images/ImagenUserDefault.png";
-                %>
-
-                <%-- TARJETA DE DETALLE E IMAGEN DE LA EDICIÓN --%>
-                <div class="card border-dark shadow p-4 bg-white mb-4">
-                    <div class="row align-items-center">
-                        <div class="col-md-4 text-center mb-3 mb-md-0">
-                            <img src="<%= imgEdicion%>" alt="Imagen de Edición" width="140" height="140" class="rounded-circle border border-2 border-dark shadow-sm" style="object-fit: cover;">
-                            <h4 class="fw-bold mt-3 text-dark"><%= detalleEdicion.getNombre()%></h4>
-                            <span class="badge bg-primary fs-6">Edición</span>
+                    <!-- MENSAJE DE ERROR -->
+                    <c:if test="${not empty mensajeError}">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>Error:</strong> ${mensajeError}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
-                        <div class="col-md-8 border-start ps-md-4">
-                            <div class="d-flex flex-column gap-2 fs-6">
-                                <p class="mb-1"><strong>Instituto:</strong> <span class="text-muted"><%= detalleEdicion.getInstituto()%></span></p>
-                                <p class="mb-1"><strong>Fecha de Inicio:</strong> <span class="text-muted"><%= fInicio%></span></p>
-                                <p class="mb-1"><strong>Fecha de Fin:</strong> <span class="text-muted"><%= fFin%></span></p>
-                                <p class="mb-1"><strong>Cupo Máximo:</strong> <span class="text-muted"><%= detalleEdicion.getCupo()%></span></p>
-                                <p class="mb-1"><strong>Cupo Actual:</strong> <span class="text-muted"><%= detalleEdicion.getCupoActual()%></span></p>
-                                <p class="mb-1"><strong>Fecha de Alta:</strong> <span class="text-muted"><%= fAlta%></span></p>
-                            </div>
+                    </c:if>
 
-                            <%-- BOTÓN DINÁMICO CON AJAX (Verde y separado) --%>
-                            <%
-                                DTMaster usuarioActual = (DTMaster) session.getAttribute("usuarioLogueado");
-                                if (usuarioActual != null) {
-                                    String tipoClase = usuarioActual.getClass().getSimpleName().toLowerCase();
-                                    if (!tipoClase.contains("docente")) {
-
-                                        Boolean yaInscriptoObj = (Boolean) request.getAttribute("yaInscripto");
-                                        boolean yaInscripto = (yaInscriptoObj != null && yaInscriptoObj);
-                            %>
-                            <div class="mt-4 pt-3 border-top d-flex align-items-center" id="contenedorInscripcion">
-                                <% if (!yaInscripto) {%>
-                                <button type="button" id="btnInscribir" onclick="inscribirDirectamente('<%= detalleEdicion.getCurso()%>', '<%= detalleEdicion.getNombre()%>')" class="btn fw-bold w-100 py-2 shadow-sm text-white" style="background-color: #198754 !important; border-color: #198754 !important;">
-                                    Solicitar Inscripción a esta Edición
-                                </button>
-                                <% } else { %>
-                                <button type="button" class="btn btn-secondary fw-bold w-100 py-2 shadow-sm" disabled>
-                                    Ya estás inscripto en esta Edición
-                                </button>
-                                <% } %>
-                            </div>
-
-                            <%-- SCRIPT AJAX PARA PROCESAR LA INSCRIPCIÓN AL INSTANTE --%>
-                            <script>
-                                function inscribirDirectamente(curso, edicion) {
-                                    const btn = document.getElementById("btnInscribir");
-                                    btn.disabled = true;
-                                    btn.innerText = "Inscribiendo...";
-
-                                    fetch('${pageContext.request.contextPath}/InscripcionEdicionServlet', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/x-www-form-urlencoded',
-                                        },
-                                        body: 'action=inscribirDirecto&curso=' + encodeURIComponent(curso) + '&edicion=' + encodeURIComponent(edicion)
-                                    })
-                                    .then(response => {
-                                        if (response.ok) {
-                                            const contenedor = document.getElementById("contenedorInscripcion");
-                                            contenedor.innerHTML = '<button type="button" class="btn btn-secondary fw-bold w-100 py-2 shadow-sm" disabled>Ya estás inscripto en esta Edición</button>';
-                                        } else {
-                                            alert("Ocurrió un error al procesar la inscripción.");
-                                            btn.disabled = false;
-                                            btn.innerText = "Solicitar Inscripción a esta Edición";
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error('Error:', error);
-                                        alert("Error de conexión al intentar inscribir.");
-                                        btn.disabled = false;
-                                        btn.innerText = "Solicitar Inscripción a esta Edición";
-                                    });
-                                }
-                            </script>
-                            <% 
-                                    }
-                                } 
-                            %>
+                    <!-- MENSAJE DE ÉXITO -->
+                    <c:if test="${not empty mensajeExito}">
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            ${mensajeExito}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
-                    </div>
-                </div>
+                    </c:if>
 
-                <%-- TARJETA DE DOCENTES ASOCIADOS A LA EDICIÓN --%>
-                <div class="card border-dark shadow p-4 bg-white mb-4">
-                    <h4 class="fw-bold border-bottom pb-2 mb-3">Docentes Asociados</h4>
-                    <ul class="list-group list-group-flush">
-                        <%
-                            List<String> docentesAsociados = null;
-                            try {
-                                docentesAsociados = detalleEdicion.getDocentes();
-                            } catch (Exception e) {}
+                    <!-- FORMULARIO DE FILTROS EN CASCADA (se envía por fetch) -->
+                    <form id="formFiltros" method="GET" action="SeleccionarEstudiantesEdicionServlet" class="row g-3 mb-4">
 
-                            if (docentesAsociados != null && !docentesAsociados.isEmpty()) {
-                                for (String docNick : docentesAsociados) {
-                                    String linkDocente = request.getContextPath() + "/ConsultaUsuarioIndividualServlet?nickname=" + java.net.URLEncoder.encode(docNick, "UTF-8");
-                        %>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="fw-semibold text-dark"><%= docNick %></span>
-                                        </div>
-                                        <a href="<%= linkDocente %>" class="btn btn-outline-dark btn-sm fw-bold">
-                                            Ver Perfil
-                                        </a>
-                                    </li>
-                        <%
-                                }
-                            } else {
-                        %>
-                            <li class="list-group-item text-muted px-0 bg-transparent">No hay docentes asociados registrados para esta edición.</li>
-                        <% } %>
-                    </ul>
-                </div>
+                        <!-- 1. Instituto -->
+                        <div class="col-md-4">
+                            <label for="instituto" class="form-label fw-bold">1. Instituto:</label>
+                            <select id="instituto" name="instituto" class="form-select">
+                                <option value="">-- Seleccionar Instituto --</option>
+                                <c:forEach var="inst" items="${institutos}">
+                                    <option value="${inst.nombre}" ${inst.nombre == instSeleccionado ? 'selected' : ''}>
+                                        ${inst.nombre}
+                                    </option>
+                                </c:forEach>
+                            </select>
+                        </div>
 
-                <%-- TARJETA DE CURSOS ASOCIADOS --%>
-                <div class="card border-dark shadow p-4 bg-white mb-4">
-                    <h4 class="fw-bold border-bottom pb-2 mb-3">Cursos Asociados</h4>
-                    <ul class="list-group list-group-flush">
-                        <% if (detalleEdicion.getCurso() != null && !detalleEdicion.getCurso().trim().isEmpty()) {
-                                String nombreCurso = detalleEdicion.getCurso();
-                        %>
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent">
-                            <div>
-                                <span class="fw-bold fs-5 text-dark"><%= nombreCurso%></span>
-                                <p class="text-muted small mb-0">Curso principal asociado a esta edición.</p>
+                        <!-- 2. Curso -->
+                        <div class="col-md-4">
+                            <label for="curso" class="form-label fw-bold">2. Curso:</label>
+                            <select id="curso" name="curso" class="form-select" ${empty cursos ? 'disabled' : ''}>
+                                <option value="">-- Seleccionar Curso --</option>
+                                <c:forEach var="c" items="${cursos}">
+                                    <option value="${c.nombre}" ${c.nombre == cursoSeleccionado ? 'selected' : ''}>
+                                        ${c.nombre}
+                                    </option>
+                                </c:forEach>
+                            </select>
+                        </div>
+
+                        <!-- 3. Edición -->
+                        <div class="col-md-4">
+                            <label for="edicion" class="form-label fw-bold">3. Edición de Curso:</label>
+                            <select id="edicion" name="edicion" class="form-select" ${empty ediciones ? 'disabled' : ''}>
+                                <option value="">-- Seleccionar Edición --</option>
+                                <c:forEach var="ed" items="${ediciones}">
+                                    <option value="${ed.nombre}" ${ed.nombre == edicionSeleccionada ? 'selected' : ''}>
+                                        ${ed.nombre}
+                                    </option>
+                                </c:forEach>
+                            </select>
+                        </div>
+                    </form>
+
+                    <!-- DATOS DE LA EDICIÓN + INSCRIPCIONES -->
+                    <c:if test="${not empty dtEdicion}">
+
+                        <!-- Ficha resumen -->
+                        <div class="card mb-4 border-success">
+                            <div class="card-header bg-success text-white fw-bold">
+                                Datos Básicos de la Edición
                             </div>
-                            <a href="${pageContext.request.contextPath}/ConsultaCursoServlet?nombre=<%= java.net.URLEncoder.encode(nombreCurso, "UTF-8")%>&curso=<%= java.net.URLEncoder.encode(nombreCurso, "UTF-8")%>" class="btn btn-dark btn-sm fw-bold">
-                                Ver Curso
-                            </a>
-                        </li>
-                        <% } else { %>
-                        <li class="list-group-item text-muted px-0 bg-transparent">No hay cursos asociados registrados.</li>
-                        <% } %>
-                    </ul>
-                </div>
-                <% } %>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4"><strong>Nombre:</strong> ${dtEdicion.nombre}</div>
+                                    <div class="col-md-4"><strong>Fecha Inicio:</strong> <fmt:formatDate value="${dtEdicion.FInicio}" pattern="dd/MM/yyyy" /></div>
+                                    <div class="col-md-4"><strong>Cupo Máximo:</strong> ${dtEdicion.cupo}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="m-0 text-secondary">Inscripciones de la Edición</h4>
+                            <c:url var="urlRanking" value="SeleccionarEstudiantesEdicionServlet">
+                                <c:param name="instituto" value="${instSeleccionado}" />
+                                <c:param name="curso" value="${cursoSeleccionado}" />
+                                <c:param name="edicion" value="${edicionSeleccionada}" />
+                                <c:param name="orden" value="ranking" />
+                            </c:url>
+                            <a href="${urlRanking}" data-ajax class="btn btn-outline-success btn-sm">Ordenar por ranking</a>
+                        </div>
+
+                        <!-- FORMULARIO DE SELECCIÓN (POST por fetch) -->
+                        <form id="formSeleccion" method="POST" action="SeleccionarEstudiantesEdicionServlet">
+
+                            <!-- Se reenvían los filtros para mantener la pantalla tras guardar -->
+                            <input type="hidden" name="instituto" value="${instSeleccionado}">
+                            <input type="hidden" name="curso" value="${cursoSeleccionado}">
+                            <input type="hidden" name="edicion" value="${edicionSeleccionada}">
+                            <input type="hidden" name="nomEdicion" value="${edicionSeleccionada}">
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped align-middle">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Estudiante (Nickname)</th>
+                                            <th>Fecha Inscripción</th>
+                                            <th>Estado actual</th>
+                                            <th class="text-center">Nuevo estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:choose>
+                                            <c:when test="${empty dtEdicion.inscripciones}">
+                                                <tr>
+                                                    <td colspan="4" class="text-center text-muted py-3">
+                                                        Esta edición de curso no tiene inscripciones.
+                                                    </td>
+                                                </tr>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <c:forEach var="ins" items="${dtEdicion.inscripciones}">
+                                                    <tr>
+                                                        <td>
+                                                            <strong>${ins.nicknameEstudiante}</strong>
+                                                            <input type="hidden" name="estudiantes[]" value="${ins.nicknameEstudiante}">
+                                                        </td>
+                                                        <td>${ins.fechaInscripcion}</td>
+                                                        <td>
+                                                            <c:choose>
+                                                                <c:when test="${ins.estado == 'Aceptada'}">
+                                                                    <span class="badge bg-success">Aceptada</span>
+                                                                </c:when>
+                                                                <c:when test="${ins.estado == 'Rechazada'}">
+                                                                    <span class="badge bg-danger">Rechazada</span>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <span class="badge bg-warning text-dark">${ins.estado}</span>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="radio"
+                                                                       name="estado_${ins.nicknameEstudiante}"
+                                                                       id="acep_${ins.nicknameEstudiante}"
+                                                                       value="Aceptada" ${ins.estado == 'Aceptada' ? 'checked' : ''}>
+                                                                <label class="form-check-label" for="acep_${ins.nicknameEstudiante}">Aceptar</label>
+                                                            </div>
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="radio"
+                                                                       name="estado_${ins.nicknameEstudiante}"
+                                                                       id="rech_${ins.nicknameEstudiante}"
+                                                                       value="Rechazada" ${ins.estado == 'Rechazada' ? 'checked' : ''}>
+                                                                <label class="form-check-label" for="rech_${ins.nicknameEstudiante}">Rechazar</label>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </c:forEach>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <c:if test="${not empty dtEdicion.inscripciones}">
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-success">Registrar Selección</button>
+                                </div>
+                            </c:if>
+                        </form>
+
+                    </c:if>
+
+                </div><!-- /#contenido -->
+
             </div>
         </div>
 
-        <!-- Bootstrap JS -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    </body>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Carga dinámica sin recargar la página -->
+    <script>
+    (function () {
+        const contenido = document.getElementById('contenido');
+        // Ruta absoluta al servlet, con el context path real de la aplicación
+        const BASE = '${pageContext.request.contextPath}/SeleccionarEstudiantesEdicionServlet';
+
+        // Pide la página al servlet y reemplaza solo el contenido dinámico
+        async function cargar(url, opciones) {
+            contenido.classList.add('cargando');
+            try {
+                const resp = await fetch(url, opciones);
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const html = await resp.text();
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+                const nuevo = doc.getElementById('contenido');
+                if (!nuevo) throw new Error('Respuesta inesperada del servidor');
+                contenido.innerHTML = nuevo.innerHTML;
+            } catch (e) {
+                contenido.insertAdjacentHTML('afterbegin',
+                    '<div class="alert alert-danger">Error al cargar los datos: ' + e.message + '</div>');
+            } finally {
+                contenido.classList.remove('cargando');
+            }
+        }
+
+        // Cambio en un combo de filtros
+        contenido.addEventListener('change', function (ev) {
+            const sel = ev.target;
+            if (!sel.matches('#formFiltros select')) return;
+
+            const form = document.getElementById('formFiltros');
+
+            // Al cambiar un combo, se reinician los dependientes
+            if (sel.id === 'instituto') {
+                form.querySelector('#curso').value = '';
+                form.querySelector('#edicion').value = '';
+            } else if (sel.id === 'curso') {
+                form.querySelector('#edicion').value = '';
+            }
+
+            const params = new URLSearchParams(new FormData(form));
+            // Los combos deshabilitados no se envían; limpiamos vacíos
+            for (const [k, v] of [...params.entries()]) {
+                if (v === '') params.delete(k);
+            }
+            const url = BASE + '?' + params.toString();
+            history.replaceState(null, '', url);
+            cargar(url);
+        });
+
+        // Link "Ordenar por ranking"
+        contenido.addEventListener('click', function (ev) {
+            const a = ev.target.closest('a[data-ajax]');
+            if (!a) return;
+            ev.preventDefault();
+            history.replaceState(null, '', a.href);
+            cargar(a.href);
+        });
+
+        // Envío de "Registrar Selección"
+        contenido.addEventListener('submit', function (ev) {
+            const form = ev.target;
+            if (form.id !== 'formSeleccion') return;
+            ev.preventDefault();
+            cargar(BASE, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                body: new URLSearchParams(new FormData(form)).toString()
+            });
+        });
+    })();
+    </script>
+</body>
 </html>

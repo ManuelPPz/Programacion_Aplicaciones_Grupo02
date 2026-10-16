@@ -34,6 +34,18 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- JSTL (Jakarta) - API + Implementación. NO usar scope provided: Tomcat no las incluye -->
+        <dependency>
+            <groupId>jakarta.servlet.jsp.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+
         <!-- Jakarta Mail API + Angus Implementation + Angus Activation -->
         <dependency>
             <groupId>jakarta.mail</groupId>
