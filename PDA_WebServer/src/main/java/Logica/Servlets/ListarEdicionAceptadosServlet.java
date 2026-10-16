@@ -59,7 +59,7 @@ public class ListarEdicionAceptadosServlet extends HttpServlet {
                 if (nomCurso != null && !nomCurso.trim().isEmpty()) {
                     request.setAttribute("cursoSeleccionado", nomCurso);
                     List<DTMaster> ediciones = ic.ListarEdiciones(nomCurso);
-                    request.setAttribute("ediciones", ediciones);
+                    request.setAttribute("edicionessssssssssssssssssssss", ediciones);
 
                     // 4. Si se selecciona la Edición de Curso
                     String nomEdicion = request.getParameter("edicion");
