@@ -6,7 +6,7 @@ package Logica.DTsClasses;
 
 /**
  *
- * @author mateo
+ * @author mateo esa mate
  */
 public class DTCategoria extends DTMaster{
     private String nombre;
@@ -23,5 +23,6 @@ public class DTCategoria extends DTMaster{
         this.nombre = nombre;
     }
     
+    //por que no me deja oushear 
     
 }
