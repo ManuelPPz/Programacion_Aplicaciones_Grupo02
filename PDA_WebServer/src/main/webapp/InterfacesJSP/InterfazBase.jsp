@@ -11,43 +11,22 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <script src="<%= request.getContextPath() %>/js/main.js"></script>
         
-        <%-- Estilos para la cajita flotante de autocompletado del buscador --%>
         <style>
-            .search-container {
-                position: relative;
-            }
+            .search-container { position: relative; }
             #searchResults {
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                z-index: 2000;
-                max-height: 380px;
-                overflow-y: auto;
-                background: #ffffff;
-                border: 1px solid rgba(0,0,0,.15);
-                border-radius: 0.375rem;
-                box-shadow: 0 0.5rem 1rem rgba(0,0,0,.2);
-                display: none;
+                position: absolute; top: 100%; left: 0; right: 0; z-index: 2000;
+                max-height: 380px; overflow-y: auto; background: #ffffff;
+                border: 1px solid rgba(0,0,0,.15); border-radius: 0.375rem;
+                box-shadow: 0 0.5rem 1rem rgba(0,0,0,.2); display: none;
             }
             .search-item {
-                padding: 10px 15px;
-                border-bottom: 1px solid #f1f1f1;
-                cursor: pointer;
-                text-decoration: none;
-                display: block;
-                color: #333;
+                padding: 10px 15px; border-bottom: 1px solid #f1f1f1;
+                cursor: pointer; text-decoration: none; display: block; color: #333;
             }
-            .search-item:hover {
-                background-color: #f8f9fa;
-                color: #000;
-            }
+            .search-item:hover { background-color: #f8f9fa; color: #000; }
             .search-badge {
-                font-size: 0.75rem;
-                padding: 3px 6px;
-                border-radius: 4px;
-                font-weight: bold;
-                float: right;
+                font-size: 0.75rem; padding: 3px 6px; border-radius: 4px;
+                font-weight: bold; float: right;
             }
         </style>
     </head>
@@ -56,17 +35,15 @@
             DTMaster dtm = (DTMaster) session.getAttribute("usuarioLogueado");
         %>
 
-        <%-- BARRA DE NAVEGACIÓN FIJA --%>
         <nav class="navbar bg-body-tertiary px-4 border-bottom sticky-top shadow-sm z-3">
             <div class="container-fluid d-flex flex-nowrap align-items-center justify-content-between">
                 <a class="navbar-brand me-3 d-flex align-items-center" href="<%= request.getContextPath() %>/MainMenu">
                     <img src="<%= request.getContextPath() %>/Images/Logo edEXT sin fondo.png" alt="LogoApp" width="52" height="52" class="rounded-circle border">
                 </a>
                 
-                <%-- BARRA DE BÚSQUEDA INTELIGENTE EN TIEMPO REAL --%>
                 <div class="search-container my-0 flex-grow-1 mx-4" style="max-width: 500px;">
                     <form class="d-flex" role="search" onsubmit="return false;">
-                        <input id="searchInput" class="form-control me-2" type="search" placeholder="Buscar cursos, programas, ediciones, usuarios..." aria-label="Search" autocomplete="off"/>
+                        <input id="searchInput" class="form-control me-2" type="search" placeholder="Buscar cursos, programas, ediciones, usuarios..." autocomplete="off"/>
                     </form>
                     <div id="searchResults"></div>
                 </div>
@@ -100,7 +77,6 @@
             </div>
         </nav>
 
-        <%-- SCRIPT JAVASCRIPT PARA EL AUTOCOMPLETADO DINÁMICO --%>
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 const searchInput = document.getElementById("searchInput");
@@ -119,12 +95,7 @@
 
                     timeout = setTimeout(() => {
                         fetch("<%= request.getContextPath() %>/BuscadorLiveServlet?q=" + encodeURIComponent(query))
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error("Respuesta HTTP con estado " + response.status);
-                                }
-                                return response.json();
-                            })
+                            .then(response => response.ok ? response.json() : Promise.reject("Error"))
                             .then(data => {
                                 searchResults.innerHTML = "";
                                 if (data && data.length > 0) {
@@ -143,7 +114,7 @@
                                         let tipoLower = tipo.toLowerCase();
                                         if (tipoLower.includes("curso")) badgeClass = "bg-primary text-white";
                                         else if (tipoLower.includes("programa")) badgeClass = "bg-info text-dark";
-                                        else if (tipoLower.includes("edicion") || tipoLower.includes("edición")) badgeClass = "bg-success text-white";
+                                        else if (tipoLower.includes("edicion")) badgeClass = "bg-success text-white";
                                         else if (tipoLower.includes("usuario") || tipoLower.includes("docente") || tipoLower.includes("estudiante")) badgeClass = "bg-warning text-dark";
 
                                         const link = document.createElement("a");
@@ -157,38 +128,25 @@
                                     searchResults.innerHTML = '<div class="p-3 text-muted small text-center">No se encontraron resultados</div>';
                                     searchResults.style.display = "block";
                                 }
-                            })
-                            .catch(err => {
-                                console.error("Error en la búsqueda en vivo:", err);
-                                searchResults.style.display = "none";
-                            });
+                            }).catch(() => searchResults.style.display = "none");
                     }, 250);
                 }
 
                 searchInput.addEventListener("input", ejecutarBusqueda);
-                searchInput.addEventListener("focus", function() {
-                    if (this.value.trim().length >= 1) {
-                        ejecutarBusqueda();
-                    }
-                });
-
+                searchInput.addEventListener("focus", function() { if (this.value.trim().length >= 1) ejecutarBusqueda(); });
                 document.addEventListener("click", function (e) {
-                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-                        searchResults.style.display = "none";
-                    }
+                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) searchResults.style.display = "none";
                 });
             });
         </script>
 
-        <%-- CONTENEDOR Y FILA PRINCIPAL QUE AGRUPA TODO --%>
         <div class="container-fluid px-4 mt-4">
             <div class="row">
 
-                <%-- 1. MENÚ LATERAL IZQUIERDO --%>
+                <%-- MENÚ LATERAL IZQUIERDO --%>
                 <div class="col-md-3 col-lg-2 mb-4">
                     <div class="card border-dark w-100 shadow-sm">
                         
-                        <%-- BOTÓN VOLVER ATRÁS --%>
                         <div class="p-2 border-bottom bg-white text-center">
                             <button onclick="history.back()" class="btn btn-outline-dark btn-sm w-100 fw-bold d-flex align-items-center justify-content-center gap-2">
                                 <img src="<%= request.getContextPath() %>/Images/Exit_Simbol.png" alt="Volver" width="18" height="18" style="transform: scaleX(-1);">
@@ -198,100 +156,56 @@
 
                         <ul class="list-group list-group-flush">
                             <%
+                            // AQUI ESTÁ LA COMPROBACIÓN DOCENTE / ESTUDIANTE
                             if (dtm != null) {
                                 if (dtm instanceof Logica.DTsClasses.DTDocente) {
                                     Logica.DTsClasses.DTDocente dtd = (Logica.DTsClasses.DTDocente) dtm;
                             %>
-                                    <%-- SECCIÓN USUARIOS --%>
                                     <li class="list-group-item text-secondary fw-bold text-center fs-5">USUARIOS</li>
-                                    <li class="list-group-item text-dark fw-semibold p-0">
-                                        <a href="<%= request.getContextPath() %>/ConsultaUsuarioIndividualServlet?nickname=<%= dtd.getNickname() %>" class="text-dark text-decoration-none d-block p-2">Mi Perfil</a>
-                                    </li>
-                                    <li class="list-group-item text-dark fw-semibold p-0">
-                                        <a href="<%= request.getContextPath() %>/ConsultaUsuarioServlet" class="text-dark text-decoration-none d-block p-2">Consulta de Usuarios</a>
-                                    </li>
+                                    <li class="list-group-item text-dark fw-semibold p-0"><a href="<%= request.getContextPath() %>/ConsultaUsuarioIndividualServlet?nickname=<%= dtd.getNickname() %>" class="text-dark text-decoration-none d-block p-2">Mi Perfil</a></li>
+                                    <li class="list-group-item text-dark fw-semibold p-0"><a href="<%= request.getContextPath() %>/ConsultaUsuarioServlet" class="text-dark text-decoration-none d-block p-2">Consulta de Usuarios</a></li>
 
-                                    <%-- SECCIÓN CURSOS --%>
                                     <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">CURSOS</li>
-                                    <li class="list-group-item text-dark fw-semibold p-0">
-                                        <a href="<%= request.getContextPath() %>/AltaCursoServlet" class="text-dark text-decoration-none d-block p-2">Alta Curso</a>
-                                    </li>
-                                    <li class="list-group-item text-dark fw-semibold p-0">
-                                        <a href="<%= request.getContextPath() %>/AltaEdicionServlet" class="text-dark text-decoration-none d-block p-2">Alta Edición</a>
-                                    </li>
-                                    <li class="list-group-item text-dark fw-semibold p-0">
-                                        <a href="<%= request.getContextPath() %>/CrearProgramaServlet" class="text-dark text-decoration-none d-block p-2">Alta Programa Formación</a>
-                                    </li>
+                                    <li class="list-group-item text-dark fw-semibold p-0"><a href="<%= request.getContextPath() %>/AltaCursoServlet" class="text-dark text-decoration-none d-block p-2">Alta Curso</a></li>
+                                    <li class="list-group-item text-dark fw-semibold p-0"><a href="<%= request.getContextPath() %>/AltaEdicionServlet" class="text-dark text-decoration-none d-block p-2">Alta Edición</a></li>
+                                    <li class="list-group-item text-dark fw-semibold p-0"><a href="<%= request.getContextPath() %>/CrearProgramaServlet" class="text-dark text-decoration-none d-block p-2">Alta Programa Formación</a></li>
 
-                                    <%-- NUEVO: SECCIÓN INSCRIPCIONES (DOCENTE) --%>
                                     <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">INSCRIPCIONES</li>
-                                    <li class="list-group-item text-dark fw-semibold p-0">
-                                        <a href="<%= request.getContextPath() %>/SeleccionarEstudiantesEdicionServlet" class="text-dark text-decoration-none d-block p-2">Seleccionar Estudiantes</a>
-                                    </li>
-                                    <li class="list-group-item text-dark fw-semibold p-0">
-                                        <a href="<%= request.getContextPath() %>/ListarAceptadosEdicionServlet" class="text-dark text-decoration-none d-block p-2">Listar Aceptados</a>
-                                    </li>
+                                    <!-- ENLACES DE DOCENTE AQUI -->
+                                    <li class="list-group-item text-dark fw-semibold p-0"><a href="<%= request.getContextPath() %>/SeleccionarEstudiantesEdicionServlet" class="text-dark text-decoration-none d-block p-2">Seleccionar Estudiantes</a></li>
+                                    <li class="list-group-item text-dark fw-semibold p-0"><a href="<%= request.getContextPath() %>/ListarAceptadosEdicionServlet" class="text-dark text-decoration-none d-block p-2">Listar Aceptados</a></li>
                             <%
                                 } else if (dtm instanceof Logica.DTsClasses.DTUsuario) {
                                     Logica.DTsClasses.DTUsuario dtu = (Logica.DTsClasses.DTUsuario) dtm;
                             %>
-                                    <%-- SECCIÓN USUARIOS --%>
                                     <li class="list-group-item text-secondary fw-bold text-center fs-5">USUARIOS</li>
-                                    <li class="list-group-item text-dark fw-semibold p-0">
-                                        <a href="<%= request.getContextPath() %>/ConsultaUsuarioIndividualServlet?nickname=<%= dtu.getNickname() %>" class="text-dark text-decoration-none d-block p-2">Mi Perfil</a>
-                                    </li>
-                                    <li class="list-group-item text-dark fw-semibold p-0">
-                                        <a href="<%= request.getContextPath() %>/ConsultaUsuarioServlet" class="text-dark text-decoration-none d-block p-2">Consulta de Usuarios</a>
-                                    </li>
+                                    <li class="list-group-item text-dark fw-semibold p-0"><a href="<%= request.getContextPath() %>/ConsultaUsuarioIndividualServlet?nickname=<%= dtu.getNickname() %>" class="text-dark text-decoration-none d-block p-2">Mi Perfil</a></li>
+                                    <li class="list-group-item text-dark fw-semibold p-0"><a href="<%= request.getContextPath() %>/ConsultaUsuarioServlet" class="text-dark text-decoration-none d-block p-2">Consulta de Usuarios</a></li>
 
-                                    <%-- SECCIÓN CONSULTAS DE CURSOS --%>
                                     <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">CURSOS</li>
-                                    <li class="list-group-item text-dark fw-semibold p-0">
-                                        <a href="<%= request.getContextPath() %>/ConsultaCursoServlet" class="text-dark text-decoration-none d-block p-2">Consulta de Curso</a>
-                                    </li>
-                                    <li class="list-group-item text-dark fw-semibold p-0">
-                                        <a href="<%= request.getContextPath() %>/ConsultaEdicionServlet" class="text-dark text-decoration-none d-block p-2">Consulta Edición</a>
-                                    </li>
+                                    <li class="list-group-item text-dark fw-semibold p-0"><a href="<%= request.getContextPath() %>/ConsultaCursoServlet" class="text-dark text-decoration-none d-block p-2">Consulta de Curso</a></li>
+                                    <li class="list-group-item text-dark fw-semibold p-0"><a href="<%= request.getContextPath() %>/ConsultaEdicionServlet" class="text-dark text-decoration-none d-block p-2">Consulta Edición</a></li>
 
-                                    <%-- SECCIÓN INSCRIPCIONES --%>
                                     <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">INSCRIPCIONES</li>
-                                    <li class="list-group-item text-dark fw-semibold p-0">
-                                        <a href="<%= request.getContextPath() %>/InscripcionEdicionServlet" class="text-dark text-decoration-none d-block p-2">Inscribirme a Edición</a>
-                                    </li>
-                                    <li class="list-group-item text-dark fw-semibold p-0">
-                                        <a href="<%= request.getContextPath() %>/InscripcionProgramaServlet" class="text-dark text-decoration-none d-block p-2">Inscribirme a Programa</a>
-                                    </li>
-                                    <%-- NUEVO: enlace a los resultados de inscripciones del estudiante --%>
-                                    <li class="list-group-item text-dark fw-semibold p-0">
-                                        <a href="<%= request.getContextPath() %>/ListarResultadosInscripcionesServlet" class="text-dark text-decoration-none d-block p-2">Ver Resultados</a>
-                                    </li>
+                                    <li class="list-group-item text-dark fw-semibold p-0"><a href="<%= request.getContextPath() %>/InscripcionEdicionServlet" class="text-dark text-decoration-none d-block p-2">Inscribirme a Edición</a></li>
+                                    <li class="list-group-item text-dark fw-semibold p-0"><a href="<%= request.getContextPath() %>/InscripcionProgramaServlet" class="text-dark text-decoration-none d-block p-2">Inscribirme a Programa</a></li>
+                                    <!-- ENLACE DE ESTUDIANTE AQUI -->
+                                    <li class="list-group-item text-dark fw-semibold p-0"><a href="<%= request.getContextPath() %>/ListarResultadosInscripcionesServlet" class="text-dark text-decoration-none d-block p-2">Ver Resultados</a></li>
                             <%
                                 }
                             } else {
                             %>
-                                <%-- SECCIÓN USUARIOS INVITADOS --%>
                                 <li class="list-group-item text-secondary fw-bold text-center fs-5">USUARIOS</li>
-                                <li class="list-group-item text-dark fw-semibold p-0">
-                                    <a href="<%= request.getContextPath() %>/ConsultaUsuarioServlet" class="text-dark text-decoration-none d-block p-2">Consulta de Usuarios</a>
-                                </li>
-
-                                <%-- SECCIÓN NAVEGACIÓN DE CURSOS --%>
+                                <li class="list-group-item text-dark fw-semibold p-0"><a href="<%= request.getContextPath() %>/ConsultaUsuarioServlet" class="text-dark text-decoration-none d-block p-2">Consulta de Usuarios</a></li>
                                 <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">CURSOS</li>
-                                <li class="list-group-item text-dark fw-semibold p-0">
-                                    <a href="<%= request.getContextPath() %>/ConsultaCursoServlet" class="text-dark text-decoration-none d-block p-2">Consulta de Curso</a>
-                                </li>
-                                <li class="list-group-item text-dark fw-semibold p-0">
-                                    <a href="<%= request.getContextPath() %>/ConsultaEdicionServlet" class="text-dark text-decoration-none d-block p-2">Consulta Edición</a>
-                                </li>
+                                <li class="list-group-item text-dark fw-semibold p-0"><a href="<%= request.getContextPath() %>/ConsultaCursoServlet" class="text-dark text-decoration-none d-block p-2">Consulta de Curso</a></li>
+                                <li class="list-group-item text-dark fw-semibold p-0"><a href="<%= request.getContextPath() %>/ConsultaEdicionServlet" class="text-dark text-decoration-none d-block p-2">Consulta Edición</a></li>
                             <%
                             }
                             %>
                         </ul>
 
-                        <!-- Sección Institutos -->
-                        <div class="card-header text-center fw-bold border-top border-dark fs-5">
-                            Institutos
-                        </div>
+                        <div class="card-header text-center fw-bold border-top border-dark fs-5">Institutos</div>
                         <ul class="list-group list-group-flush">
                             <%
                                 java.util.List<Logica.DTsClasses.DTMaster> listInstitutos = (java.util.List<Logica.DTsClasses.DTMaster>) session.getAttribute("AuxListInstituto");
@@ -314,10 +228,7 @@
                             %>
                         </ul>
 
-                        <!-- Sección Categorías -->
-                        <div class="card-header text-center fw-bold border-top border-dark fs-5">
-                            Categorias
-                        </div>
+                        <div class="card-header text-center fw-bold border-top border-dark fs-5">Categorias</div>
                         <ul class="list-group list-group-flush">
                             <%
                                 java.util.List<Logica.DTsClasses.DTMaster> listCategorias = (java.util.List<Logica.DTsClasses.DTMaster>) session.getAttribute("AuxListCategoria");
@@ -342,5 +253,5 @@
                     </div>
                 </div>
 
-                <%-- 2. ÁREA DE CONTENIDO CENTRAL --%>
+                <%-- ÁREA DE CONTENIDO CENTRAL (Se deja ABIERTO para que el JSP hijo ponga su contenido aquí) --%>
                 <div class="col-md-9 col-lg-10 ps-md-4 d-flex flex-column align-items-center mb-5">
