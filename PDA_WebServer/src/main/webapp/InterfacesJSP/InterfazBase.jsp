@@ -222,8 +222,7 @@
                                     <li class="list-group-item text-dark fw-semibold p-0">
                                         <a href="<%= request.getContextPath() %>/CrearProgramaServlet" class="text-dark text-decoration-none d-block p-2">Alta Programa Formación</a>
                                     </li>
-
-                                    <%-- NUEVO: SECCIÓN INSCRIPCIONES (DOCENTE) --%>
+                                  <%-- SECCIÓN INSCRIPCIONES (DOCENTE) --%>
                                     <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">INSCRIPCIONES</li>
                                     <li class="list-group-item text-dark fw-semibold p-0">
                                         <a href="<%= request.getContextPath() %>/SeleccionarEstudiantesEdicionServlet" class="text-dark text-decoration-none d-block p-2">Seleccionar Estudiantes</a>
@@ -252,6 +251,10 @@
                                     <li class="list-group-item text-dark fw-semibold p-0">
                                         <a href="<%= request.getContextPath() %>/ConsultaEdicionServlet" class="text-dark text-decoration-none d-block p-2">Consulta Edición</a>
                                     </li>
+                                    <%-- NUEVO: Consulta de Programa de Formación para Estudiante --%>
+                                    <li class="list-group-item text-dark fw-semibold p-0">
+                                        <a href="<%= request.getContextPath() %>/ConsultaProgramaServlet" class="text-dark text-decoration-none d-block p-2">Consulta Programa</a>
+                                    </li>
 
                                     <%-- SECCIÓN INSCRIPCIONES --%>
                                     <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">INSCRIPCIONES</li>
@@ -261,7 +264,6 @@
                                     <li class="list-group-item text-dark fw-semibold p-0">
                                         <a href="<%= request.getContextPath() %>/InscripcionProgramaServlet" class="text-dark text-decoration-none d-block p-2">Inscribirme a Programa</a>
                                     </li>
-                                    <%-- NUEVO: enlace a los resultados de inscripciones del estudiante --%>
                                     <li class="list-group-item text-dark fw-semibold p-0">
                                         <a href="<%= request.getContextPath() %>/ListarResultadosInscripcionesServlet" class="text-dark text-decoration-none d-block p-2">Ver Resultados</a>
                                     </li>
@@ -269,20 +271,24 @@
                                 }
                             } else {
                             %>
-                                <%-- SECCIÓN USUARIOS INVITADOS --%>
-                                <li class="list-group-item text-secondary fw-bold text-center fs-5">USUARIOS</li>
-                                <li class="list-group-item text-dark fw-semibold p-0">
-                                    <a href="<%= request.getContextPath() %>/ConsultaUsuarioServlet" class="text-dark text-decoration-none d-block p-2">Consulta de Usuarios</a>
-                                </li>
+                                    <%-- SECCIÓN USUARIOS INVITADOS --%>
+                                    <li class="list-group-item text-secondary fw-bold text-center fs-5">USUARIOS</li>
+                                    <li class="list-group-item text-dark fw-semibold p-0">
+                                        <a href="<%= request.getContextPath() %>/ConsultaUsuarioServlet" class="text-dark text-decoration-none d-block p-2">Consulta de Usuarios</a>
+                                    </li>
 
-                                <%-- SECCIÓN NAVEGACIÓN DE CURSOS --%>
-                                <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">CURSOS</li>
-                                <li class="list-group-item text-dark fw-semibold p-0">
-                                    <a href="<%= request.getContextPath() %>/ConsultaCursoServlet" class="text-dark text-decoration-none d-block p-2">Consulta de Curso</a>
-                                </li>
-                                <li class="list-group-item text-dark fw-semibold p-0">
-                                    <a href="<%= request.getContextPath() %>/ConsultaEdicionServlet" class="text-dark text-decoration-none d-block p-2">Consulta Edición</a>
-                                </li>
+                                    <%-- SECCIÓN NAVEGACIÓN DE CURSOS --%>
+                                    <li class="list-group-item text-secondary fw-bold border-top border-dark fs-5 text-center">CURSOS</li>
+                                    <li class="list-group-item text-dark fw-semibold p-0">
+                                        <a href="<%= request.getContextPath() %>/ConsultaCursoServlet" class="text-dark text-decoration-none d-block p-2">Consulta de Curso</a>
+                                    </li>
+                                    <li class="list-group-item text-dark fw-semibold p-0">
+                                        <a href="<%= request.getContextPath() %>/ConsultaEdicionServlet" class="text-dark text-decoration-none d-block p-2">Consulta Edición</a>
+                                    </li>
+                                    <%-- NUEVO: Consulta de Programa de Formación para Invitados --%>
+                                    <li class="list-group-item text-dark fw-semibold p-0">
+                                        <a href="<%= request.getContextPath() %>/ConsultaProgramaFormacionServlet" class="text-dark text-decoration-none d-block p-2">Consulta Programa</a>
+                                    </li>
                             <%
                             }
                             %>
@@ -339,6 +345,18 @@
                                 }
                             %>
                         </ul>
+
+                        <%-- BOTÓN CERRAR SESIÓN (solo con usuario logueado) --%>
+                        <% if (dtm != null) { %>
+                        <div class="p-2 border-top border-dark bg-white text-center">
+                            <form action="<%= request.getContextPath() %>/LogoutServlet" method="POST" class="m-0">
+                                <button type="submit" class="btn btn-outline-danger btn-sm w-100 fw-bold d-flex align-items-center justify-content-center gap-2">
+                                    <img src="<%= request.getContextPath() %>/Images/Exit_Simbol.png" alt="Cerrar sesión" width="18" height="18">
+                                    Cerrar Sesión
+                                </button>
+                            </form>
+                        </div>
+                        <% } %>
                     </div>
                 </div>
 

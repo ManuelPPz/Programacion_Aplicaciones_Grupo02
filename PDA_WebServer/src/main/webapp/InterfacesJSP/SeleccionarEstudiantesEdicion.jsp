@@ -160,10 +160,10 @@
                                                         <td><fmt:formatDate value="${ins.fInscripcion}" pattern="dd/MM/yyyy" /></td>
                                                         <td>
                                                             <c:choose>
-                                                                <c:when test="${fn:toUpperCase(ins.estadoIns) == 'ACEPTADA'}">
+                                                                <c:when test="${fn:toUpperCase(ins.estadoIns) == 'ACEPTADO'}">
                                                                     <span class="badge bg-success">Aceptada</span>
                                                                 </c:when>
-                                                                <c:when test="${fn:toUpperCase(ins.estadoIns) == 'RECHAZADA'}">
+                                                                <c:when test="${fn:toUpperCase(ins.estadoIns) == 'RECHAZADO'}">
                                                                     <span class="badge bg-danger">Rechazada</span>
                                                                 </c:when>
                                                                 <c:otherwise>
@@ -176,14 +176,14 @@
                                                                 <input class="form-check-input" type="radio"
                                                                        name="estado_${ins.nickEstudiante}"
                                                                        id="acep_${ins.nickEstudiante}"
-                                                                       value="Aceptada" ${fn:toUpperCase(ins.estadoIns) == 'ACEPTADA' ? 'checked' : ''}>
+                                                                       value="ACEPTADO" ${fn:toUpperCase(ins.estadoIns) == 'ACEPTADO' ? 'checked' : ''}>
                                                                 <label class="form-check-label" for="acep_${ins.nickEstudiante}">Aceptar</label>
                                                             </div>
                                                             <div class="form-check form-check-inline">
                                                                 <input class="form-check-input" type="radio"
                                                                        name="estado_${ins.nickEstudiante}"
                                                                        id="rech_${ins.nickEstudiante}"
-                                                                       value="Rechazada" ${fn:toUpperCase(ins.estadoIns) == 'RECHAZADA' ? 'checked' : ''}>
+                                                                       value="RECHAZADO" ${fn:toUpperCase(ins.estadoIns) == 'RECHAZADO' ? 'checked' : ''}>
                                                                 <label class="form-check-label" for="rech_${ins.nickEstudiante}">Rechazar</label>
                                                             </div>
                                                         </td>

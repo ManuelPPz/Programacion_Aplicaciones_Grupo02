@@ -136,7 +136,7 @@
                                     btn.disabled = true;
                                     btn.innerText = "Inscribiendo...";
 
-                                    fetch('${pageContext.request.contextPath}/InscripcionEdicionServlet', {
+                                    fetch('${pageContext.request.contextPath}/ConsultaEdicionServlet', {
                                         method: 'POST',
                                         headers: {
                                             'Content-Type': 'application/x-www-form-urlencoded',
@@ -148,7 +148,9 @@
                                             const contenedor = document.getElementById("contenedorInscripcion");
                                             contenedor.innerHTML = '<button type="button" class="btn btn-secondary fw-bold w-100 py-2 shadow-sm" disabled>Ya estás inscripto en esta Edición</button>';
                                         } else {
-                                            alert("Ocurrió un error al procesar la inscripción.");
+                                            response.text().then(msg => {
+                                                alert(msg && msg.trim() !== "" ? msg : "Ocurrió un error al procesar la inscripción.");
+                                            });
                                             btn.disabled = false;
                                             btn.innerText = "Solicitar Inscripción a esta Edición";
                                         }

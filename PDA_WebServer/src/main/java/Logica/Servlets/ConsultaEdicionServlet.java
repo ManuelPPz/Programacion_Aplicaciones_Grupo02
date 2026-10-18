@@ -2,6 +2,7 @@ package Logica.Servlets;
 
 import Logica.DTsClasses.DTEdicionCurso;
 import Logica.DTsClasses.DTMaster;
+import Logica.DTsClasses.DTUsuarioBase;
 import Logica.DTsClasses.EnumDT;
 import Logica.Logica.Fabric;
 import Logica.Logica.IController;
@@ -12,12 +13,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 /**
- * ED-22 – Consulta de Edición de Curso
- * GET con ?curso=X: Trae las ediciones de ese curso.
- * GET con ?edicion=X o nombre: Trae el detalle completo de la edición seleccionada y precarga su curso.
+ * ED-22 – Consulta de Edición de Curso GET con ?curso=X: Trae las ediciones de
+ * ese curso. GET con ?edicion=X o nombre: Trae el detalle completo de la
+ * edición seleccionada y precarga su curso.
  */
 @WebServlet(name = "ConsultaEdicionServlet", urlPatterns = {"/ConsultaEdicionServlet"})
 public class ConsultaEdicionServlet extends HttpServlet {
@@ -33,9 +35,9 @@ public class ConsultaEdicionServlet extends HttpServlet {
         // 1. Siempre disponemos la lista completa de cursos para el primer selector
         request.setAttribute("cursos", control.ListarClase(EnumDT.DT_CURSO));
 
-        String curso    = request.getParameter("curso");
+        String curso = request.getParameter("curso");
         String edicion = request.getParameter("edicion");
-        
+
         // Soporte adicional por si viene como ?nombre=... desde los enlaces de perfil
         if (edicion == null || edicion.isBlank()) {
             edicion = request.getParameter("nombre");
@@ -53,7 +55,7 @@ public class ConsultaEdicionServlet extends HttpServlet {
 
                 request.setAttribute("edicionDetalle", dte);
                 request.setAttribute("edicionSeleccionada", dte.getNombre());
-                
+
                 curso = dte.getCurso();
                 request.setAttribute("cursoSeleccionado", curso);
 
@@ -99,32 +101,45 @@ public class ConsultaEdicionServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         String action = request.getParameter("action");
-        
-        // Si el usuario hizo clic en "Solicitar Inscripción" directamente desde la consulta
+
         if ("inscribirDirecto".equals(action)) {
+            response.setContentType("text/plain; charset=UTF-8");
+
             HttpSession session = request.getSession(false);
-            DTMaster usuarioLogueado = (session != null) ? (DTMaster) session.getAttribute("usuarioLogueado") : null;
-            
+            DTMaster usuario = (session != null) ? (DTMaster) session.getAttribute("usuarioLogueado") : null;
             String edicion = request.getParameter("edicion");
-            
-            if (usuarioLogueado != null && edicion != null && !edicion.isBlank()) {
-                IController control = Fabric.GetInstance().GetIController();
-                try {
-                    // AQUÍ LLAMAS A TU MÉTODO DE LA CAPA LÓGICA PARA REGISTRAR LA INSCRIPCIÓN DIRECTA
-                    // Ejemplo: control.registrarInscripcionEdicion(usuarioLogueado.getNickname(), edicion);
-                    
-                    // Redirigimos de vuelta a la consulta con mensaje de éxito
-                    response.sendRedirect(request.getContextPath() + "/ConsultaEdicionServlet?nombre=" + java.net.URLEncoder.encode(edicion, "UTF-8") + "&exito=InscripcionRealizada");
-                    return;
-                } catch (Exception e) {
-                    response.sendRedirect(request.getContextPath() + "/ConsultaEdicionServlet?nombre=" + java.net.URLEncoder.encode(edicion, "UTF-8") + "&error=" + java.net.URLEncoder.encode(e.getMessage(), "UTF-8"));
-                    return;
-                }
+
+            if (usuario == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Debes iniciar sesión para inscribirte.");
+                return;
             }
+            if (usuario.getClass().getSimpleName().toLowerCase().contains("docente")) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.getWriter().write("Los docentes no pueden inscribirse a ediciones.");
+                return;
+            }
+            if (edicion == null || edicion.isBlank()) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("Falta la edición.");
+                return;
+            }
+
+            try {
+                IController control = Fabric.GetInstance().GetIController();
+                String nickname = ((DTUsuarioBase) usuario).getNickname();
+                control.InscripcionAEdicionCurso(edicion.trim(), nickname, new Date());
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().write("OK");
+            } catch (Exception e) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write(e.getMessage() != null ? e.getMessage() : "No se pudo completar la inscripción.");
+            }
+            return;
         }
-        
+
         doGet(request, response);
     }
 }
