@@ -287,7 +287,7 @@
                                     </li>
                                     <%-- NUEVO: Consulta de Programa de Formación para Invitados --%>
                                     <li class="list-group-item text-dark fw-semibold p-0">
-                                        <a href="<%= request.getContextPath() %>/ConsultaProgramaFormacionServlet" class="text-dark text-decoration-none d-block p-2">Consulta Programa</a>
+                                        <a href="<%= request.getContextPath() %>/ConsultaProgramaServlet" class="text-dark text-decoration-none d-block p-2">Consulta Programa</a>
                                     </li>
                             <%
                             }
