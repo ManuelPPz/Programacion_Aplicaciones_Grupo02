@@ -74,7 +74,11 @@ public class ConsultaCursoServlet extends HttpServlet {
             // 2. CARGAR LAS EDICIONES DEL CURSO SELECCIONADO PARA EL PANEL DERECHO
             List<DTMaster> listaEdiciones = ico.ListarEdiciones(cursoTrim);
             request.setAttribute("ediciones", listaEdiciones);
-        } 
+
+            // 3. CARGAR LOS PROGRAMAS DE FORMACION A LOS QUE PERTENECE EL CURSO (PANEL DERECHO)
+            List<DTMaster> listaProgramas = ico.ListarProgramasDeCurso(cursoTrim);
+            request.setAttribute("programasDelCurso", listaProgramas);
+        }
 
         request.getRequestDispatcher("/InterfacesJSP/ConsultaCurso.jsp").forward(request, response);
     }

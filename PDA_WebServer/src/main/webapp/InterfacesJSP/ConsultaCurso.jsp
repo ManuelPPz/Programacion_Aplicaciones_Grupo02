@@ -133,11 +133,16 @@
                                                             DTProgramaForm dtp = (DTProgramaForm) progMaster;
                                                             String urlConVersionPro = ImagenUtil.versionedUrl(ImagenUtil.CARPETA_PROGRAMAS, dtp.getImage(), request.getContextPath());
                                             %>
-                                                            <li class="list-group-item d-flex align-items-center gap-2 px-0">
-                                                                <img src="<%= urlConVersionPro %>" alt="Logo Programa" width="60" height="40" class="rounded border" style="object-fit: cover;">
-                                                                <div class="text-truncate">
-                                                                    <h6 class="mb-0 fw-semibold text-truncate"><%= dtp.getNombre() %></h6>
+                                                            <li class="list-group-item d-flex align-items-center justify-content-between gap-2 px-0 py-2 bg-transparent">
+                                                                <div class="d-flex align-items-center gap-2 text-truncate">
+                                                                    <img src="<%= urlConVersionPro %>" alt="Logo Programa" width="60" height="40" class="rounded border flex-shrink-0" style="object-fit: cover;">
+                                                                    <div class="text-truncate">
+                                                                        <h6 class="mb-0 fw-semibold text-truncate"><%= dtp.getNombre() %></h6>
+                                                                    </div>
                                                                 </div>
+                                                                <a href="${pageContext.request.contextPath}/ConsultaProgramaServlet?nombre=<%= java.net.URLEncoder.encode(dtp.getNombre(), "UTF-8") %>" class="btn btn-outline-dark btn-sm flex-shrink-0 fw-bold">
+                                                                    Ver
+                                                                </a>
                                                             </li>
                                             <%
                                                         }
