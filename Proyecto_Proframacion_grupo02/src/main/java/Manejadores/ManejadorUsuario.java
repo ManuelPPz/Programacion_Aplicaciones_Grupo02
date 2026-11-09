@@ -508,4 +508,41 @@ public class ManejadorUsuario {
             em.close();
         }
     }
+
+    /** Nicknames de los usuarios que sigue el usuario indicado. */
+    public List<String> getNicksSeguidos(String nickname) {
+        List<String> nicks = new ArrayList<>();
+        UsuarioBase ub = (nickname == null) ? null : BuscarUsuario(nickname);
+        if (ub != null && ub.getSeguidos() != null) {
+            for (UsuarioBase seguido : ub.getSeguidos()) {
+                if (seguido != null) {
+                    nicks.add(seguido.getNickname());
+                }
+            }
+        }
+        return nicks;
+    }
+
+    /** Nicknames de los usuarios que siguen al usuario indicado. */
+    public List<String> getNicksSeguidores(String nickname) {
+        List<String> nicks = new ArrayList<>();
+        if (nickname == null) {
+            return nicks;
+        }
+        List<UsuarioBase> todos = getList();
+        if (todos != null) {
+            for (UsuarioBase u : todos) {
+                if (u == null || u.getSeguidos() == null) {
+                    continue;
+                }
+                for (UsuarioBase seguido : u.getSeguidos()) {
+                    if (seguido != null && nickname.equals(seguido.getNickname())) {
+                        nicks.add(u.getNickname());
+                        break;
+                    }
+                }
+            }
+        }
+        return nicks;
+    }
 }

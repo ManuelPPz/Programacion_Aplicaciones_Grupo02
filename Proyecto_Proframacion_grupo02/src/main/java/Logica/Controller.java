@@ -453,6 +453,16 @@ public class Controller implements IController {
     }
 
     @Override
+    public List<String> ListarSeguidos(String nickname) {
+        return manUsuario.getNicksSeguidos(nickname);
+    }
+
+    @Override
+    public List<String> ListarSeguidores(String nickname) {
+        return manUsuario.getNicksSeguidores(nickname);
+    }
+
+    @Override
     public List<DTMaster> ListarProgramaDeForm() {
         return manProgramas.getDTList();
     }

@@ -3,6 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package DTsClasses;
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,7 +14,13 @@ import java.util.Date;
  *
  * @author manuelpalumbo
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public class DTProgramaForm extends DTMaster {
+
+    /** Constructor sin argumentos requerido por JAXB (Web Services). */
+    protected DTProgramaForm() {
+    }
+
     private String nombre;
     private String descripcion;
     private Vigencia vigenciaPrograma;

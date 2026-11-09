@@ -810,4 +810,12 @@ public class ControllerTest {
         verify(manProgramas).Add(pdf);
     }
 
+    @Test
+    public void testListarSeguidosYSeguidores() {
+        when(manUsuario.getNicksSeguidos("a")).thenReturn(List.of("b"));
+        when(manUsuario.getNicksSeguidores("a")).thenReturn(List.of("c"));
+        assertEquals(List.of("b"), instance.ListarSeguidos("a"));
+        assertEquals(List.of("c"), instance.ListarSeguidores("a"));
+    }
+
 }

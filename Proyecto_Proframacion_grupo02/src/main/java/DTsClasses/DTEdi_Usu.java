@@ -4,13 +4,22 @@
  */
 package DTsClasses;
 
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 import java.util.Date;
 import Classes.Enum_Estado_inscripcion;
 /**
  *
  * @author mateo
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public class DTEdi_Usu extends DTMaster{
+
+    /** Constructor sin argumentos requerido por JAXB (Web Services). */
+    protected DTEdi_Usu() {
+    }
+
     private String nickEstudiante;
     private String nomEdicion;
     private Date fInscripcion;

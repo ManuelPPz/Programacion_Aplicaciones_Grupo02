@@ -4,10 +4,21 @@
  */
 package DTsClasses;
 
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
 /**
  *
  * @author mateo
  */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSeeAlso({DTUsuarioBase.class, DTUsuario.class, DTDocente.class, DTEdi_Usu.class, DTCategoria.class, DTInstituto.class, DTCurso.class, DTEdicionCurso.class, DTProgramaForm.class, DTCambioEstado.class})
 public class DTMaster {
+
+    /** Constructor sin argumentos requerido por JAXB (Web Services). */
+    protected DTMaster() {
+    }
+
     
 }

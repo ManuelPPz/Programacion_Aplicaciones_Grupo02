@@ -110,6 +110,10 @@ public interface IController {
     public abstract List<DTMaster> ListarInscripciones(String nicknameEstudiante);
     public abstract List<DTMaster> ListarProgramaDeForm();
 
+    //Seguidores / seguidos (nicknames)
+    public abstract List<String> ListarSeguidos(String nickname);
+    public abstract List<String> ListarSeguidores(String nickname);
+
     public abstract List<DTMaster> ListarProgramasDeCurso(String curso);
     
     public abstract List<DTMaster> ListarCursosXCategoria(String categoria);

@@ -4,13 +4,22 @@
  */
 package DTsClasses;
 
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 import java.util.Date;
 import java.util.List;
 /**
  *
  * @author mateo
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public class DTEdicionCurso extends DTMaster{
+
+    /** Constructor sin argumentos requerido por JAXB (Web Services). */
+    protected DTEdicionCurso() {
+    }
+
     private String instituto;
     private String curso;
     private String nombre;

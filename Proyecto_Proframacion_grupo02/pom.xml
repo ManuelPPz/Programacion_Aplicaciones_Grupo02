@@ -83,6 +83,12 @@
             <artifactId>angus-mail</artifactId>
             <version>2.0.3</version>
         </dependency>
+        <!-- JAX-WS (Jakarta) para publicar los Web Services con Endpoint.publish -->
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-rt</artifactId>
+            <version>4.0.5</version>
+        </dependency>
     </dependencies>
 
     <build>

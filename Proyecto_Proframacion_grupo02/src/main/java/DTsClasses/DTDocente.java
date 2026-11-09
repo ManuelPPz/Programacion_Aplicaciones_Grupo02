@@ -4,16 +4,24 @@
  */
 package DTsClasses;
 
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.swing.ImageIcon;
 
 /**
  *
  * @author mateo
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public class DTDocente extends DTUsuarioBase{
+
+    /** Constructor sin argumentos requerido por JAXB (Web Services). */
+    protected DTDocente() {
+    }
+
     String instituto;
     List<String> cursos = new ArrayList();
     public DTDocente(String nickname,String nombre,String apellido,String correo, String password,Date fNac, String instituto, String img, List<String> cursos, List<String> ediciones, List<String> programas){

@@ -917,4 +917,51 @@ public class ManejadorUsuarioTest {
         assertNull(manejador.VerificarUsuario("nick"));
         verify(em).close();
     }
+
+    // ===================== Seguidos / seguidores =====================
+
+    private UsuarioBase usuarioQueSigue(String nick, UsuarioBase... seguidos) {
+        UsuarioBase u = mock(UsuarioBase.class);
+        when(u.getNickname()).thenReturn(nick);
+        when(u.getSeguidos()).thenReturn(new java.util.ArrayList<>(java.util.Arrays.asList(seguidos)));
+        return u;
+    }
+
+    @Test
+    public void testGetNicksSeguidos() {
+        ManejadorUsuario spy = spy(manejador);
+        UsuarioBase b = usuarioQueSigue("b");
+        UsuarioBase c = usuarioQueSigue("c");
+        UsuarioBase a = usuarioQueSigue("a", b, null, c);
+        doReturn(a).when(spy).BuscarUsuario("a");
+        doReturn(null).when(spy).BuscarUsuario("x");
+
+        assertEquals(java.util.List.of("b", "c"), spy.getNicksSeguidos("a"));
+        assertTrue(spy.getNicksSeguidos("x").isEmpty());
+        assertTrue(spy.getNicksSeguidos(null).isEmpty());
+
+        UsuarioBase sinLista = mock(UsuarioBase.class);
+        when(sinLista.getSeguidos()).thenReturn(null);
+        doReturn(sinLista).when(spy).BuscarUsuario("s");
+        assertTrue(spy.getNicksSeguidos("s").isEmpty());
+    }
+
+    @Test
+    public void testGetNicksSeguidores() {
+        ManejadorUsuario spy = spy(manejador);
+        UsuarioBase objetivo = usuarioQueSigue("obj");
+        UsuarioBase otro = usuarioQueSigue("otro");
+        UsuarioBase sigueAlObjetivo = usuarioQueSigue("fan", null, otro, objetivo);
+        UsuarioBase noLoSigue = usuarioQueSigue("nada", otro);
+        UsuarioBase sinLista = mock(UsuarioBase.class);
+        when(sinLista.getSeguidos()).thenReturn(null);
+        doReturn(java.util.Arrays.asList(sigueAlObjetivo, null, noLoSigue, sinLista)).when(spy).getList();
+
+        assertEquals(java.util.List.of("fan"), spy.getNicksSeguidores("obj"));
+        assertTrue(spy.getNicksSeguidores(null).isEmpty());
+
+        doReturn(null).when(spy).getList();
+        assertTrue(spy.getNicksSeguidores("obj").isEmpty());
+    }
+
 }

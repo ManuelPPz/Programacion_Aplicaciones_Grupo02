@@ -4,12 +4,16 @@
  */
 package DTsClasses;
 
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 import java.util.Date;
 
 /**
  *
  * @author manuelpalumbo
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Vigencia {
     private Date fechaInicio;
     private Date fechaFin;

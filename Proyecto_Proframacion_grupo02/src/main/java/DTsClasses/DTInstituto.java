@@ -3,11 +3,20 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package DTsClasses;
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 /**
  *
  * @author mateo
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public class DTInstituto extends DTMaster{
+
+    /** Constructor sin argumentos requerido por JAXB (Web Services). */
+    protected DTInstituto() {
+    }
+
     String nombre;
     public DTInstituto(String nombre){
         this.nombre = nombre;

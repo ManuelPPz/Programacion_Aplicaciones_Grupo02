@@ -4,11 +4,20 @@
  */
 package DTsClasses;
 
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 /**
  *
  * @author mateo
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public class DTCategoria extends DTMaster{
+
+    /** Constructor sin argumentos requerido por JAXB (Web Services). */
+    protected DTCategoria() {
+    }
+
     private String nombre;
 
     public DTCategoria(String nombre) {

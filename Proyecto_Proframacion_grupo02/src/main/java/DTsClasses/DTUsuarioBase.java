@@ -4,20 +4,30 @@
  */
 package DTsClasses;
 
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.swing.ImageIcon;
 
 /**
  *
  * @author mateo
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public class DTUsuarioBase extends DTMaster{
+
+    /** Constructor sin argumentos requerido por JAXB (Web Services). */
+    protected DTUsuarioBase() {
+    }
+
     String nickname;
     String nombre;
     String apellido;
     String correo;
+    @XmlTransient // la contraseña no viaja por el Web Service
     String password;
     Date fNac;
     String imgPath;
