@@ -37,40 +37,8 @@
     private boolean usuarioSigueA(String nickLogueado, String nickTarget) {
         if (nickLogueado == null || nickTarget == null || nickLogueado.isBlank() || nickTarget.isBlank()) return false;
         try {
-            String[] clasesManejador = {
-                "Logica.Manejadores.ManejadorUsuario",
-                "Logica.Manejadores.ManejadorUsuarios"
-            };
-            for (String nomClase : clasesManejador) {
-                try {
-                    Class<?> clazz = Class.forName(nomClase);
-                    Object inst = clazz.getMethod("GetInstance").invoke(null);
-                    Object userObj = null;
-                    for (String mName : new String[]{"BuscarUsuario", "buscarUsuario", "obtenerUsuario", "getUsuario"}) {
-                        try {
-                            userObj = clazz.getMethod(mName, String.class).invoke(inst, nickLogueado);
-                            if (userObj != null) break;
-                        } catch (Exception ex) {}
-                    }
-                    if (userObj != null) {
-                        for (String mSeguidos : new String[]{"getSeguidos", "getListaSeguidos", "getNicksSeguidos"}) {
-                            try {
-                                Object listObj = userObj.getClass().getMethod(mSeguidos).invoke(userObj);
-                                if (listObj instanceof List<?>) {
-                                    for (Object item : (List<?>) listObj) {
-                                        if (item instanceof String && ((String) item).equalsIgnoreCase(nickTarget)) return true;
-                                        if (item != null) {
-                                            try {
-                                                Object n = item.getClass().getMethod("getNickname").invoke(item);
-                                                if (n != null && n.toString().equalsIgnoreCase(nickTarget)) return true;
-                                            } catch (Exception ex) {}
-                                        }
-                                    }
-                                }
-                            } catch (Exception ex) {}
-                        }
-                    }
-                } catch (Exception e) {}
+            for (String seguido : Logica.Logica.Fabric.GetInstance().GetIController().ListarSeguidos(nickLogueado)) {
+                if (seguido != null && seguido.equalsIgnoreCase(nickTarget)) return true;
             }
         } catch (Exception e) {}
         return false;
@@ -203,35 +171,7 @@
                                 Object manejadorInst = null;
                                 Class<?> manejadorClass = null;
 
-                                String[] clasesManejadorProg = {
-                                    "Logica.Manejadores.ManejadorPrograma",
-                                    "Logica.Manejadores.ManejadorProgramaFormacion",
-                                    "Logica.Manejadores.ManejadorProgramas"
-                                };
-
-                                for (String nomClase : clasesManejadorProg) {
-                                    try {
-                                        manejadorClass = Class.forName(nomClase);
-                                        for (String mInst : new String[]{"GetInstance", "getInstance", "getInstancia"}) {
-                                            try {
-                                                manejadorInst = manejadorClass.getMethod(mInst).invoke(null);
-                                                if (manejadorInst != null) break;
-                                            } catch (Exception ex) {}
-                                        }
-                                        if (manejadorInst != null) {
-                                            for (String mList : new String[]{"getDTList", "getProgramas", "getProgramasFormacion", "getListaProgramas", "obtenerProgramas", "getColeccionProgramas", "listarProgramas"}) {
-                                                try {
-                                                    Object res = manejadorClass.getMethod(mList).invoke(manejadorInst);
-                                                    if (res instanceof List<?>) {
-                                                        progsList = (List<?>) res;
-                                                        if (progsList != null && !progsList.isEmpty()) break;
-                                                    }
-                                                } catch (Exception ex) {}
-                                            }
-                                        }
-                                        if (progsList != null && !progsList.isEmpty()) break;
-                                    } catch (Exception e) {}
-                                }
+                                progsList = Logica.Logica.Fabric.GetInstance().GetIController().ListarProgramaDeForm();
 
                                 if (progsList != null && !progsList.isEmpty()) {
                                     for (Object pObj : progsList) {
@@ -519,35 +459,7 @@
                                 Object manejadorInst = null;
                                 Class<?> manejadorClass = null;
 
-                                String[] clasesManejadorProg = {
-                                    "Logica.Manejadores.ManejadorPrograma",
-                                    "Logica.Manejadores.ManejadorProgramaFormacion",
-                                    "Logica.Manejadores.ManejadorProgramas"
-                                };
-
-                                for (String nomClase : clasesManejadorProg) {
-                                    try {
-                                        manejadorClass = Class.forName(nomClase);
-                                        for (String mInst : new String[]{"GetInstance", "getInstance", "getInstancia"}) {
-                                            try {
-                                                manejadorInst = manejadorClass.getMethod(mInst).invoke(null);
-                                                if (manejadorInst != null) break;
-                                            } catch (Exception ex) {}
-                                        }
-                                        if (manejadorInst != null) {
-                                            for (String mList : new String[]{"getDTList", "getProgramas", "getProgramasFormacion", "getListaProgramas", "obtenerProgramas", "getColeccionProgramas", "listarProgramas"}) {
-                                                try {
-                                                    Object res = manejadorClass.getMethod(mList).invoke(manejadorInst);
-                                                    if (res instanceof List<?>) {
-                                                        progsList = (List<?>) res;
-                                                        if (progsList != null && !progsList.isEmpty()) break;
-                                                    }
-                                                } catch (Exception ex) {}
-                                            }
-                                        }
-                                        if (progsList != null && !progsList.isEmpty()) break;
-                                    } catch (Exception e) {}
-                                }
+                                progsList = Logica.Logica.Fabric.GetInstance().GetIController().ListarProgramaDeForm();
 
                                 if (progsList != null && !progsList.isEmpty()) {
                                     for (Object pObj : progsList) {
@@ -755,18 +667,7 @@
                             }
 
                             if (usuariosRequest == null) {
-                                String[] clasesManejador = {
-                                    "Logica.Manejadores.ManejadorUsuario",
-                                    "Logica.Manejadores.ManejadorUsuarios"
-                                };
-                                for (String nomClase : clasesManejador) {
-                                    try {
-                                        Class<?> clazz = Class.forName(nomClase);
-                                        Object inst = clazz.getMethod("GetInstance").invoke(null);
-                                        usuariosRequest = (List<?>) clazz.getMethod("getDTList").invoke(inst);
-                                        if (usuariosRequest != null) break;
-                                    } catch (Exception e) {}
-                                }
+                                usuariosRequest = Logica.Logica.Fabric.GetInstance().GetIController().ListarClase(Logica.DTsClasses.EnumDT.DT_USUARIO);
                             }
 
                             if (usuariosRequest != null) {

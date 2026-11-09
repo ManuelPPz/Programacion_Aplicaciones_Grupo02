@@ -20,7 +20,8 @@ public class Fabric {
         return instance;
     }
     
+   /** El web no tiene lógica propia: todo pasa por el Web Service del Servidor Central. */
    public IController GetIController(){
-       return new Controller();
+       return new Logica.ws.ControllerWS();
    }
 }

@@ -1,11 +1,9 @@
 package Logica.Servlets;
 
-import Logica.Classes.UsuarioBase;
 import Logica.DTsClasses.DTMaster;
 import Logica.DTsClasses.DTUsuarioBase;
 import Logica.Logica.Fabric;
 import Logica.Logica.IController;
-import Logica.Manejadores.ManejadorUsuario;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -32,22 +30,12 @@ public class ConsultaUsuarioIndividualServlet extends HttpServlet {
             if (usuarioConsultado != null) {
                 request.setAttribute("usuarioConsultado", usuarioConsultado);
 
-                // 1. CARGAR LISTA DE SEGUIDORES REALES DESDE LA BASE DE DATOS
+                // 1. SEGUIDORES (nicknames que da el Servidor Central)
                 List<DTUsuarioBase> listaSeguidores = new ArrayList<>();
-                UsuarioBase ubReal = ManejadorUsuario.GetInstance().BuscarUsuario(nicknameConsultado.trim());
-                
-                if (ubReal != null) {
-                    // CORRECCIÓN: Usamos getList() para obtener todos los usuarios y evaluar quiénes lo siguen
-                    List<UsuarioBase> todosLosUsuarios = ManejadorUsuario.GetInstance().getList();
-                    if (todosLosUsuarios != null) {
-                        for (UsuarioBase u : todosLosUsuarios) {
-                            if (u.getSeguidos() != null && u.getSeguidos().contains(ubReal)) {
-                                DTUsuarioBase dtSeg = control.ConsultarUsuario(u.getNickname());
-                                if (dtSeg != null) {
-                                    listaSeguidores.add(dtSeg);
-                                }
-                            }
-                        }
+                for (String nickSeguidor : control.ListarSeguidores(nicknameConsultado.trim())) {
+                    DTUsuarioBase dtSeg = control.ConsultarUsuario(nickSeguidor);
+                    if (dtSeg != null) {
+                        listaSeguidores.add(dtSeg);
                     }
                 }
                 request.setAttribute("listaSeguidores", listaSeguidores);
@@ -57,14 +45,8 @@ public class ConsultaUsuarioIndividualServlet extends HttpServlet {
                 DTMaster dtmLogueado = (session != null) ? (DTMaster) session.getAttribute("usuarioLogueado") : null;
 
                 boolean loSigue = false;
-                if (dtmLogueado instanceof DTUsuarioBase userLog && ubReal != null) {
-                    UsuarioBase ubLogueadoReal = ManejadorUsuario.GetInstance().BuscarUsuario(userLog.getNickname());
-                    if (ubLogueadoReal != null && ubLogueadoReal.getSeguidos() != null) {
-                        // Si el usuario logueado sigue al usuario consultado, cambiamos a true
-                        if (ubLogueadoReal.getSeguidos().contains(ubReal)) {
-                            loSigue = true;
-                        }
-                    }
+                if (dtmLogueado instanceof DTUsuarioBase userLog) {
+                    loSigue = control.ListarSeguidos(userLog.getNickname()).contains(usuarioConsultado.getNickname());
                 }
                 request.setAttribute("loSigue", loSigue);
                 

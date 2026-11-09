@@ -1,8 +1,7 @@
-<%@page import="Logica.Classes.Curso"%>
-<%@page import="Logica.Manejadores.ManejadorCursos"%>
 <%@page import="Logica.util.ImagenUtil"%>
 <%@page import="Logica.DTsClasses.DTProgramaForm"%>
 <%@page import="Logica.DTsClasses.DTMaster"%>
+<%@page import="Logica.DTsClasses.DTCurso"%>
 <%@page import="Logica.DTsClasses.DTUsuario"%>
 <%@page import="java.util.List"%>
 <%@page import="java.text.SimpleDateFormat"%>
@@ -208,7 +207,8 @@
                                                 
                                                 // Se busca la entidad Curso para obtener el nombre real de su imagen
                                                 String imgCurso = request.getContextPath() + "/Images/ImagenUserDefault.png";
-                                                Curso cAux = ManejadorCursos.GetInstance().BuscarCurso(nomCurso);
+                                                DTMaster dtCursoAux = Logica.Logica.Fabric.GetInstance().GetIController().ConsultaCurso(nomCurso);
+                                                DTCurso cAux = (dtCursoAux instanceof DTCurso) ? (DTCurso) dtCursoAux : null;
                                                 if (cAux != null && cAux.getImage() != null && !cAux.getImage().trim().isEmpty()) {
                                                     imgCurso = ImagenUtil.versionedUrl(ImagenUtil.CARPETA_CURSOS, cAux.getImage(), request.getContextPath());
                                                 }

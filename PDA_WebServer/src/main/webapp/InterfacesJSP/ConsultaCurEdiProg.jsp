@@ -16,6 +16,9 @@
                 <h2 class="card-title text-center mb-4 fw-bold">Curso, ediciones y programas</h2>
                 <!--A partir de aca es la lista de cursos, ediciones y programas por la categoria seleccionda o instituto-->
                 <%                    List<DTMaster> auxList = (List<DTMaster>) request.getAttribute("ListaFinal");
+                    if (auxList == null) {
+                        auxList = new java.util.ArrayList<>();
+                    }
                 %>
                 <div class="text-center"><%= auxList.size()%> Resultados</div>
                 <ol class="list-group list-group-numbered">

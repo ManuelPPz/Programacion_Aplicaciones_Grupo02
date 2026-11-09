@@ -1,3 +1,4 @@
+<%@page import="Logica.util.ImagenUtil"%>
 <%@page import="Logica.DTsClasses.DTUsuario"%>
 <%@page import="Logica.DTsClasses.DTInstituto"%>
 <%@page import="Logica.DTsClasses.DTMaster"%>
@@ -6,18 +7,6 @@
 <%@page import="Logica.DTsClasses.DTDocente"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="Logica.DTsClasses.DTUsuarioBase"%>
-<%!
-    // Función helper para evadir caché apuntando a la carpeta física real
-    public String versionedUrl(String relativePath) {
-        String discoPath = "C:/mi_proyecto_data" + relativePath;
-        java.io.File file = new java.io.File(discoPath);
-        
-        if (file.exists()) {
-            return relativePath + "?v=" + file.lastModified();
-        }
-        return relativePath;
-    }
-%>
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -62,8 +51,7 @@
                             <span class="fw-bold me-3 text-nowrap text-dark fs-5"><%=dtu.getNickname()%></span>    
                             <a class="navbar-brand p-0 m-0 d-flex align-items-center" href="${pageContext.request.contextPath}/ConsultaUsuarioIndividualServlet?nickname=<%= dtu.getNickname() %>">
                                 <% if (nombreImagen != null && !nombreImagen.trim().isEmpty()) { 
-                                       String relPath = "/uploads/perfiles/" + nombreImagen;
-                                       String urlConVersion = versionedUrl(relPath);
+                                       String urlConVersion = ImagenUtil.versionedUrl(ImagenUtil.CARPETA_PERFILES, nombreImagen, "");
                                 %>
                                     <img src="<%= request.getContextPath() %><%= urlConVersion %>" 
                                          alt="Perfil" 

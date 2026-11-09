@@ -1,91 +1,74 @@
 package Logica.util;
 
+import Logica.ws.ClienteWS;
+import Logica.ws.cliente.EdextWSException;
 import jakarta.servlet.http.Part;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 
-public class ImagenUtil {
-
-    // Único lugar donde se define la carpeta base
-    private static final String BASE_DIR =
-            System.getProperty("user.home") + File.separator + "mi_proyecto_data";
+/**
+ * Imágenes del web. Ya no se guardan en esta PC: se envían al Servidor Central
+ * por Web Service (SubirImagen) y se sirven pidiéndoselas (ver ImagenServlet).
+ */
+public final class ImagenUtil {
 
     public static final String CARPETA_PERFILES = "perfiles";
-    public static final String CARPETA_CURSOS   = "cursos";
+    public static final String CARPETA_CURSOS = "cursos";
     public static final String CARPETA_PROGRAMAS = "programas";
     public static final String CARPETA_EDICIONCURSOS = "edicioncursos";
 
-    /** Carpeta física: <user.home>/mi_proyecto_data/uploads/<carpeta> */
-    public static File getDirectorio(String carpeta) {
-        File dir = new File(BASE_DIR + File.separator + "uploads" + File.separator + carpeta);
-        if (!dir.exists()) {
-            boolean creados = dir.mkdirs();
-            System.out.println(">>> [DEBUG ImagenUtil] Creando directorio: " + dir.getAbsolutePath() + " -> " + creados);
-        }
-        return dir;
+    public static final String IMAGEN_POR_DEFECTO = "/Images/ImagenUserDefault.png";
+
+    private ImagenUtil() {
     }
 
-    /** URL de imagen con ?v=<lastModified> para evitar caché. */
+    /**
+     * URL de una imagen guardada en el Servidor Central (servida por
+     * ImagenServlet), o la imagen por defecto si no hay nombre. Los nombres
+     * incluyen la fecha de subida, así que no hace falta "?v=" contra la caché.
+     */
     public static String versionedUrl(String carpeta, String nombreImagen, String contextPath) {
         if (nombreImagen == null || nombreImagen.isBlank()) {
-            return contextPath + "/Images/ImagenUserDefault.png";
+            return contextPath + IMAGEN_POR_DEFECTO;
         }
-        
-        File file = new File(getDirectorio(carpeta), nombreImagen);
-        
-        // Si la imagen no existe en la carpeta física, se retorna directamente la imagen por defecto
-        if (!file.exists() || !file.isFile()) {
-            return contextPath + "/Images/ImagenUserDefault.png";
-        }
-
-        String relativePath = "/" + carpeta + "/" + nombreImagen;
-        return contextPath + "/imagenes" + relativePath + "?v=" + file.lastModified();
+        String nombre = URLEncoder.encode(nombreImagen.trim(), StandardCharsets.UTF_8).replace("+", "%20");
+        return contextPath + "/imagenes/" + carpeta + "/" + nombre;
     }
 
-    /** Guarda la imagen y devuelve el nombre final ("" si no había archivo). */
+    /**
+     * Envía la imagen subida en el formulario al Servidor Central y devuelve el
+     * nombre con el que quedó guardada ("" si no se subió ningún archivo).
+     */
     public static String guardar(Part filePart, String nombreBase, String carpeta) throws IOException {
         if (filePart == null || filePart.getSize() == 0) {
-            System.out.println(">>> [DEBUG ImagenUtil] filePart es nulo o de tamaño 0.");
             return "";
         }
-
-        String original = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-        int i = original.lastIndexOf('.');
-        String extension = (i > 0) ? original.substring(i) : "";
-
-        String limpio = nombreBase.trim().toLowerCase().replaceAll("[^a-z0-9_-]", "_");
-        String nombreFinal = limpio + "_" + System.currentTimeMillis() + extension;
-
-        File archivoDestino = new File(getDirectorio(carpeta), nombreFinal);
-
-        // Se usa Files.copy con InputStream para garantizar escritura física directa
-        try (InputStream input = filePart.getInputStream()) {
-            Files.copy(input, archivoDestino.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            System.out.println(">>> [DEBUG ImagenUtil] Imagen guardada en: " + archivoDestino.getAbsolutePath());
-        } catch (Exception e) {
-            System.err.println(">>> [ERROR ImagenUtil] No se pudo guardar la imagen: " + e.getMessage());
-            e.printStackTrace();
-            return "";
+        String original = filePart.getSubmittedFileName() == null
+                ? "" : Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+        byte[] datos;
+        try (InputStream in = filePart.getInputStream()) {
+            datos = in.readAllBytes();
         }
+        try {
+            String nombre = ClienteWS.getPuerto().subirImagen(carpeta, nombreBase, original, datos);
+            return nombre == null ? "" : nombre;
+        } catch (EdextWSException e) {
+            throw new IOException("El Servidor Central no pudo guardar la imagen: " + e.getMessage(), e);
+        }
+    }
 
-        return nombreFinal;
-    }
-   
-    public static File getBaseDir() { 
-        return new File(BASE_DIR); 
-    }
-   
+    /** Pide al Servidor Central que borre una imagen (no falla si no existe). */
     public static void borrar(String carpeta, String nombreImagen) {
         if (nombreImagen == null || nombreImagen.isBlank()) {
             return;
         }
-        File f = new File(getDirectorio(carpeta), nombreImagen);
-        if (f.isFile()) {
-            f.delete();
+        try {
+            ClienteWS.getPuerto().borrarImagen(carpeta, nombreImagen);
+        } catch (Exception e) {
+            System.err.println("No se pudo borrar la imagen " + carpeta + "/" + nombreImagen + ": " + e.getMessage());
         }
     }
 }

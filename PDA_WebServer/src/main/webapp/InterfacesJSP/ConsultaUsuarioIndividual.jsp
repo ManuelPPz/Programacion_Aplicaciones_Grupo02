@@ -12,39 +12,20 @@
 <%@page import="jakarta.servlet.ServletContext" %>
 <%@page import="jakarta.servlet.http.HttpServletRequest" %>
 <%@page import="Logica.util.ImagenUtil"%>
-<%@page import="Logica.Manejadores.ManejadorEdicionCurso"%>
-<%@page import="Logica.Classes.EdicionCurso"%>
 
 <%!
     // Método auxiliar seguro para obtener la imagen del programa sin fallos de compilación
     private String obtenerImagenPrograma(String nomPrograma) {
         if (nomPrograma == null || nomPrograma.isBlank()) return null;
-        String[] clasesManejador = {
-            "Logica.Manejadores.ManejadorProgramaForm",
-            "Logica.Manejadores.ManejadorPrograma",
-            "Logica.Manejadores.ManejadorProgramaDeFormacion",
-            "Logica.Manejadores.ManejadorProgramas",
-            "Logica.Manejadores.ManejadorProgramaFormacion"
-        };
-        for (String nombreClase : clasesManejador) {
-            try {
-                Class<?> clazz = Class.forName(nombreClase);
-                Object instance = clazz.getMethod("GetInstance").invoke(null);
-                Object progObj = null;
-                for (String nombreMetodo : new String[]{"BuscarPrograma", "BuscarProgramaForm", "BuscarProgramaDeFormacion", "buscarPrograma"}) {
-                    try {
-                        progObj = clazz.getMethod(nombreMetodo, String.class).invoke(instance, nomPrograma);
-                        if (progObj != null) break;
-                    } catch (Exception ex) {}
+        try {
+            Logica.DTsClasses.DTMaster dt = Logica.Logica.Fabric.GetInstance().GetIController().ConsultaProgramaFormacion(nomPrograma);
+            if (dt instanceof Logica.DTsClasses.DTProgramaForm) {
+                String img = ((Logica.DTsClasses.DTProgramaForm) dt).getImage();
+                if (img != null && !img.trim().isEmpty()) {
+                    return img.trim();
                 }
-                if (progObj != null) {
-                    Object imgObj = progObj.getClass().getMethod("getImage").invoke(progObj);
-                    if (imgObj != null && !imgObj.toString().trim().isEmpty()) {
-                        return imgObj.toString().trim();
-                    }
-                }
-            } catch (Exception e) {}
-        }
+            }
+        } catch (Exception e) {}
         return null;
     }
 %>
@@ -185,7 +166,8 @@
                                         String linkEdicion = request.getContextPath() + "/ConsultaEdicionServlet?nombre=" + java.net.URLEncoder.encode(ed, "UTF-8");
                                         
                                         String imgEdicion = request.getContextPath() + "/Images/ImagenUserDefault.png";
-                                        EdicionCurso ecAux = ManejadorEdicionCurso.GetInstance().BuscarEdicion(ed);
+                                        Logica.DTsClasses.DTMaster dtEdAux = Logica.Logica.Fabric.GetInstance().GetIController().ConsultaEdicionCurso(ed);
+                                        Logica.DTsClasses.DTEdicionCurso ecAux = (dtEdAux instanceof Logica.DTsClasses.DTEdicionCurso) ? (Logica.DTsClasses.DTEdicionCurso) dtEdAux : null;
                                         if (ecAux != null && ecAux.getImage() != null && !ecAux.getImage().trim().isEmpty()) {
                                             imgEdicion = ImagenUtil.versionedUrl(ImagenUtil.CARPETA_EDICIONCURSOS, ecAux.getImage(), request.getContextPath());
                                         }

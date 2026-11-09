@@ -109,6 +109,12 @@ public interface IController {
     //Devolver lista de inscripciones a ediciones de curso de un usuario
     public abstract List<DTMaster> ListarInscripciones(String nicknameEstudiante);
     public abstract List<DTMaster> ListarProgramasDeCurso(String curso);
+
+    public abstract List<DTMaster> ListarProgramaDeForm();
+
+    //Seguidores / seguidos (nicknames)
+    public abstract List<String> ListarSeguidos(String nickname);
+    public abstract List<String> ListarSeguidores(String nickname);
     
     public abstract List<DTMaster> ListarCursosXCategoria(String categoria);
     public abstract List<DTMaster> ListarCurEdiProg(EnumDT tipoBusqueda, String dato);
