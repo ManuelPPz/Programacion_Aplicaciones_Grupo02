@@ -5,10 +5,11 @@
    version="6.0">
 
     <!-- Servidor Central de edEXT (Web Service JAX-WS).
-         Debe coincidir con ws.url del config.properties del Servidor Central.
-         Para la demo en varias PCs, poner la IP de la PC del Servidor Central,
-         por ejemplo http://192.168.1.10:9128/edext
-         (el WSDL está en la misma URL agregando ?wsdl). -->
+         La URL se toma primero del config.properties compartido con el Servidor
+         Central (clave ws.url), que se busca subiendo desde donde Tomcat despliega
+         la aplicación (con NetBeans: la raíz del repo; en otra PC: la carpeta de
+         Tomcat) o en la ruta indicada con -Dedext.config / EDEXT_CONFIG.
+         Si no se encuentra ese archivo, se usa este valor. -->
     <context-param>
         <param-name>edext.ws.url</param-name>
         <param-value>http://localhost:9128/edext</param-value>

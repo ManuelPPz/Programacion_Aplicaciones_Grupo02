@@ -348,9 +348,11 @@ public class ControllerWSTest {
             ClienteWS.configurar("  http://10.0.0.5:9128/edext  ");
             assertEquals("http://10.0.0.5:9128/edext", ClienteWS.getUrl());
             ClienteWS.configurar(" ");
-            assertEquals(ClienteWS.URL_POR_DEFECTO, ClienteWS.getUrl());
+            assertNull(ClienteWS.getUrl());
+            // Sin URL configurada no hay a dónde conectarse: error claro (muestra la página de error)
+            assertThrows(jakarta.xml.ws.WebServiceException.class, ClienteWS::getPuerto);
             ClienteWS.configurar(null);
-            assertEquals(ClienteWS.URL_POR_DEFECTO, ClienteWS.getUrl());
+            assertNull(ClienteWS.getUrl());
         } finally {
             ClienteWS.configurar(anterior);
         }

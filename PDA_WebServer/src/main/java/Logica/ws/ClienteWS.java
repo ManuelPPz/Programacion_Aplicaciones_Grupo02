@@ -3,26 +3,27 @@ package Logica.ws;
 import Logica.ws.cliente.PublicadorService;
 import Logica.ws.cliente.PublicadorWS;
 import jakarta.xml.ws.BindingProvider;
+import jakarta.xml.ws.WebServiceException;
 import java.util.Map;
 
 /**
  * Acceso al Web Service del Servidor Central.
  *
- * La URL del servicio se configura en web.xml (context-param "edext.ws.url");
- * ConfigWSListener la carga al arrancar la aplicación. El WSDL se toma de la
+ * La URL del servicio viene del config.properties compartido o, si no existe,
+ * del context-param "edext.ws.url" del web.xml (ver ConfigWSListener). No hay
+ * ninguna URL fija en el código. El WSDL se toma de la
  * copia incluida en el WAR (/wsdl/PublicadorService.wsdl), así que no hace falta
  * que el Servidor Central esté levantado para desplegar el web.
  */
 public final class ClienteWS {
 
     public static final String PARAM_URL = "edext.ws.url";
-    public static final String URL_POR_DEFECTO = "http://localhost:9128/edext";
 
     /** Tiempo máximo para conectar / esperar respuesta del Servidor Central (ms). */
     static final int TIMEOUT_CONEXION_MS = 5000;
     static final int TIMEOUT_RESPUESTA_MS = 60000;
 
-    private static volatile String url = URL_POR_DEFECTO;
+    private static volatile String url;
     private static PublicadorService servicio;
 
     /** Un proxy por hilo: los proxies de JAX-WS no son seguros para uso concurrente. */
@@ -35,7 +36,7 @@ public final class ClienteWS {
 
     /** Cambia la URL del Servidor Central (se aplica a los próximos pedidos). */
     public static synchronized void configurar(String nuevaUrl) {
-        url = (nuevaUrl == null || nuevaUrl.isBlank()) ? URL_POR_DEFECTO : nuevaUrl.trim();
+        url = (nuevaUrl == null || nuevaUrl.isBlank()) ? null : nuevaUrl.trim();
         version++;
     }
 
@@ -52,6 +53,10 @@ public final class ClienteWS {
 
     /** Proxy del Web Service para el hilo actual, apuntando a la URL configurada. */
     public static PublicadorWS getPuerto() {
+        if (url == null) {
+            throw new WebServiceException("No está configurada la URL del Servidor Central (ws.url en "
+                    + "config.properties o edext.ws.url en web.xml)");
+        }
         PublicadorWS puerto = PUERTOS.get();
         Integer v = VERSION_PUERTO.get();
         if (puerto == null || v == null || v != version) {

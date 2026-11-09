@@ -127,4 +127,33 @@ public class ServidorWSTest {
         assertFalse(ServidorWS.estaPublicado());
         ServidorWS.detener(); // no falla si ya estaba detenido
     }
+
+    @Test
+    public void testUrlDePublicacion() {
+        // Local: se escucha solo en esta PC
+        assertEquals("http://localhost:9128/edext", ServidorWS.urlDePublicacion("http://localhost:9128/edext"));
+        assertEquals("http://127.0.0.1:9128/edext", ServidorWS.urlDePublicacion(" http://127.0.0.1:9128/edext "));
+        // IP o nombre de la PC: se escucha en todas las interfaces con el mismo puerto y ruta
+        assertEquals("http://0.0.0.0:9128/edext", ServidorWS.urlDePublicacion("http://192.168.1.10:9128/edext"));
+        assertEquals("http://0.0.0.0:8000/", ServidorWS.urlDePublicacion("http://servidor:8000"));
+    }
+
+    @Test
+    public void testUrlDePublicacionInvalida() {
+        assertThrows(IllegalArgumentException.class, () -> ServidorWS.urlDePublicacion(null));
+        assertThrows(IllegalArgumentException.class, () -> ServidorWS.urlDePublicacion(" "));
+        assertThrows(IllegalArgumentException.class, () -> ServidorWS.urlDePublicacion("https://x:1/ws"));
+        assertThrows(IllegalArgumentException.class, () -> ServidorWS.urlDePublicacion("http://x/ws"));
+        assertThrows(IllegalArgumentException.class, () -> ServidorWS.urlDePublicacion("http:///ws"));
+    }
+
+    @Test
+    public void testPublicaConIpEnTodasLasInterfaces() throws Exception {
+        IController ico = mock(IController.class);
+        int puerto = puertoLibre();
+        // Con un nombre de PC distinto de localhost, igual responde por localhost
+        String wsdl = ServidorWS.publicar("http://mi-pc-sc:" + puerto + "/edext", new PublicadorWS(ico));
+        assertEquals("http://mi-pc-sc:" + puerto + "/edext?wsdl", wsdl);
+        assertTrue(get("http://127.0.0.1:" + puerto + "/edext?wsdl").contains("PublicadorService"));
+    }
 }

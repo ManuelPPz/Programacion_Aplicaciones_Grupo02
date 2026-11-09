@@ -9,10 +9,12 @@ import webservices.ServidorWS;
 public class proyecto_pda_grupo02 {
 
     public static void main(String[] args) {
-        // 1. Configuración (.properties): URL del Web Service y carpeta de imágenes
+        // 1. Configuración (config.properties): URL del Web Service y carpeta de imágenes
         ConfigSC config = ConfigSC.cargar();
-        config.aplicarImagenesDir();
-        System.out.println("Configuración leída de: " + config.getOrigen());
+        if (config.encontrado()) {
+            config.aplicarImagenesDir();
+            System.out.println("Configuración leída de: " + config.getArchivo().getAbsolutePath());
+        }
 
         // 2. Verificar/crear las tablas antes de atender pedidos
         try {
@@ -25,11 +27,22 @@ public class proyecto_pda_grupo02 {
 
         // 3. Publicar el Web Service para el servidor web
         String errorWS = null;
-        try {
-            String wsdl = ServidorWS.publicar(config.getWsUrl());
-            System.out.println("Web Service publicado. WSDL: " + wsdl);
-        } catch (Exception e) {
-            errorWS = "No se pudo publicar el Web Service en " + config.getWsUrl() + ":\n" + e.getMessage();
+        if (!config.encontrado()) {
+            errorWS = "No se encontró el archivo " + ConfigSC.NOMBRE_ARCHIVO + ". Se buscó en:\n"
+                    + ConfigSC.rutasBuscadas() + "El Web Service no se publicó.";
+        } else if (config.getWsUrl() == null) {
+            errorWS = "Falta la clave " + ConfigSC.CLAVE_WS_URL + " en " + config.getArchivo().getAbsolutePath()
+                    + ".\nEl Web Service no se publicó.";
+        } else {
+            try {
+                String wsdl = ServidorWS.publicar(config.getWsUrl());
+                System.out.println("Web Service publicado. WSDL: " + wsdl);
+            } catch (Exception e) {
+                errorWS = "No se pudo publicar el Web Service en " + config.getWsUrl() + ":\n" + e.getMessage()
+                        + "\n\nRevisá ws.url en " + config.getArchivo().getAbsolutePath() + " (¿puerto ocupado?).";
+            }
+        }
+        if (errorWS != null) {
             System.err.println(errorWS);
         }
 
@@ -43,7 +56,7 @@ public class proyecto_pda_grupo02 {
             vPresentacion.setVisible(true);
             if (avisoWS != null) {
                 javax.swing.JOptionPane.showMessageDialog(vPresentacion,
-                        avisoWS + "\n\nRevisá ws.url en config.properties (¿puerto ocupado?).",
+                        avisoWS,
                         "Web Service", javax.swing.JOptionPane.WARNING_MESSAGE);
             }
         });

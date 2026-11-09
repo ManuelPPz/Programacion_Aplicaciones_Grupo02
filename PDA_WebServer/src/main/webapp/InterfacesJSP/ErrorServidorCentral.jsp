@@ -17,8 +17,9 @@
             <h2 class="fw-bold mb-3">Servidor Central no disponible</h2>
             <p class="mb-2">No se pudo establecer la conexión con el Servidor Central de edEXT.</p>
             <p class="text-muted small mb-4">
-                Verificá que esté en ejecución y que la dirección configurada en <code>web.xml</code>
-                (<code>edext.ws.url</code>) sea correcta: <code><%= ClienteWS.getUrl() %></code>
+                Verificá que esté en ejecución y que la dirección configurada (<code>ws.url</code> en
+                <code>config.properties</code>, o <code>edext.ws.url</code> en <code>web.xml</code>) sea correcta:
+                <code><%= ClienteWS.getUrl() != null ? ClienteWS.getUrl() : "(sin configurar)" %></code>
             </p>
             <a class="btn btn-dark" href="javascript:location.reload()">Reintentar</a>
         </div>
