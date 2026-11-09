@@ -46,7 +46,7 @@ public class MiniInterfazDeConsultaUsuario extends javax.swing.JInternalFrame {
     if (nombreImagen != null && !nombreImagen.isBlank()) {
         cargarImagenDesdeServidor(nombreImagen);
     } else {
-        labelIcon.setIcon(null); // Si no tiene foto, limpia la vista
+        mostrarImagen(imagenPorDefecto()); // Si no tiene foto, muestra la imagen por defecto
     }
     
     if (dt instanceof DTDocente dti) {
@@ -69,31 +69,44 @@ public class MiniInterfazDeConsultaUsuario extends javax.swing.JInternalFrame {
  */
     private void cargarImagenDesdeServidor(String nombreImagen) {
         new Thread(() -> {
+            Image img = null;
             try {
-                Image img = null;
-
                 // Las imágenes se guardan en el disco del Servidor Central
                 File archivoLocal = util.ImagenUtil.getArchivo(util.ImagenUtil.CARPETA_PERFILES, nombreImagen);
                 if (archivoLocal != null) {
+                    // ImageIO devuelve null si el formato no es soportado (p. ej. WebP o AVIF)
                     img = javax.imageio.ImageIO.read(archivoLocal);
-                }
-
-                if (img != null) {
-                    int width = labelIcon.getWidth() > 0 ? labelIcon.getWidth() : 114;
-                    int height = labelIcon.getHeight() > 0 ? labelIcon.getHeight() : 114;
-
-                    Image imgEscalada = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-                    ImageIcon iconFinal = new ImageIcon(imgEscalada);
-
-                    // Actualizar el componente Swing en el EDT (Event Dispatch Thread)
-                    javax.swing.SwingUtilities.invokeLater(() -> labelIcon.setIcon(iconFinal));
+                } else {
+                    System.err.println("No se encontró la imagen de perfil '" + nombreImagen + "' en "
+                            + util.ImagenUtil.getDirectorio(util.ImagenUtil.CARPETA_PERFILES).getAbsolutePath());
                 }
             } catch (Exception e) {
                 System.err.println("No se pudo cargar la imagen de perfil: " + e.getMessage());
-                javax.swing.SwingUtilities.invokeLater(() -> labelIcon.setIcon(null));
             }
+            if (img == null) {
+                img = imagenPorDefecto();
+            }
+            mostrarImagen(img);
         }).start();
     }
+
+    private Image imagenPorDefecto() {
+        java.net.URL url = getClass().getResource("/Images/ImagenUserDefault.png");
+        return url != null ? new ImageIcon(url).getImage() : null;
+    }
+
+    private void mostrarImagen(Image img) {
+        if (img == null) {
+            javax.swing.SwingUtilities.invokeLater(() -> labelIcon.setIcon(null));
+            return;
+        }
+        int width = labelIcon.getWidth() > 0 ? labelIcon.getWidth() : 114;
+        int height = labelIcon.getHeight() > 0 ? labelIcon.getHeight() : 114;
+        ImageIcon iconFinal = new ImageIcon(img.getScaledInstance(width, height, Image.SCALE_SMOOTH));
+        // Actualizar el componente Swing en el EDT (Event Dispatch Thread)
+        javax.swing.SwingUtilities.invokeLater(() -> labelIcon.setIcon(iconFinal));
+    }
+
     private void ColocarDatosEnListas(List<String> list, JList jList){
         DefaultListModel<String> modelo = new DefaultListModel<>();
         jList.setModel(modelo);
