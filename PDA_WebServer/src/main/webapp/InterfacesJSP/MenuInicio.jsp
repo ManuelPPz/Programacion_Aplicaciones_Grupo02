@@ -289,11 +289,8 @@
                                     Date fAltaProg = obtenerFechaAlta(item);
                                     if (fAltaProg != null) fechaAltaStr = sdf.format(fAltaProg);
 
-                                    if (nombre != null && !nombre.isBlank()) {
-                                        linkConsulta = request.getContextPath() + "/ConsultaProgramaServlet?nombre=" + java.net.URLEncoder.encode(nombre, "UTF-8");
-                                    } else {
-                                        linkConsulta = request.getContextPath() + "/ConsultaProgramaServlet";
-                                    }
+                                    // En la versión móvil no se accede a la consulta de programas: sin botón "Ver Detalle"
+                                    linkConsulta = null;
 
                                     String imgProg = "";
                                     for (String mImg : new String[]{"getImage", "getImg", "getImagen", "getFoto", "getNomImagen"}) {
@@ -331,7 +328,9 @@
                                     </p>
                                     <div class="d-flex justify-content-between align-items-center pt-1 border-top">
                                         <small class="text-muted" style="font-size: 0.65rem;"><%= fechaAltaStr %></small>
-                                        <a href="<%= linkConsulta %>" class="btn btn-outline-dark btn-sm py-0 px-2 fw-bold" style="font-size: 0.7rem;">Ver Detalle</a>
+                                        <% if (linkConsulta != null) { %>
+                                            <a href="<%= linkConsulta %>" class="btn btn-outline-dark btn-sm py-0 px-2 fw-bold" style="font-size: 0.7rem;">Ver Detalle</a>
+                                        <% } %>
                                     </div>
                                 </div>
                     <%
