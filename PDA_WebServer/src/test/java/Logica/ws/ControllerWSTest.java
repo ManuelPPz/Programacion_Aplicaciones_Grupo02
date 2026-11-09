@@ -142,6 +142,7 @@ public class ControllerWSTest {
         assertEquals(List.of("Cat"), dc.getCategorias());
         assertEquals(fecha, dc.getFechaAlta());
         assertEquals("c.png", dc.getImage());
+        assertEquals(0, dc.getVisitas());
 
         DtEdiUsu ins = new DtEdiUsu();
         ins.setNickEstudiante("roro");
@@ -376,5 +377,24 @@ public class ControllerWSTest {
         } finally {
             ClienteWS.configurar(anterior);
         }
+    }
+
+    // ===================== Listado de tendencias =====================
+
+    @Test
+    public void testTendencias() {
+        when(ws.registrarVisitaCurso("Java")).thenReturn(true);
+        assertTrue(ctrl.RegistrarVisitaCurso("Java"));
+        assertFalse(ctrl.RegistrarVisitaCurso("Otro"));
+
+        DtCurso c = new DtCurso();
+        c.setNombre("Java");
+        c.setVisitas(12);
+        when(ws.listarCursosMasVisitados(0)).thenReturn(List.of(c));
+        List<DTMaster> l = ctrl.ListarCursosMasVisitados(0);
+        assertEquals(1, l.size());
+        DTCurso dc = assertInstanceOf(DTCurso.class, l.get(0));
+        assertEquals("Java", dc.getNombre());
+        assertEquals(12, dc.getVisitas());
     }
 }

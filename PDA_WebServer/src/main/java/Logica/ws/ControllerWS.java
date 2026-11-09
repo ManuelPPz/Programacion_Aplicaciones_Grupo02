@@ -139,6 +139,16 @@ public class ControllerWS implements IController {
         return ConversorDT.lista(ws().listarCursosXCategoria(categoria));
     }
 
+    @Override
+    public boolean RegistrarVisitaCurso(String nomCurso) {
+        return ws().registrarVisitaCurso(nomCurso);
+    }
+
+    @Override
+    public List<DTMaster> ListarCursosMasVisitados(int cantidad) {
+        return ConversorDT.lista(ws().listarCursosMasVisitados(cantidad));
+    }
+
     // ===================== Ediciones =====================
 
     @Override

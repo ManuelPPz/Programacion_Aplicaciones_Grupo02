@@ -546,6 +546,16 @@ public class Controller implements IController {
     }
     
     @Override
+    public boolean RegistrarVisitaCurso(String nomCurso) {
+        return manCursos.RegistrarVisita(nomCurso);
+    }
+
+    @Override
+    public List<DTMaster> ListarCursosMasVisitados(int cantidad) {
+        return manCursos.ListarMasVisitados(cantidad);
+    }
+
+    @Override
     public DTMaster ConsultaUsuarioAvanzada(String id, String password) {
         UsuarioBase ub = manUsuario.BusquedaAvanzada(id, password);
         if (ub != null) {

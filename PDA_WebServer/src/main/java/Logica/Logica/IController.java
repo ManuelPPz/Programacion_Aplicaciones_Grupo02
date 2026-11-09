@@ -122,4 +122,9 @@ public interface IController {
     public abstract String GenerateRandPassword();
     
     public abstract void AltaCategoria(String nombre);
+
+    //Listado de tendencias: suma una visita al curso consultado
+    public abstract boolean RegistrarVisitaCurso(String nomCurso);
+    //Listado de tendencias: cursos más visitados (cantidad <= 0 = todos)
+    public abstract List<DTMaster> ListarCursosMasVisitados(int cantidad);
 }

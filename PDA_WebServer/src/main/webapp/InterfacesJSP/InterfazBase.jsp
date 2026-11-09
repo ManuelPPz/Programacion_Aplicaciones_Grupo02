@@ -42,6 +42,26 @@
                 background-color: #f8f9fa;
                 color: #000;
             }
+            /* Menu lateral: resalta la opcion bajo el puntero y la pagina actual */
+            #menuLateral .list-group-item > a,
+            #menuLateral a > .list-group-item {
+                transition: background-color .15s ease, color .15s ease, box-shadow .15s ease;
+            }
+            #menuLateral .list-group-item > a:hover,
+            #menuLateral a:hover > .list-group-item {
+                background-color: #e7f1ff;
+                color: #0d6efd !important;
+                box-shadow: inset 4px 0 0 #0d6efd;
+                text-decoration: none;
+            }
+            #menuLateral .menu-activo,
+            #menuLateral .menu-activo:hover,
+            #menuLateral a:hover > .menu-activo {
+                background-color: #0d6efd;
+                color: #ffffff !important;
+                box-shadow: inset 4px 0 0 #0a3d8f;
+                text-decoration: none;
+            }
             .search-badge {
                 font-size: 0.75rem;
                 padding: 3px 6px;
@@ -186,7 +206,7 @@
 
                 <%-- 1. MENÚ LATERAL IZQUIERDO --%>
                 <div class="col-md-3 col-lg-2 mb-4">
-                    <div class="card border-dark w-100 shadow-sm">
+                    <div id="menuLateral" class="card border-dark w-100 shadow-sm">
                         
                         <%-- BOTÓN VOLVER ATRÁS --%>
                         <div class="p-2 border-bottom bg-white text-center">
@@ -294,6 +314,16 @@
                             %>
                         </ul>
 
+                        <!-- Listado de tendencias (visible para todos) -->
+                        <div class="card-header text-center fw-bold border-top border-dark fs-5">
+                            Tendencias
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item text-dark fw-semibold p-0">
+                                <a href="<%= request.getContextPath() %>/TendenciasServlet" class="text-dark text-decoration-none d-block p-2">Cursos m&aacute;s visitados</a>
+                            </li>
+                        </ul>
+
                         <!-- Sección Institutos -->
                         <div class="card-header text-center fw-bold border-top border-dark fs-5">
                             Institutos
@@ -359,6 +389,35 @@
                         <% } %>
                     </div>
                 </div>
+
+                <%-- Marca en el menu lateral la opcion de la pagina actual --%>
+                <script>
+                    (function () {
+                        var menu = document.getElementById("menuLateral");
+                        if (!menu) {
+                            return;
+                        }
+                        var actual = new URL(window.location.href);
+                        menu.querySelectorAll("a[href]").forEach(function (a) {
+                            var destino = new URL(a.getAttribute("href"), window.location.href);
+                            if (destino.pathname !== actual.pathname) {
+                                return;
+                            }
+                            // Si el enlace lleva parametros (instituto, categoria, perfil) tienen que coincidir
+                            var coincide = true;
+                            destino.searchParams.forEach(function (valor, clave) {
+                                if (actual.searchParams.get(clave) !== valor) {
+                                    coincide = false;
+                                }
+                            });
+                            if (coincide) {
+                                var item = a.querySelector(".list-group-item") || a;
+                                item.classList.add("menu-activo");
+                                a.setAttribute("aria-current", "page");
+                            }
+                        });
+                    })();
+                </script>
 
                 <%-- 2. ÁREA DE CONTENIDO CENTRAL --%>
                 <div class="col-md-9 col-lg-10 ps-md-4 d-flex flex-column align-items-center mb-5">

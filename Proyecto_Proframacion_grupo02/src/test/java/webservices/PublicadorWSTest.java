@@ -297,4 +297,14 @@ public class PublicadorWSTest {
         assertSame(f, conCausa.getFaultInfo());
         assertNotNull(conCausa.getCause());
     }
+
+    @Test
+    public void testTendencias() {
+        when(ico.RegistrarVisitaCurso("Java")).thenReturn(true);
+        assertTrue(ws.RegistrarVisitaCurso("Java"));
+
+        List<DTMaster> lista = new ArrayList<>();
+        when(ico.ListarCursosMasVisitados(0)).thenReturn(lista);
+        assertSame(lista, ws.ListarCursosMasVisitados(0));
+    }
 }

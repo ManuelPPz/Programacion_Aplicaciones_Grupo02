@@ -41,6 +41,10 @@ public class Curso implements Serializable {
     @Column(name="ImagePath")
     private String image;
 
+    /** Cantidad de veces que se consultó el curso (Listado de tendencias). */
+    @Column(name="Visitas", columnDefinition = "INT DEFAULT 0")
+    private Integer visitas = 0;
+
     @ManyToMany
     @JoinTable(
         name = "Previa", 
@@ -82,6 +86,8 @@ public class Curso implements Serializable {
     public List<Categoria> getCategorias(){ return this.misCategorias; }
     public String getImage(){ return this.image; }
     public void setImage(String image){ this.image = image; }
+    public int getVisitas(){ return this.visitas != null ? this.visitas : 0; }
+    public void setVisitas(int visitas){ this.visitas = visitas; }
 
     public Curso() {
     }

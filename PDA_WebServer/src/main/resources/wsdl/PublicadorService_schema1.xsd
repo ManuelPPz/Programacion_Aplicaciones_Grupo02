@@ -76,6 +76,10 @@
 
 <xs:element name="ListarCursos" type="tns:ListarCursos"/>
 
+<xs:element name="ListarCursosMasVisitados" type="tns:ListarCursosMasVisitados"/>
+
+<xs:element name="ListarCursosMasVisitadosResponse" type="tns:ListarCursosMasVisitadosResponse"/>
+
 <xs:element name="ListarCursosResponse" type="tns:ListarCursosResponse"/>
 
 <xs:element name="ListarCursosXCategoria" type="tns:ListarCursosXCategoria"/>
@@ -125,6 +129,10 @@
 <xs:element name="ObtenerImagen" type="tns:ObtenerImagen"/>
 
 <xs:element name="ObtenerImagenResponse" type="tns:ObtenerImagenResponse"/>
+
+<xs:element name="RegistrarVisitaCurso" type="tns:RegistrarVisitaCurso"/>
+
+<xs:element name="RegistrarVisitaCursoResponse" type="tns:RegistrarVisitaCursoResponse"/>
 
 <xs:element name="SeguirUsuario" type="tns:SeguirUsuario"/>
 
@@ -181,6 +189,24 @@
 </xs:sequence>
 </xs:complexType>
 
+<xs:complexType name="AgregarUsuario">
+<xs:sequence>
+<xs:element name="nickname" type="xs:string" minOccurs="0"/>
+<xs:element name="nombre" type="xs:string" minOccurs="0"/>
+<xs:element name="apellido" type="xs:string" minOccurs="0"/>
+<xs:element name="correo" type="xs:string" minOccurs="0"/>
+<xs:element name="password" type="xs:string" minOccurs="0"/>
+<xs:element name="fechaNac" type="xs:dateTime" minOccurs="0"/>
+<xs:element name="docente" type="xs:boolean"/>
+<xs:element name="instituto" type="xs:string" minOccurs="0"/>
+<xs:element name="imgPath" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="AgregarUsuarioResponse">
+<xs:sequence/>
+</xs:complexType>
+
 <xs:complexType name="ListarSeguidos">
 <xs:sequence>
 <xs:element name="nickname" type="xs:string" minOccurs="0"/>
@@ -203,24 +229,6 @@
 <xs:sequence>
 <xs:element name="return" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
 </xs:sequence>
-</xs:complexType>
-
-<xs:complexType name="AgregarUsuario">
-<xs:sequence>
-<xs:element name="nickname" type="xs:string" minOccurs="0"/>
-<xs:element name="nombre" type="xs:string" minOccurs="0"/>
-<xs:element name="apellido" type="xs:string" minOccurs="0"/>
-<xs:element name="correo" type="xs:string" minOccurs="0"/>
-<xs:element name="password" type="xs:string" minOccurs="0"/>
-<xs:element name="fechaNac" type="xs:dateTime" minOccurs="0"/>
-<xs:element name="docente" type="xs:boolean"/>
-<xs:element name="instituto" type="xs:string" minOccurs="0"/>
-<xs:element name="imgPath" type="xs:string" minOccurs="0"/>
-</xs:sequence>
-</xs:complexType>
-
-<xs:complexType name="AgregarUsuarioResponse">
-<xs:sequence/>
 </xs:complexType>
 
 <xs:complexType name="VerificarCurso">
@@ -338,6 +346,7 @@
 <xs:element name="listCategorias" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
 <xs:element name="docente" type="xs:string" minOccurs="0"/>
 <xs:element name="imgPath" type="xs:string" minOccurs="0"/>
+<xs:element name="visitas" type="xs:int"/>
 </xs:sequence>
 </xs:extension>
 </xs:complexContent>
@@ -482,6 +491,18 @@
 <xs:complexType name="ConsultaUsuarioAvanzadaResponse">
 <xs:sequence>
 <xs:element name="return" type="tns:dtMaster" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="RegistrarVisitaCurso">
+<xs:sequence>
+<xs:element name="nombre" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="RegistrarVisitaCursoResponse">
+<xs:sequence>
+<xs:element name="return" type="xs:boolean"/>
 </xs:sequence>
 </xs:complexType>
 
@@ -752,6 +773,18 @@
 
 <xs:complexType name="AceptarEstudiantesAEdicionCursoResponse">
 <xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="ListarCursosMasVisitados">
+<xs:sequence>
+<xs:element name="cantidad" type="xs:int"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="ListarCursosMasVisitadosResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:dtMaster" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
 </xs:complexType>
 
 <xs:complexType name="InscripcionUsuarioAProgramas">

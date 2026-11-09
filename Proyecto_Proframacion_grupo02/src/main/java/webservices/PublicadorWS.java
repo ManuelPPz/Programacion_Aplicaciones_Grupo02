@@ -151,6 +151,18 @@ public class PublicadorWS {
         return ico.ListarCursosXCategoria(categoria);
     }
 
+    /** Listado de tendencias: suma una visita al curso. Devuelve false si el curso no existe. */
+    @WebMethod
+    public boolean RegistrarVisitaCurso(@WebParam(name = "nombre") String nombre) {
+        return ico.RegistrarVisitaCurso(nombre);
+    }
+
+    /** Listado de tendencias: cursos más visitados, de mayor a menor (cantidad <= 0 = todos). */
+    @WebMethod
+    public List<DTMaster> ListarCursosMasVisitados(@WebParam(name = "cantidad") int cantidad) {
+        return ico.ListarCursosMasVisitados(cantidad);
+    }
+
     // ===================== Ediciones =====================
 
     @WebMethod

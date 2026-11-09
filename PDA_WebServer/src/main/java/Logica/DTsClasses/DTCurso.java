@@ -25,6 +25,8 @@ public class DTCurso extends DTMaster{
     private List<String> listCategorias;
     private String docente;
     String imgPath;
+    /** Cantidad de veces que se consulto el curso (Listado de tendencias). */
+    private int visitas;
     
     public DTCurso(String nomInstituto, String nom, String descripcion, int duracion,float cantHoras,int cantCreditos, String URL, Date fecha, List<String> listPrevias, List<String> listEdiCursos, List<String> listProgCursos, List<String> categorias, String docente, String imgPath){
         this.instituto = nomInstituto;
@@ -56,5 +58,7 @@ public class DTCurso extends DTMaster{
     public List<String> getCategorias(){return this.listCategorias;}
     public String getDocente(){return this.docente;}
     public String getImage(){return this.imgPath;}
+    public int getVisitas(){return this.visitas;}
+    public void setVisitas(int visitas){this.visitas = visitas;}
     
 }

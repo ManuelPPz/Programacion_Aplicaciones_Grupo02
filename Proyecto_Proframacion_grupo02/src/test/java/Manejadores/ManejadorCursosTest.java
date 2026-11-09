@@ -1,5 +1,7 @@
 package Manejadores;
 
+import static org.mockito.ArgumentMatchers.anyInt;
+import jakarta.persistence.Query;
 import Classes.Categoria;
 import Classes.Curso;
 import Classes.EdicionCurso;
@@ -467,6 +469,89 @@ public class ManejadorCursosTest {
 
         assertEquals(1, result.size());
         assertSame(dt, result.get(0));
+    }
+
+
+    // ===================== Listado de tendencias =====================
+
+    @Test
+    public void testRegistrarVisitaCursoExistente() {
+        Query update = mock(Query.class, RETURNS_SELF);
+        when(em.createQuery(anyString())).thenReturn(update);
+        when(update.executeUpdate()).thenReturn(1);
+
+        assertTrue(manejador.RegistrarVisita(" Java "));
+        verify(update).setParameter("nombre", "Java");
+        verify(tx).commit();
+        verify(em).close();
+    }
+
+    @Test
+    public void testRegistrarVisitaCursoInexistente() {
+        Query update = mock(Query.class, RETURNS_SELF);
+        when(em.createQuery(anyString())).thenReturn(update);
+        when(update.executeUpdate()).thenReturn(0);
+
+        assertFalse(manejador.RegistrarVisita("NoExiste"));
+    }
+
+    @Test
+    public void testRegistrarVisitaNombreVacio() {
+        assertFalse(manejador.RegistrarVisita(null));
+        assertFalse(manejador.RegistrarVisita("  "));
+        verify(em, never()).createQuery(anyString());
+    }
+
+    @Test
+    public void testRegistrarVisitaErrorHaceRollback() {
+        when(em.createQuery(anyString())).thenThrow(new RuntimeException("falla"));
+
+        assertFalse(manejador.RegistrarVisita("Java"));
+        verify(tx).rollback();
+        verify(em).close();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testListarMasVisitados() {
+        TypedQuery<String> nombres = mock(TypedQuery.class, RETURNS_SELF);
+        when(em.createQuery(anyString(), eq(String.class))).thenReturn(nombres);
+        when(nombres.getResultList()).thenReturn(List.of("Java"));
+
+        Curso c = mock(Curso.class);
+        when(c.getNombre()).thenReturn("Java");
+        when(c.getVisitas()).thenReturn(7);
+        when(query.getResultList()).thenReturn(List.of(c));
+
+        List<DTMaster> result = manejador.ListarMasVisitados(5);
+
+        verify(nombres).setMaxResults(5);
+        assertEquals(1, result.size());
+        DTCurso dt = (DTCurso) result.get(0);
+        assertEquals("Java", dt.getNombre());
+        assertEquals(7, dt.getVisitas());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testListarMasVisitadosTodosYError() {
+        TypedQuery<String> nombres = mock(TypedQuery.class, RETURNS_SELF);
+        when(em.createQuery(anyString(), eq(String.class))).thenReturn(nombres);
+        when(nombres.getResultList()).thenReturn(List.of());
+
+        assertTrue(manejador.ListarMasVisitados(0).isEmpty());
+        verify(nombres, never()).setMaxResults(anyInt());
+
+        when(nombres.getResultList()).thenThrow(new RuntimeException("falla"));
+        assertTrue(manejador.ListarMasVisitados(-1).isEmpty());
+    }
+
+    @Test
+    public void testGetDTIncluyeVisitas() {
+        Curso c = new Curso(null, "Java", "d", 1, 1f, 1, "u", new Date(), null, null, new ArrayList<>(), null);
+        assertEquals(0, manejador.getDT(c).getVisitas());
+        c.setVisitas(3);
+        assertEquals(3, manejador.getDT(c).getVisitas());
     }
 
 }

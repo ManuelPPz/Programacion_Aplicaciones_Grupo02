@@ -141,10 +141,12 @@ public final class ConversorDT {
     }
 
     public static DTCurso curso(DtCurso c) {
-        return new DTCurso(c.getInstituto(), c.getNombre(), c.getDescripcion(), c.getDuracion(), c.getCantHoras(),
+        DTCurso dt = new DTCurso(c.getInstituto(), c.getNombre(), c.getDescripcion(), c.getDuracion(), c.getCantHoras(),
                 c.getCantCreditos(), c.getURL(), fecha(c.getFechaAlta()), copia(c.getListPrevias()),
                 copia(c.getListEdiCursos()), copia(c.getListProgCursos()), copia(c.getListCategorias()),
                 c.getDocente(), c.getImgPath());
+        dt.setVisitas(c.getVisitas());
+        return dt;
     }
 
     public static DTEdicionCurso edicion(DtEdicionCurso e) {

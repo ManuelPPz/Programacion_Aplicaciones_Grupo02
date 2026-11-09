@@ -818,4 +818,21 @@ public class ControllerTest {
         assertEquals(List.of("c"), instance.ListarSeguidores("a"));
     }
 
+
+    // ===================== Listado de tendencias =====================
+
+    @Test
+    public void testRegistrarVisitaCurso() {
+        when(manCursos.RegistrarVisita("Java")).thenReturn(true);
+        assertTrue(instance.RegistrarVisitaCurso("Java"));
+        assertFalse(instance.RegistrarVisitaCurso("Otro"));
+    }
+
+    @Test
+    public void testListarCursosMasVisitados() {
+        List<DTMaster> lista = new ArrayList<>();
+        when(manCursos.ListarMasVisitados(5)).thenReturn(lista);
+        assertSame(lista, instance.ListarCursosMasVisitados(5));
+    }
+
 }

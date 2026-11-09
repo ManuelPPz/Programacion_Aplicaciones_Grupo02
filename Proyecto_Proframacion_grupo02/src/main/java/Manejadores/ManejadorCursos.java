@@ -229,7 +229,7 @@ public class ManejadorCursos {
 
         String docenteNick = (c.getDocente() != null) ? c.getDocente().getNickname() : "";
 
-        return new DTCurso(
+        DTCurso dt = new DTCurso(
             ins,
             c.getNombre(),
             c.getDescripcion(),
@@ -245,6 +245,8 @@ public class ManejadorCursos {
             docenteNick,
             c.getImage()
         );
+        dt.setVisitas(c.getVisitas());
+        return dt;
     }
 
     public List<DTMaster> getDTList(){
@@ -278,6 +280,70 @@ public class ManejadorCursos {
         }
         
         return auxList;
+    }
+
+    // ===================== Listado de tendencias =====================
+
+    /**
+     * Suma una visita al curso. Se hace con un UPDATE en la base de datos para
+     * que dos consultas simultáneas no se pisen.
+     *
+     * @return true si el curso existe y se registró la visita
+     */
+    public boolean RegistrarVisita(String nombre) {
+        if (nombre == null || nombre.isBlank()) {
+            return false;
+        }
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            int filas = em.createQuery(
+                "UPDATE Curso c SET c.visitas = COALESCE(c.visitas, 0) + 1 WHERE c.nombre = :nombre")
+                .setParameter("nombre", nombre.trim())
+                .executeUpdate();
+            em.getTransaction().commit();
+            return filas > 0;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            System.err.println("Error al registrar la visita del curso: " + e.getMessage());
+            return false;
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * Cursos que fueron consultados al menos una vez, ordenados por cantidad de
+     * visitas (de mayor a menor; a igual cantidad, por nombre).
+     *
+     * @param cantidad máximo de cursos a devolver; 0 o negativo = todos
+     */
+    public List<DTMaster> ListarMasVisitados(int cantidad) {
+        List<String> nombres = new ArrayList<>();
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<String> q = em.createQuery(
+                "SELECT c.nombre FROM Curso c WHERE c.visitas > 0 ORDER BY c.visitas DESC, c.nombre ASC", String.class);
+            if (cantidad > 0) {
+                q.setMaxResults(cantidad);
+            }
+            nombres = q.getResultList();
+        } catch (Exception e) {
+            System.err.println("Error al listar los cursos más visitados: " + e.getMessage());
+        } finally {
+            em.close();
+        }
+
+        List<DTMaster> resultado = new ArrayList<>();
+        for (String nombre : nombres) {
+            DTCurso dt = getDT(BuscarCurso(nombre));
+            if (dt != null) {
+                resultado.add(dt);
+            }
+        }
+        return resultado;
     }
 
     private EntityManager getEntityManager() {
