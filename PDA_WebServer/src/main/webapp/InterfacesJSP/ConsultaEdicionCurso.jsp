@@ -69,7 +69,20 @@
                     <i class="bi bi-list fs-2"></i>
                 </button>
                 <span class="fs-6 fw-normal text-dark text-truncate px-2">Bienvenido <%= nombreUsuarioMostrar %></span>
-                <img src="<%= request.getContextPath() %>/Images/LogoEdext.png" alt="edEXT Logo" style="height: 35px; width: auto;" onerror="this.onerror=null; this.src='<%= request.getContextPath() %>/Images/ImagenUserDefault.png';">
+                <img src="<%= request.getContextPath() %>/Images/Logo%20edEXT%20sin%20fondo.png" alt="edEXT Logo" style="height: 35px; width: auto;">
+                <%-- Foto de perfil del usuario logueado (se pide al Servidor Central vía /imagenes) --%>
+                <% if (dtmUserLogueado instanceof Logica.DTsClasses.DTUsuarioBase) {
+                       Logica.DTsClasses.DTUsuarioBase usuMovil = (Logica.DTsClasses.DTUsuarioBase) dtmUserLogueado;
+                       String fotoMovil = Logica.util.ImagenUtil.versionedUrl(Logica.util.ImagenUtil.CARPETA_PERFILES,
+                               usuMovil.getImg(), request.getContextPath());
+                %>
+                    <a href="<%= request.getContextPath() %>/ConsultaUsuarioIndividualServlet?nickname=<%= java.net.URLEncoder.encode(usuMovil.getNickname(), "UTF-8") %>" title="<%= usuMovil.getNickname() %>">
+                        <img src="<%= fotoMovil %>" alt="Perfil" width="40" height="40" class="rounded-circle border" style="object-fit: cover;"
+                             onerror="this.onerror=null; this.src='<%= request.getContextPath() %>/Images/ImagenUserDefault.png';">
+                    </a>
+                <% } else { %>
+                    <span style="width: 40px;"></span>
+                <% } %>
             </div>
             
             <!-- Menú Desplegable -->
