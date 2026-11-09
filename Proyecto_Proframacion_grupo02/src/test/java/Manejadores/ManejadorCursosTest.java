@@ -86,7 +86,7 @@ public class ManejadorCursosTest {
 
         try (MockedConstruction<Curso> construido = mockConstruction(Curso.class)) {
             Curso result = manejador.CrearCurso(instituto, "Java", "desc", 10, 20.5f, 5,
-                    "http://url", fecha, List.of("Previa1"), ub, categorias);
+                    "http://url", fecha, List.of("Previa1"), ub, categorias, null);
 
             assertNotNull(result);
             assertEquals(1, construido.constructed().size());
@@ -103,10 +103,10 @@ public class ManejadorCursosTest {
         try (MockedConstruction<Curso> construido = mockConstruction(Curso.class,
                 (mock, ctx) -> argumentos.addAll(ctx.arguments()))) {
             Curso result = manejador.CrearCurso(instituto, "Java", "desc", 10, 20.5f, 5,
-                    "http://url", new Date(), new ArrayList<>(), ub, new ArrayList<>());
+                    "http://url", new Date(), new ArrayList<>(), ub, new ArrayList<>(), null);
 
             assertNotNull(result);
-            assertEquals(11, argumentos.size());
+            assertEquals(12, argumentos.size());
             assertSame(instituto, argumentos.get(0));
             assertEquals("Java", argumentos.get(1));
             assertEquals(new ArrayList<Curso>(), argumentos.get(8));
@@ -124,7 +124,7 @@ public class ManejadorCursosTest {
                 (mock, ctx) -> argumentos.addAll(ctx.arguments()))) {
             manejador.CrearCurso(mock(Instituto.class), "Java", "desc", 10, 20.5f, 5,
                     "http://url", new Date(), Arrays.asList("A", "B"),
-                    mock(UsuarioBase.class), new ArrayList<>());
+                    mock(UsuarioBase.class), new ArrayList<>(), null);
 
             assertEquals(List.of(previa, previa), argumentos.get(8));
         }
@@ -141,9 +141,9 @@ public class ManejadorCursosTest {
         List<Categoria> categorias = new ArrayList<>();
         Date fecha = new Date();
 
-        manejador.ModificarCurso(c, "nueva", 5, 10f, 3, "url", fecha, List.of("P1"), ub, categorias);
+        manejador.ModificarCurso(c, "nueva", 5, 10f, 3, "url", fecha, List.of("P1"), ub, categorias, null);
 
-        verify(c).ModificarMisDatos("nueva", 5, 10f, 3, "url", fecha, List.of(previa), ub, categorias);
+        verify(c).ModificarMisDatos("nueva", 5, 10f, 3, "url", fecha, List.of(previa), ub, categorias, null);
         verify(tx).begin();
         verify(em).merge(c);
         verify(tx).commit();
@@ -156,7 +156,7 @@ public class ManejadorCursosTest {
         when(em.merge(c)).thenThrow(new RuntimeException("fallo merge"));
 
         manejador.ModificarCurso(c, "d", 1, 1f, 1, "u", new Date(), new ArrayList<>(),
-                mock(UsuarioBase.class), new ArrayList<>());
+                mock(UsuarioBase.class), new ArrayList<>(), null);
 
         verify(tx).rollback();
         verify(tx, never()).commit();
@@ -170,7 +170,7 @@ public class ManejadorCursosTest {
         when(tx.isActive()).thenReturn(false);
 
         manejador.ModificarCurso(c, "d", 1, 1f, 1, "u", new Date(), new ArrayList<>(),
-                mock(UsuarioBase.class), new ArrayList<>());
+                mock(UsuarioBase.class), new ArrayList<>(), null);
 
         verify(tx, never()).rollback();
         verify(em).close();
@@ -350,7 +350,7 @@ public class ManejadorCursosTest {
             DTCurso result = manejador.getDT(c);
 
             assertNotNull(result);
-            assertEquals(13, args.size());
+            assertEquals(14, args.size());
             assertEquals("INCO", args.get(0));
             assertEquals("Java", args.get(1));
             assertEquals("desc", args.get(2));
@@ -430,7 +430,7 @@ public class ManejadorCursosTest {
         doReturn(Arrays.asList(delInstituto, deOtro, sinInstituto)).when(spy).getList();
         doReturn(dt).when(spy).getDT(any(Curso.class));
 
-        List<DTMaster> result = spy.getDTLIst("INCO");
+        List<DTMaster> result = spy.getDTListIns("INCO");
 
         assertEquals(1, result.size());
         assertSame(dt, result.get(0));
@@ -442,9 +442,31 @@ public class ManejadorCursosTest {
         ManejadorCursos spy = spy(manejador);
         doReturn(null).when(spy).getList();
 
-        List<DTMaster> result = spy.getDTLIst("INCO");
+        List<DTMaster> result = spy.getDTListIns("INCO");
 
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    public void testGetDTListCat() {
+        ManejadorCursos spy = spy(manejador);
+        Categoria prog = mock(Categoria.class);
+        when(prog.getNombre()).thenReturn("Prog");
+        Categoria sinNombre = mock(Categoria.class);
+        when(sinNombre.getNombre()).thenReturn(null);
+        Curso conCat = mock(Curso.class);
+        when(conCat.getCategorias()).thenReturn(Arrays.asList(prog, sinNombre));
+        Curso sinCat = mock(Curso.class);
+        when(sinCat.getCategorias()).thenReturn(new ArrayList<>());
+        DTCurso dt = mock(DTCurso.class);
+        doReturn(Arrays.asList(conCat, sinCat)).when(spy).getList();
+        doReturn(dt).when(spy).getDT(conCat);
+
+        List<DTMaster> result = spy.getDTListCat("Prog");
+
+        assertEquals(1, result.size());
+        assertSame(dt, result.get(0));
+    }
+
 }

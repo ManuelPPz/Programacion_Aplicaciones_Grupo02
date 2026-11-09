@@ -63,7 +63,7 @@ public class ManejadorProgramasDeFormacionTest {
     @Test
     public void testCrearPrograma() {
         try (MockedConstruction<ProgramaDeFormacion> construido = mockConstruction(ProgramaDeFormacion.class)) {
-            ProgramaDeFormacion result = manejador.CrearPrograma("P", "desc", null, new Date());
+            ProgramaDeFormacion result = manejador.CrearPrograma("P", "desc", null, new Date(), null, null);
 
             assertNotNull(result);
             assertSame(construido.constructed().get(0), result);
@@ -78,9 +78,9 @@ public class ManejadorProgramasDeFormacionTest {
         when(em.find(ProgramaDeFormacion.class, "P")).thenReturn(pdf);
         Date d = new Date();
 
-        manejador.ModificarDatos("P", "nueva", null, d);
+        manejador.ModificarDatos("P", "nueva", null, d, null);
 
-        verify(pdf).ModificarDatos("nueva", null, d);
+        verify(pdf).ModificarDatos("nueva", null, d, null);
         verify(em).merge(pdf);
         verify(tx).commit();
     }
@@ -89,7 +89,7 @@ public class ManejadorProgramasDeFormacionTest {
     public void testModificarDatosProgramaInexistente() {
         when(em.find(ProgramaDeFormacion.class, "P")).thenReturn(null);
 
-        manejador.ModificarDatos("P", "nueva", null, new Date());
+        manejador.ModificarDatos("P", "nueva", null, new Date(), null);
 
         verify(em, never()).merge(any());
     }
@@ -100,7 +100,7 @@ public class ManejadorProgramasDeFormacionTest {
         when(em.find(ProgramaDeFormacion.class, "P")).thenReturn(pdf);
         when(em.merge(pdf)).thenThrow(new RuntimeException("boom"));
 
-        assertThrows(RuntimeException.class, () -> manejador.ModificarDatos("P", "d", null, new Date()));
+        assertThrows(RuntimeException.class, () -> manejador.ModificarDatos("P", "d", null, new Date(), null));
         verify(tx).rollback();
     }
 
@@ -111,7 +111,7 @@ public class ManejadorProgramasDeFormacionTest {
         when(em.merge(pdf)).thenThrow(new RuntimeException("boom"));
         when(tx.isActive()).thenReturn(false);
 
-        assertThrows(RuntimeException.class, () -> manejador.ModificarDatos("P", "d", null, new Date()));
+        assertThrows(RuntimeException.class, () -> manejador.ModificarDatos("P", "d", null, new Date(), null));
         verify(tx, never()).rollback();
     }
 
@@ -418,4 +418,28 @@ public class ManejadorProgramasDeFormacionTest {
         assertThrows(RuntimeException.class, () -> manejador.getDTList());
         verify(em).close();
     }
+
+    @Test
+    public void testListarProgramasDeCurso() {
+        TypedQuery<ProgramaDeFormacion> q = queryProgramas();
+        Curso java = mock(Curso.class);
+        when(java.getNombre()).thenReturn("Java");
+        Curso otro = mock(Curso.class);
+        when(otro.getNombre()).thenReturn("C");
+        Curso sinNombre = mock(Curso.class);
+        when(sinNombre.getNombre()).thenReturn(null);
+        ProgramaDeFormacion conJava = mock(ProgramaDeFormacion.class);
+        when(conJava.getCursos()).thenReturn(Arrays.asList(java, otro, sinNombre, null));
+        ProgramaDeFormacion sinCursos = mock(ProgramaDeFormacion.class);
+        when(sinCursos.getCursos()).thenReturn(null);
+        when(q.getResultList()).thenReturn(Arrays.asList(conJava, sinCursos));
+
+        try (MockedConstruction<DTProgramaForm> dt = mockConstruction(DTProgramaForm.class)) {
+            List<DTMaster> result = manejador.ListarProgramasDeCurso("Java");
+
+            assertEquals(1, result.size());
+            assertSame(dt.constructed().get(0), result.get(0));
+        }
+    }
+
 }

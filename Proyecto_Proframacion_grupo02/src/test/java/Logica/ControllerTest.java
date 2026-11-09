@@ -202,13 +202,13 @@ public class ControllerTest {
         when(manUsuario.BuscarUsuario("doc")).thenReturn(doc);
         when(manCategoria.BuscarCategoria("cat")).thenReturn(cat);
         when(manCursos.CrearCurso(any(Instituto.class), anyString(), anyString(), anyInt(), anyFloat(), anyInt(),
-                anyString(), any(Date.class), anyList(), any(UsuarioBase.class), anyList())).thenReturn(nuevo);
+                anyString(), any(Date.class), anyList(), any(UsuarioBase.class), anyList(), any())).thenReturn(nuevo);
 
-        instance.AltaCurso("ins", "curso", "desc", 3, 10f, 5, "url", previas, fecha, "doc", Arrays.asList("cat"));
+        instance.AltaCurso("ins", "curso", "desc", 3, 10f, 5, "url", previas, fecha, "doc", Arrays.asList("cat"), null);
 
         verify(manUsuario).AddCurso(doc, nuevo);
         verify(manCursos).Add(nuevo);
-        verify(manCursos, never()).ModificarCurso(any(), any(), anyInt(), anyFloat(), anyInt(), any(), any(), any(), any(), any());
+        verify(manCursos, never()).ModificarCurso(any(), any(), anyInt(), anyFloat(), anyInt(), any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -220,12 +220,12 @@ public class ControllerTest {
         when(manCursos.BuscarCurso("curso")).thenReturn(existente);
         when(manUsuario.BuscarUsuario("doc")).thenReturn(docNuevo);
 
-        instance.AltaCurso("ins", "curso", "desc", 3, 10f, 5, "url", new ArrayList<>(), fecha, "doc", new ArrayList<>());
+        instance.AltaCurso("ins", "curso", "desc", 3, 10f, 5, "url", new ArrayList<>(), fecha, "doc", new ArrayList<>(), null);
 
         verify(manUsuario).RemoveCurso(docViejo, existente);
         verify(manUsuario).AddCurso(docNuevo, existente);
         verify(manCursos).ModificarCurso(eq(existente), eq("desc"), eq(3), eq(10f), eq(5), eq("url"),
-                eq(fecha), anyList(), eq(docNuevo), anyList());
+                eq(fecha), anyList(), eq(docNuevo), anyList(), any());
         verify(manCursos, never()).Add(any());
     }
 
@@ -260,9 +260,9 @@ public class ControllerTest {
         when(manEdicion.BuscarEdicion("ed")).thenReturn(null);
         when(manUsuario.BuscarUsuario("d1")).thenReturn(d1);
         when(manUsuario.BuscarUsuario("noExiste")).thenReturn(null);
-        when(manEdicion.CrearEdicion(any(), any(), any(), any(), any(), anyInt(), any(), anyList())).thenReturn(ec);
+        when(manEdicion.CrearEdicion(any(), any(), any(), any(), any(), anyInt(), any(), anyList(), any())).thenReturn(ec);
 
-        instance.AltaEdicionCurso("ins", "curso", "ed", fecha, fecha, 10, Arrays.asList("d1", "noExiste"), fecha);
+        instance.AltaEdicionCurso("ins", "curso", "ed", fecha, fecha, 10, Arrays.asList("d1", "noExiste"), fecha, null);
 
         verify(manUsuario).AddEdicion(d1, ec);
         verify(manEdicion).Add(ec);
@@ -274,9 +274,9 @@ public class ControllerTest {
         EdicionCurso ec = mock(EdicionCurso.class);
         when(manCursos.BuscarCurso("curso")).thenReturn(null);
         when(manEdicion.BuscarEdicion("ed")).thenReturn(null);
-        when(manEdicion.CrearEdicion(any(), any(), any(), any(), any(), anyInt(), any(), anyList())).thenReturn(ec);
+        when(manEdicion.CrearEdicion(any(), any(), any(), any(), any(), anyInt(), any(), anyList(), any())).thenReturn(ec);
 
-        instance.AltaEdicionCurso("ins", "curso", "ed", fecha, fecha, 10, null, fecha);
+        instance.AltaEdicionCurso("ins", "curso", "ed", fecha, fecha, 10, null, fecha, null);
 
         verify(manEdicion).Add(ec);
         verify(manUsuario, never()).AddEdicion(any(), any());
@@ -292,11 +292,11 @@ public class ControllerTest {
         when(manUsuario.BuscarUsuario("nuevo")).thenReturn(nuevo);
         when(manUsuario.BuscarUsuario("noExiste")).thenReturn(null);
 
-        instance.AltaEdicionCurso("ins", "curso", "ed", fecha, fecha, 10, Arrays.asList("nuevo", "noExiste"), fecha);
+        instance.AltaEdicionCurso("ins", "curso", "ed", fecha, fecha, 10, Arrays.asList("nuevo", "noExiste"), fecha, null);
 
         verify(manUsuario).RemoveEdicion(viejo, existente);
         verify(manUsuario).AddEdicion(nuevo, existente);
-        verify(manEdicion).ModificarDatos(eq(existente), any(), any(), eq(10), any(), anyList());
+        verify(manEdicion).ModificarDatos(eq(existente), any(), any(), eq(10), any(), anyList(), any());
         verify(manEdicion, never()).Add(any());
     }
 
@@ -306,9 +306,9 @@ public class ControllerTest {
         when(existente.getMisDocentes()).thenReturn(new ArrayList<>());
         when(manEdicion.BuscarEdicion("ed")).thenReturn(existente);
 
-        instance.AltaEdicionCurso("ins", "curso", "ed", fecha, fecha, 10, null, fecha);
+        instance.AltaEdicionCurso("ins", "curso", "ed", fecha, fecha, 10, null, fecha, null);
 
-        verify(manEdicion).ModificarDatos(eq(existente), any(), any(), eq(10), any(), anyList());
+        verify(manEdicion).ModificarDatos(eq(existente), any(), any(), eq(10), any(), anyList(), any());
     }
 
     @Test
@@ -387,21 +387,21 @@ public class ControllerTest {
     public void testCrearProgramasDeFormacionNuevo() throws Exception {
         ProgramaDeFormacion pdf = mock(ProgramaDeFormacion.class);
         when(manProgramas.BuscarPrograma("prog")).thenReturn(null);
-        when(manProgramas.CrearPrograma(eq("prog"), eq("desc"), any(), eq(fecha))).thenReturn(pdf);
+        when(manProgramas.CrearPrograma(eq("prog"), eq("desc"), any(), eq(fecha), any(), any())).thenReturn(pdf);
 
-        instance.CrearProgramasDeFormacion("prog", "desc", fecha, fecha, fecha);
+        instance.CrearProgramasDeFormacion("prog", "desc", fecha, fecha, fecha, null, null);
 
         verify(manProgramas).Add(pdf);
-        verify(manProgramas, never()).ModificarDatos(any(), any(), any(), any());
+        verify(manProgramas, never()).ModificarDatos(any(), any(), any(), any(), any());
     }
 
     @Test
     public void testCrearProgramasDeFormacionExistente() throws Exception {
         when(manProgramas.BuscarPrograma("prog")).thenReturn(mock(ProgramaDeFormacion.class));
 
-        instance.CrearProgramasDeFormacion("prog", "desc", fecha, fecha, fecha);
+        instance.CrearProgramasDeFormacion("prog", "desc", fecha, fecha, fecha, null, null);
 
-        verify(manProgramas).ModificarDatos(eq("prog"), eq("desc"), any(), eq(fecha));
+        verify(manProgramas).ModificarDatos(eq("prog"), eq("desc"), any(), eq(fecha), any());
         verify(manProgramas, never()).Add(any());
     }
 
@@ -641,7 +641,7 @@ public class ControllerTest {
     @Test
     public void testListarCursos() {
         List<DTMaster> lista = new ArrayList<>();
-        doReturn(lista).when(manCursos).getDTLIst("ins");
+        doReturn(lista).when(manCursos).getDTListIns("ins");
         assertSame(lista, instance.ListarCursos("ins"));
     }
 
@@ -753,4 +753,61 @@ public class ControllerTest {
         when(manUsuario.BusquedaAvanzada("id", "pw")).thenReturn(null);
         assertNull(instance.ConsultaUsuarioAvanzada("id", "pw"));
     }
+
+    // ===================== Métodos unificados desde el servidor web =====================
+
+    @Test
+    public void testListarProgramasDeCurso() {
+        List<DTMaster> lista = new ArrayList<>();
+        when(manProgramas.ListarProgramasDeCurso("Java")).thenReturn(lista);
+        assertSame(lista, instance.ListarProgramasDeCurso("Java"));
+    }
+
+    @Test
+    public void testListarCursosXCategoria() {
+        List<DTMaster> lista = new ArrayList<>();
+        when(manCursos.getDTListCat("Prog")).thenReturn(lista);
+        assertSame(lista, instance.ListarCursosXCategoria("Prog"));
+    }
+
+    @Test
+    public void testListarCurEdiProgPorCategoriaEInstituto() {
+        DTCurso dtc = mock(DTCurso.class);
+        when(dtc.getNombre()).thenReturn("Java");
+        DTMaster dte = mock(DTEdicionCurso.class);
+        DTMaster dtp = mock(DTProgramaForm.class);
+        when(manCursos.getDTListCat("Prog")).thenReturn(new ArrayList<>(List.of(dtc)));
+        when(manCursos.getDTListIns("INCO")).thenReturn(new ArrayList<>(List.of(dtc)));
+        when(manEdicion.getDTLIst("Java")).thenReturn(new ArrayList<>(List.of(dte)));
+        when(manProgramas.ListarProgramasDeCurso("Java")).thenReturn(new ArrayList<>(List.of(dtp)));
+
+        assertEquals(List.of(dtc, dte, dtp), instance.ListarCurEdiProg(EnumDT.DT_CATEGORIA, "Prog"));
+        assertEquals(List.of(dtc, dte, dtp), instance.ListarCurEdiProg(EnumDT.DT_INSTITUTO, "INCO"));
+    }
+
+    @Test
+    public void testListarCurEdiProgSinResultadosYListasNulas() {
+        DTCurso dtc = mock(DTCurso.class);
+        when(dtc.getNombre()).thenReturn("Java");
+        when(manCursos.getDTListIns("INCO")).thenReturn(new ArrayList<>(List.of(dtc)));
+        when(manEdicion.getDTLIst("Java")).thenReturn(null);
+        when(manProgramas.ListarProgramasDeCurso("Java")).thenReturn(null);
+
+        assertEquals(List.of(dtc), instance.ListarCurEdiProg(EnumDT.DT_INSTITUTO, "INCO"));
+        assertTrue(instance.ListarCurEdiProg(EnumDT.DT_CURSO, "x").isEmpty());
+    }
+
+    @Test
+    public void testCrearProgramaConInstituto() throws Exception {
+        Instituto ins = mock(Instituto.class);
+        ProgramaDeFormacion pdf = mock(ProgramaDeFormacion.class);
+        when(manProgramas.BuscarPrograma("P")).thenReturn(null);
+        when(manInstituto.BuscarInstituto("INCO")).thenReturn(ins);
+        when(manProgramas.CrearPrograma(eq("P"), eq("d"), any(), any(), eq("img.png"), same(ins))).thenReturn(pdf);
+
+        instance.CrearProgramasDeFormacion("P", "d", new Date(), new Date(), new Date(), "img.png", "INCO");
+
+        verify(manProgramas).Add(pdf);
+    }
+
 }

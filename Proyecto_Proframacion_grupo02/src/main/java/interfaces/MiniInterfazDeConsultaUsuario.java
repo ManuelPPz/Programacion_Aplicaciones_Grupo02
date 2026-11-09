@@ -65,22 +65,17 @@ public class MiniInterfazDeConsultaUsuario extends javax.swing.JInternalFrame {
 }
 
 /**
- * Carga y escala la imagen de perfil de forma asíncrona desde el servidor Tomcat o disco local
+ * Carga y escala la imagen de perfil de forma asíncrona desde la carpeta de imágenes del Servidor Central
  */
     private void cargarImagenDesdeServidor(String nombreImagen) {
         new Thread(() -> {
             try {
                 Image img = null;
 
-                // Opción 1: Intentar leer desde la ruta absoluta del servidor (Si corre localmente)
-                File archivoLocal = new File("C:" + File.separator + "mi_proyecto_data" + File.separator + "uploads" + File.separator + "perfiles" + File.separator + nombreImagen);
-
-                if (archivoLocal.exists()) {
+                // Las imágenes se guardan en el disco del Servidor Central
+                File archivoLocal = util.ImagenUtil.getArchivo(util.ImagenUtil.CARPETA_PERFILES, nombreImagen);
+                if (archivoLocal != null) {
                     img = javax.imageio.ImageIO.read(archivoLocal);
-                } else {
-                    // Opción 2: Si no está local o el servidor es remoto, solicitar por HTTP
-                    java.net.URL url = new java.net.URL("http://localhost:8080/PDA_WebServer/uploads/perfiles/" + nombreImagen);
-                    img = javax.imageio.ImageIO.read(url);
                 }
 
                 if (img != null) {

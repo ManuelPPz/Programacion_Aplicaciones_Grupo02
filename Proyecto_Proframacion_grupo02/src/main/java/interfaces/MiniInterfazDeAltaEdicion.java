@@ -349,12 +349,12 @@ public class MiniInterfazDeAltaEdicion extends javax.swing.JInternalFrame {
             );
             
             if (respuesta == JOptionPane.YES_OPTION) {
-                ico.AltaEdicionCurso(instituto, curso, nombre, fIni, fFin, auxCupo, auxDocentes, fPub);
+                ico.AltaEdicionCurso(instituto, curso, nombre, fIni, fFin, auxCupo, auxDocentes, fPub, null);
                 JOptionPane.showMessageDialog(this, "Edición actualizada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
             }
         } else {
-            ico.AltaEdicionCurso(instituto, curso, nombre, fIni, fFin, auxCupo, auxDocentes, fPub);
+            ico.AltaEdicionCurso(instituto, curso, nombre, fIni, fFin, auxCupo, auxDocentes, fPub, null);
             JOptionPane.showMessageDialog(this, "Edición dada de alta con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             this.dispose();
         }

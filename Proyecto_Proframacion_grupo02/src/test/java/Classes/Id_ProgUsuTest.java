@@ -12,7 +12,7 @@ public class Id_ProgUsuTest {
     }
 
     private ProgramaDeFormacion programa(String nombre) {
-        return new ProgramaDeFormacion(nombre, "d", null, new Date());
+        return new ProgramaDeFormacion(nombre, "d", null, new Date(), null, null);
     }
 
     @Test

@@ -504,7 +504,8 @@ public class AltaCurso extends javax.swing.JInternalFrame {
                         previas, 
                         fecha, 
                         docenteSeleccionado,
-                        categorias
+                        categorias,
+                        null // imagen: se carga desde la web
                     );
                     javax.swing.JOptionPane.showMessageDialog(this, "Programa actualizado con éxito.", "Éxito", javax.swing.JOptionPane.INFORMATION_MESSAGE);
                     this.dispose();
@@ -522,7 +523,8 @@ public class AltaCurso extends javax.swing.JInternalFrame {
                     previas, 
                     fecha, 
                     docenteSeleccionado,
-                    categorias
+                    categorias,
+                        null // imagen: se carga desde la web
                 );
                 javax.swing.JOptionPane.showMessageDialog(this, "Curso ingresado con éxito!", "System", javax.swing.JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();

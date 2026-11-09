@@ -18,15 +18,17 @@ public class DTProgramaForm extends DTMaster {
     private List<String> cursos;
     private Date fechaAlta;
     private List<String> misCategorias;
+    private String imgPath;
     
     // constructor
-    public DTProgramaForm(String nomPrograma, String descripcion, Vigencia vigenciaProg, List<String> cursos, Date fechaAlta, List<String> misCategorias) {
+    public DTProgramaForm(String nomPrograma, String descripcion, Vigencia vigenciaProg, List<String> cursos, Date fechaAlta, List<String> misCategorias, String imgPath) {
         this.nombre = nomPrograma;
         this.descripcion = descripcion;
         this.vigenciaPrograma = vigenciaProg;
         this.cursos = cursos;
         this.fechaAlta = fechaAlta;
         this.misCategorias = misCategorias;
+        this.imgPath=imgPath;
     }
     
     public String getNombre() {
@@ -50,5 +52,8 @@ public class DTProgramaForm extends DTMaster {
     }
     public List<String> getMisCategorias(){
         return this.misCategorias;
+    }
+    public String getImage(){
+        return this.imgPath;
     }
 }

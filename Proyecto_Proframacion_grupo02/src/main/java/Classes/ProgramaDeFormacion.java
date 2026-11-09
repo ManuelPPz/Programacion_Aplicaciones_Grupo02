@@ -24,12 +24,24 @@ public class ProgramaDeFormacion implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     private String nombre;
+    
     @Column(name="Descripcion")
     private String descripcion;
+    
     @Embedded
     private Vigencia vigenciaPrograma;
+    
     @Column(name="F_Alta")
     private Date fAlta;
+    
+    // CORREGIDO: Se quitó el columnDefinition = "BLOB" para que se guarde como texto plano (VARCHAR)
+    @Column(name="ImagePath")
+    private String image;
+    
+    @ManyToOne
+    @JoinColumn(name="Instituto")
+    private Instituto miInstituto;
+    
     @ManyToMany
     @JoinTable(
         name = "programa_curso",
@@ -37,26 +49,32 @@ public class ProgramaDeFormacion implements Serializable {
         inverseJoinColumns = @JoinColumn(name = "curso_nombre")
     )
     private List<Curso> cursos;
+    
     // Se corrige mappedBy apuntando a la propiedad edicion de Edi_Usu
     @OneToMany(mappedBy = "id.miPrograma", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Prog_Usu> misUsuarios = new ArrayList<>();
+    
     // Requerido por JPA/Hibernate
-public ProgramaDeFormacion() {}
+    public ProgramaDeFormacion() {}
 
-    public ProgramaDeFormacion(String nombre, String descripcion, Vigencia vigenciaPrograma, Date fAlta) {
+    public ProgramaDeFormacion(String nombre, String descripcion, Vigencia vigenciaPrograma, Date fAlta, String imgPath, Instituto instituto) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.vigenciaPrograma = vigenciaPrograma;
         this.fAlta = fAlta;
-        cursos  = new ArrayList<>();
+        this.cursos = new ArrayList<>();
+        this.image = imgPath;
+        this.miInstituto = instituto;
     }
     
-    public void ModificarDatos(String descripcion, Vigencia vigenciaPrograma, Date fAlta){
+    public void ModificarDatos(String descripcion, Vigencia vigenciaPrograma, Date fAlta, String imgPath){
         this.descripcion = descripcion;
         this.vigenciaPrograma = vigenciaPrograma;
         this.fAlta = fAlta;
+        if (imgPath != null && !imgPath.isBlank()) {
+            this.image = imgPath;
+        }
     }
-    
     
     public void AddCurso(Curso c) {
         if (c != null) {
@@ -80,6 +98,7 @@ public ProgramaDeFormacion() {}
             }
         }
     }
+    
     public void RemoveCurso(Curso c){
         if (c != null && this.cursos != null) {
             if (this.cursos.remove(c)) {
@@ -92,23 +111,33 @@ public ProgramaDeFormacion() {}
         misUsuarios.add(pu);
     }
     
-    
     public String getNombre() {
         return nombre;
     }
+    
     public String getDescripcion(){
         return descripcion;
     }
+    
     public Vigencia getVigencia(){
         return vigenciaPrograma;
     }
+    
     public List<Curso> getCursos(){
         return cursos;
     }
+    
     public Date getFAlta(){
         return fAlta;
     }
     
+    public String getImage(){
+        return this.image;
+    }
+
+    public Instituto getInstituo(){
+        return this.miInstituto;
+    }
 
     public void setId(String nombre) {
         this.nombre = nombre;
@@ -123,7 +152,6 @@ public ProgramaDeFormacion() {}
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof ProgramaDeFormacion)) {
             return false;
         }
@@ -138,5 +166,4 @@ public ProgramaDeFormacion() {}
     public String toString() {
         return "Classes.ProgramaDeFormacion[ id=" + nombre + " ]";
     }
-    
 }

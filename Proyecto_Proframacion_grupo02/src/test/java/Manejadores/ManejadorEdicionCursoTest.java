@@ -80,7 +80,7 @@ public class ManejadorEdicionCursoTest {
     public void testCrearEdicion() {
         try (MockedConstruction<EdicionCurso> construido = mockConstruction(EdicionCurso.class)) {
             EdicionCurso result = manejador.CrearEdicion(mock(Instituto.class), mock(Curso.class),
-                    "Ed1", new Date(), new Date(), 10, new Date(), new ArrayList<>());
+                    "Ed1", new Date(), new Date(), 10, new Date(), new ArrayList<>(), null);
 
             assertNotNull(result);
             assertEquals(1, construido.constructed().size());
@@ -96,9 +96,9 @@ public class ManejadorEdicionCursoTest {
         Date d = new Date();
         List<Docente> docentes = new ArrayList<>();
 
-        manejador.ModificarDatos(ec, d, d, 5, d, docentes);
+        manejador.ModificarDatos(ec, d, d, 5, d, docentes, null);
 
-        verify(ec).ModificarDatos(d, d, 5, d, docentes);
+        verify(ec).ModificarDatos(d, d, 5, d, docentes, null);
         verify(tx).begin();
         verify(em).merge(ec);
         verify(tx).commit();
@@ -107,7 +107,7 @@ public class ManejadorEdicionCursoTest {
 
     @Test
     public void testModificarDatosEcNulo() {
-        manejador.ModificarDatos(null, new Date(), new Date(), 5, new Date(), new ArrayList<>());
+        manejador.ModificarDatos(null, new Date(), new Date(), 5, new Date(), new ArrayList<>(), null);
 
         verify(em).merge(null);
         verify(em).close();
@@ -118,7 +118,7 @@ public class ManejadorEdicionCursoTest {
         EdicionCurso ec = mock(EdicionCurso.class);
         when(em.merge(ec)).thenThrow(new RuntimeException("boom"));
 
-        manejador.ModificarDatos(ec, new Date(), new Date(), 5, new Date(), new ArrayList<>());
+        manejador.ModificarDatos(ec, new Date(), new Date(), 5, new Date(), new ArrayList<>(), null);
 
         verify(tx).rollback();
         verify(em).close();
@@ -130,7 +130,7 @@ public class ManejadorEdicionCursoTest {
         when(em.merge(ec)).thenThrow(new RuntimeException("boom"));
         when(tx.isActive()).thenReturn(false);
 
-        manejador.ModificarDatos(ec, new Date(), new Date(), 5, new Date(), new ArrayList<>());
+        manejador.ModificarDatos(ec, new Date(), new Date(), 5, new Date(), new ArrayList<>(), null);
 
         verify(tx, never()).rollback();
     }
@@ -499,7 +499,7 @@ public class ManejadorEdicionCursoTest {
             DTEdicionCurso result = manejador.getDT(ec);
 
             assertNotNull(result);
-            assertEquals(11, args.size());
+            assertEquals(12, args.size());
             assertEquals("INCO", args.get(0));
             assertEquals("Java", args.get(1));
             assertEquals("Ed1", args.get(2));

@@ -19,7 +19,7 @@ public class DTEdicionCursoTest {
         List<String> categorias = List.of("Backend");
 
         DTEdicionCurso dt = new DTEdicionCurso("INCO", "Java", "Ed1", fi, ff, 10, 7,
-                docentes, fa, inscripciones, categorias);
+                docentes, fa, inscripciones, categorias, null);
 
         assertEquals("INCO", dt.getInstituto());
         assertEquals("Java", dt.getCurso());

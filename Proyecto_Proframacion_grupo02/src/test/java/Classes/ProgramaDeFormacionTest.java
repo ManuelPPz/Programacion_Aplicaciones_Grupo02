@@ -17,7 +17,7 @@ public class ProgramaDeFormacionTest {
     }
 
     private ProgramaDeFormacion programa(String nombre) {
-        return new ProgramaDeFormacion(nombre, "desc", null, new Date());
+        return new ProgramaDeFormacion(nombre, "desc", null, new Date(), null, null);
     }
 
     private Curso curso(String nombre) {
@@ -37,7 +37,7 @@ public class ProgramaDeFormacionTest {
     @Test
     public void testConstructorCompletoYGetters() {
         Date f = new Date(1234);
-        ProgramaDeFormacion p = new ProgramaDeFormacion("P", "desc", null, f);
+        ProgramaDeFormacion p = new ProgramaDeFormacion("P", "desc", null, f, null, null);
 
         assertEquals("P", p.getNombre());
         assertEquals("desc", p.getDescripcion());
@@ -52,7 +52,7 @@ public class ProgramaDeFormacionTest {
         ProgramaDeFormacion p = programa("P");
         Date f = new Date(9999);
 
-        p.ModificarDatos("nueva", null, f);
+        p.ModificarDatos("nueva", null, f, null);
 
         assertEquals("nueva", p.getDescripcion());
         assertNull(p.getVigencia());

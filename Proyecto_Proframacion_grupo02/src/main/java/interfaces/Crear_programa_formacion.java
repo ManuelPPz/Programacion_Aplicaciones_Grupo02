@@ -233,7 +233,7 @@ public class Crear_programa_formacion extends javax.swing.JInternalFrame {
             
                 if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
                     // El usuario quiere modificarlo
-                    ico.CrearProgramasDeFormacion(nombreProg, descripcionProg, fechaInicio, fechaFin, fAlta);
+                    ico.CrearProgramasDeFormacion(nombreProg, descripcionProg, fechaInicio, fechaFin, fAlta, null, null);
                     javax.swing.JOptionPane.showMessageDialog(this, "Programa actualizado con éxito.", "Éxito", javax.swing.JOptionPane.INFORMATION_MESSAGE);
                     this.dispose();
                 } else {
@@ -242,7 +242,7 @@ public class Crear_programa_formacion extends javax.swing.JInternalFrame {
                     this.dispose();
                 }
             } else {
-                ico.CrearProgramasDeFormacion(nombreProg, descripcionProg, fechaInicio, fechaFin, fAlta);
+                ico.CrearProgramasDeFormacion(nombreProg, descripcionProg, fechaInicio, fechaFin, fAlta, null, null);
                 javax.swing.JOptionPane.showMessageDialog(this, "¡Programa de formación creado con éxito!", "Éxito", javax.swing.JOptionPane.INFORMATION_MESSAGE);
                 this.dispose();
             }

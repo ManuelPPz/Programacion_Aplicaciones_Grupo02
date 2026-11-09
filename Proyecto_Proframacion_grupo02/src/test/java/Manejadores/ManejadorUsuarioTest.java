@@ -731,12 +731,55 @@ public class ManejadorUsuarioTest {
     public void testSeguirYDejarDeSeguir() {
         UsuarioBase ub1 = mock(UsuarioBase.class);
         UsuarioBase ub2 = mock(UsuarioBase.class);
+        when(ub1.getNickname()).thenReturn("u1");
+        when(ub2.getNickname()).thenReturn("u2");
+        when(em.find(UsuarioBase.class, "u1")).thenReturn(ub1);
+        when(em.find(UsuarioBase.class, "u2")).thenReturn(ub2);
 
         manejador.SeguirUsuarios(ub1, ub2);
         manejador.DejarDeSeguir(ub1, ub2);
 
         verify(ub1).SeguirUsuario(ub2);
         verify(ub1).DejarDeSeguir(ub2);
+        verify(em, times(2)).merge(ub1);
+        verify(tx, times(2)).commit();
+    }
+
+    @Test
+    public void testSeguirYDejarDeSeguirUsuarioInexistenteHaceRollback() {
+        UsuarioBase ub1 = mock(UsuarioBase.class);
+        UsuarioBase ub2 = mock(UsuarioBase.class);
+        when(ub1.getNickname()).thenReturn("u1");
+        when(ub2.getNickname()).thenReturn("u2");
+        when(em.find(UsuarioBase.class, "u1")).thenReturn(null);
+
+        manejador.SeguirUsuarios(ub1, ub2);
+        manejador.DejarDeSeguir(ub1, ub2);
+
+        verify(tx, times(2)).rollback();
+        verify(tx, never()).commit();
+    }
+
+    @Test
+    public void testSeguirYDejarDeSeguirConErrorHaceRollback() {
+        UsuarioBase ub1 = mock(UsuarioBase.class);
+        UsuarioBase ub2 = mock(UsuarioBase.class);
+        when(ub1.getNickname()).thenReturn("u1");
+        when(ub2.getNickname()).thenReturn("u2");
+        when(em.find(eq(UsuarioBase.class), anyString())).thenThrow(new RuntimeException("BD caida"));
+
+        manejador.SeguirUsuarios(ub1, ub2);
+        manejador.DejarDeSeguir(ub1, ub2);
+
+        verify(tx, times(2)).rollback();
+        verify(em, times(2)).close();
+    }
+
+    @Test
+    public void testSeguirYDejarDeSeguirConNulos() {
+        manejador.SeguirUsuarios(null, null);
+        manejador.DejarDeSeguir(null, null);
+        verify(em, never()).getTransaction();
     }
 
     // ===================== ConvertirImageIconToByte (privado) =====================

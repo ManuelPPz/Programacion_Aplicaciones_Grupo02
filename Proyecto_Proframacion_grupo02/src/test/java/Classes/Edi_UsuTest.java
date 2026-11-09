@@ -15,7 +15,7 @@ public class Edi_UsuTest {
     }
 
     private EdicionCurso edicion(String nombre) {
-        return new EdicionCurso(nombre, null, null, new Date(), new Date(), 5, new Date(), new ArrayList<>());
+        return new EdicionCurso(nombre, null, null, new Date(), new Date(), 5, new Date(), new ArrayList<>(), null);
     }
 
     @Test

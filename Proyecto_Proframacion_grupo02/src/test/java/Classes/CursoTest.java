@@ -42,7 +42,7 @@ public class CursoTest {
         List<Categoria> cats = new ArrayList<>();
         cats.add(new Categoria("Backend"));
 
-        Curso c = new Curso(ins, "Java", "desc", 10, 20.5f, 5, "http://url", f, previas, docente, cats);
+        Curso c = new Curso(ins, "Java", "desc", 10, 20.5f, 5, "http://url", f, previas, docente, cats, null);
 
         assertSame(ins, c.getInstituto());
         assertEquals("Java", c.getNombre());
@@ -62,7 +62,7 @@ public class CursoTest {
 
     @Test
     public void testConstructorConPreviasNulas() {
-        Curso c = new Curso(null, "Java", "d", 1, 1f, 1, "u", new Date(), null, null, null);
+        Curso c = new Curso(null, "Java", "d", 1, 1f, 1, "u", new Date(), null, null, null, null);
 
         assertNotNull(c.getPrevias());
         assertTrue(c.getPrevias().isEmpty());
@@ -71,13 +71,13 @@ public class CursoTest {
 
     @Test
     public void testModificarMisDatos() {
-        Curso c = new Curso(null, "Java", "d", 1, 1f, 1, "u", new Date(), null, null, null);
+        Curso c = new Curso(null, "Java", "d", 1, 1f, 1, "u", new Date(), null, null, null, null);
         Docente docente = new Docente();
         Date f = new Date(5000);
         List<Curso> previas = new ArrayList<>();
         List<Categoria> cats = new ArrayList<>();
 
-        c.ModificarMisDatos("nueva", 20, 30f, 8, "nuevaUrl", f, previas, docente, cats);
+        c.ModificarMisDatos("nueva", 20, 30f, 8, "nuevaUrl", f, previas, docente, cats, null);
 
         assertEquals("nueva", c.getDescripcion());
         assertEquals(20, c.getDuracion());
@@ -132,7 +132,7 @@ public class CursoTest {
     @Test
     public void testAddPrograma() {
         Curso c = new Curso();
-        ProgramaDeFormacion p = new ProgramaDeFormacion("P", "d", null, new Date());
+        ProgramaDeFormacion p = new ProgramaDeFormacion("P", "d", null, new Date(), null, null);
 
         c.AddPrograma(p);
         c.AddPrograma(p); // duplicado: no se agrega
@@ -143,7 +143,7 @@ public class CursoTest {
     @Test
     public void testAddYRemoveProgramaConListaNula() throws Exception {
         Curso c = new Curso();
-        ProgramaDeFormacion p = new ProgramaDeFormacion("P", "d", null, new Date());
+        ProgramaDeFormacion p = new ProgramaDeFormacion("P", "d", null, new Date(), null, null);
         setField(c, "misProgramas", null);
 
         c.RemovePrograma(p); // no debe lanzar excepcion

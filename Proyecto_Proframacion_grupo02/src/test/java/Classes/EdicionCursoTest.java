@@ -18,7 +18,7 @@ public class EdicionCursoTest {
 
     private EdicionCurso crear(int cupo, List<Docente> docentes) {
         return new EdicionCurso("Ed1", new Instituto("INCO"), new Curso(), new Date(1), new Date(2),
-                cupo, new Date(3), docentes);
+                cupo, new Date(3), docentes, null);
     }
 
     @Test
@@ -39,7 +39,7 @@ public class EdicionCursoTest {
         Date fa = new Date(3);
         List<Docente> docentes = new ArrayList<>();
 
-        EdicionCurso ec = new EdicionCurso("Ed1", ins, curso, fi, ff, 10, fa, docentes);
+        EdicionCurso ec = new EdicionCurso("Ed1", ins, curso, fi, ff, 10, fa, docentes, null);
 
         assertEquals("Ed1", ec.getNombre());
         assertSame(ins, ec.getInstituto());
@@ -61,7 +61,7 @@ public class EdicionCursoTest {
         Date fa = new Date(30);
         List<Docente> nuevos = new ArrayList<>();
 
-        ec.ModificarDatos(fi, ff, 25, fa, nuevos);
+        ec.ModificarDatos(fi, ff, 25, fa, nuevos, null);
 
         assertSame(fi, ec.getFInicio());
         assertSame(ff, ec.getFFin());

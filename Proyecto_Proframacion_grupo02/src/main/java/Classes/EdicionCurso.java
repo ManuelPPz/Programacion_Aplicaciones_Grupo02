@@ -41,7 +41,10 @@ public class EdicionCurso implements Serializable {
 
     @Column(name="Cupo_actual")
     private int cupoActual;
-
+    
+    @Column(name="ImagePath")
+    private String image;
+    
     // Se corrige mappedBy apuntando a la propiedad "edicion" en Edi_Usu
     @OneToMany(mappedBy = "edicion", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Edi_Usu> misUsuarios = new ArrayList<>();
@@ -67,12 +70,14 @@ public class EdicionCurso implements Serializable {
     public List<Docente> getMisDocentes() { return misDocentes; }
     public Date getFAlta() { return fAlta; }
     public List<Edi_Usu> getMisInscripciones(){ return this.misUsuarios; }
-
+    public String getImage(){ return this.image; }
+    public void setImage(String image){ this.image = image; }
+    
     public EdicionCurso() { 
         this.misUsuarios = new ArrayList<>();
     }
     
-    public EdicionCurso(String nombre, Instituto miInstituto, Curso miCurso, Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> docentes) {
+    public EdicionCurso(String nombre, Instituto miInstituto, Curso miCurso, Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> docentes, String imgPath) {
         this.nombre = nombre;
         this.miInstituto = miInstituto;
         this.miCurso = miCurso;
@@ -83,14 +88,18 @@ public class EdicionCurso implements Serializable {
         this.misUsuarios = new ArrayList<>();
         this.misDocentes = docentes;
         this.cupoActual = cupo;
+        this.image = imgPath;
     }
     
-    public void ModificarDatos(Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> newUsuarios){
+    public void ModificarDatos(Date fInicio, Date fFin, int cupo, Date fAlta, List<Docente> newUsuarios, String imgPath){
         this.fInicio = fInicio;
         this.fFin = fFin;
         this.cupo = cupo;
         this.fAlta = fAlta;
         this.misDocentes = newUsuarios;
+        if (imgPath != null && !imgPath.isBlank()) {
+            this.image = imgPath;
+        }
     }
     
     public void AddUsuarioInscripto(Edi_Usu eu){
@@ -132,6 +141,7 @@ public class EdicionCurso implements Serializable {
     public void setCupoActual(int nuevoCupo){
         this.cupoActual = nuevoCupo;
     }
+    
     public int getCupoActual() {
         // Si cupoActual es 0 pero nunca se han registrado inscripciones, se inicializa al cupo máximo
         if (this.cupoActual == 0 && (this.misUsuarios == null || this.misUsuarios.isEmpty()) && this.cupo > 0) {

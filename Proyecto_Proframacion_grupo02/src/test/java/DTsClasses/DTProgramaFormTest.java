@@ -15,7 +15,7 @@ public class DTProgramaFormTest {
         Date fa = new Date(3);
         List<String> categorias = List.of("Backend");
 
-        DTProgramaForm dt = new DTProgramaForm("P1", "desc", vigencia, cursos, fa, categorias);
+        DTProgramaForm dt = new DTProgramaForm("P1", "desc", vigencia, cursos, fa, categorias, null);
 
         assertEquals("P1", dt.getNombre());
         assertEquals("desc", dt.getDescripcion());

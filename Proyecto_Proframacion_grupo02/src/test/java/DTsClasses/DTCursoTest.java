@@ -17,7 +17,7 @@ public class DTCursoTest {
         List<String> categorias = List.of("Backend");
 
         DTCurso dt = new DTCurso("INCO", "Java", "desc", 10, 20.5f, 5, "http://url", f,
-                previas, ediciones, programas, categorias, "profe");
+                previas, ediciones, programas, categorias, "profe", null);
 
         assertEquals("INCO", dt.getInstituto());
         assertEquals("Java", dt.getNombre());

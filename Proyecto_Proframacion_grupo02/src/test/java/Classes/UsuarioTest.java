@@ -16,7 +16,7 @@ public class UsuarioTest {
         Curso curso = new Curso();
         curso.setNombre(nombreCurso);
         EdicionCurso ed = new EdicionCurso("Ed-" + nombreCurso, null, curso, new Date(), new Date(),
-                10, new Date(), new ArrayList<>());
+                10, new Date(), new ArrayList<>(), null);
         Edi_Usu eu = new Edi_Usu(u, ed, new Date());
         eu.setEstado(estado);
         return eu;
@@ -107,12 +107,12 @@ public class UsuarioTest {
         sinEdicion.setEstado(Enum_Estado_inscripcion.RECHAZADO);
         u.AddEdicionCurso(sinEdicion);
 
-        EdicionCurso edSinCurso = new EdicionCurso("E", null, null, new Date(), new Date(), 5, new Date(), new ArrayList<>());
+        EdicionCurso edSinCurso = new EdicionCurso("E", null, null, new Date(), new Date(), 5, new Date(), new ArrayList<>(), null);
         Edi_Usu sinCurso = new Edi_Usu(u, edSinCurso, new Date());
         sinCurso.setEstado(Enum_Estado_inscripcion.RECHAZADO);
         u.AddEdicionCurso(sinCurso);
 
-        EdicionCurso edCursoSinNombre = new EdicionCurso("E2", null, new Curso(), new Date(), new Date(), 5, new Date(), new ArrayList<>());
+        EdicionCurso edCursoSinNombre = new EdicionCurso("E2", null, new Curso(), new Date(), new Date(), 5, new Date(), new ArrayList<>(), null);
         Edi_Usu cursoSinNombre = new Edi_Usu(u, edCursoSinNombre, new Date());
         cursoSinNombre.setEstado(Enum_Estado_inscripcion.RECHAZADO);
         u.AddEdicionCurso(cursoSinNombre);

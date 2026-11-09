@@ -10,7 +10,7 @@ public class Prog_UsuTest {
     private Id_ProgUsu id(String nick, String programa) {
         return new Id_ProgUsu(
                 new Usuario(nick, "n", "a", "c@c.com", "pw", new Date(0), "img"),
-                new ProgramaDeFormacion(programa, "d", null, new Date()));
+                new ProgramaDeFormacion(programa, "d", null, new Date(), null, null));
     }
 
     @Test

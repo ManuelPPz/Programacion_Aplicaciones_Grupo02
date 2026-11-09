@@ -36,12 +36,6 @@ import DTsClasses.EnumDT;
 import Logica.Fabric;
 import Logica.IController;
 import com.toedter.calendar.JCalendar;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.file.Files;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import javax.swing.JPopupMenu;
@@ -545,9 +539,9 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
             String instituto = (String)comboInstituto.getSelectedItem();
             boolean resultado = false;
             if(esDocenteActual){
-                resultado = EnviarAlServlet(nicknameActual,nombre,apellido,fechaNacFormatted,"Docente",instituto,archivoImagen);
+                resultado = ModificarEnServidorCentral(nicknameActual,nombre,apellido,fechaNacFormatted,"Docente",instituto,archivoImagen);
             }else{
-                resultado = EnviarAlServlet(nicknameActual,nombre,apellido,fechaNacFormatted,"Estudiante",instituto,archivoImagen);
+                resultado = ModificarEnServidorCentral(nicknameActual,nombre,apellido,fechaNacFormatted,"Estudiante",instituto,archivoImagen);
             }
             if(resultado){
                 JOptionPane.showMessageDialog(this,
@@ -559,7 +553,7 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
                 nicknameActual = null;
             }else{
                 javax.swing.JOptionPane.showMessageDialog(this,
-                        "Error al procesar el registro en el servidor Tomcat.",
+                        "No se pudieron modificar los datos del usuario.",
                         "Error",
                         javax.swing.JOptionPane.ERROR_MESSAGE);
             }
@@ -605,69 +599,34 @@ public class ModificarDatosdeUsuario extends javax.swing.JInternalFrame {
         // DESPLEGAR EL POPUP (Muestra el calendario justo debajo del JTextField)
         popupMenu.show(fieldFecha, 0, fieldFecha.getHeight());
     }//GEN-LAST:event_fieldFechaMousePressed
-    private boolean EnviarAlServlet(String nickname, String newNombre, String newApellido, String newFechaNac, 
+    /**
+     * Modifica el usuario directamente contra la lógica del Servidor Central.
+     * Si se eligió una imagen nueva, se guarda en el SC y se borra la anterior.
+     */
+    private boolean ModificarEnServidorCentral(String nickname, String newNombre, String newApellido, String newFechaNac,
         String tipoUsuario, String instituto, File archivoImagen) {
-        String boundary = "---Boundary" + System.currentTimeMillis();
-        String LINE_FEED = "\r\n";
-
         try {
-            URL url = new URL("http://localhost:8080/PDA_WebServer/ModificarUsuarioServlet");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            conn.setRequestMethod("POST");
-
-            // --- CABECERAS (AQUÍ SE AGREGA USER-AGENT) ---
-            conn.setRequestProperty("User-Agent", "Java/SwingClient"); 
-            conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-
-            OutputStream outputStream = conn.getOutputStream();
-            PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream, "UTF-8"), true);
-
-            // --- Campos de texto ---
-            addFormField(writer, outputStream, "nickname", nickname, boundary, LINE_FEED);
-            addFormField(writer, outputStream, "nombre", newNombre, boundary, LINE_FEED);
-            addFormField(writer, outputStream, "apellido", newApellido, boundary, LINE_FEED);
-            addFormField(writer, outputStream, "fechaNacimiento", newFechaNac, boundary, LINE_FEED);
-            addFormField(writer, outputStream, "tipoUsuario", tipoUsuario, boundary, LINE_FEED);
-
-            // Limpiar el símbolo "✓ " si estaba seleccionado en el desplegable
-            if (instituto != null && instituto.contains("✓")) {
-                instituto = instituto.replace("✓", "").trim();
+            DTUsuarioBase actual = ico.ConsultarUsuario(nickname);
+            if (actual == null) {
+                throw new Exception("Usuario no especificado o inexistente.");
             }
-            addFormField(writer, outputStream, "instituto", instituto, boundary, LINE_FEED);
-
-            // --- Adjuntar Imagen ---
-            if (archivoImagen != null && archivoImagen.exists()) {
-                writer.append("--" + boundary).append(LINE_FEED);
-                writer.append("Content-Disposition: form-data; name=\"imagen\"; filename=\"" + archivoImagen.getName() + "\"").append(LINE_FEED);
-                writer.append("Content-Type: " + Files.probeContentType(archivoImagen.toPath())).append(LINE_FEED);
-                writer.append(LINE_FEED).flush();
-
-                Files.copy(archivoImagen.toPath(), outputStream);
-                outputStream.flush();
-                writer.append(LINE_FEED).flush();
+            boolean esDocente = "Docente".equalsIgnoreCase(tipoUsuario);
+            if (esDocente && (instituto == null || instituto.isBlank())) {
+                throw new Exception("Debe seleccionar un instituto para el docente.");
             }
-
-            // Finalizar petición
-            writer.append("--" + boundary + "--").append(LINE_FEED).flush();
-            writer.close();
-
-            int responseCode = conn.getResponseCode();
-            return (responseCode == HttpURLConnection.HTTP_OK);
-
+            String nombreImagen = actual.getImg();
+            String nueva = util.ImagenUtil.guardar(archivoImagen, nickname, util.ImagenUtil.CARPETA_PERFILES);
+            if (!nueva.isEmpty()) {
+                util.ImagenUtil.borrar(util.ImagenUtil.CARPETA_PERFILES, actual.getImg());
+                nombreImagen = nueva;
+            }
+            ico.ModificarUsuario(nickname, newNombre, newApellido, "", esDocente,
+                    java.sql.Date.valueOf(newFechaNac), esDocente ? instituto.trim() : "", nombreImagen);
+            return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-    }
-    private void addFormField(PrintWriter writer, OutputStream os, String name, String value, String boundary, String lineFeed) {
-        if (value == null) value = "";
-        writer.append("--" + boundary).append(lineFeed);
-        writer.append("Content-Disposition: form-data; name=\"" + name + "\"").append(lineFeed);
-        writer.append("Content-Type: text/plain; charset=UTF-8").append(lineFeed);
-        writer.append(lineFeed);
-        writer.append(value).append(lineFeed).flush();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
