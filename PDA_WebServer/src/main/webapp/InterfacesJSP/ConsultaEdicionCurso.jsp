@@ -91,7 +91,7 @@
                     <li><a href="<%= request.getContextPath() %>/MainMenu" class="mobile-menu-link text-dark fw-semibold"><i class="bi bi-house-door me-2"></i>Inicio</a></li>
                     <li><a href="<%= request.getContextPath() %>/ConsultaCursoServlet" class="mobile-menu-link text-dark fw-semibold"><i class="bi bi-book me-2"></i>Ver Cursos</a></li>
                     <li><a href="<%= request.getContextPath() %>/ConsultaEdicionServlet" class="mobile-menu-link text-dark fw-semibold"><i class="bi bi-calendar-event me-2"></i>Ver Ediciones</a></li>
-                    <li><a href="<%= request.getContextPath() %>/CerrarSesionServlet" class="mobile-menu-link text-danger"><i class="bi bi-box-arrow-right me-2"></i>Salir</a></li>
+                    <li><a href="<%= request.getContextPath() %>/LogoutServlet" class="mobile-menu-link text-danger"><i class="bi bi-box-arrow-right me-2"></i>Salir</a></li>
                 </ul>
             </div>
         </div>

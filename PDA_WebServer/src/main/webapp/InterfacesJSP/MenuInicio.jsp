@@ -143,9 +143,9 @@
                     
                     <li class="border-top mt-2 pt-2">
                         <% if (esVisitante) { %>
-                            <a href="<%= request.getContextPath() %>/LoginServlet" class="mobile-menu-link text-success fw-semibold"><i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión</a>
+                            <a href="<%= request.getContextPath() %>/IniciarSesionServlet" class="mobile-menu-link text-success fw-semibold"><i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión</a>
                         <% } else { %>
-                            <a href="<%= request.getContextPath() %>/CerrarSesionServlet" class="mobile-menu-link text-danger fw-semibold"><i class="bi bi-box-arrow-right me-2"></i>Salir</a>
+                            <a href="<%= request.getContextPath() %>/LogoutServlet" class="mobile-menu-link text-danger fw-semibold"><i class="bi bi-box-arrow-right me-2"></i>Salir</a>
                         <% } %>
                     </li>
                 </ul>
