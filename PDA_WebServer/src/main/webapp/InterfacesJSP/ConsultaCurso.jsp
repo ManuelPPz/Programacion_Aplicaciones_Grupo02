@@ -12,6 +12,254 @@
 <%@page import="Logica.util.ImagenUtil"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
+<%
+    // Detección de dispositivo móvil por User-Agent
+    String ua = request.getHeader("User-Agent");
+    boolean esMovil = ua != null && ua.matches("(?i).*(android|iphone|ipad|ipod|mobile|blackberry|opera mini).*");
+
+    if (esMovil) {
+        // ===================================================================
+        // VISTA MÓVIL PURA (Muestra programas pero SIN botón "Ver")
+        // ===================================================================
+        DTMaster dtmUserLogueado = (DTMaster) session.getAttribute("usuarioLogueado");
+        String nombreUsuarioMostrar = "Usuario";
+        if (dtmUserLogueado instanceof DTUsuarioBase) {
+            DTUsuarioBase uBase = (DTUsuarioBase) dtmUserLogueado;
+            if (uBase.getNombre() != null && !uBase.getNombre().isBlank()) {
+                nombreUsuarioMostrar = uBase.getNombre();
+            } else if (uBase.getNickname() != null && !uBase.getNickname().isBlank()) {
+                nombreUsuarioMostrar = uBase.getNickname();
+            }
+        }
+%>
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Consulta de Curso - Móvil</title>
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css">
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/Styles/StylesContainers.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <style>
+            .mobile-header {
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #e9ecef;
+            }
+            .mobile-menu-link {
+                color: #6c757d;
+                text-decoration: none;
+                font-weight: 500;
+                display: block;
+                padding: 8px 0;
+            }
+            .mobile-menu-link:hover {
+                color: #212529;
+            }
+            .btn-hamburger-clean {
+                color: #212529 !important;
+                border: none !important;
+                background: transparent !important;
+            }
+        </style>
+    </head>
+    <body class="bg-light">
+
+        <!-- Header Superior Móvil -->
+        <div class="mobile-header p-3 mb-3 shadow-sm">
+            <div class="d-flex align-items-center justify-content-between">
+                <button class="btn btn-hamburger-clean p-1 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobileMenu" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="bi bi-list fs-2"></i>
+                </button>
+                <span class="fs-6 fw-normal text-dark text-truncate px-2">Bienvenido <%= nombreUsuarioMostrar %></span>
+                <img src="<%= request.getContextPath() %>/Images/LogoEdext.png" alt="edEXT Logo" style="height: 35px; width: auto;" onerror="this.onerror=null; this.src='<%= request.getContextPath() %>/Images/ImagenUserDefault.png';">
+            </div>
+            
+            <!-- Menú Desplegable -->
+            <div class="collapse pt-3 ps-1 border-top mt-2" id="mobileMenu">
+                <ul class="list-unstyled mb-0">
+                    <li><a href="<%= request.getContextPath() %>/MainMenu" class="mobile-menu-link text-dark fw-semibold"><i class="bi bi-house-door me-2"></i>Inicio</a></li>
+                    <li><a href="<%= request.getContextPath() %>/ConsultaCursoServlet" class="mobile-menu-link text-dark fw-semibold"><i class="bi bi-book me-2"></i>Ver Cursos</a></li>
+                    <li><a href="<%= request.getContextPath() %>/ConsultaEdicionServlet" class="mobile-menu-link"><i class="bi bi-calendar-event me-2"></i>Ver Ediciones</a></li>
+                    <li><a href="<%= request.getContextPath() %>/CerrarSesionServlet" class="mobile-menu-link text-danger"><i class="bi bi-box-arrow-right me-2"></i>Salir</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="container px-3 pb-5">
+            <% if (request.getAttribute("error") != null) { %>
+                <div class="alert alert-danger"><%= request.getAttribute("error") %></div>
+            <% } %>
+            
+            <%  
+            DTMaster dtmaster = (DTMaster) request.getAttribute("cursoElegido");
+            if (dtmaster != null) {
+                if (dtmaster instanceof DTCurso) {
+                    DTCurso dtc = (DTCurso) dtmaster;
+                    if (dtc != null) {
+                        String urlConVersion = ImagenUtil.versionedUrl(ImagenUtil.CARPETA_CURSOS, dtc.getImage(), request.getContextPath());  
+            %>  
+                        <!-- Cabecera de Detalle en Móvil -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="fw-bold m-0">Consulta de Curso</h4>
+                            <a href="${pageContext.request.contextPath}/ConsultaCursoServlet" class="btn btn-outline-dark btn-sm fw-bold">
+                                ← Volver
+                            </a>
+                        </div>
+
+                        <!-- Información Principal del Curso -->
+                        <div class="card p-3 border-dark bg-white shadow-sm mb-3">
+                            <div class="text-center mb-3">
+                                <% if (dtc.getImage() != null && !dtc.getImage().trim().isEmpty()) { %>
+                                    <img src="<%= urlConVersion %>" alt="Logo Curso" class="rounded border border-2 border-dark shadow-sm w-100" style="max-height: 200px; object-fit: cover;">
+                                <% } else { %>
+                                    <img src="<%= request.getContextPath() %>/Images/ImagenUserDefault.png" alt="Logo Curso" class="rounded border border-2 border-dark shadow-sm w-100" style="max-height: 200px; object-fit: cover;">
+                                <% } %>
+                            </div>
+                            <h3 class="fw-bold mb-1 fs-4"><%= dtc.getNombre() %></h3>
+                            <p class="text-muted mb-2"><%= dtc.getInstituto() %></p>
+
+                            <% if (dtc.getURL() != null && !dtc.getURL().isBlank()) { %>
+                                <div class="my-2">
+                                    <a href="<%= dtc.getURL() %>" target="_blank" class="text-primary text-decoration-underline small"><%= dtc.getURL() %></a>
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="card p-3 border-dark bg-white shadow-sm mb-3">
+                            <h5 class="fw-bold border-bottom pb-2 fs-6">Descripción</h5>
+                            <p class="mb-0 text-break small" style="white-space: pre-line; word-wrap: break-word;">
+                                <%= dtc.getDescripcion() != null ? dtc.getDescripcion() : "Sin descripción disponible." %>
+                            </p>
+                        </div>
+
+                        <!-- Ediciones del Curso -->
+                        <div class="card p-3 border-dark shadow-sm bg-white mb-3">
+                            <h5 class="fw-bold mb-3 border-bottom pb-2 fs-6">Ediciones de Cursos</h5>
+                            <ul class="list-group list-group-flush">
+                                <%
+                                    List<DTMaster> dtEdiciones = (List<DTMaster>) request.getAttribute("edicionesDelCurso");
+                                    if (dtEdiciones == null) {
+                                        dtEdiciones = (List<DTMaster>) request.getAttribute("ediciones");
+                                    }
+
+                                    if (dtEdiciones != null && !dtEdiciones.isEmpty()) {
+                                        for (DTMaster edMaster : dtEdiciones) {
+                                            if (edMaster instanceof DTEdicionCurso) {
+                                                DTEdicionCurso dte = (DTEdicionCurso) edMaster;
+                                                String urlConVersionEdi = ImagenUtil.versionedUrl(ImagenUtil.CARPETA_EDICIONCURSOS, dte.getImage(), request.getContextPath());
+                                %>
+                                                <li class="list-group-item d-flex align-items-center justify-content-between gap-2 px-0 py-2 bg-transparent">
+                                                    <div class="d-flex align-items-center gap-2 text-truncate">
+                                                        <img src="<%= urlConVersionEdi %>" alt="Edición" width="35" height="35" class="rounded border flex-shrink-0" style="object-fit: cover;">
+                                                        <div class="text-truncate">
+                                                            <h6 class="mb-0 fw-semibold text-truncate small"><%= dte.getNombre() %></h6>
+                                                            <small class="text-muted" style="font-size: 0.75rem;">Inicio: <%= dte.getFInicio() != null ? new SimpleDateFormat("dd/MM/yyyy").format(dte.getFInicio()) : "" %></small>
+                                                        </div>
+                                                    </div>
+                                                    <a href="${pageContext.request.contextPath}/ConsultaEdicionServlet?nombre=<%= java.net.URLEncoder.encode(dte.getNombre(), "UTF-8") %>" class="btn btn-outline-dark btn-sm flex-shrink-0 fw-bold" style="font-size: 0.75rem; padding: 2px 8px;">
+                                                        Ver
+                                                    </a>
+                                                </li>
+                                <%
+                                            }
+                                        }
+                                    } else {
+                                %>
+                                        <li class="list-group-item text-muted px-0 bg-transparent text-center small">
+                                            No hay ediciones registradas.
+                                        </li>
+                                <% } %>
+                            </ul>
+                        </div>
+
+                        <!-- Programas de Formación (Visualización Únicamente, SIN BOTÓN DE VER) -->
+                        <div class="card p-3 border-dark shadow-sm bg-white mb-4">
+                            <h5 class="fw-bold mb-3 border-bottom pb-2 fs-6">Programas de Formación</h5>
+                            <ul class="list-group list-group-flush">
+                                <%
+                                    List<DTMaster> dtProgramas = (List<DTMaster>) request.getAttribute("programasDelCurso");
+                                    if (dtProgramas == null) {
+                                        dtProgramas = (List<DTMaster>) request.getAttribute("programas");
+                                    }
+
+                                    if (dtProgramas != null && !dtProgramas.isEmpty()) {
+                                        for (DTMaster progMaster : dtProgramas) {
+                                            if (progMaster instanceof DTProgramaForm) {
+                                                DTProgramaForm dtp = (DTProgramaForm) progMaster;
+                                                String urlConVersionPro = ImagenUtil.versionedUrl(ImagenUtil.CARPETA_PROGRAMAS, dtp.getImage(), request.getContextPath());
+                                %>
+                                                <li class="list-group-item d-flex align-items-center gap-2 px-0 py-2 bg-transparent">
+                                                    <img src="<%= urlConVersionPro %>" alt="Programa" width="45" height="30" class="rounded border flex-shrink-0" style="object-fit: cover;">
+                                                    <div class="text-truncate">
+                                                        <h6 class="mb-0 fw-semibold text-truncate small text-dark"><%= dtp.getNombre() %></h6>
+                                                    </div>
+                                                </li>
+                                <%
+                                            }
+                                        }
+                                    } else {
+                                %>
+                                        <li class="list-group-item text-muted px-0 bg-transparent text-center small">
+                                            No hay programas vinculados.
+                                        </li>
+                                <% } %>
+                            </ul>
+                        </div>
+            <%  
+                    }
+                }
+            } else {
+                // Listado general de cursos para móvil
+            %>
+                <h4 class="mb-3 fw-bold text-center">Listado de Cursos</h4>
+                <div class="card border-dark shadow-sm p-3 bg-white">
+                    <h6 class="fw-bold border-bottom pb-2 mb-2 small">Seleccione un curso:</h6>
+                    <ul class="list-group list-group-flush">
+                        <%
+                            List<DTMaster> listaCursos = (List<DTMaster>) request.getAttribute("cursos");
+                            if (listaCursos != null && !listaCursos.isEmpty()) {
+                                for (DTMaster mCurso : listaCursos) {
+                                    if (mCurso instanceof DTCurso) {
+                                        DTCurso cursoItem = (DTCurso) mCurso;
+                                        String imgCurso = ImagenUtil.versionedUrl(ImagenUtil.CARPETA_CURSOS, cursoItem.getImage(), request.getContextPath());
+                        %>
+                                        <li class="list-group-item d-flex align-items-center justify-content-between gap-2 px-2 py-2 bg-transparent border-bottom">
+                                            <div class="d-flex align-items-center gap-2 text-truncate">
+                                                <img src="<%= imgCurso %>" alt="Curso" width="40" height="40" class="rounded-circle border border-dark flex-shrink-0" style="object-fit: cover;">
+                                                <div class="text-truncate">
+                                                    <h6 class="fw-bold text-dark mb-0 text-truncate small"><%= cursoItem.getNombre() %></h6>
+                                                    <small class="text-muted" style="font-size: 0.7rem;">Inst: <%= cursoItem.getInstituto() %></small>
+                                                </div>
+                                            </div>
+                                            <a href="${pageContext.request.contextPath}/ConsultaCursoServlet?nombre=<%= java.net.URLEncoder.encode(cursoItem.getNombre(), "UTF-8") %>" class="btn btn-dark btn-sm fw-bold px-2 py-1 flex-shrink-0" style="font-size: 0.75rem;">
+                                                Ver
+                                            </a>
+                                        </li>
+                        <%
+                                    }
+                                }
+                            } else {
+                        %>
+                                <li class="list-group-item text-muted text-center py-3 small">No hay cursos disponibles.</li>
+                        <% } %>
+                    </ul>
+                </div>
+            <% } %>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>
+
+<%
+    } else {
+        // ===================================================================
+        // VISTA DE ESCRITORIO ORIGINAL (Mantiene tu InterfazBase.jsp de PC)
+        // ===================================================================
+%>
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -33,14 +281,14 @@
                     <div class="alert alert-danger"><%= request.getAttribute("error") %></div>
                 <% } %>
                 
-                <% 
+                <%  
                 DTMaster dtmaster = (DTMaster) request.getAttribute("cursoElegido");
                 if (dtmaster != null) {
                     if (dtmaster instanceof DTCurso) {
                         DTCurso dtc = (DTCurso) dtmaster;
                         if (dtc != null) {
-                            String urlConVersion = ImagenUtil.versionedUrl(ImagenUtil.CARPETA_CURSOS, dtc.getImage(), request.getContextPath());
-                %>          
+                            String urlConVersion = ImagenUtil.versionedUrl(ImagenUtil.CARPETA_CURSOS, dtc.getImage(), request.getContextPath());  
+                %>        
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <h2 class="fw-bold m-0">Consulta de Curso</h2>
                                 <a href="${pageContext.request.contextPath}/ConsultaCursoServlet" class="btn btn-outline-dark btn-sm fw-bold">
@@ -157,11 +405,10 @@
                                     </div>
                                 </div>
                             </div>
-                <%
+                <%  
                         }
                     }
                 } else {
-                    // MENÚ DE LISTADO DE TODOS LOS CURSOS CUANDO NO HAY NINGUNO SELECCIONADO
                 %>
                     <h2 class="mb-4 fw-bold text-center">Listado de Cursos</h2>
                     <div class="card border-dark shadow p-4 bg-white">
@@ -204,3 +451,4 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
+<% } %>

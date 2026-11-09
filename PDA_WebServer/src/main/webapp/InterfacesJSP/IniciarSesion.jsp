@@ -11,6 +11,12 @@
         return relativePath;
     }
 %>
+<%
+    // Detección opcional de dispositivo (solo para agregar una clase al body)
+    String ua = request.getHeader("User-Agent");
+    boolean esMovil = ua != null
+            && ua.matches("(?i).*(android|iphone|ipad|ipod|mobile|blackberry|opera mini).*");
+%>
 <!doctype html>
 <html lang="es">
   <head>
@@ -21,15 +27,16 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
+
     <!-- CSS personalizado (Instanciado/Vinculado) -->
     <link rel="stylesheet" href="<%= request.getContextPath() %><%= versionedUrl(application, "/Styles/StylesContainers.css") %>">
   </head>
-  <body>
-    <div class="container-fluid vh-100 d-flex justify-content-center align-items-center bg-light">
-        
-        <div class="col-11 col-sm-8 col-md-5 col-lg-4 p-4 bg-white rounded shadow-sm border">
-            
+  <body class="<%= esMovil ? "es-movil" : "es-escritorio" %>">
+    <!-- min-vh-100 en lugar de vh-100: no se corta con la barra del navegador ni con el teclado -->
+    <div class="container-fluid min-vh-100 d-flex justify-content-center align-items-center bg-light py-3">
+
+        <div class="col-11 col-sm-8 col-md-5 col-lg-4 p-3 p-md-4 bg-white rounded shadow-sm border">
+
             <h3 class="text-center mb-4">Iniciar Sesión</h3>
 
             <%
@@ -44,13 +51,15 @@
             %>
 
             <form id="formLogin" action="MainMenu" method="POST">
-                
+
                 <!-- Correo electronico -->
                 <div class="mb-3">
                     <div class="input-group">
                         <span class="input-group-text">@︎︎</span>
                         <div class="form-floating">
-                          <input type="text" name="email" class="form-control" id="floatingInputGroup2" placeholder="Username">
+                          <input type="text" name="email" class="form-control" id="floatingInputGroup2"
+                                 placeholder="Username" autocomplete="username"
+                                 autocapitalize="none" autocorrect="off" spellcheck="false">
                           <label for="floatingInputGroup2">Nickname o Correo Electrónico</label>
                         </div>
                     </div>
@@ -65,13 +74,15 @@
                         <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
 
                         <div class="form-floating flex-grow-1 position-relative">
-                            <input type="password" name="password" class="form-control pe-5" id="inputPassword" placeholder="Contraseña">
+                            <input type="password" name="password" class="form-control pe-5" id="inputPassword"
+                                   placeholder="Contraseña" autocomplete="current-password">
                             <label for="inputPassword">Contraseña</label>
 
                             <!-- Botón del ojo -->
-                            <button class="btn btn-link text-secondary position-absolute top-50 end-0 translate-middle-y me-2 p-0 border-0 shadow-none text-decoration-none" 
-                                    type="button" 
-                                    id="btnTogglePassword" 
+                            <button class="btn btn-link text-secondary position-absolute top-50 end-0 translate-middle-y me-2 p-0 border-0 shadow-none text-decoration-none"
+                                    type="button"
+                                    id="btnTogglePassword"
+                                    aria-label="Mostrar u ocultar contraseña"
                                     style="z-index: 10;">
                                 <i class="bi bi-eye-slash" id="iconoOjo"></i>
                             </button>
@@ -83,18 +94,19 @@
                     </div>
                 </div>
 
-                <!-- Boton iniciar sesion -->
+                <!-- Boton iniciar sesion (más grande para el dedo) -->
                 <div class="d-grid mt-4">
-                    <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+                    <button type="submit" class="btn btn-primary btn-lg">Iniciar Sesión</button>
                 </div>
                 <br>
+                <!-- col-12 en celular (apilados), col-sm-6 desde pantallas pequeñas hacia arriba -->
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-12 col-sm-6">
                         <div class="mb-3 text-center">
                             <p class="mb-2"><a class="link-offset-2 link-underline link-underline-opacity-0" href="MainMenu?action=ingVisitante">Ingresar como visitante</a></p>
                         </div>
                     </div>
-                    <div class="col-6">
+                    <div class="col-12 col-sm-6">
                         <div class="mb-3 text-center">
                             <p class="mb-2"><a class="link-offset-2 link-underline link-underline-opacity-0" href="AltaUsuarioServlet">Crear una cuenta</a></p>
                         </div>
@@ -104,7 +116,7 @@
 
         </div>
     </div>
-    
+
     <!-- JavaScripts -->
     <script src="<%= request.getContextPath() %><%= versionedUrl(application, "/JavasScripts/ValidarIndex.js") %>"></script>
     <script src="<%= request.getContextPath() %><%= versionedUrl(application, "/JavasScripts/ShowPassword.js") %>"></script>
