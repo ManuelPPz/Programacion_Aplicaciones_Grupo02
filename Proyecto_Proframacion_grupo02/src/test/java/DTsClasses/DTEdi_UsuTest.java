@@ -19,5 +19,7 @@ public class DTEdi_UsuTest {
         assertSame(f, dt.getfInscripcion());
         assertEquals(Enum_Estado_inscripcion.ACEPTADO, dt.getEstadoIns());
         assertTrue(dt instanceof DTMaster);
+        assertNull(dt.getUrlVideo());
+        assertEquals("https://v", new DTEdi_Usu("n", "E", f, Enum_Estado_inscripcion.INSCRIPTO, "https://v").getUrlVideo());
     }
 }

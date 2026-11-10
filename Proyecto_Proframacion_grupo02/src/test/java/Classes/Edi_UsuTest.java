@@ -46,6 +46,17 @@ public class Edi_UsuTest {
     }
 
     @Test
+    public void testConstructorConVideoYDT() {
+        Edi_Usu eu = new Edi_Usu(usuario("nick"), edicion("Ed1"), new Date(1), "https://youtu.be/v");
+        assertEquals("https://youtu.be/v", eu.getUrlVideo());
+        assertEquals("https://youtu.be/v", ((DTsClasses.DTEdi_Usu) eu.getMyDT()).getUrlVideo());
+
+        eu.setUrlVideo(null);
+        assertNull(eu.getUrlVideo());
+        assertNull(new Edi_Usu().getUrlVideo());
+    }
+
+    @Test
     public void testConstructorConNulos() {
         Edi_Usu eu = new Edi_Usu(null, null, null);
 

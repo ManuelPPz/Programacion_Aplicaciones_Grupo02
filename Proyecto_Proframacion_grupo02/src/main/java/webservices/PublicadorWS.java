@@ -198,10 +198,75 @@ public class PublicadorWS {
         return ico.ListarEdicionesPrioritarias(edicion);
     }
 
+    /** Inscribe al estudiante a la edición; urlVideo (video de motivación) es opcional. */
     @WebMethod
     public void InscripcionAEdicionCurso(@WebParam(name = "edicion") String edicion,
-            @WebParam(name = "nickname") String nickname, @WebParam(name = "fecha") Date fecha) {
-        ico.InscripcionAEdicionCurso(edicion, nickname, fecha);
+            @WebParam(name = "nickname") String nickname, @WebParam(name = "fecha") Date fecha,
+            @WebParam(name = "urlVideo") String urlVideo) throws EdextWSException {
+        try {
+            ico.InscripcionAEdicionCurso(edicion, nickname, fecha, urlVideo);
+        } catch (Exception e) {
+            throw error(e);
+        }
+    }
+
+    /** Inscripción del estudiante a la edición, o null si no está inscripto. */
+    @WebMethod
+    public DTMaster ConsultarInscripcionEdicion(@WebParam(name = "nickname") String nickname,
+            @WebParam(name = "edicion") String edicion) {
+        return ico.ConsultarInscripcionEdicion(nickname, edicion);
+    }
+
+    @WebMethod
+    public void ModificarInscripcionEdicion(@WebParam(name = "nickname") String nickname,
+            @WebParam(name = "edicion") String edicion, @WebParam(name = "urlVideo") String urlVideo)
+            throws EdextWSException {
+        try {
+            ico.ModificarInscripcionEdicion(nickname, edicion, urlVideo);
+        } catch (Exception e) {
+            throw error(e);
+        }
+    }
+
+    /** El estudiante desiste de su inscripción pendiente a la edición. */
+    @WebMethod
+    public void DesistirDeEdicionDeCurso(@WebParam(name = "nickname") String nickname,
+            @WebParam(name = "edicion") String edicion) throws EdextWSException {
+        try {
+            ico.DesistirDeEdicionDeCurso(nickname, edicion);
+        } catch (Exception e) {
+            throw error(e);
+        }
+    }
+
+    /** Guarda las calificaciones (listas en paralelo: estudiantes[i] tiene notas[i]). */
+    @WebMethod
+    public void IngresarResultadosDeEvaluaciones(@WebParam(name = "edicion") String edicion,
+            @WebParam(name = "estudiantes") List<String> estudiantes,
+            @WebParam(name = "notas") List<Integer> notas) throws EdextWSException {
+        try {
+            ico.IngresarResultadosDeEvaluaciones(edicion, estudiantes, notas);
+        } catch (Exception e) {
+            throw error(e);
+        }
+    }
+
+    /** Guarda las calificaciones y finaliza la edición. */
+    @WebMethod
+    public void FinalizarEdicionDeCurso(@WebParam(name = "edicion") String edicion,
+            @WebParam(name = "estudiantes") List<String> estudiantes,
+            @WebParam(name = "notas") List<Integer> notas) throws EdextWSException {
+        try {
+            ico.FinalizarEdicionDeCurso(edicion, estudiantes, notas);
+        } catch (Exception e) {
+            throw error(e);
+        }
+    }
+
+    /** Edición vigente del curso, o null si no tiene. */
+    @WebMethod
+    public DTMaster EdicionVigente(@WebParam(name = "curso") String curso) {
+        return ico.EdicionVigente(curso);
     }
 
     @WebMethod

@@ -19,12 +19,6 @@
 <message name="ConsultarUsuarioResponse">
 <part name="parameters" element="tns:ConsultarUsuarioResponse"/>
 </message>
-<message name="SeguirUsuario">
-<part name="parameters" element="tns:SeguirUsuario"/>
-</message>
-<message name="SeguirUsuarioResponse">
-<part name="parameters" element="tns:SeguirUsuarioResponse"/>
-</message>
 <message name="ModificarUsuario">
 <part name="parameters" element="tns:ModificarUsuario"/>
 </message>
@@ -36,6 +30,12 @@
 </message>
 <message name="ConsultaUsuarioAvanzadaResponse">
 <part name="parameters" element="tns:ConsultaUsuarioAvanzadaResponse"/>
+</message>
+<message name="SeguirUsuario">
+<part name="parameters" element="tns:SeguirUsuario"/>
+</message>
+<message name="SeguirUsuarioResponse">
+<part name="parameters" element="tns:SeguirUsuarioResponse"/>
 </message>
 <message name="DejarDeSeguir">
 <part name="parameters" element="tns:DejarDeSeguir"/>
@@ -150,6 +150,42 @@
 </message>
 <message name="InscripcionAEdicionCursoResponse">
 <part name="parameters" element="tns:InscripcionAEdicionCursoResponse"/>
+</message>
+<message name="ConsultarInscripcionEdicion">
+<part name="parameters" element="tns:ConsultarInscripcionEdicion"/>
+</message>
+<message name="ConsultarInscripcionEdicionResponse">
+<part name="parameters" element="tns:ConsultarInscripcionEdicionResponse"/>
+</message>
+<message name="ModificarInscripcionEdicion">
+<part name="parameters" element="tns:ModificarInscripcionEdicion"/>
+</message>
+<message name="ModificarInscripcionEdicionResponse">
+<part name="parameters" element="tns:ModificarInscripcionEdicionResponse"/>
+</message>
+<message name="DesistirDeEdicionDeCurso">
+<part name="parameters" element="tns:DesistirDeEdicionDeCurso"/>
+</message>
+<message name="DesistirDeEdicionDeCursoResponse">
+<part name="parameters" element="tns:DesistirDeEdicionDeCursoResponse"/>
+</message>
+<message name="IngresarResultadosDeEvaluaciones">
+<part name="parameters" element="tns:IngresarResultadosDeEvaluaciones"/>
+</message>
+<message name="IngresarResultadosDeEvaluacionesResponse">
+<part name="parameters" element="tns:IngresarResultadosDeEvaluacionesResponse"/>
+</message>
+<message name="FinalizarEdicionDeCurso">
+<part name="parameters" element="tns:FinalizarEdicionDeCurso"/>
+</message>
+<message name="FinalizarEdicionDeCursoResponse">
+<part name="parameters" element="tns:FinalizarEdicionDeCursoResponse"/>
+</message>
+<message name="EdicionVigente">
+<part name="parameters" element="tns:EdicionVigente"/>
+</message>
+<message name="EdicionVigenteResponse">
+<part name="parameters" element="tns:EdicionVigenteResponse"/>
 </message>
 <message name="ListarInscripciones">
 <part name="parameters" element="tns:ListarInscripciones"/>
@@ -269,10 +305,6 @@
 <input wsam:Action="http://webservices.edext/PublicadorWS/ConsultarUsuarioRequest" message="tns:ConsultarUsuario"/>
 <output wsam:Action="http://webservices.edext/PublicadorWS/ConsultarUsuarioResponse" message="tns:ConsultarUsuarioResponse"/>
 </operation>
-<operation name="SeguirUsuario">
-<input wsam:Action="http://webservices.edext/PublicadorWS/SeguirUsuarioRequest" message="tns:SeguirUsuario"/>
-<output wsam:Action="http://webservices.edext/PublicadorWS/SeguirUsuarioResponse" message="tns:SeguirUsuarioResponse"/>
-</operation>
 <operation name="ModificarUsuario">
 <input wsam:Action="http://webservices.edext/PublicadorWS/ModificarUsuarioRequest" message="tns:ModificarUsuario"/>
 <output wsam:Action="http://webservices.edext/PublicadorWS/ModificarUsuarioResponse" message="tns:ModificarUsuarioResponse"/>
@@ -280,6 +312,10 @@
 <operation name="ConsultaUsuarioAvanzada">
 <input wsam:Action="http://webservices.edext/PublicadorWS/ConsultaUsuarioAvanzadaRequest" message="tns:ConsultaUsuarioAvanzada"/>
 <output wsam:Action="http://webservices.edext/PublicadorWS/ConsultaUsuarioAvanzadaResponse" message="tns:ConsultaUsuarioAvanzadaResponse"/>
+</operation>
+<operation name="SeguirUsuario">
+<input wsam:Action="http://webservices.edext/PublicadorWS/SeguirUsuarioRequest" message="tns:SeguirUsuario"/>
+<output wsam:Action="http://webservices.edext/PublicadorWS/SeguirUsuarioResponse" message="tns:SeguirUsuarioResponse"/>
 </operation>
 <operation name="DejarDeSeguir">
 <input wsam:Action="http://webservices.edext/PublicadorWS/DejarDeSeguirRequest" message="tns:DejarDeSeguir"/>
@@ -358,6 +394,35 @@
 <operation name="InscripcionAEdicionCurso">
 <input wsam:Action="http://webservices.edext/PublicadorWS/InscripcionAEdicionCursoRequest" message="tns:InscripcionAEdicionCurso"/>
 <output wsam:Action="http://webservices.edext/PublicadorWS/InscripcionAEdicionCursoResponse" message="tns:InscripcionAEdicionCursoResponse"/>
+<fault message="tns:EdextWSException" name="EdextWSException" wsam:Action="http://webservices.edext/PublicadorWS/InscripcionAEdicionCurso/Fault/EdextWSException"/>
+</operation>
+<operation name="ConsultarInscripcionEdicion">
+<input wsam:Action="http://webservices.edext/PublicadorWS/ConsultarInscripcionEdicionRequest" message="tns:ConsultarInscripcionEdicion"/>
+<output wsam:Action="http://webservices.edext/PublicadorWS/ConsultarInscripcionEdicionResponse" message="tns:ConsultarInscripcionEdicionResponse"/>
+</operation>
+<operation name="ModificarInscripcionEdicion">
+<input wsam:Action="http://webservices.edext/PublicadorWS/ModificarInscripcionEdicionRequest" message="tns:ModificarInscripcionEdicion"/>
+<output wsam:Action="http://webservices.edext/PublicadorWS/ModificarInscripcionEdicionResponse" message="tns:ModificarInscripcionEdicionResponse"/>
+<fault message="tns:EdextWSException" name="EdextWSException" wsam:Action="http://webservices.edext/PublicadorWS/ModificarInscripcionEdicion/Fault/EdextWSException"/>
+</operation>
+<operation name="DesistirDeEdicionDeCurso">
+<input wsam:Action="http://webservices.edext/PublicadorWS/DesistirDeEdicionDeCursoRequest" message="tns:DesistirDeEdicionDeCurso"/>
+<output wsam:Action="http://webservices.edext/PublicadorWS/DesistirDeEdicionDeCursoResponse" message="tns:DesistirDeEdicionDeCursoResponse"/>
+<fault message="tns:EdextWSException" name="EdextWSException" wsam:Action="http://webservices.edext/PublicadorWS/DesistirDeEdicionDeCurso/Fault/EdextWSException"/>
+</operation>
+<operation name="IngresarResultadosDeEvaluaciones">
+<input wsam:Action="http://webservices.edext/PublicadorWS/IngresarResultadosDeEvaluacionesRequest" message="tns:IngresarResultadosDeEvaluaciones"/>
+<output wsam:Action="http://webservices.edext/PublicadorWS/IngresarResultadosDeEvaluacionesResponse" message="tns:IngresarResultadosDeEvaluacionesResponse"/>
+<fault message="tns:EdextWSException" name="EdextWSException" wsam:Action="http://webservices.edext/PublicadorWS/IngresarResultadosDeEvaluaciones/Fault/EdextWSException"/>
+</operation>
+<operation name="FinalizarEdicionDeCurso">
+<input wsam:Action="http://webservices.edext/PublicadorWS/FinalizarEdicionDeCursoRequest" message="tns:FinalizarEdicionDeCurso"/>
+<output wsam:Action="http://webservices.edext/PublicadorWS/FinalizarEdicionDeCursoResponse" message="tns:FinalizarEdicionDeCursoResponse"/>
+<fault message="tns:EdextWSException" name="EdextWSException" wsam:Action="http://webservices.edext/PublicadorWS/FinalizarEdicionDeCurso/Fault/EdextWSException"/>
+</operation>
+<operation name="EdicionVigente">
+<input wsam:Action="http://webservices.edext/PublicadorWS/EdicionVigenteRequest" message="tns:EdicionVigente"/>
+<output wsam:Action="http://webservices.edext/PublicadorWS/EdicionVigenteResponse" message="tns:EdicionVigenteResponse"/>
 </operation>
 <operation name="ListarInscripciones">
 <input wsam:Action="http://webservices.edext/PublicadorWS/ListarInscripcionesRequest" message="tns:ListarInscripciones"/>
@@ -459,15 +524,6 @@
 <soap:body use="literal"/>
 </output>
 </operation>
-<operation name="SeguirUsuario">
-<soap:operation soapAction=""/>
-<input>
-<soap:body use="literal"/>
-</input>
-<output>
-<soap:body use="literal"/>
-</output>
-</operation>
 <operation name="ModificarUsuario">
 <soap:operation soapAction=""/>
 <input>
@@ -478,6 +534,15 @@
 </output>
 </operation>
 <operation name="ConsultaUsuarioAvanzada">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="SeguirUsuario">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>
@@ -655,6 +720,75 @@
 </output>
 </operation>
 <operation name="InscripcionAEdicionCurso">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="EdextWSException">
+<soap:fault name="EdextWSException" use="literal"/>
+</fault>
+</operation>
+<operation name="ConsultarInscripcionEdicion">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="ModificarInscripcionEdicion">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="EdextWSException">
+<soap:fault name="EdextWSException" use="literal"/>
+</fault>
+</operation>
+<operation name="DesistirDeEdicionDeCurso">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="EdextWSException">
+<soap:fault name="EdextWSException" use="literal"/>
+</fault>
+</operation>
+<operation name="IngresarResultadosDeEvaluaciones">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="EdextWSException">
+<soap:fault name="EdextWSException" use="literal"/>
+</fault>
+</operation>
+<operation name="FinalizarEdicionDeCurso">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="EdextWSException">
+<soap:fault name="EdextWSException" use="literal"/>
+</fault>
+</operation>
+<operation name="EdicionVigente">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>

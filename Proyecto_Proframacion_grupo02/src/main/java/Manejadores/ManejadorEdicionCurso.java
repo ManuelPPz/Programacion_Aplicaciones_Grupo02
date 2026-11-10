@@ -147,6 +147,7 @@ public class ManejadorEdicionCurso {
             Date fechaInscripcion = (eu.getFIns() != null) ? eu.getFIns() : new Date();
             Edi_Usu nuevaInscripcion = new Edi_Usu(usuarioManaged, edicionManaged, fechaInscripcion);
             nuevaInscripcion.setEstado(eu.getMiEstado());
+            nuevaInscripcion.setUrlVideo(eu.getUrlVideo());
 
             // 5. Persistir en la BD
             em.persist(nuevaInscripcion);
@@ -248,7 +249,7 @@ public class ManejadorEdicionCurso {
         return new DTEdicionCurso(
             ins, cur, ec.getNombre(), ec.getFInicio(), ec.getFFin(), 
             ec.getCupo(), ec.getCupoActual(), auxDocentes, ec.getFAlta(), 
-            auxDTEdiUsu, auxCatStr, ec.getImage()
+            auxDTEdiUsu, auxCatStr, ec.getImage(), ec.getEstado()
         );
     }
     
@@ -331,6 +332,177 @@ public class ManejadorEdicionCurso {
         return auxList;
     }
     
+    /** Devuelve la inscripción del estudiante a la edición, o null si no existe. */
+    public Edi_Usu BuscarInscripcion(String nickname, String nomEdicion) {
+        if (nickname == null || nomEdicion == null) {
+            return null;
+        }
+        EntityManager em = getEntityManager();
+        try {
+            return em.find(Edi_Usu.class, new Id_EdiUsu(nickname, nomEdicion));
+        } catch (Exception e) {
+            System.err.println("Error al buscar la inscripción: " + e.getMessage());
+            return null;
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    /** Modifica la URL del video de motivación de una inscripción existente. */
+    public void ModificarVideoInscripcion(String nickname, String nomEdicion, String urlVideo) throws Exception {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Edi_Usu eu = em.find(Edi_Usu.class, new Id_EdiUsu(nickname, nomEdicion));
+            if (eu == null) {
+                throw new Exception("El estudiante no está inscripto a esta edición.");
+            }
+            eu.setUrlVideo(urlVideo);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction() != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Edición vigente de un curso: entre las ediciones que todavía no terminaron
+     * (fecha de fin igual o posterior a {@code hoy}), la de fecha de alta más reciente.
+     * Devuelve null si el curso no tiene ninguna.
+     */
+    public EdicionCurso BuscarEdicionVigente(String nomCurso, Date hoy) {
+        if (nomCurso == null || nomCurso.isBlank()) {
+            return null;
+        }
+        Date inicioDeHoy = inicioDelDia(hoy != null ? hoy : new Date());
+        EdicionCurso vigente = null;
+        for (EdicionCurso ec : getList()) {
+            if (ec == null || ec.getCurso() == null || ec.getCurso().getNombre() == null
+                    || !ec.getCurso().getNombre().trim().equalsIgnoreCase(nomCurso.trim())) {
+                continue;
+            }
+            if (ec.getFFin() == null || ec.getFFin().before(inicioDeHoy)) {
+                continue;
+            }
+            if (vigente == null || esMasReciente(ec, vigente)) {
+                vigente = ec;
+            }
+        }
+        return vigente;
+    }
+
+    private static boolean esMasReciente(EdicionCurso a, EdicionCurso b) {
+        Date fa = a.getFAlta() != null ? a.getFAlta() : a.getFInicio();
+        Date fb = b.getFAlta() != null ? b.getFAlta() : b.getFInicio();
+        if (fa == null) {
+            return false;
+        }
+        return fb == null || fa.after(fb);
+    }
+
+    private static Date inicioDelDia(Date d) {
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTime(d);
+        cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        cal.set(java.util.Calendar.MINUTE, 0);
+        cal.set(java.util.Calendar.SECOND, 0);
+        cal.set(java.util.Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
+
+    /**
+     * El estudiante desiste de su inscripción: se borra y se libera el cupo.
+     * Solo se puede desistir mientras la inscripción está pendiente (INSCRIPTO).
+     */
+    public void DesistirDeInscripcion(String nickname, String nomEdicion) throws Exception {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Edi_Usu eu = em.find(Edi_Usu.class, new Id_EdiUsu(nickname, nomEdicion));
+            if (eu == null) {
+                throw new Exception("El estudiante no está inscripto a esta edición.");
+            }
+            if (eu.getMiEstado() != Enum_Estado_inscripcion.INSCRIPTO) {
+                throw new Exception("Solo se puede desistir de una inscripción pendiente (estado actual: "
+                        + eu.getMiEstado() + ").");
+            }
+            EdicionCurso ec = eu.getEdicion();
+            if (ec != null) {
+                ec.getMisInscripciones().remove(eu);
+                if (ec.getCupo() > 0) {
+                    ec.setCupoActual(Math.min(ec.getCupo(), ec.getCupoActual() + 1));
+                }
+            }
+            if (eu.getUsuario() != null && eu.getUsuario().getMisInscripciones() != null) {
+                eu.getUsuario().getMisInscripciones().remove(eu);
+            }
+            em.remove(eu);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction() != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Guarda las calificaciones (1 a 12) de los estudiantes de la edición; las
+     * listas van en paralelo (estudiantes.get(i) tiene la nota notas.get(i)).
+     * Si finalizar es true, además cierra la edición. Es todo o nada.
+     */
+    public void IngresarNotas(String nomEdicion, List<String> estudiantes, List<Integer> notas, boolean finalizar)
+            throws Exception {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            EdicionCurso ec = em.find(EdicionCurso.class, nomEdicion);
+            if (ec == null) {
+                throw new Exception("No existe la edición '" + nomEdicion + "'.");
+            }
+            if (ec.isFinalizada()) {
+                throw new Exception("La edición ya está finalizada; no se pueden modificar las calificaciones.");
+            }
+            int cant = (estudiantes == null || notas == null) ? 0 : Math.min(estudiantes.size(), notas.size());
+            for (int i = 0; i < cant; i++) {
+                Integer nota = notas.get(i);
+                if (nota == null || nota < 1 || nota > 12) {
+                    throw new Exception("La calificación de " + estudiantes.get(i) + " debe estar entre 1 y 12.");
+                }
+                Edi_Usu eu = em.find(Edi_Usu.class, new Id_EdiUsu(estudiantes.get(i), nomEdicion));
+                if (eu == null) {
+                    throw new Exception("El estudiante " + estudiantes.get(i) + " no está inscripto a esta edición.");
+                }
+                eu.setNota(nota);
+            }
+            if (finalizar) {
+                ec.Finalizar();
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction() != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
     public void ModificarEstadoDeInscripcion(String nicknameUsuario, Enum_Estado_inscripcion estado, String nomEdicion) {
         EntityManager em = getEntityManager();
 

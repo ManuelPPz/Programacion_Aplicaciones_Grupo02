@@ -368,6 +368,98 @@ public class ControllerTest {
         assertDoesNotThrow(() -> instance.InscripcionAEdicionCurso("ed", "nick", fecha));
     }
 
+    // ------------------------------------------------ Inscripcion con video
+
+    @Test
+    public void testInscripcionConVideoOk() throws Exception {
+        Usuario u = mock(Usuario.class);
+        when(manUsuario.BuscarUsuario("nick")).thenReturn(u);
+        when(manEdicion.BuscarEdicion("ed")).thenReturn(mock(EdicionCurso.class));
+
+        instance.InscripcionAEdicionCurso("ed", "nick", fecha, "  https://youtu.be/abc  ");
+
+        org.mockito.ArgumentCaptor<Edi_Usu> cap = org.mockito.ArgumentCaptor.forClass(Edi_Usu.class);
+        verify(manEdicion).AddUsuarioInscripto(cap.capture());
+        assertEquals("https://youtu.be/abc", cap.getValue().getUrlVideo());
+        assertEquals(fecha, cap.getValue().getFIns());
+    }
+
+    @Test
+    public void testInscripcionSinVideoYSinFechaUsaHoy() throws Exception {
+        when(manUsuario.BuscarUsuario("nick")).thenReturn(mock(Usuario.class));
+        when(manEdicion.BuscarEdicion("ed")).thenReturn(mock(EdicionCurso.class));
+
+        instance.InscripcionAEdicionCurso("ed", "nick", null, "   ");
+
+        org.mockito.ArgumentCaptor<Edi_Usu> cap = org.mockito.ArgumentCaptor.forClass(Edi_Usu.class);
+        verify(manEdicion).AddUsuarioInscripto(cap.capture());
+        assertNull(cap.getValue().getUrlVideo());
+        assertNotNull(cap.getValue().getFIns());
+    }
+
+    @Test
+    public void testInscripcionConVideoDocenteNoPuede() throws Exception {
+        when(manUsuario.BuscarUsuario("doc")).thenReturn(mock(Docente.class));
+        assertThrows(Exception.class, () -> instance.InscripcionAEdicionCurso("ed", "doc", fecha, null));
+        verify(manEdicion, never()).AddUsuarioInscripto(any());
+    }
+
+    @Test
+    public void testInscripcionConVideoEdicionInexistente() throws Exception {
+        when(manUsuario.BuscarUsuario("nick")).thenReturn(mock(Usuario.class));
+        when(manEdicion.BuscarEdicion("ed")).thenReturn(null);
+        assertThrows(Exception.class, () -> instance.InscripcionAEdicionCurso("ed", "nick", fecha, null));
+    }
+
+    @Test
+    public void testInscripcionConVideoUrlInvalida() throws Exception {
+        when(manUsuario.BuscarUsuario("nick")).thenReturn(mock(Usuario.class));
+        when(manEdicion.BuscarEdicion("ed")).thenReturn(mock(EdicionCurso.class));
+        assertThrows(Exception.class, () -> instance.InscripcionAEdicionCurso("ed", "nick", fecha, "no es url"));
+        assertThrows(Exception.class, () -> instance.InscripcionAEdicionCurso("ed", "nick", fecha, "ftp://x.com/v"));
+        assertThrows(Exception.class, () -> instance.InscripcionAEdicionCurso("ed", "nick", fecha, "https://"));
+        assertThrows(Exception.class, () -> instance.InscripcionAEdicionCurso("ed", "nick", fecha, "http://a b"));
+        verify(manEdicion, never()).AddUsuarioInscripto(any());
+    }
+
+    @Test
+    public void testInscripcionConVideoPropagaErrorDelManejador() throws Exception {
+        when(manUsuario.BuscarUsuario("nick")).thenReturn(mock(Usuario.class));
+        when(manEdicion.BuscarEdicion("ed")).thenReturn(mock(EdicionCurso.class));
+        doThrow(new Exception("ya inscripto")).when(manEdicion).AddUsuarioInscripto(any(Edi_Usu.class));
+        Exception e = assertThrows(Exception.class, () -> instance.InscripcionAEdicionCurso("ed", "nick", fecha, null));
+        assertEquals("ya inscripto", e.getMessage());
+    }
+
+    @Test
+    public void testConsultarInscripcionEdicion() {
+        Edi_Usu eu = mock(Edi_Usu.class);
+        DTMaster dt = mock(DTMaster.class);
+        when(eu.getMyDT()).thenReturn(dt);
+        when(manEdicion.BuscarInscripcion("nick", "ed")).thenReturn(eu);
+        assertSame(dt, instance.ConsultarInscripcionEdicion("nick", "ed"));
+        assertNull(instance.ConsultarInscripcionEdicion("otro", "ed"));
+    }
+
+    @Test
+    public void testModificarInscripcionEdicion() throws Exception {
+        instance.ModificarInscripcionEdicion("nick", "ed", " http://v.com/1 ");
+        verify(manEdicion).ModificarVideoInscripcion("nick", "ed", "http://v.com/1");
+        instance.ModificarInscripcionEdicion("nick", "ed", "");
+        verify(manEdicion).ModificarVideoInscripcion("nick", "ed", null);
+        assertThrows(Exception.class, () -> instance.ModificarInscripcionEdicion("nick", "ed", "mal"));
+    }
+
+    @Test
+    public void testEdicionVigente() {
+        EdicionCurso ec = mock(EdicionCurso.class);
+        DTEdicionCurso dt = mock(DTEdicionCurso.class);
+        when(manEdicion.BuscarEdicionVigente(eq("C"), any(Date.class))).thenReturn(ec);
+        when(manEdicion.getDT(ec)).thenReturn(dt);
+        assertSame(dt, instance.EdicionVigente("C"));
+        assertNull(instance.EdicionVigente("SinEdiciones"));
+    }
+
     @Test
     public void testAceptarEstudiantesAEdicionCurso() {
         Enum_Estado_inscripcion estado = Enum_Estado_inscripcion.values()[0];
@@ -835,4 +927,17 @@ public class ControllerTest {
         assertSame(lista, instance.ListarCursosMasVisitados(5));
     }
 
+
+    @Test
+    public void testDesistirYCalificaciones() throws Exception {
+        instance.DesistirDeEdicionDeCurso("nick", "ed");
+        verify(manEdicion).DesistirDeInscripcion("nick", "ed");
+
+        List<String> est = List.of("a");
+        List<Integer> notas = List.of(8);
+        instance.IngresarResultadosDeEvaluaciones("ed", est, notas);
+        verify(manEdicion).IngresarNotas("ed", est, notas, false);
+        instance.FinalizarEdicionDeCurso("ed", est, notas);
+        verify(manEdicion).IngresarNotas("ed", est, notas, true);
+    }
 }

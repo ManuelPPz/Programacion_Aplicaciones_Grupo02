@@ -51,6 +51,28 @@ public interface IController {
     
     //Inscripcion a Edicion Curso
     public abstract void InscripcionAEdicionCurso(String nomCurso, String nickname, Date fIns);
+
+    //Inscripcion a Edicion Curso con video de motivacion opcional (urlVideo puede ser null o vacia).
+    //A diferencia de la version de 3 parametros, informa los errores con una excepcion.
+    public abstract void InscripcionAEdicionCurso(String nomEdicion, String nickname, Date fIns, String urlVideo) throws Exception;
+
+    //Devuelve la inscripcion (DTEdi_Usu) del estudiante a la edicion, o null si no esta inscripto
+    public abstract DTMaster ConsultarInscripcionEdicion(String nickname, String nomEdicion);
+
+    //Modifica la URL del video de motivacion de una inscripcion existente (null o vacia la quita)
+    public abstract void ModificarInscripcionEdicion(String nickname, String nomEdicion, String urlVideo) throws Exception;
+
+    //El estudiante desiste de su inscripcion pendiente a la edicion (se libera el cupo)
+    public abstract void DesistirDeEdicionDeCurso(String nickname, String nomEdicion) throws Exception;
+
+    //Ingresa las calificaciones (1 a 12) de los estudiantes; listas en paralelo
+    public abstract void IngresarResultadosDeEvaluaciones(String nomEdicion, List<String> estudiantes, List<Integer> notas) throws Exception;
+
+    //Guarda las calificaciones y cierra la edicion (queda FINALIZADA)
+    public abstract void FinalizarEdicionDeCurso(String nomEdicion, List<String> estudiantes, List<Integer> notas) throws Exception;
+
+    //Devuelve la edicion vigente (DTEdicionCurso) del curso, o null si no tiene
+    public abstract DTMaster EdicionVigente(String nomCurso);
     
     //
     public abstract void AceptarEstudiantesAEdicionCurso(List<Object[]> estudiantesYCambios, String nomEdicion);

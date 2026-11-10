@@ -250,6 +250,9 @@
                                     <li class="list-group-item text-dark fw-semibold p-0">
                                         <a href="<%= request.getContextPath() %>/ListarAceptadosEdicionServlet" class="text-dark text-decoration-none d-block p-2">Listar Aceptados</a>
                                     </li>
+                                    <li class="list-group-item text-dark fw-semibold p-0">
+                                        <a href="<%= request.getContextPath() %>/IngresarResultadosEvServlet" class="text-dark text-decoration-none d-block p-2">Ingresar Resultados</a>
+                                    </li>
                             <%
                                 } else if (dtm instanceof Logica.DTsClasses.DTUsuario) {
                                     Logica.DTsClasses.DTUsuario dtu = (Logica.DTsClasses.DTUsuario) dtm;

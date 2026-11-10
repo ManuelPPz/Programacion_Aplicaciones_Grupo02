@@ -1,65 +1,69 @@
 <%@page import="Logica.DTsClasses.DTProgramaForm"%>
-<%@page import="Logica.DTsClasses.DTEdicionCurso"%>
-<%@page import="Logica.DTsClasses.DTCurso"%>
-<%@page import="Logica.DTsClasses.DTUsuario"%>
-<%@page import="Logica.DTsClasses.DTInstituto"%>
 <%@page import="Logica.DTsClasses.DTMaster"%>
-<%@page import="Logica.DTsClasses.DTCategoria"%>
 <%@page import="java.util.List"%>
-<%@page import="Logica.DTsClasses.DTDocente"%>
-<%@page import="java.text.SimpleDateFormat"%>
-<%@page import="Logica.DTsClasses.DTUsuarioBase"%>
-
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%!
+    // Escapa texto para mostrarlo dentro del HTML
+    private static String html(Object o) {
+        if (o == null) {
+            return "";
+        }
+        return o.toString().replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+    }
+%>
+<%
+    String ctx = request.getContextPath();
+    List<DTMaster> programas = (List<DTMaster>) request.getAttribute("programas");
+%>
 <!DOCTYPE html>
 <html lang="es">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Alta Edici髇 de Curso</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Inscripci贸n a Programa de Formaci贸n</title>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css">
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/Styles/StylesContainers.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <script src="${pageContext.request.contextPath}/js/main.js"></script>
     </head>
     <body class="bg-light">
-    <!-- Navbar / Interfaz Base -->
-    <%@ include file="/InterfacesJSP/InterfazBase.jsp" %>
+        <%@ include file="/InterfacesJSP/InterfazBase.jsp" %>
 
-                <%-- FORMULARIO PRINCIPAL DE ALTA DE EDICI覰 DE CURSO --%>
-                <div class="col-md-9 col-lg-10 ps-md-4 d-flex flex-column align-items-center mb-5">
-                    <div class="card border-dark shadow-sm p-4 w-100" style="max-width: 550px;">
-                        <h2>Inscripci髇 a Programa de Formaci髇</h2>
-                        <% if(request.getAttribute("error") != null) { %><div class="alert-error"><%= request.getAttribute("error") %></div><% } %>
-                        <% if(request.getAttribute("exito") != null) { %><div class="alert-success"><%= request.getAttribute("exito") %></div><% } %>
+        <div class="col-md-9 col-lg-10 ps-md-4 d-flex flex-column align-items-center mb-5">
+            <div class="card border-dark shadow p-3 p-md-4 w-100" style="max-width: 550px;">
+                <h2 class="card-title text-center mb-4 fw-bold fs-3">Inscripci贸n a Programa de Formaci贸n</h2>
 
-                        <form action="${pageContext.request.contextPath}/InscripcionProgramaServlet" method="POST">
-                            <label>Seleccionar Programa:</label><br>
-                            <select name="programa" required>
-                                <option value="" disabled selected>Seleccione un programa...</option>
-                                <%
-                                List<DTMaster> auxListProg = (List<DTMaster>)request.getAttribute("programas");
-                                if(auxListProg!=null){
-                                    for(int i = 0;i<auxListProg.size();i++){
-                                        DTProgramaForm dtp = (DTProgramaForm)auxListProg.get(i);
-                                        if(dtp!=null){
-                                            %>
-                                                    <option value="<%= dtp.getNombre() %>">
-                                                        <%= dtp.getNombre() %>
-                                                    </option>
-                                            <%
-                                        }
-                                    }
-                                }
-                                %>
-                            </select><br><br>
-                            <button type="submit">Inscribirme</button>
-                        </form>
+                <% if (request.getAttribute("error") != null) { %>
+                    <div class="alert alert-danger text-center"><%= html(request.getAttribute("error")) %></div>
+                <% } %>
+                <% if (request.getAttribute("exito") != null) { %>
+                    <div class="alert alert-success text-center"><%= html(request.getAttribute("exito")) %></div>
+                <% } %>
+
+                <% if (programas == null || programas.isEmpty()) { %>
+                    <div class="alert alert-secondary text-center mb-0">
+                        No hay programas de formaci贸n registrados en el sistema.
                     </div>
-                </div>
+                <% } else { %>
+                    <form action="<%= ctx %>/InscripcionProgramaServlet" method="POST">
+                        <label for="programa" class="form-label fw-bold">Seleccionar programa</label>
+                        <select name="programa" id="programa" class="form-select border-dark mb-4" required>
+                            <option value="" disabled selected>-- Seleccione un programa --</option>
+                            <% for (DTMaster dt : programas) {
+                                   if (dt instanceof DTProgramaForm) { DTProgramaForm p = (DTProgramaForm) dt; %>
+                                <option value="<%= html(p.getNombre()) %>"><%= html(p.getNombre()) %></option>
+                            <%     }
+                               } %>
+                        </select>
+                        <button type="submit" class="btn btn-dark fw-bold w-100 py-2 shadow-sm">Inscribirme</button>
+                    </form>
+                <% } %>
+            </div>
+        </div>
 
             </div>
         </div>
 
-        <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>

@@ -183,8 +183,65 @@ public class ControllerWS implements IController {
     }
 
     @Override
-    public void InscripcionAEdicionCurso(String nomEdicion, String nickname, Date fIns) {
-        ws().inscripcionAEdicionCurso(nomEdicion, nickname, ConversorDT.fecha(fIns));
+    public void InscripcionAEdicionCurso(String nomEdicion, String nickname, Date fIns) throws Exception {
+        InscripcionAEdicionCurso(nomEdicion, nickname, fIns, null);
+    }
+
+    @Override
+    public void InscripcionAEdicionCurso(String nomEdicion, String nickname, Date fIns, String urlVideo) throws Exception {
+        try {
+            ws().inscripcionAEdicionCurso(nomEdicion, nickname, ConversorDT.fecha(fIns), urlVideo);
+        } catch (EdextWSException e) {
+            throw error(e);
+        }
+    }
+
+    @Override
+    public DTMaster ConsultarInscripcionEdicion(String nickname, String nomEdicion) {
+        return ConversorDT.dt(ws().consultarInscripcionEdicion(nickname, nomEdicion));
+    }
+
+    @Override
+    public void ModificarInscripcionEdicion(String nickname, String nomEdicion, String urlVideo) throws Exception {
+        try {
+            ws().modificarInscripcionEdicion(nickname, nomEdicion, urlVideo);
+        } catch (EdextWSException e) {
+            throw error(e);
+        }
+    }
+
+    @Override
+    public void DesistirDeEdicionDeCurso(String nickname, String nomEdicion) throws Exception {
+        try {
+            ws().desistirDeEdicionDeCurso(nickname, nomEdicion);
+        } catch (EdextWSException e) {
+            throw error(e);
+        }
+    }
+
+    @Override
+    public void IngresarResultadosDeEvaluaciones(String nomEdicion, List<String> estudiantes, List<Integer> notas)
+            throws Exception {
+        try {
+            ws().ingresarResultadosDeEvaluaciones(nomEdicion, estudiantes, notas);
+        } catch (EdextWSException e) {
+            throw error(e);
+        }
+    }
+
+    @Override
+    public void FinalizarEdicionDeCurso(String nomEdicion, List<String> estudiantes, List<Integer> notas)
+            throws Exception {
+        try {
+            ws().finalizarEdicionDeCurso(nomEdicion, estudiantes, notas);
+        } catch (EdextWSException e) {
+            throw error(e);
+        }
+    }
+
+    @Override
+    public DTMaster EdicionVigente(String nomCurso) {
+        return ConversorDT.dt(ws().edicionVigente(nomCurso));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package Logica.Servlets;
 
+import Logica.DTsClasses.DTEdi_Usu;
 import Logica.DTsClasses.DTEdicionCurso;
 import Logica.DTsClasses.DTMaster;
 import Logica.DTsClasses.DTUsuarioBase;
@@ -59,12 +60,15 @@ public class ConsultaEdicionServlet extends HttpServlet {
                 curso = dte.getCurso();
                 request.setAttribute("cursoSeleccionado", curso);
 
-                if (usuarioLogueado != null) {
+                // Estado de la inscripción del estudiante logueado (null = no inscripto)
+                if (usuarioLogueado instanceof DTUsuarioBase dtub) {
                     try {
-                        boolean yaInscripto = false; // Ajusta aquí tu lógica de verificación si la tienes
-                        request.setAttribute("yaInscripto", yaInscripto);
+                        DTMaster ins = control.ConsultarInscripcionEdicion(dtub.getNickname(), dte.getNombre());
+                        if (ins instanceof DTEdi_Usu eu) {
+                            request.setAttribute("estadoInscripcion", eu.getEstadoIns());
+                        }
                     } catch (Exception e) {
-                        request.setAttribute("yaInscripto", false);
+                        // Sin estado: la vista ofrece inscribirse
                     }
                 }
             } else {
@@ -136,6 +140,37 @@ public class ConsultaEdicionServlet extends HttpServlet {
             } catch (Exception e) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().write(e.getMessage() != null ? e.getMessage() : "No se pudo completar la inscripción.");
+            }
+            return;
+        }
+
+        // Desistir de una inscripción pendiente (botón "Cancelar" de la vista)
+        if ("desistirInscripcion".equals(action)) {
+            response.setContentType("text/plain; charset=UTF-8");
+
+            HttpSession session = request.getSession(false);
+            DTMaster usuario = (session != null) ? (DTMaster) session.getAttribute("usuarioLogueado") : null;
+            String edicion = request.getParameter("edicion");
+
+            if (!(usuario instanceof DTUsuarioBase)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Debes iniciar sesión para realizar esta acción.");
+                return;
+            }
+            if (edicion == null || edicion.isBlank()) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("Falta especificar la edición.");
+                return;
+            }
+
+            try {
+                IController control = Fabric.GetInstance().GetIController();
+                control.DesistirDeEdicionDeCurso(((DTUsuarioBase) usuario).getNickname(), edicion.trim());
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().write("OK");
+            } catch (Exception e) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write(e.getMessage() != null ? e.getMessage() : "No se pudo cancelar la inscripción.");
             }
             return;
         }

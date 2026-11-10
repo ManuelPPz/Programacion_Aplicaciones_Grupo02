@@ -241,6 +241,72 @@ public class Controller implements IController {
         }
     }
 
+    @Override
+    public void InscripcionAEdicionCurso(String nomEdicion, String nickname, Date fIns, String urlVideo) throws Exception {
+        UsuarioBase ub = manUsuario.BuscarUsuario(nickname);
+        if (!(ub instanceof Usuario u)) {
+            throw new Exception("Solo los estudiantes pueden inscribirse a una edición de curso.");
+        }
+        EdicionCurso ec = manEdicion.BuscarEdicion(nomEdicion);
+        if (ec == null) {
+            throw new Exception("La edición de curso '" + nomEdicion + "' no existe.");
+        }
+        String video = normalizarUrlVideo(urlVideo);
+        manEdicion.AddUsuarioInscripto(new Edi_Usu(u, ec, fIns != null ? fIns : new Date(), video));
+    }
+
+    @Override
+    public DTMaster ConsultarInscripcionEdicion(String nickname, String nomEdicion) {
+        Edi_Usu eu = manEdicion.BuscarInscripcion(nickname, nomEdicion);
+        return (eu != null) ? eu.getMyDT() : null;
+    }
+
+    @Override
+    public void ModificarInscripcionEdicion(String nickname, String nomEdicion, String urlVideo) throws Exception {
+        String video = normalizarUrlVideo(urlVideo);
+        manEdicion.ModificarVideoInscripcion(nickname, nomEdicion, video);
+    }
+
+    @Override
+    public void DesistirDeEdicionDeCurso(String nickname, String nomEdicion) throws Exception {
+        manEdicion.DesistirDeInscripcion(nickname, nomEdicion);
+    }
+
+    @Override
+    public void IngresarResultadosDeEvaluaciones(String nomEdicion, List<String> estudiantes, List<Integer> notas) throws Exception {
+        manEdicion.IngresarNotas(nomEdicion, estudiantes, notas, false);
+    }
+
+    @Override
+    public void FinalizarEdicionDeCurso(String nomEdicion, List<String> estudiantes, List<Integer> notas) throws Exception {
+        manEdicion.IngresarNotas(nomEdicion, estudiantes, notas, true);
+    }
+
+    @Override
+    public DTMaster EdicionVigente(String nomCurso) {
+        EdicionCurso ec = manEdicion.BuscarEdicionVigente(nomCurso, new Date());
+        return (ec != null) ? manEdicion.getDT(ec) : null;
+    }
+
+    /** null si no hay video; si hay, debe ser una URL http(s) válida. */
+    static String normalizarUrlVideo(String urlVideo) throws Exception {
+        if (urlVideo == null || urlVideo.isBlank()) {
+            return null;
+        }
+        String url = urlVideo.trim();
+        try {
+            java.net.URI uri = new java.net.URI(url);
+            String esquema = uri.getScheme();
+            if (esquema != null && (esquema.equalsIgnoreCase("http") || esquema.equalsIgnoreCase("https"))
+                    && uri.getHost() != null && url.length() <= 500) {
+                return url;
+            }
+        } catch (java.net.URISyntaxException e) {
+            // cae al error de abajo
+        }
+        throw new Exception("La URL del video no es válida. Debe comenzar con http:// o https://");
+    }
+
     //En esta funcion la lista de Object[] recibe el nickname del estudiate como indice="0" y el cambio con indice="1" que puede ser Enum_Estado_inscripcion - ACEPTADO, RECHAZADO O INSCRIPTO
     //si y solo si el profe confirma que esto se puede en todo caso solo se pasaran los estudiantes que fueron aceptados y rechazados
     @Override

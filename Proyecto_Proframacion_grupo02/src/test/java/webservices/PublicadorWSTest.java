@@ -160,15 +160,42 @@ public class PublicadorWSTest {
         when(ico.ListarInscripciones("u")).thenReturn(lista);
 
         ws.AltaEdicionCurso("I", "C", "E", d, d, 10, docentes, d, "img");
-        ws.InscripcionAEdicionCurso("E", "u", d);
+        ws.InscripcionAEdicionCurso("E", "u", d, "https://youtu.be/x");
 
         verify(ico).AltaEdicionCurso("I", "C", "E", d, d, 10, docentes, d, "img");
-        verify(ico).InscripcionAEdicionCurso("E", "u", d);
+        verify(ico).InscripcionAEdicionCurso("E", "u", d, "https://youtu.be/x");
         assertSame(dt, ws.ConsultaEdicionCurso("E"));
         assertTrue(ws.VerificarEdicion("E"));
         assertSame(lista, ws.ListarEdiciones("C"));
         assertSame(lista, ws.ListarEdicionesPrioritarias("E"));
         assertSame(lista, ws.ListarInscripciones("u"));
+    }
+
+    @Test
+    public void testInscripcionConVideoYConsultas() throws Exception {
+        DTMaster ins = mock(DTMaster.class);
+        DTMaster vig = mock(DTMaster.class);
+        when(ico.ConsultarInscripcionEdicion("u", "E")).thenReturn(ins);
+        when(ico.EdicionVigente("C")).thenReturn(vig);
+
+        assertSame(ins, ws.ConsultarInscripcionEdicion("u", "E"));
+        assertSame(vig, ws.EdicionVigente("C"));
+        ws.ModificarInscripcionEdicion("u", "E", "https://v");
+        verify(ico).ModificarInscripcionEdicion("u", "E", "https://v");
+    }
+
+    @Test
+    public void testInscripcionConVideoError() throws Exception {
+        doThrow(new Exception("ya inscripto")).when(ico).InscripcionAEdicionCurso(any(), any(), any(), any());
+        EdextWSException e = assertThrows(EdextWSException.class,
+                () -> ws.InscripcionAEdicionCurso("E", "u", new Date(), null));
+        assertEquals("ya inscripto", e.getMessage());
+    }
+
+    @Test
+    public void testModificarInscripcionError() throws Exception {
+        doThrow(new Exception("no inscripto")).when(ico).ModificarInscripcionEdicion(any(), any(), any());
+        assertThrows(EdextWSException.class, () -> ws.ModificarInscripcionEdicion("u", "E", null));
     }
 
     @Test
@@ -306,5 +333,30 @@ public class PublicadorWSTest {
         List<DTMaster> lista = new ArrayList<>();
         when(ico.ListarCursosMasVisitados(0)).thenReturn(lista);
         assertSame(lista, ws.ListarCursosMasVisitados(0));
+    }
+
+    @Test
+    public void testDesistirYCalificaciones() throws Exception {
+        ws.DesistirDeEdicionDeCurso("u", "E");
+        verify(ico).DesistirDeEdicionDeCurso("u", "E");
+        List<String> est = List.of("u");
+        List<Integer> notas = List.of(10);
+        ws.IngresarResultadosDeEvaluaciones("E", est, notas);
+        verify(ico).IngresarResultadosDeEvaluaciones("E", est, notas);
+        ws.FinalizarEdicionDeCurso("E", est, notas);
+        verify(ico).FinalizarEdicionDeCurso("E", est, notas);
+    }
+
+    @Test
+    public void testDesistirYCalificacionesConError() throws Exception {
+        doThrow(new Exception("no pendiente")).when(ico).DesistirDeEdicionDeCurso(any(), any());
+        doThrow(new Exception("nota")).when(ico).IngresarResultadosDeEvaluaciones(any(), any(), any());
+        doThrow(new Exception("fin")).when(ico).FinalizarEdicionDeCurso(any(), any(), any());
+        assertEquals("no pendiente", assertThrows(EdextWSException.class,
+                () -> ws.DesistirDeEdicionDeCurso("u", "E")).getMessage());
+        assertEquals("nota", assertThrows(EdextWSException.class,
+                () -> ws.IngresarResultadosDeEvaluaciones("E", null, null)).getMessage());
+        assertEquals("fin", assertThrows(EdextWSException.class,
+                () -> ws.FinalizarEdicionDeCurso("E", null, null)).getMessage());
     }
 }

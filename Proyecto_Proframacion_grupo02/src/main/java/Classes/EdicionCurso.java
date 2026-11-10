@@ -60,6 +60,11 @@ public class EdicionCurso implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "F_Alta")
     private Date fAlta;
+
+    /** Solo se persiste FINALIZADA; el resto de los estados se calcula por fechas (ver getEstado). */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado", length = 20)
+    private Enum_Estado_Edicion estado;
     
     public String getNombre(){ return nombre; }
     public Instituto getInstituto() { return miInstituto; }
@@ -72,6 +77,30 @@ public class EdicionCurso implements Serializable {
     public List<Edi_Usu> getMisInscripciones(){ return this.misUsuarios; }
     public String getImage(){ return this.image; }
     public void setImage(String image){ this.image = image; }
+
+    /** Estado actual: FINALIZADA si el docente la cerró; si no, según la fecha de hoy. */
+    public Enum_Estado_Edicion getEstado() {
+        return getEstado(new Date());
+    }
+
+    public Enum_Estado_Edicion getEstado(Date hoy) {
+        if (this.estado == Enum_Estado_Edicion.FINALIZADA) {
+            return Enum_Estado_Edicion.FINALIZADA;
+        }
+        if (this.fInicio == null) {
+            return Enum_Estado_Edicion.NORMAL;
+        }
+        return hoy.before(this.fInicio) ? Enum_Estado_Edicion.SIN_INICIAR : Enum_Estado_Edicion.EN_CURSO;
+    }
+
+    public boolean isFinalizada() {
+        return this.estado == Enum_Estado_Edicion.FINALIZADA;
+    }
+
+    /** Cierra la edición; una vez finalizada no vuelve a cambiar de estado. */
+    public void Finalizar() {
+        this.estado = Enum_Estado_Edicion.FINALIZADA;
+    }
     
     public EdicionCurso() { 
         this.misUsuarios = new ArrayList<>();

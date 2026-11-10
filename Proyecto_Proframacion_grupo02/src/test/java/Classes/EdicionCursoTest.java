@@ -188,4 +188,18 @@ public class EdicionCursoTest {
     public void testToString() {
         assertTrue(conNombre("Ed1").toString().contains("Ed1"));
     }
+
+    @Test
+    public void testEstadoSegunFechasYFinalizada() {
+        long dia = 24L * 60 * 60 * 1000;
+        Date hoy = new Date();
+        EdicionCurso futura = new EdicionCurso("F", null, null, new Date(hoy.getTime() + dia), new Date(hoy.getTime() + 9 * dia), 0, hoy, new java.util.ArrayList<>(), null);
+        assertEquals(Enum_Estado_Edicion.SIN_INICIAR, futura.getEstado());
+        assertEquals(Enum_Estado_Edicion.EN_CURSO, futura.getEstado(new Date(hoy.getTime() + 2 * dia)));
+        assertFalse(futura.isFinalizada());
+        futura.Finalizar();
+        assertTrue(futura.isFinalizada());
+        assertEquals(Enum_Estado_Edicion.FINALIZADA, futura.getEstado());
+        assertEquals(Enum_Estado_Edicion.NORMAL, new EdicionCurso().getEstado());
+    }
 }

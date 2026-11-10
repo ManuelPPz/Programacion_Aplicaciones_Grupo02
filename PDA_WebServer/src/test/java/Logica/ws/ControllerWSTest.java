@@ -284,7 +284,7 @@ public class ControllerWSTest {
         verify(ws).altaCurso(eq("INCO"), eq("Java"), eq("d"), eq(1), eq(2f), eq(3), eq("u"), eq(List.of("p")),
                 any(), eq("house"), eq(List.of("c")), eq("img"));
         verify(ws).altaEdicionCurso(eq("INCO"), eq("Java"), eq("E"), any(), any(), eq(10), eq(List.of("house")), any(), eq("img"));
-        verify(ws).inscripcionAEdicionCurso(eq("E"), eq("roro"), any());
+        verify(ws).inscripcionAEdicionCurso(eq("E"), eq("roro"), any(), isNull());
         verify(ws).crearProgramasDeFormacion(eq("P"), eq("d"), any(), any(), any(), eq("img"), eq("INCO"));
         verify(ws).agregarCursoAProgramas("P", List.of("Java"));
         verify(ws).inscripcionUsuarioAProgramas(eq("P"), eq("roro"), any());
@@ -396,5 +396,83 @@ public class ControllerWSTest {
         DTCurso dc = assertInstanceOf(DTCurso.class, l.get(0));
         assertEquals("Java", dc.getNombre());
         assertEquals(12, dc.getVisitas());
+    }
+
+    // ===================== Inscripción a edición con video =====================
+
+    @Test
+    public void testInscripcionConVideoYConsultas() throws Exception {
+        ctrl.InscripcionAEdicionCurso("E", "roro", new Date(), "https://youtu.be/x");
+        verify(ws).inscripcionAEdicionCurso(eq("E"), eq("roro"), any(), eq("https://youtu.be/x"));
+
+        DtEdiUsu ins = new DtEdiUsu();
+        ins.setNickEstudiante("roro");
+        ins.setNomEdicion("E");
+        ins.setUrlVideo("https://youtu.be/x");
+        when(ws.consultarInscripcionEdicion("roro", "E")).thenReturn(ins);
+        Logica.DTsClasses.DTEdi_Usu dt = (Logica.DTsClasses.DTEdi_Usu) ctrl.ConsultarInscripcionEdicion("roro", "E");
+        assertEquals("https://youtu.be/x", dt.getUrlVideo());
+        assertNull(ctrl.ConsultarInscripcionEdicion("otro", "E"));
+
+        ctrl.ModificarInscripcionEdicion("roro", "E", null);
+        verify(ws).modificarInscripcionEdicion("roro", "E", null);
+
+        DtEdicionCurso vig = new DtEdicionCurso();
+        vig.setNombre("E");
+        when(ws.edicionVigente("Java")).thenReturn(vig);
+        assertEquals("E", ((DTEdicionCurso) ctrl.EdicionVigente("Java")).getNombre());
+        assertNull(ctrl.EdicionVigente("SinEdicion"));
+    }
+
+    @Test
+    public void testInscripcionConVideoErrores() throws Exception {
+        EdextWSException fault = new EdextWSException("ya inscripto", new EdextFault());
+        doThrow(fault).when(ws).inscripcionAEdicionCurso(any(), any(), any(), any());
+        doThrow(fault).when(ws).modificarInscripcionEdicion(any(), any(), any());
+
+        Exception e = assertThrows(Exception.class, () -> ctrl.InscripcionAEdicionCurso("E", "roro", new Date()));
+        assertEquals("ya inscripto", e.getMessage());
+        assertThrows(Exception.class, () -> ctrl.ModificarInscripcionEdicion("roro", "E", "https://v"));
+    }
+
+    @Test
+    public void testDesistirYCalificaciones() throws Exception {
+        List<String> est = List.of("roro");
+        List<Integer> notas = List.of(11);
+        ctrl.DesistirDeEdicionDeCurso("roro", "E");
+        verify(ws).desistirDeEdicionDeCurso("roro", "E");
+        ctrl.IngresarResultadosDeEvaluaciones("E", est, notas);
+        verify(ws).ingresarResultadosDeEvaluaciones("E", est, notas);
+        ctrl.FinalizarEdicionDeCurso("E", est, notas);
+        verify(ws).finalizarEdicionDeCurso("E", est, notas);
+    }
+
+    @Test
+    public void testDesistirYCalificacionesConError() throws Exception {
+        EdextWSException ex = new EdextWSException("no pendiente", new EdextFault());
+        doThrow(ex).when(ws).desistirDeEdicionDeCurso(any(), any());
+        doThrow(ex).when(ws).ingresarResultadosDeEvaluaciones(any(), any(), any());
+        doThrow(ex).when(ws).finalizarEdicionDeCurso(any(), any(), any());
+        assertEquals("no pendiente", assertThrows(Exception.class, () -> ctrl.DesistirDeEdicionDeCurso("r", "E")).getMessage());
+        assertThrows(Exception.class, () -> ctrl.IngresarResultadosDeEvaluaciones("E", null, null));
+        assertThrows(Exception.class, () -> ctrl.FinalizarEdicionDeCurso("E", null, null));
+    }
+
+    @Test
+    public void testConvierteEstadoEdicionYNota() {
+        DtEdiUsu ins = new DtEdiUsu();
+        ins.setNickEstudiante("roro");
+        ins.setNota(9);
+        DtEdicionCurso e = new DtEdicionCurso();
+        e.setNombre("E");
+        e.setEstado(Logica.ws.cliente.EnumEstadoEdicion.FINALIZADA);
+        e.getMisIscripciones().add(ins);
+        when(ws.consultaEdicionCurso("E")).thenReturn(e);
+
+        DTEdicionCurso dt = (DTEdicionCurso) ctrl.ConsultaEdicionCurso("E");
+
+        assertEquals(Logica.Classes.Enum_Estado_Edicion.FINALIZADA, dt.getEstado());
+        assertEquals(9, dt.getMisInscripciones().get(0).getNota());
+        assertNull(ConversorDT.estado((Logica.ws.cliente.EnumEstadoEdicion) null));
     }
 }

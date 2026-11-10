@@ -15,6 +15,20 @@ public class DTEdi_Usu extends DTMaster{
     private String nomEdicion;
     private Date fInscripcion;
     private Enum_Estado_inscripcion estadoIns;
+    private String urlVideo;
+    private Integer nota;
+
+    public DTEdi_Usu(String nickEstudiante, String nomEdicion, Date fInscripcion, Enum_Estado_inscripcion estadoIns,
+            String urlVideo, Integer nota) {
+        this(nickEstudiante, nomEdicion, fInscripcion, estadoIns, urlVideo);
+        this.nota = nota;
+    }
+
+    public DTEdi_Usu(String nickEstudiante, String nomEdicion, Date fInscripcion, Enum_Estado_inscripcion estadoIns,
+            String urlVideo) {
+        this(nickEstudiante, nomEdicion, fInscripcion, estadoIns);
+        this.urlVideo = urlVideo;
+    }
 
     public DTEdi_Usu(String nickEstudiante, String nomEdicion, Date fInscripcion, Enum_Estado_inscripcion estadoIns) {
         this.nickEstudiante = nickEstudiante;
@@ -39,4 +53,14 @@ public class DTEdi_Usu extends DTMaster{
         return estadoIns;
     }
     
+
+    /** URL del video de motivación, o null si no se adjuntó. */
+    public String getUrlVideo() {
+        return urlVideo;
+    }
+
+    /** Calificación (1 a 12), o null si todavía no se ingresó. */
+    public Integer getNota() {
+        return nota;
+    }
 }

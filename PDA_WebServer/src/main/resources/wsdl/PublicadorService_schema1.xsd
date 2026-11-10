@@ -40,6 +40,10 @@
 
 <xs:element name="ConsultaUsuarioAvanzadaResponse" type="tns:ConsultaUsuarioAvanzadaResponse"/>
 
+<xs:element name="ConsultarInscripcionEdicion" type="tns:ConsultarInscripcionEdicion"/>
+
+<xs:element name="ConsultarInscripcionEdicionResponse" type="tns:ConsultarInscripcionEdicionResponse"/>
+
 <xs:element name="ConsultarUsuario" type="tns:ConsultarUsuario"/>
 
 <xs:element name="ConsultarUsuarioResponse" type="tns:ConsultarUsuarioResponse"/>
@@ -52,11 +56,27 @@
 
 <xs:element name="DejarDeSeguirResponse" type="tns:DejarDeSeguirResponse"/>
 
+<xs:element name="DesistirDeEdicionDeCurso" type="tns:DesistirDeEdicionDeCurso"/>
+
+<xs:element name="DesistirDeEdicionDeCursoResponse" type="tns:DesistirDeEdicionDeCursoResponse"/>
+
 <xs:element name="EdextFault" nillable="true" type="tns:edextFault"/>
+
+<xs:element name="EdicionVigente" type="tns:EdicionVigente"/>
+
+<xs:element name="EdicionVigenteResponse" type="tns:EdicionVigenteResponse"/>
+
+<xs:element name="FinalizarEdicionDeCurso" type="tns:FinalizarEdicionDeCurso"/>
+
+<xs:element name="FinalizarEdicionDeCursoResponse" type="tns:FinalizarEdicionDeCursoResponse"/>
 
 <xs:element name="GenerateRandPassword" type="tns:GenerateRandPassword"/>
 
 <xs:element name="GenerateRandPasswordResponse" type="tns:GenerateRandPasswordResponse"/>
+
+<xs:element name="IngresarResultadosDeEvaluaciones" type="tns:IngresarResultadosDeEvaluaciones"/>
+
+<xs:element name="IngresarResultadosDeEvaluacionesResponse" type="tns:IngresarResultadosDeEvaluacionesResponse"/>
 
 <xs:element name="InscripcionAEdicionCurso" type="tns:InscripcionAEdicionCurso"/>
 
@@ -121,6 +141,10 @@
 <xs:element name="ListarSeguidos" type="tns:ListarSeguidos"/>
 
 <xs:element name="ListarSeguidosResponse" type="tns:ListarSeguidosResponse"/>
+
+<xs:element name="ModificarInscripcionEdicion" type="tns:ModificarInscripcionEdicion"/>
+
+<xs:element name="ModificarInscripcionEdicionResponse" type="tns:ModificarInscripcionEdicionResponse"/>
 
 <xs:element name="ModificarUsuario" type="tns:ModificarUsuario"/>
 
@@ -303,6 +327,8 @@
 <xs:element name="nomEdicion" type="xs:string" minOccurs="0"/>
 <xs:element name="fInscripcion" type="xs:dateTime" minOccurs="0"/>
 <xs:element name="estadoIns" type="tns:enumEstadoInscripcion" minOccurs="0"/>
+<xs:element name="urlVideo" type="xs:string" minOccurs="0"/>
+<xs:element name="nota" type="xs:int" minOccurs="0"/>
 </xs:sequence>
 </xs:extension>
 </xs:complexContent>
@@ -368,6 +394,7 @@
 <xs:element name="misIscripciones" type="tns:dtEdiUsu" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
 <xs:element name="misCategorias" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
 <xs:element name="imgPath" type="xs:string" minOccurs="0"/>
+<xs:element name="estado" type="tns:enumEstadoEdicion" minOccurs="0"/>
 </xs:sequence>
 </xs:extension>
 </xs:complexContent>
@@ -518,6 +545,19 @@
 </xs:sequence>
 </xs:complexType>
 
+<xs:complexType name="ConsultarInscripcionEdicion">
+<xs:sequence>
+<xs:element name="nickname" type="xs:string" minOccurs="0"/>
+<xs:element name="edicion" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="ConsultarInscripcionEdicionResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:dtMaster" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
 <xs:complexType name="SubirImagen">
 <xs:sequence>
 <xs:element name="carpeta" type="xs:string" minOccurs="0"/>
@@ -531,6 +571,18 @@
 <xs:sequence>
 <xs:element name="return" type="xs:string" minOccurs="0"/>
 </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="FinalizarEdicionDeCurso">
+<xs:sequence>
+<xs:element name="edicion" type="xs:string" minOccurs="0"/>
+<xs:element name="estudiantes" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+<xs:element name="notas" type="xs:int" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="FinalizarEdicionDeCursoResponse">
+<xs:sequence/>
 </xs:complexType>
 
 <xs:complexType name="ListarDocentes">
@@ -603,6 +655,7 @@
 <xs:element name="edicion" type="xs:string" minOccurs="0"/>
 <xs:element name="nickname" type="xs:string" minOccurs="0"/>
 <xs:element name="fecha" type="xs:dateTime" minOccurs="0"/>
+<xs:element name="urlVideo" type="xs:string" minOccurs="0"/>
 </xs:sequence>
 </xs:complexType>
 
@@ -634,6 +687,18 @@
 </xs:sequence>
 </xs:complexType>
 
+<xs:complexType name="IngresarResultadosDeEvaluaciones">
+<xs:sequence>
+<xs:element name="edicion" type="xs:string" minOccurs="0"/>
+<xs:element name="estudiantes" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+<xs:element name="notas" type="xs:int" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="IngresarResultadosDeEvaluacionesResponse">
+<xs:sequence/>
+</xs:complexType>
+
 <xs:complexType name="AltaCurso">
 <xs:sequence>
 <xs:element name="instituto" type="xs:string" minOccurs="0"/>
@@ -652,6 +717,17 @@
 </xs:complexType>
 
 <xs:complexType name="AltaCursoResponse">
+<xs:sequence/>
+</xs:complexType>
+
+<xs:complexType name="DesistirDeEdicionDeCurso">
+<xs:sequence>
+<xs:element name="nickname" type="xs:string" minOccurs="0"/>
+<xs:element name="edicion" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="DesistirDeEdicionDeCursoResponse">
 <xs:sequence/>
 </xs:complexType>
 
@@ -764,6 +840,18 @@
 </xs:sequence>
 </xs:complexType>
 
+<xs:complexType name="EdicionVigente">
+<xs:sequence>
+<xs:element name="curso" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="EdicionVigenteResponse">
+<xs:sequence>
+<xs:element name="return" type="tns:dtMaster" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
 <xs:complexType name="AceptarEstudiantesAEdicionCurso">
 <xs:sequence>
 <xs:element name="cambios" type="tns:dtCambioEstado" minOccurs="0" maxOccurs="unbounded"/>
@@ -821,6 +909,18 @@
 </xs:sequence>
 </xs:complexType>
 
+<xs:complexType name="ModificarInscripcionEdicion">
+<xs:sequence>
+<xs:element name="nickname" type="xs:string" minOccurs="0"/>
+<xs:element name="edicion" type="xs:string" minOccurs="0"/>
+<xs:element name="urlVideo" type="xs:string" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="ModificarInscripcionEdicionResponse">
+<xs:sequence/>
+</xs:complexType>
+
 <xs:complexType name="ListarEdiciones">
 <xs:sequence>
 <xs:element name="curso" type="xs:string" minOccurs="0"/>
@@ -862,6 +962,15 @@
 <xs:enumeration value="INSCRIPTO"/>
 <xs:enumeration value="ACEPTADO"/>
 <xs:enumeration value="RECHAZADO"/>
+</xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name="enumEstadoEdicion">
+<xs:restriction base="xs:string">
+<xs:enumeration value="EN_CURSO"/>
+<xs:enumeration value="FINALIZADA"/>
+<xs:enumeration value="SIN_INICIAR"/>
+<xs:enumeration value="NORMAL"/>
 </xs:restriction>
 </xs:simpleType>
 

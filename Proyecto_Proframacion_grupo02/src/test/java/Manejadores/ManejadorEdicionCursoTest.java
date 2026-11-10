@@ -499,7 +499,7 @@ public class ManejadorEdicionCursoTest {
             DTEdicionCurso result = manejador.getDT(ec);
 
             assertNotNull(result);
-            assertEquals(12, args.size());
+            assertEquals(13, args.size());
             assertEquals("INCO", args.get(0));
             assertEquals("Java", args.get(1));
             assertEquals("Ed1", args.get(2));
@@ -716,5 +716,217 @@ public class ManejadorEdicionCursoTest {
         manejador.ModificarEstadoDeInscripcion("nick", null, "Ed1");
 
         verify(tx, never()).rollback();
+    }
+
+    // ===================== Inscripción con video =====================
+
+    @Test
+    public void testAddUsuarioInscriptoCopiaUrlVideo() throws Exception {
+        Edi_Usu eu = euEntrada(new Date());
+        when(eu.getUrlVideo()).thenReturn("https://youtu.be/x");
+        edicionManaged(5, 3);
+        usuarioManaged();
+        when(em.find(eq(Edi_Usu.class), any())).thenReturn(null);
+
+        try (MockedConstruction<Edi_Usu> construido = mockConstruction(Edi_Usu.class)) {
+            manejador.AddUsuarioInscripto(eu);
+            verify(construido.constructed().get(0)).setUrlVideo("https://youtu.be/x");
+        }
+    }
+
+    @Test
+    public void testBuscarInscripcion() {
+        Edi_Usu eu = mock(Edi_Usu.class);
+        when(em.find(eq(Edi_Usu.class), any())).thenReturn(eu);
+
+        assertSame(eu, manejador.BuscarInscripcion("nick", "Ed1"));
+        assertNull(manejador.BuscarInscripcion(null, "Ed1"));
+        assertNull(manejador.BuscarInscripcion("nick", null));
+        verify(em).close();
+    }
+
+    @Test
+    public void testBuscarInscripcionError() {
+        when(em.find(eq(Edi_Usu.class), any())).thenThrow(new RuntimeException("boom"));
+        assertNull(manejador.BuscarInscripcion("nick", "Ed1"));
+        verify(em).close();
+    }
+
+    @Test
+    public void testModificarVideoInscripcionOk() throws Exception {
+        Edi_Usu eu = mock(Edi_Usu.class);
+        when(em.find(eq(Edi_Usu.class), any())).thenReturn(eu);
+
+        manejador.ModificarVideoInscripcion("nick", "Ed1", "https://v");
+
+        verify(eu).setUrlVideo("https://v");
+        verify(tx).commit();
+        verify(em).close();
+    }
+
+    @Test
+    public void testModificarVideoInscripcionNoExiste() {
+        when(em.find(eq(Edi_Usu.class), any())).thenReturn(null);
+
+        Exception ex = assertThrows(Exception.class, () -> manejador.ModificarVideoInscripcion("nick", "Ed1", null));
+
+        assertTrue(ex.getMessage().contains("no está inscripto"));
+        verify(tx).rollback();
+        verify(tx, never()).commit();
+        verify(em).close();
+    }
+
+    private static Date dia(int offsetDias) {
+        return new Date(System.currentTimeMillis() + offsetDias * 24L * 60 * 60 * 1000);
+    }
+
+    private EdicionCurso edicionDeCurso(String curso, Date fInicio, Date fFin, Date fAlta) {
+        EdicionCurso ec = mock(EdicionCurso.class, RETURNS_DEEP_STUBS);
+        when(ec.getCurso().getNombre()).thenReturn(curso);
+        when(ec.getFInicio()).thenReturn(fInicio);
+        when(ec.getFFin()).thenReturn(fFin);
+        when(ec.getFAlta()).thenReturn(fAlta);
+        return ec;
+    }
+
+    @Test
+    public void testBuscarEdicionVigenteEligeLaMasRecienteNoTerminada() {
+        EdicionCurso terminada = edicionDeCurso("Java", dia(-60), dia(-1), dia(-1));
+        EdicionCurso vieja = edicionDeCurso("Java", dia(-10), dia(30), dia(-90));
+        EdicionCurso nueva = edicionDeCurso("Java", dia(20), dia(80), dia(-5));
+        EdicionCurso otroCurso = edicionDeCurso("Python", dia(5), dia(50), dia(0));
+        EdicionCurso sinFin = edicionDeCurso("Java", dia(5), null, dia(0));
+        EdicionCurso sinCurso = mock(EdicionCurso.class);
+        when(sinCurso.getCurso()).thenReturn(null);
+        when(queryEdiciones().getResultList()).thenReturn(
+                Arrays.asList(sinCurso, terminada, vieja, otroCurso, nueva, sinFin));
+
+        assertSame(nueva, manejador.BuscarEdicionVigente(" java ", new Date()));
+    }
+
+    @Test
+    public void testBuscarEdicionVigenteTerminaHoyCuenta() {
+        EdicionCurso hoy = edicionDeCurso("Java", dia(-30), new Date(), null);
+        when(queryEdiciones().getResultList()).thenReturn(List.of(hoy));
+        assertSame(hoy, manejador.BuscarEdicionVigente("Java", null));
+    }
+
+    @Test
+    public void testBuscarEdicionVigenteSinFechaAltaUsaInicio() {
+        EdicionCurso a = edicionDeCurso("Java", dia(1), dia(40), null);
+        EdicionCurso b = edicionDeCurso("Java", dia(10), dia(40), null);
+        EdicionCurso sinFechas = edicionDeCurso("Java", null, dia(40), null);
+        when(queryEdiciones().getResultList()).thenReturn(List.of(sinFechas, a, b));
+        assertSame(b, manejador.BuscarEdicionVigente("Java", new Date()));
+    }
+
+    @Test
+    public void testBuscarEdicionVigenteSinResultado() {
+        EdicionCurso terminada = edicionDeCurso("Java", dia(-9), dia(-2), dia(-9));
+        when(queryEdiciones().getResultList()).thenReturn(List.of(terminada));
+        assertNull(manejador.BuscarEdicionVigente("Java", new Date()));
+        assertNull(manejador.BuscarEdicionVigente(null, new Date()));
+        assertNull(manejador.BuscarEdicionVigente("  ", new Date()));
+    }
+
+    // ===================== Desistir / calificaciones =====================
+
+    private Edi_Usu inscripcionReal(String nick, EdicionCurso ec, Enum_Estado_inscripcion estado) {
+        Usuario u = mock(Usuario.class);
+        when(u.getNickname()).thenReturn(nick);
+        when(u.getMisInscripciones()).thenReturn(new ArrayList<>());
+        Edi_Usu eu = new Edi_Usu(u, ec, new Date());
+        eu.setEstado(estado);
+        return eu;
+    }
+
+    @Test
+    public void testDesistirDeInscripcionLiberaCupo() throws Exception {
+        EdicionCurso ec = new EdicionCurso("Ed1", null, null, dia(5), dia(30), 10, new Date(), new ArrayList<>(), null);
+        ec.setCupoActual(9);
+        Edi_Usu eu = inscripcionReal("nick", ec, Enum_Estado_inscripcion.INSCRIPTO);
+        ec.AddUsuarioInscripto(eu);
+        when(em.find(eq(Edi_Usu.class), any())).thenReturn(eu);
+
+        manejador.DesistirDeInscripcion("nick", "Ed1");
+
+        assertEquals(10, ec.getCupoActual());
+        assertTrue(ec.getMisInscripciones().isEmpty());
+        verify(em).remove(eu);
+        verify(tx).commit();
+        verify(em).close();
+    }
+
+    @Test
+    public void testDesistirDeInscripcionNoPendiente() {
+        EdicionCurso ec = new EdicionCurso("Ed1", null, null, dia(5), dia(30), 10, new Date(), new ArrayList<>(), null);
+        Edi_Usu eu = inscripcionReal("nick", ec, Enum_Estado_inscripcion.ACEPTADO);
+        when(em.find(eq(Edi_Usu.class), any())).thenReturn(eu);
+
+        Exception ex = assertThrows(Exception.class, () -> manejador.DesistirDeInscripcion("nick", "Ed1"));
+
+        assertTrue(ex.getMessage().contains("pendiente"));
+        verify(em, never()).remove(any());
+        verify(tx).rollback();
+    }
+
+    @Test
+    public void testDesistirDeInscripcionNoExiste() {
+        when(em.find(eq(Edi_Usu.class), any())).thenReturn(null);
+        Exception ex = assertThrows(Exception.class, () -> manejador.DesistirDeInscripcion("nick", "Ed1"));
+        assertTrue(ex.getMessage().contains("no está inscripto"));
+        verify(em).close();
+    }
+
+    @Test
+    public void testIngresarNotasYFinalizar() throws Exception {
+        EdicionCurso ec = new EdicionCurso("Ed1", null, null, dia(-5), dia(30), 0, new Date(), new ArrayList<>(), null);
+        Edi_Usu a = inscripcionReal("a", ec, Enum_Estado_inscripcion.ACEPTADO);
+        Edi_Usu b = inscripcionReal("b", ec, Enum_Estado_inscripcion.ACEPTADO);
+        when(em.find(EdicionCurso.class, "Ed1")).thenReturn(ec);
+        when(em.find(eq(Edi_Usu.class), any())).thenReturn(a, b);
+
+        manejador.IngresarNotas("Ed1", List.of("a", "b"), List.of(7, 12), false);
+        assertEquals(7, a.getNota());
+        assertEquals(12, b.getNota());
+        assertFalse(ec.isFinalizada());
+
+        manejador.IngresarNotas("Ed1", List.of(), List.of(), true);
+        assertTrue(ec.isFinalizada());
+        verify(tx, times(2)).commit();
+    }
+
+    @Test
+    public void testIngresarNotasValidaciones() {
+        EdicionCurso ec = new EdicionCurso("Ed1", null, null, dia(-5), dia(30), 0, new Date(), new ArrayList<>(), null);
+        when(em.find(EdicionCurso.class, "Ed1")).thenReturn(ec);
+        when(em.find(eq(Edi_Usu.class), any())).thenReturn(null);
+
+        assertTrue(assertThrows(Exception.class,
+                () -> manejador.IngresarNotas("Ed1", List.of("a"), List.of(13), false)).getMessage().contains("entre 1 y 12"));
+        assertTrue(assertThrows(Exception.class,
+                () -> manejador.IngresarNotas("Ed1", List.of("a"), Arrays.asList((Integer) null), false)).getMessage().contains("entre 1 y 12"));
+        assertTrue(assertThrows(Exception.class,
+                () -> manejador.IngresarNotas("Ed1", List.of("a"), List.of(5), false)).getMessage().contains("no está inscripto"));
+        assertTrue(assertThrows(Exception.class,
+                () -> manejador.IngresarNotas("NoExiste", null, null, false)).getMessage().contains("No existe"));
+
+        ec.Finalizar();
+        assertTrue(assertThrows(Exception.class,
+                () -> manejador.IngresarNotas("Ed1", null, null, false)).getMessage().contains("finalizada"));
+        verify(tx, never()).commit();
+    }
+
+    @Test
+    public void testGetDTIncluyeEstadoYNota() {
+        EdicionCurso ec = new EdicionCurso("Ed1", null, null, dia(-5), dia(30), 0, new Date(), new ArrayList<>(), null);
+        Edi_Usu eu = inscripcionReal("a", ec, Enum_Estado_inscripcion.ACEPTADO);
+        eu.setNota(9);
+        ec.AddUsuarioInscripto(eu);
+
+        DTEdicionCurso dt = manejador.getDT(ec);
+
+        assertEquals(Classes.Enum_Estado_Edicion.EN_CURSO, dt.getEstado());
+        assertEquals(9, dt.getMisInscripciones().get(0).getNota());
     }
 }

@@ -33,7 +33,20 @@ public class Edi_Usu implements Serializable {
     @Column(name = "estado", length = 20)
     private Enum_Estado_inscripcion estadoIns = Enum_Estado_inscripcion.INSCRIPTO;
 
+    /** URL opcional del video de motivación que el estudiante adjunta a su inscripción. */
+    @Column(name = "url_video", length = 500)
+    private String urlVideo;
+
+    /** Calificación de la evaluación (1 a 12), o null si todavía no se ingresó. */
+    @Column(name = "nota")
+    private Integer nota;
+
     public Edi_Usu() {}
+
+    public Edi_Usu(Usuario usuario, EdicionCurso edicion, Date fIns, String urlVideo) {
+        this(usuario, edicion, fIns);
+        this.urlVideo = urlVideo;
+    }
 
     public Edi_Usu(Usuario usuario, EdicionCurso edicion, Date fIns) {
         this.usuario = usuario;
@@ -60,6 +73,12 @@ public class Edi_Usu implements Serializable {
     public Enum_Estado_inscripcion getMiEstado() { return this.estadoIns; }
     public void setEstado(Enum_Estado_inscripcion estado) { this.estadoIns = estado; }
 
+    public String getUrlVideo() { return this.urlVideo; }
+    public void setUrlVideo(String urlVideo) { this.urlVideo = urlVideo; }
+
+    public Integer getNota() { return this.nota; }
+    public void setNota(Integer nota) { this.nota = nota; }
+
     @Override
     public int hashCode() {
         return (id != null ? id.hashCode() : 0);
@@ -77,7 +96,9 @@ public class Edi_Usu implements Serializable {
             usuario != null ? usuario.getNickname() : "",
             edicion != null ? edicion.getNombre() : "",
             fInscripcion,
-            estadoIns
+            estadoIns,
+            urlVideo,
+            nota
         );
     }
 }

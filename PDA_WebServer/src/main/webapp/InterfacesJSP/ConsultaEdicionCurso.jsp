@@ -1,4 +1,5 @@
 <%@page import="Logica.util.ImagenUtil"%>
+<%@page import="Logica.Classes.Enum_Estado_inscripcion"%>
 <%@page import="Logica.DTsClasses.DTEdicionCurso"%>
 <%@page import="Logica.DTsClasses.DTCurso"%>
 <%@page import="Logica.DTsClasses.DTMaster"%>
@@ -185,60 +186,38 @@
                         <p class="mb-1"><strong>Fecha de Alta:</strong> <span class="text-muted"><%= fAlta%></span></p>
                     </div>
 
-                    <!-- Botón de Inscripción -->
+                    <%-- Botón según el estado de la inscripción (null = no inscripto). La lógica AJAX está en JavasScripts/ConsultaEdicion.js --%>
                     <%
                         DTMaster usuarioActual = (DTMaster) session.getAttribute("usuarioLogueado");
                         if (usuarioActual != null) {
                             String tipoClase = usuarioActual.getClass().getSimpleName().toLowerCase();
                             if (!tipoClase.contains("docente")) {
-                                Boolean yaInscriptoObj = (Boolean) request.getAttribute("yaInscripto");
-                                boolean yaInscripto = (yaInscriptoObj != null && yaInscriptoObj);
+                                Enum_Estado_inscripcion estadoIns = (Enum_Estado_inscripcion) request.getAttribute("estadoInscripcion");
+                                String atributosBtn = "data-curso=\"" + detalleEdicion.getCurso() + "\" data-edicion=\"" + detalleEdicion.getNombre()
+                                        + "\" data-contextpath=\"" + request.getContextPath() + "\"";
                     %>
                     <div class="mt-3 pt-3 border-top" id="contenedorInscripcion">
-                        <% if (!yaInscripto) {%>
-                        <button type="button" id="btnInscribir" onclick="inscribirDirectamente('<%= detalleEdicion.getCurso()%>', '<%= detalleEdicion.getNombre()%>')" class="btn fw-bold w-100 py-2 shadow-sm text-white" style="background-color: #198754 !important; border-color: #198754 !important; font-size: 0.9rem;">
-                            Solicitar Inscripción
-                        </button>
+                        <% if (estadoIns == null) { %>
+                            <button type="button" id="btnInscribir" <%= atributosBtn %>
+                                    class="btn fw-bold w-100 py-2 shadow-sm text-white"
+                                    style="background-color: #198754 !important; border-color: #198754 !important;">
+                                Solicitar Inscripción a esta Edición
+                            </button>
+                        <% } else if (estadoIns == Enum_Estado_inscripcion.INSCRIPTO) { %>
+                            <button type="button" id="btnCancelar" <%= atributosBtn %>
+                                    class="btn btn-danger fw-bold w-100 py-2 shadow-sm">
+                                Cancelar
+                            </button>
+                        <% } else if (estadoIns == Enum_Estado_inscripcion.ACEPTADO) { %>
+                            <button type="button" class="btn btn-secondary fw-bold w-100 py-2 shadow-sm" disabled>
+                                Inscripto a esta edición de curso
+                            </button>
                         <% } else { %>
-                        <button type="button" class="btn btn-secondary fw-bold w-100 py-2 shadow-sm" disabled style="font-size: 0.9rem;">
-                            Ya estás inscripto
-                        </button>
+                            <button type="button" class="btn btn-secondary fw-bold w-100 py-2 shadow-sm" disabled>
+                                Rechazado
+                            </button>
                         <% } %>
                     </div>
-
-                    <script>
-                        function inscribirDirectamente(curso, edicion) {
-                            const btn = document.getElementById("btnInscribir");
-                            btn.disabled = true;
-                            btn.innerText = "Inscribiendo...";
-
-                            fetch('${pageContext.request.contextPath}/ConsultaEdicionServlet', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded',
-                                },
-                                body: 'action=inscribirDirecto&curso=' + encodeURIComponent(curso) + '&edicion=' + encodeURIComponent(edicion)
-                            })
-                            .then(response => {
-                                if (response.ok) {
-                                    const contenedor = document.getElementById("contenedorInscripcion");
-                                    contenedor.innerHTML = '<button type="button" class="btn btn-secondary fw-bold w-100 py-2 shadow-sm" disabled style="font-size: 0.9rem;">Ya estás inscripto</button>';
-                                } else {
-                                    response.text().then(msg => {
-                                        alert(msg && msg.trim() !== "" ? msg : "Ocurrió un error al procesar la inscripción.");
-                                    });
-                                    btn.disabled = false;
-                                    btn.innerText = "Solicitar Inscripción";
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                alert("Error de conexión al intentar inscribir.");
-                                btn.disabled = false;
-                                btn.innerText = "Solicitar Inscripción";
-                            });
-                        }
-                    </script>
                     <% 
                             }
                         } 
@@ -294,6 +273,7 @@
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="${pageContext.request.contextPath}/JavasScripts/ConsultaEdicion.js"></script>
     </body>
 </html>
 
@@ -402,62 +382,38 @@
                                 <p class="mb-1"><strong>Fecha de Alta:</strong> <span class="text-muted"><%= fAlta%></span></p>
                             </div>
 
-                            <%-- BOTÓN DINÁMICO CON AJAX (Verde y separado) --%>
-                            <%
-                                DTMaster usuarioActual = (DTMaster) session.getAttribute("usuarioLogueado");
-                                if (usuarioActual != null) {
-                                    String tipoClase = usuarioActual.getClass().getSimpleName().toLowerCase();
-                                    if (!tipoClase.contains("docente")) {
-
-                                        Boolean yaInscriptoObj = (Boolean) request.getAttribute("yaInscripto");
-                                        boolean yaInscripto = (yaInscriptoObj != null && yaInscriptoObj);
-                            %>
-                            <div class="mt-4 pt-3 border-top d-flex align-items-center" id="contenedorInscripcion">
-                                <% if (!yaInscripto) {%>
-                                <button type="button" id="btnInscribir" onclick="inscribirDirectamente('<%= detalleEdicion.getCurso()%>', '<%= detalleEdicion.getNombre()%>')" class="btn fw-bold w-100 py-2 shadow-sm text-white" style="background-color: #198754 !important; border-color: #198754 !important;">
-                                    Solicitar Inscripción a esta Edición
-                                </button>
-                                <% } else { %>
-                                <button type="button" class="btn btn-secondary fw-bold w-100 py-2 shadow-sm" disabled>
-                                    Ya estás inscripto en esta Edición
-                                </button>
-                                <% } %>
-                            </div>
-
-                            <%-- SCRIPT AJAX PARA PROCESAR LA INSCRIPCIÓN AL INSTANTE --%>
-                            <script>
-                                function inscribirDirectamente(curso, edicion) {
-                                    const btn = document.getElementById("btnInscribir");
-                                    btn.disabled = true;
-                                    btn.innerText = "Inscribiendo...";
-
-                                    fetch('${pageContext.request.contextPath}/ConsultaEdicionServlet', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/x-www-form-urlencoded',
-                                        },
-                                        body: 'action=inscribirDirecto&curso=' + encodeURIComponent(curso) + '&edicion=' + encodeURIComponent(edicion)
-                                    })
-                                    .then(response => {
-                                        if (response.ok) {
-                                            const contenedor = document.getElementById("contenedorInscripcion");
-                                            contenedor.innerHTML = '<button type="button" class="btn btn-secondary fw-bold w-100 py-2 shadow-sm" disabled>Ya estás inscripto en esta Edición</button>';
-                                        } else {
-                                            response.text().then(msg => {
-                                                alert(msg && msg.trim() !== "" ? msg : "Ocurrió un error al procesar la inscripción.");
-                                            });
-                                            btn.disabled = false;
-                                            btn.innerText = "Solicitar Inscripción a esta Edición";
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error('Error:', error);
-                                        alert("Error de conexión al intentar inscribir.");
-                                        btn.disabled = false;
-                                        btn.innerText = "Solicitar Inscripción a esta Edición";
-                                    });
-                                }
-                            </script>
+                    <%-- Botón según el estado de la inscripción (null = no inscripto). La lógica AJAX está en JavasScripts/ConsultaEdicion.js --%>
+                    <%
+                        DTMaster usuarioActual = (DTMaster) session.getAttribute("usuarioLogueado");
+                        if (usuarioActual != null) {
+                            String tipoClase = usuarioActual.getClass().getSimpleName().toLowerCase();
+                            if (!tipoClase.contains("docente")) {
+                                Enum_Estado_inscripcion estadoIns = (Enum_Estado_inscripcion) request.getAttribute("estadoInscripcion");
+                                String atributosBtn = "data-curso=\"" + detalleEdicion.getCurso() + "\" data-edicion=\"" + detalleEdicion.getNombre()
+                                        + "\" data-contextpath=\"" + request.getContextPath() + "\"";
+                    %>
+                    <div class="mt-4 pt-3 border-top d-flex align-items-center" id="contenedorInscripcion">
+                        <% if (estadoIns == null) { %>
+                            <button type="button" id="btnInscribir" <%= atributosBtn %>
+                                    class="btn fw-bold w-100 py-2 shadow-sm text-white"
+                                    style="background-color: #198754 !important; border-color: #198754 !important;">
+                                Solicitar Inscripción a esta Edición
+                            </button>
+                        <% } else if (estadoIns == Enum_Estado_inscripcion.INSCRIPTO) { %>
+                            <button type="button" id="btnCancelar" <%= atributosBtn %>
+                                    class="btn btn-danger fw-bold w-100 py-2 shadow-sm">
+                                Cancelar
+                            </button>
+                        <% } else if (estadoIns == Enum_Estado_inscripcion.ACEPTADO) { %>
+                            <button type="button" class="btn btn-secondary fw-bold w-100 py-2 shadow-sm" disabled>
+                                Inscripto a esta edición de curso
+                            </button>
+                        <% } else { %>
+                            <button type="button" class="btn btn-secondary fw-bold w-100 py-2 shadow-sm" disabled>
+                                Rechazado
+                            </button>
+                        <% } %>
+                    </div>
                             <% 
                                     }
                                 } 
@@ -525,6 +481,7 @@
 
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="${pageContext.request.contextPath}/JavasScripts/ConsultaEdicion.js"></script>
     </body>
 </html>
 <% } %>

@@ -1,5 +1,6 @@
 package Logica.ws;
 
+import Logica.Classes.Enum_Estado_Edicion;
 import Logica.Classes.Enum_Estado_inscripcion;
 import Logica.DTsClasses.DTCategoria;
 import Logica.DTsClasses.DTCurso;
@@ -22,6 +23,7 @@ import Logica.ws.cliente.DtInstituto;
 import Logica.ws.cliente.DtMaster;
 import Logica.ws.cliente.DtProgramaForm;
 import Logica.ws.cliente.DtUsuarioBase;
+import Logica.ws.cliente.EnumEstadoEdicion;
 import Logica.ws.cliente.EnumEstadoInscripcion;
 import java.util.ArrayList;
 import java.util.Date;
@@ -72,6 +74,10 @@ public final class ConversorDT {
 
     public static Enum_Estado_inscripcion estado(EnumEstadoInscripcion e) {
         return e == null ? null : Enum_Estado_inscripcion.valueOf(e.name());
+    }
+
+    public static Enum_Estado_Edicion estado(EnumEstadoEdicion e) {
+        return e == null ? null : Enum_Estado_Edicion.valueOf(e.name());
     }
 
     public static EnumEstadoInscripcion estado(Enum_Estado_inscripcion e) {
@@ -158,12 +164,13 @@ public final class ConversorDT {
         }
         return new DTEdicionCurso(e.getInstituto(), e.getCurso(), e.getNombre(), fecha(e.getFInicio()),
                 fecha(e.getFFin()), e.getCupo(), e.getCupoActual(), copia(e.getListDocentes()),
-                fecha(e.getFechaAlta()), inscripciones, copia(e.getMisCategorias()), e.getImgPath());
+                fecha(e.getFechaAlta()), inscripciones, copia(e.getMisCategorias()), e.getImgPath(),
+                estado(e.getEstado()));
     }
 
     public static DTEdi_Usu inscripcion(DtEdiUsu i) {
         return new DTEdi_Usu(i.getNickEstudiante(), i.getNomEdicion(), fecha(i.getFInscripcion()),
-                estado(i.getEstadoIns()));
+                estado(i.getEstadoIns()), i.getUrlVideo(), i.getNota());
     }
 
     public static DTProgramaForm programa(DtProgramaForm p) {

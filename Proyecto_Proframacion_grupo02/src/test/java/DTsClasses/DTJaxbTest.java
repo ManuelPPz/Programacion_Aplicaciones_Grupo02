@@ -86,6 +86,8 @@ public class DTJaxbTest {
         DTEdi_Usu eu = idaYVuelta(new DTEdi_Usu("u", "E", new Date(5), Enum_Estado_inscripcion.values()[0]));
         assertEquals("E", eu.getNomEdicion());
         assertEquals(new Date(5), eu.getfInscripcion());
+        DTEdi_Usu conVideo = idaYVuelta(new DTEdi_Usu("u", "E", new Date(5), Enum_Estado_inscripcion.values()[0], "https://v"));
+        assertEquals("https://v", conVideo.getUrlVideo());
 
         DTCambioEstado ce = idaYVuelta(new DTCambioEstado("ana", Enum_Estado_inscripcion.values()[0]));
         assertEquals("ana", ce.getNickname());

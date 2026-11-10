@@ -9,6 +9,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import java.util.Date;
 import java.util.List;
+import Classes.Enum_Estado_Edicion;
 /**
  *
  * @author mateo
@@ -32,6 +33,12 @@ public class DTEdicionCurso extends DTMaster{
     private List<DTEdi_Usu> misIscripciones;
     private List<String> misCategorias;
     private String imgPath;
+    private Enum_Estado_Edicion estado;
+
+    public DTEdicionCurso(String nomInstituto, String curso, String nombre, Date fInicio, Date fFin, int cupo, int cupoActual, List<String> listDocentes,Date fechaAlta, List<DTEdi_Usu> misInscripciones, List<String> misCategorias, String imgPath, Enum_Estado_Edicion estado){
+        this(nomInstituto, curso, nombre, fInicio, fFin, cupo, cupoActual, listDocentes, fechaAlta, misInscripciones, misCategorias, imgPath);
+        this.estado = estado;
+    }
     
     public DTEdicionCurso(String nomInstituto, String curso, String nombre, Date fInicio, Date fFin, int cupo, int cupoActual, List<String> listDocentes,Date fechaAlta, List<DTEdi_Usu> misInscripciones, List<String> misCategorias, String imgPath){
         this.instituto = nomInstituto;
@@ -59,4 +66,5 @@ public class DTEdicionCurso extends DTMaster{
     public List<DTEdi_Usu> getMisInscripciones(){return this.misIscripciones;}
     public List<String> getMisCategorias(){return this.misCategorias;}
     public String getImage(){return this.imgPath;}
+    public Enum_Estado_Edicion getEstado(){return this.estado;}
 }

@@ -45,12 +45,13 @@
                                 <th>Edición de Curso</th>
                                 <th>Fecha de Inscripción</th>
                                 <th>Estado</th>
+                                <th>Calificación</th>
                             </tr>
                         </thead>
                         <tbody>
                             <c:if test="${empty inscripciones}">
                                 <tr>
-                                    <td colspan="3" class="text-muted py-4">
+                                    <td colspan="4" class="text-muted py-4">
                                         No se encontraron inscripciones registradas.
                                     </td>
                                 </tr>
@@ -72,6 +73,16 @@
                                             <c:otherwise>
                                                 <!-- INSCRIPTO / Pendiente de aprobación -->
                                                 <span class="badge bg-warning text-dark fs-6">Inscripto</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${not empty ins.nota}">
+                                                <span class="fw-bold fs-5">${ins.nota}</span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="text-muted">Sin calificar</span>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
