@@ -277,7 +277,7 @@ public class PublicadorWS {
     /** Cambia el estado de inscripción (aceptado/rechazado/...) de varios estudiantes a una edición. */
     @WebMethod
     public void AceptarEstudiantesAEdicionCurso(@WebParam(name = "cambios") List<DTCambioEstado> cambios,
-            @WebParam(name = "edicion") String edicion) {
+            @WebParam(name = "edicion") String edicion) throws EdextWSException {
         List<Object[]> lista = new ArrayList<>();
         if (cambios != null) {
             for (DTCambioEstado c : cambios) {
@@ -286,7 +286,11 @@ public class PublicadorWS {
                 }
             }
         }
-        ico.AceptarEstudiantesAEdicionCurso(lista, edicion);
+        try {
+            ico.AceptarEstudiantesAEdicionCurso(lista, edicion);
+        } catch (Exception e) {
+            throw error(e);
+        }
     }
 
     /** Lista los estados de inscripción posibles (útil para los combos del web). */

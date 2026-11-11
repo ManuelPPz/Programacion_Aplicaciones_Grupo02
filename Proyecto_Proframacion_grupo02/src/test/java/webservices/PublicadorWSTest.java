@@ -208,7 +208,7 @@ public class PublicadorWSTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testAceptarEstudiantesConvierteLosDTs() {
+    public void testAceptarEstudiantesConvierteLosDTs() throws Exception {
         Enum_Estado_inscripcion estado = Enum_Estado_inscripcion.values()[0];
         List<DTCambioEstado> cambios = Arrays.asList(
                 new DTCambioEstado("ana", estado),
@@ -227,11 +227,18 @@ public class PublicadorWSTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testAceptarEstudiantesSinCambios() {
+    public void testAceptarEstudiantesSinCambios() throws Exception {
         ws.AceptarEstudiantesAEdicionCurso(null, "E");
         ArgumentCaptor<List<Object[]>> captor = ArgumentCaptor.forClass(List.class);
         verify(ico).AceptarEstudiantesAEdicionCurso(captor.capture(), eq("E"));
         assertTrue(captor.getValue().isEmpty());
+    }
+
+    @Test
+    public void testAceptarEstudiantesSuperaCupo() throws Exception {
+        doThrow(new Exception("cupo")).when(ico).AceptarEstudiantesAEdicionCurso(any(), eq("E"));
+        EdextWSException ex = assertThrows(EdextWSException.class, () -> ws.AceptarEstudiantesAEdicionCurso(null, "E"));
+        assertEquals("cupo", ex.getMessage());
     }
 
     @Test

@@ -461,16 +461,14 @@ public class ControllerTest {
     }
 
     @Test
-    public void testAceptarEstudiantesAEdicionCurso() {
-        Enum_Estado_inscripcion estado = Enum_Estado_inscripcion.values()[0];
+    public void testAceptarEstudiantesAEdicionCurso() throws Exception {
         List<Object[]> lista = new ArrayList<>();
-        lista.add(new Object[]{"est1", estado});
-        lista.add(new Object[]{"est2", estado});
+        lista.add(new Object[]{"est1", Enum_Estado_inscripcion.ACEPTADO});
+        lista.add(new Object[]{"est2", Enum_Estado_inscripcion.RECHAZADO});
 
         instance.AceptarEstudiantesAEdicionCurso(lista, "ed");
 
-        verify(manEdicion).ModificarEstadoDeInscripcion("est1", estado, "ed");
-        verify(manEdicion).ModificarEstadoDeInscripcion("est2", estado, "ed");
+        verify(manEdicion).SeleccionarEstudiantes("ed", lista);
     }
 
     // --------------------------------------------------------------- Programa

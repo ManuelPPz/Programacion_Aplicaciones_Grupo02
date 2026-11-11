@@ -51,3 +51,26 @@ document.addEventListener('submit', function (event) {
         }
     }
 });
+
+// Enter en el login: si falta la contraseña pasa a ese campo; si está todo, envía el formulario.
+// Se maneja a mano para no depender del envío implícito del navegador.
+document.addEventListener('keydown', function (event) {
+    if (event.key !== 'Enter' || event.isComposing) return;
+    const form = event.target && event.target.form;
+    if (!form || form.id !== 'formLogin' || event.target.tagName !== 'INPUT') return;
+
+    event.preventDefault();
+    const email = document.getElementById('floatingInputGroup2');
+    const password = document.getElementById('inputPassword');
+
+    if (event.target === email && password && password.value === '') {
+        password.focus();
+        return;
+    }
+    // requestSubmit dispara el evento submit, así corre la validación de arriba
+    if (typeof form.requestSubmit === 'function') {
+        form.requestSubmit();
+    } else {
+        form.querySelector('button[type=submit]').click();
+    }
+});

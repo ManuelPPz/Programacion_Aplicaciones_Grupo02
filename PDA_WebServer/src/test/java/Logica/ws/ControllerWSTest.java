@@ -312,7 +312,7 @@ public class ControllerWSTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testAceptarEstudiantesArmaLosDTCambioEstado() {
+    public void testAceptarEstudiantesArmaLosDTCambioEstado() throws Exception {
         List<Object[]> cambios = Arrays.asList(
                 new Object[]{"ana", Enum_Estado_inscripcion.ACEPTADO},
                 null,
@@ -333,6 +333,13 @@ public class ControllerWSTest {
 
         ctrl.AceptarEstudiantesAEdicionCurso(null, "F");
         verify(ws).aceptarEstudiantesAEdicionCurso(eq(new ArrayList<>()), eq("F"));
+    }
+
+    @Test
+    public void testAceptarEstudiantesPropagaErrorDelSC() throws Exception {
+        doThrow(new EdextWSException("Supera el cupo", new EdextFault())).when(ws).aceptarEstudiantesAEdicionCurso(any(), eq("E"));
+        Exception ex = assertThrows(Exception.class, () -> ctrl.AceptarEstudiantesAEdicionCurso(null, "E"));
+        assertEquals("Supera el cupo", ex.getMessage());
     }
 
     @Test

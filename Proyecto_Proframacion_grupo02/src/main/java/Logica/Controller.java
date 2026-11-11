@@ -307,13 +307,10 @@ public class Controller implements IController {
         throw new Exception("La URL del video no es válida. Debe comenzar con http:// o https://");
     }
 
-    //En esta funcion la lista de Object[] recibe el nickname del estudiate como indice="0" y el cambio con indice="1" que puede ser Enum_Estado_inscripcion - ACEPTADO, RECHAZADO O INSCRIPTO
-    //si y solo si el profe confirma que esto se puede en todo caso solo se pasaran los estudiantes que fueron aceptados y rechazados
+    //Seleccion de estudiantes: cada Object[] es {nickname, ACEPTADO|RECHAZADO}; todo o nada y sin superar el cupo
     @Override
-    public void AceptarEstudiantesAEdicionCurso(List<Object[]> estudiantesYCambios, String nomEdicion) {
-        for (Object[] o : estudiantesYCambios) {
-            manEdicion.ModificarEstadoDeInscripcion((String) o[0], (Enum_Estado_inscripcion) o[1], nomEdicion);
-        }
+    public void AceptarEstudiantesAEdicionCurso(List<Object[]> estudiantesYCambios, String nomEdicion) throws Exception {
+        manEdicion.SeleccionarEstudiantes(nomEdicion, estudiantesYCambios);
     }
 
     //Crear Programa de Formacion (Versión por parámetros sueltos)

@@ -503,6 +503,60 @@ public class ManejadorEdicionCurso {
         }
     }
 
+    /**
+     * Selección de estudiantes: el docente marca cada inscripción como ACEPTADO o
+     * RECHAZADO. Cada elemento de cambios es {nickname (String), estado}. Es todo
+     * o nada: si los aceptados quedan por encima del cupo de la edición no se
+     * guarda ningún cambio.
+     */
+    public void SeleccionarEstudiantes(String nomEdicion, List<Object[]> cambios) throws Exception {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            EdicionCurso ec = (nomEdicion == null) ? null : em.find(EdicionCurso.class, nomEdicion);
+            if (ec == null) {
+                throw new Exception("No existe la edición '" + nomEdicion + "'.");
+            }
+            if (ec.isFinalizada()) {
+                throw new Exception("La edición ya está finalizada; no se puede modificar la selección.");
+            }
+            if (cambios != null) {
+                for (Object[] c : cambios) {
+                    String nick = (String) c[0];
+                    Enum_Estado_inscripcion estado = (Enum_Estado_inscripcion) c[1];
+                    if (estado != Enum_Estado_inscripcion.ACEPTADO && estado != Enum_Estado_inscripcion.RECHAZADO) {
+                        throw new Exception("El estado de " + nick + " debe ser Aceptada o Rechazada.");
+                    }
+                    Edi_Usu eu = em.find(Edi_Usu.class, new Id_EdiUsu(nick, nomEdicion));
+                    if (eu == null) {
+                        throw new Exception("El estudiante " + nick + " no está inscripto a esta edición.");
+                    }
+                    eu.setEstado(estado);
+                }
+            }
+            int aceptados = 0;
+            for (Edi_Usu eu : ec.getMisInscripciones()) {
+                if (eu != null && eu.getMiEstado() == Enum_Estado_inscripcion.ACEPTADO) {
+                    aceptados++;
+                }
+            }
+            if (ec.getCupo() > 0 && aceptados > ec.getCupo()) {
+                throw new Exception("Se aceptaron " + aceptados + " estudiantes y el cupo de la edición es "
+                        + ec.getCupo() + ".");
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction() != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
     public void ModificarEstadoDeInscripcion(String nicknameUsuario, Enum_Estado_inscripcion estado, String nomEdicion) {
         EntityManager em = getEntityManager();
 

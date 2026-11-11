@@ -73,8 +73,8 @@ public interface IController {
     //Edicion vigente (DTEdicionCurso) del curso, o null si no tiene
     public abstract DTMaster EdicionVigente(String nomCurso);
     
-    //
-    public abstract void AceptarEstudiantesAEdicionCurso(List<Object[]> estudiantesYCambios, String nomEdicion);
+    //Seleccion de estudiantes: {nickname, ACEPTADO|RECHAZADO}; falla si los aceptados superan el cupo
+    public abstract void AceptarEstudiantesAEdicionCurso(List<Object[]> estudiantesYCambios, String nomEdicion) throws Exception;
     //Crear Programa de Formacion
     //El tipo de dato FechaType sera añadido cuando se cree el tipo de dato "FechaType" o alguno con nombre parecido
     public abstract void CrearProgramasDeFormacion(String nomPrograma, String descripcion, Date fInicio, Date fFin,Date fAlta, String imgPath, String instituto)throws Exception;

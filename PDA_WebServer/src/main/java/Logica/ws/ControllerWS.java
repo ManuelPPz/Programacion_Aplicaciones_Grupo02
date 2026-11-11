@@ -251,7 +251,7 @@ public class ControllerWS implements IController {
 
     /** Cada elemento es {nickname (String), nuevo estado (Enum_Estado_inscripcion)}. */
     @Override
-    public void AceptarEstudiantesAEdicionCurso(List<Object[]> estudiantesYCambios, String nomEdicion) {
+    public void AceptarEstudiantesAEdicionCurso(List<Object[]> estudiantesYCambios, String nomEdicion) throws Exception {
         List<DtCambioEstado> cambios = new ArrayList<>();
         if (estudiantesYCambios != null) {
             for (Object[] o : estudiantesYCambios) {
@@ -264,7 +264,11 @@ public class ControllerWS implements IController {
                 }
             }
         }
-        ws().aceptarEstudiantesAEdicionCurso(cambios, nomEdicion);
+        try {
+            ws().aceptarEstudiantesAEdicionCurso(cambios, nomEdicion);
+        } catch (EdextWSException e) {
+            throw error(e);
+        }
     }
 
     // ===================== Programas =====================

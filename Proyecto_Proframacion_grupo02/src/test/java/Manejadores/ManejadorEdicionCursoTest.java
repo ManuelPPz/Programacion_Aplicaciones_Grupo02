@@ -878,6 +878,85 @@ public class ManejadorEdicionCursoTest {
         verify(em).close();
     }
 
+    private EdicionCurso edicionConInscriptos(int cupo, Edi_Usu... out) {
+        EdicionCurso ec = new EdicionCurso("Ed1", null, null, dia(5), dia(30), cupo, new Date(), new ArrayList<>(), null);
+        String[] nicks = {"a", "b", "c"};
+        for (int i = 0; i < out.length; i++) {
+            out[i] = inscripcionReal(nicks[i], ec, Enum_Estado_inscripcion.INSCRIPTO);
+            ec.AddUsuarioInscripto(out[i]);
+        }
+        when(em.find(EdicionCurso.class, "Ed1")).thenReturn(ec);
+        return ec;
+    }
+
+    @Test
+    public void testSeleccionarEstudiantesDentroDelCupo() throws Exception {
+        Edi_Usu[] ins = new Edi_Usu[3];
+        edicionConInscriptos(2, ins);
+        when(em.find(eq(Edi_Usu.class), any())).thenReturn(ins[0], ins[1], ins[2]);
+
+        manejador.SeleccionarEstudiantes("Ed1", List.of(
+                new Object[]{"a", Enum_Estado_inscripcion.ACEPTADO},
+                new Object[]{"b", Enum_Estado_inscripcion.ACEPTADO},
+                new Object[]{"c", Enum_Estado_inscripcion.RECHAZADO}));
+
+        assertEquals(Enum_Estado_inscripcion.ACEPTADO, ins[0].getMiEstado());
+        assertEquals(Enum_Estado_inscripcion.ACEPTADO, ins[1].getMiEstado());
+        assertEquals(Enum_Estado_inscripcion.RECHAZADO, ins[2].getMiEstado());
+        verify(tx).commit();
+        verify(em).close();
+    }
+
+    @Test
+    public void testSeleccionarEstudiantesSuperaCupo() {
+        Edi_Usu[] ins = new Edi_Usu[3];
+        edicionConInscriptos(2, ins);
+        when(em.find(eq(Edi_Usu.class), any())).thenReturn(ins[0], ins[1], ins[2]);
+
+        Exception ex = assertThrows(Exception.class, () -> manejador.SeleccionarEstudiantes("Ed1", List.of(
+                new Object[]{"a", Enum_Estado_inscripcion.ACEPTADO},
+                new Object[]{"b", Enum_Estado_inscripcion.ACEPTADO},
+                new Object[]{"c", Enum_Estado_inscripcion.ACEPTADO})));
+
+        assertTrue(ex.getMessage().contains("cupo"));
+        verify(tx).rollback();
+        verify(tx, never()).commit();
+    }
+
+    @Test
+    public void testSeleccionarEstudiantesSinCupoDefinidoNoLimita() throws Exception {
+        Edi_Usu[] ins = new Edi_Usu[2];
+        edicionConInscriptos(0, ins);
+        when(em.find(eq(Edi_Usu.class), any())).thenReturn(ins[0], ins[1]);
+
+        manejador.SeleccionarEstudiantes("Ed1", List.of(
+                new Object[]{"a", Enum_Estado_inscripcion.ACEPTADO},
+                new Object[]{"b", Enum_Estado_inscripcion.ACEPTADO}));
+
+        verify(tx).commit();
+    }
+
+    @Test
+    public void testSeleccionarEstudiantesValidaciones() {
+        Edi_Usu[] ins = new Edi_Usu[1];
+        EdicionCurso ec = edicionConInscriptos(5, ins);
+        when(em.find(eq(Edi_Usu.class), any())).thenReturn(null);
+
+        assertTrue(assertThrows(Exception.class, () -> manejador.SeleccionarEstudiantes("Ed1",
+                List.<Object[]>of(new Object[]{"a", Enum_Estado_inscripcion.INSCRIPTO}))).getMessage().contains("Aceptada o Rechazada"));
+        assertTrue(assertThrows(Exception.class, () -> manejador.SeleccionarEstudiantes("Ed1",
+                List.<Object[]>of(new Object[]{"zz", Enum_Estado_inscripcion.ACEPTADO}))).getMessage().contains("no está inscripto"));
+        assertTrue(assertThrows(Exception.class,
+                () -> manejador.SeleccionarEstudiantes("NoExiste", null)).getMessage().contains("No existe"));
+        assertTrue(assertThrows(Exception.class,
+                () -> manejador.SeleccionarEstudiantes(null, null)).getMessage().contains("No existe"));
+
+        ec.Finalizar();
+        assertTrue(assertThrows(Exception.class,
+                () -> manejador.SeleccionarEstudiantes("Ed1", null)).getMessage().contains("finalizada"));
+        verify(tx, never()).commit();
+    }
+
     @Test
     public void testIngresarNotasYFinalizar() throws Exception {
         EdicionCurso ec = new EdicionCurso("Ed1", null, null, dia(-5), dia(30), 0, new Date(), new ArrayList<>(), null);

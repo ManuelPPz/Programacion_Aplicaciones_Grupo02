@@ -431,6 +431,7 @@
 <operation name="AceptarEstudiantesAEdicionCurso">
 <input wsam:Action="http://webservices.edext/PublicadorWS/AceptarEstudiantesAEdicionCursoRequest" message="tns:AceptarEstudiantesAEdicionCurso"/>
 <output wsam:Action="http://webservices.edext/PublicadorWS/AceptarEstudiantesAEdicionCursoResponse" message="tns:AceptarEstudiantesAEdicionCursoResponse"/>
+<fault message="tns:EdextWSException" name="EdextWSException" wsam:Action="http://webservices.edext/PublicadorWS/AceptarEstudiantesAEdicionCurso/Fault/EdextWSException"/>
 </operation>
 <operation name="CrearProgramasDeFormacion">
 <input wsam:Action="http://webservices.edext/PublicadorWS/CrearProgramasDeFormacionRequest" message="tns:CrearProgramasDeFormacion"/>
@@ -814,6 +815,9 @@
 <output>
 <soap:body use="literal"/>
 </output>
+<fault name="EdextWSException">
+<soap:fault name="EdextWSException" use="literal"/>
+</fault>
 </operation>
 <operation name="CrearProgramasDeFormacion">
 <soap:operation soapAction=""/>
