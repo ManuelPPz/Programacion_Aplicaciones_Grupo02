@@ -50,6 +50,10 @@
                     <div id="errorNicknameMsg" class="invalid-feedback">
                         <%= tieneErrorNick ? errorNickServidor : "El nickname es obligatorio y no debe contener espacios." %>
                     </div>
+                    <div id="okNicknameMsg" class="valid-feedback"></div>
+                    <div id="sugerenciaNickname" class="mt-1 small d-none">
+                        Sugerencia: <button type="button" id="btnSugerencia" class="btn btn-link btn-sm p-0 align-baseline fw-bold" style="background: none; margin: 0; color: var(--bs-link-color);"></button>
+                    </div>
                 </div>
 
                 <%-- Nombre --%>
@@ -73,6 +77,7 @@
                     <div id="errorCorreoMsg" class="invalid-feedback">
                         <%= tieneErrorCorreo ? errorCorreoServidor : "Ingrese un correo electrónico válido que contenga el símbolo '@'." %>
                     </div>
+                    <div id="okCorreoMsg" class="valid-feedback"></div>
                 </div>
                 
                 <%-- Fecha de Nacimiento --%>
@@ -197,6 +202,18 @@
                 esValido = false;
             }
 
+            // 4b. Disponibilidad verificada por AJAX (si ya se sabe que está ocupado, no se envía)
+            if (disponibilidad.nickname === false && valorNick) {
+                errorNicknameMsg.innerText = mensajes.nickname;
+                inputNickname.classList.add('is-invalid');
+                esValido = false;
+            }
+            if (disponibilidad.correo === false && valorCorreo) {
+                errorCorreoMsg.innerText = mensajes.correo;
+                inputCorreo.classList.add('is-invalid');
+                esValido = false;
+            }
+
             // 5. Validación de Instituto para Docentes
             let tipo = document.getElementById("tipoUsuario").value;
             let instituto = document.getElementById("selectInstituto");
@@ -207,6 +224,68 @@
 
             return esValido;
         }
+
+        // ---------- Requerimiento 7.5: disponibilidad de nickname y correo (AJAX) ----------
+        const disponibilidad = { nickname: null, correo: null };  // null = sin verificar
+        const mensajes = { nickname: '', correo: '' };
+        const URL_VERIFICAR = '${pageContext.request.contextPath}/VerificarDisponibilidadServlet';
+
+        function verificadorEnVivo(tipo, input, msgError, msgOk, alResultado) {
+            let temporizador = null;
+            let pedido = null;
+
+            function verificar() {
+                const valor = input.value.trim();
+                if (pedido) pedido.abort();
+                disponibilidad[tipo] = null;
+                if (!valor) {
+                    input.classList.remove('is-valid', 'is-invalid');
+                    alResultado && alResultado(null);
+                    return;
+                }
+                pedido = new AbortController();
+                fetch(URL_VERIFICAR + '?tipo=' + tipo + '&valor=' + encodeURIComponent(valor), { signal: pedido.signal })
+                    .then(r => r.json())
+                    .then(datos => {
+                        if (input.value.trim() !== valor) return; // llegó tarde: el usuario siguió escribiendo
+                        disponibilidad[tipo] = datos.disponible;
+                        mensajes[tipo] = datos.mensaje;
+                        input.classList.toggle('is-valid', datos.disponible);
+                        input.classList.toggle('is-invalid', !datos.disponible);
+                        (datos.disponible ? msgOk : msgError).textContent = datos.mensaje;
+                        alResultado && alResultado(datos);
+                    })
+                    .catch(() => { /* sin conexión o cancelado: se valida al enviar */ });
+            }
+
+            input.addEventListener('input', function () {
+                clearTimeout(temporizador);
+                temporizador = setTimeout(verificar, 400);
+            });
+            if (input.value.trim()) verificar(); // al volver con datos tras un error
+            return verificar;
+        }
+
+        const inputNick = document.getElementById('inputNickname');
+        const cajaSugerencia = document.getElementById('sugerenciaNickname');
+        const btnSugerencia = document.getElementById('btnSugerencia');
+
+        const verificarNick = verificadorEnVivo('nickname', inputNick,
+            document.getElementById('errorNicknameMsg'), document.getElementById('okNicknameMsg'),
+            function (datos) {
+                const sugerencia = datos && !datos.disponible ? datos.sugerencia : null;
+                cajaSugerencia.classList.toggle('d-none', !sugerencia);
+                if (sugerencia) btnSugerencia.textContent = sugerencia + ' (disponible)';
+                btnSugerencia.dataset.nick = sugerencia || '';
+            });
+
+        btnSugerencia.addEventListener('click', function () {
+            inputNick.value = btnSugerencia.dataset.nick;
+            verificarNick();
+        });
+
+        verificadorEnVivo('correo', document.getElementById('inputCorreo'),
+            document.getElementById('errorCorreoMsg'), document.getElementById('okCorreoMsg'));
     </script>
 </body>
 </html>
