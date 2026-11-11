@@ -2,6 +2,7 @@ package Logica.ws;
 
 import Logica.Classes.Enum_Estado_inscripcion;
 import Logica.DTsClasses.DTMaster;
+import Logica.DTsClasses.DTValoracionCurso;
 import Logica.DTsClasses.DTUsuarioBase;
 import Logica.DTsClasses.EnumDT;
 import Logica.Logica.IController;
@@ -253,6 +254,31 @@ public class ControllerWS implements IController {
     public DTMaster ActaDeEstudio(String nickname, String nomPrograma) throws Exception {
         try {
             return ConversorDT.acta(ws().actaDeEstudio(nickname, nomPrograma));
+        } catch (EdextWSException e) {
+            throw error(e);
+        }
+    }
+
+    // ===================== Valorar un Curso =====================
+
+    @Override
+    public void ValorarCurso(String nickname, String nomCurso, int puntaje) throws Exception {
+        try {
+            ws().valorarCurso(nickname, nomCurso, puntaje);
+        } catch (EdextWSException e) {
+            throw error(e);
+        }
+    }
+
+    @Override
+    public DTValoracionCurso ValoracionesCurso(String nomCurso, String nickname) {
+        return ConversorDT.valoracion(ws().valoracionesCurso(nomCurso, nickname));
+    }
+
+    @Override
+    public List<String> CursosParticipa(String nickname) throws Exception {
+        try {
+            return ws().cursosParticipa(nickname);
         } catch (EdextWSException e) {
             throw error(e);
         }

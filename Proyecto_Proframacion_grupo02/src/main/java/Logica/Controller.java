@@ -6,6 +6,7 @@ package Logica;
 
 import Manejadores.ManejadorInstituto;
 import Manejadores.ManejadorCursos;
+import Manejadores.ManejadorValoraciones;
 import Manejadores.ManejadorProgramasDeFormacion;
 import Manejadores.ManejadorEdicionCurso;
 import Manejadores.ManejadorUsuario;
@@ -313,6 +314,27 @@ public class Controller implements IController {
     @Override
     public void AceptarEstudiantesAEdicionCurso(List<Object[]> estudiantesYCambios, String nomEdicion) throws Exception {
         manEdicion.SeleccionarEstudiantes(nomEdicion, estudiantesYCambios);
+    }
+
+    // ===================== Valorar un Curso =====================
+
+    @Override
+    public void ValorarCurso(String nickname, String nomCurso, int puntaje) throws Exception {
+        ManejadorValoraciones.GetInstance().Valorar(nickname, nomCurso, puntaje);
+    }
+
+    @Override
+    public DTMaster ValoracionesCurso(String nomCurso, String nickname) {
+        return ManejadorValoraciones.GetInstance().Resumen(nomCurso, nickname);
+    }
+
+    @Override
+    public List<String> CursosParticipa(String nickname) throws Exception {
+        UsuarioBase ub = (nickname == null) ? null : manUsuario.BuscarUsuario(nickname);
+        if (!(ub instanceof Usuario u)) {
+            throw new Exception("Solo los estudiantes pueden valorar cursos.");
+        }
+        return ManejadorValoraciones.cursosParticipa(u);
     }
 
     /** Nota mínima (escala 1 a 12) para aprobar un curso en el acta de estudio. */

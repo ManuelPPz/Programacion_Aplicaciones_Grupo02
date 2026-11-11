@@ -366,6 +366,41 @@ public class ControllerWSTest {
     }
 
     @Test
+    public void testValoracionesConvierteElDT() throws Exception {
+        Logica.ws.cliente.DtValoracionCurso dt = new Logica.ws.cliente.DtValoracionCurso();
+        dt.setCurso("Java");
+        dt.setTotal(3);
+        dt.setPromedio(13f / 3);
+        dt.setMiPuntaje(5);
+        dt.getEstrellas().addAll(Arrays.asList(0, 0, 1, null, 2, 7));
+        when(ws.valoracionesCurso("Java", "ana")).thenReturn(dt);
+
+        Logica.DTsClasses.DTValoracionCurso v = ctrl.ValoracionesCurso("Java", "ana");
+
+        assertEquals("Java", v.getCurso());
+        assertEquals(3, v.getTotal());
+        assertEquals(5, v.getMiPuntaje());
+        assertEquals(1, v.cantidad(3));
+        assertEquals(0, v.cantidad(4));
+        assertEquals(2, v.cantidad(5));
+        assertSame(Logica.DTsClasses.DTValoracionCurso.class, ConversorDT.dt(dt).getClass());
+        assertNull(ConversorDT.valoracion(null));
+    }
+
+    @Test
+    public void testValorarCursoYCursosParticipa() throws Exception {
+        ctrl.ValorarCurso("ana", "Java", 4);
+        verify(ws).valorarCurso("ana", "Java", 4);
+        doThrow(new EdextWSException("Ya valoraste", new EdextFault())).when(ws).valorarCurso("ana", "Java", 5);
+        assertEquals("Ya valoraste", assertThrows(Exception.class, () -> ctrl.ValorarCurso("ana", "Java", 5)).getMessage());
+
+        when(ws.cursosParticipa("ana")).thenReturn(List.of("Java"));
+        assertEquals(List.of("Java"), ctrl.CursosParticipa("ana"));
+        when(ws.cursosParticipa("doc")).thenThrow(new EdextWSException("Solo los estudiantes", new EdextFault()));
+        assertEquals("Solo los estudiantes", assertThrows(Exception.class, () -> ctrl.CursosParticipa("doc")).getMessage());
+    }
+
+    @Test
     public void testAceptarEstudiantesPropagaErrorDelSC() throws Exception {
         doThrow(new EdextWSException("Supera el cupo", new EdextFault())).when(ws).aceptarEstudiantesAEdicionCurso(any(), eq("E"));
         Exception ex = assertThrows(Exception.class, () -> ctrl.AceptarEstudiantesAEdicionCurso(null, "E"));

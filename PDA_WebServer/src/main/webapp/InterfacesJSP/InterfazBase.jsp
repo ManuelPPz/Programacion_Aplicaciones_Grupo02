@@ -290,6 +290,9 @@
                                     <li class="list-group-item text-dark fw-semibold p-0">
                                         <a href="<%= request.getContextPath() %>/ListarResultadosInscripcionesServlet" class="text-dark text-decoration-none d-block p-2">Ver Resultados</a>
                                     </li>
+                                    <li class="list-group-item text-dark fw-semibold p-0">
+                                        <a href="<%= request.getContextPath() %>/ValorarCursoServlet" class="text-dark text-decoration-none d-block p-2">Valorar Curso</a>
+                                    </li>
                             <%
                                 }
                             } else {

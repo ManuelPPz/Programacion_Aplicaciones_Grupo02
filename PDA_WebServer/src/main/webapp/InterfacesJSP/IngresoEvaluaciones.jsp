@@ -112,7 +112,7 @@
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h4 class="m-0 text-secondary">Inscripciones de la Edición</h4>
+                            <h4 class="m-0 text-secondary">Inscripciones Aceptadas de la Edición</h4>
                             <c:url var="urlRanking" value="IngresarResultadosEvServlet">
                                 <c:param name="instituto" value="${instSeleccionado}" />
                                 <c:param name="curso" value="${cursoSeleccionado}" />
@@ -151,26 +151,18 @@
                                                 </tr>
                                             </c:when>
                                             <c:otherwise>
+                                                <%-- Solo se califica a los estudiantes ACEPTADOS en la edición --%>
+                                                <c:set var="hayAceptados" value="false" />
                                                 <c:forEach var="ins" items="${dtEdicion.misInscripciones}">
+                                                    <c:if test="${fn:toUpperCase(ins.estadoIns) == 'ACEPTADO'}">
+                                                    <c:set var="hayAceptados" value="true" />
                                                     <tr>
                                                         <td>
                                                             <strong>${ins.nickEstudiante}</strong>
                                                             <input type="hidden" name="estudiantes[]" value="${ins.nickEstudiante}">
                                                         </td>
                                                         <td><fmt:formatDate value="${ins.fInscripcion}" pattern="dd/MM/yyyy" /></td>
-                                                        <td>
-                                                            <c:choose>
-                                                                <c:when test="${fn:toUpperCase(ins.estadoIns) == 'ACEPTADO'}">
-                                                                    <span class="badge bg-success">Aceptada</span>
-                                                                </c:when>
-                                                                <c:when test="${fn:toUpperCase(ins.estadoIns) == 'RECHAZADO'}">
-                                                                    <span class="badge bg-danger">Rechazada</span>
-                                                                </c:when>
-                                                                <c:otherwise>
-                                                                    <span class="badge bg-warning text-dark">${ins.estadoIns}</span>
-                                                                </c:otherwise>
-                                                            </c:choose>
-                                                        </td>
+                                                        <td><span class="badge bg-success">Aceptada</span></td>
                                                         <td>
                                                             <input type="number" 
                                                                    name="calificacion_${ins.nickEstudiante}" 
@@ -182,14 +174,22 @@
                                                                    ${dtEdicion.estado == 'FINALIZADA' ? 'disabled' : ''}>
                                                         </td>
                                                     </tr>
+                                                    </c:if>
                                                 </c:forEach>
+                                                <c:if test="${not hayAceptados}">
+                                                    <tr>
+                                                        <td colspan="4" class="text-center text-muted py-3">
+                                                            No hay estudiantes aceptados en esta edición.
+                                                        </td>
+                                                    </tr>
+                                                </c:if>
                                             </c:otherwise>
                                         </c:choose>
                                     </tbody>
                                 </table>
                             </div>
 
-                            <c:if test="${not empty dtEdicion.misInscripciones}">
+                            <c:if test="${not empty dtEdicion.misInscripciones and hayAceptados}">
                                 <div class="text-end mt-3">
                                     <c:choose>
                                         <c:when test="${dtEdicion.estado == 'FINALIZADA'}">

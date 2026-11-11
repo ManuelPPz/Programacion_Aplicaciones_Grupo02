@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import Logica.DTsClasses.DTActaEstudio;
 import Logica.DTsClasses.DTFilaActa;
 import Logica.ws.cliente.DtActaEstudio;
+import Logica.ws.cliente.DtValoracionCurso;
+import Logica.DTsClasses.DTValoracionCurso;
 import Logica.ws.cliente.DtFilaActa;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -123,6 +125,9 @@ public final class ConversorDT {
         if (dt instanceof DtActaEstudio a) {
             return acta(a);
         }
+        if (dt instanceof DtValoracionCurso v) {
+            return valoracion(v);
+        }
         return new DTMaster();
     }
 
@@ -139,6 +144,18 @@ public final class ConversorDT {
         }
         return new DTActaEstudio(a.getNickname(), a.getNombre(), a.getApellido(), a.getPrograma(),
                 a.getInstituto(), fecha(a.getFechaEmision()), filas);
+    }
+
+    public static DTValoracionCurso valoracion(DtValoracionCurso v) {
+        if (v == null) {
+            return null;
+        }
+        List<Integer> l = v.getEstrellas();
+        int[] estrellas = new int[DTValoracionCurso.MAX_ESTRELLAS];
+        for (int i = 0; l != null && i < l.size() && i < estrellas.length; i++) {
+            estrellas[i] = (l.get(i) != null) ? l.get(i) : 0;
+        }
+        return new DTValoracionCurso(v.getCurso(), v.getTotal(), estrellas, v.getPromedio(), v.getMiPuntaje());
     }
 
     public static List<DTMaster> lista(List<? extends DtMaster> l) {

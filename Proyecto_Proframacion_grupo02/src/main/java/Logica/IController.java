@@ -79,6 +79,13 @@ public interface IController {
 
     //Acta de estudio (DTActaEstudio) del estudiante para un programa al que esta inscripto
     public abstract DTMaster ActaDeEstudio(String nickname, String nomPrograma) throws Exception;
+
+    //Valorar un Curso (y resumen de puntajes, Requerimiento 7.6)
+    public abstract void ValorarCurso(String nickname, String nomCurso, int puntaje) throws Exception;
+
+    public abstract DTMaster ValoracionesCurso(String nomCurso, String nickname);
+
+    public abstract List<String> CursosParticipa(String nickname) throws Exception;
     //Crear Programa de Formacion
     //El tipo de dato FechaType sera añadido cuando se cree el tipo de dato "FechaType" o alguno con nombre parecido
     public abstract void CrearProgramasDeFormacion(String nomPrograma, String descripcion, Date fInicio, Date fFin,Date fAlta, String imgPath, String instituto)throws Exception;

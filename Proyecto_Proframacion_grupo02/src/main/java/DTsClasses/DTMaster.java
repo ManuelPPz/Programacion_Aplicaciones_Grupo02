@@ -13,7 +13,7 @@ import jakarta.xml.bind.annotation.XmlSeeAlso;
  * @author mateo
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSeeAlso({DTUsuarioBase.class, DTUsuario.class, DTDocente.class, DTEdi_Usu.class, DTCategoria.class, DTInstituto.class, DTCurso.class, DTEdicionCurso.class, DTProgramaForm.class, DTCambioEstado.class, DTActaEstudio.class})
+@XmlSeeAlso({DTUsuarioBase.class, DTUsuario.class, DTDocente.class, DTEdi_Usu.class, DTCategoria.class, DTInstituto.class, DTCurso.class, DTEdicionCurso.class, DTProgramaForm.class, DTCambioEstado.class, DTActaEstudio.class, DTValoracionCurso.class})
 public class DTMaster {
 
     /** Constructor sin argumentos requerido por JAXB (Web Services). */

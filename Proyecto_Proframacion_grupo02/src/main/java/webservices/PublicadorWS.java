@@ -2,6 +2,7 @@ package webservices;
 
 import Classes.Enum_Estado_inscripcion;
 import DTsClasses.DTActaEstudio;
+import DTsClasses.DTValoracionCurso;
 import DTsClasses.DTCambioEstado;
 import DTsClasses.DTMaster;
 import DTsClasses.DTUsuarioBase;
@@ -300,6 +301,36 @@ public class PublicadorWS {
             @WebParam(name = "programa") String programa) throws EdextWSException {
         try {
             return (DTActaEstudio) ico.ActaDeEstudio(nickname, programa);
+        } catch (Exception e) {
+            throw error(e);
+        }
+    }
+
+    // ===================== Valorar un Curso =====================
+
+    /** El estudiante valora (1 a 5 estrellas, una sola vez) un curso en el que participa. */
+    @WebMethod
+    public void ValorarCurso(@WebParam(name = "nickname") String nickname, @WebParam(name = "curso") String curso,
+            @WebParam(name = "puntaje") int puntaje) throws EdextWSException {
+        try {
+            ico.ValorarCurso(nickname, curso, puntaje);
+        } catch (Exception e) {
+            throw error(e);
+        }
+    }
+
+    /** Resumen de puntajes del curso; nickname es opcional (para devolver el puntaje propio). */
+    @WebMethod
+    public DTValoracionCurso ValoracionesCurso(@WebParam(name = "curso") String curso,
+            @WebParam(name = "nickname") String nickname) {
+        return (DTValoracionCurso) ico.ValoracionesCurso(curso, nickname);
+    }
+
+    /** Cursos en los que participa el estudiante (inscripción aceptada en alguna edición). */
+    @WebMethod
+    public List<String> CursosParticipa(@WebParam(name = "nickname") String nickname) throws EdextWSException {
+        try {
+            return ico.CursosParticipa(nickname);
         } catch (Exception e) {
             throw error(e);
         }

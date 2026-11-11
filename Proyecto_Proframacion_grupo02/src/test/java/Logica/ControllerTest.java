@@ -494,6 +494,33 @@ public class ControllerTest {
     }
 
     @Test
+    public void testValorarCursoYResumenDelegan() throws Exception {
+        Manejadores.ManejadorValoraciones manVal = mock(Manejadores.ManejadorValoraciones.class);
+        try (MockedStatic<Manejadores.ManejadorValoraciones> s = mockStatic(Manejadores.ManejadorValoraciones.class)) {
+            s.when(Manejadores.ManejadorValoraciones::GetInstance).thenReturn(manVal);
+            DTsClasses.DTValoracionCurso dt = new DTsClasses.DTValoracionCurso("Java", new int[]{0, 0, 0, 0, 1}, 5);
+            when(manVal.Resumen("Java", "ana")).thenReturn(dt);
+
+            instance.ValorarCurso("ana", "Java", 5);
+            verify(manVal).Valorar("ana", "Java", 5);
+            assertSame(dt, instance.ValoracionesCurso("Java", "ana"));
+        }
+    }
+
+    @Test
+    public void testCursosParticipa() throws Exception {
+        Usuario u = new Usuario("ana", "Ana", "Paz", "a@x.com", "p", fecha, null);
+        inscripcion(u, edicion("Java 1", curso("Java"), false), Enum_Estado_inscripcion.ACEPTADO, null);
+        inscripcion(u, edicion("Web 1", curso("Web"), false), Enum_Estado_inscripcion.INSCRIPTO, null);
+        when(manUsuario.BuscarUsuario("ana")).thenReturn(u);
+        when(manUsuario.BuscarUsuario("doc")).thenReturn(mock(Classes.Docente.class));
+
+        assertEquals(List.of("Java"), instance.CursosParticipa("ana"));
+        assertThrows(Exception.class, () -> instance.CursosParticipa("doc"));
+        assertThrows(Exception.class, () -> instance.CursosParticipa(null));
+    }
+
+    @Test
     public void testActaDeEstudio() throws Exception {
         Usuario u = new Usuario("ana", "Ana", "Paz", "a@x.com", "p", fecha, null);
         ProgramaDeFormacion pdf = new ProgramaDeFormacion("Prog", "d", null, fecha, null, new Instituto("INCO"));

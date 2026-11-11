@@ -205,6 +205,24 @@
 <message name="ActaDeEstudioResponse">
 <part name="parameters" element="tns:ActaDeEstudioResponse"/>
 </message>
+<message name="ValorarCurso">
+<part name="parameters" element="tns:ValorarCurso"/>
+</message>
+<message name="ValorarCursoResponse">
+<part name="parameters" element="tns:ValorarCursoResponse"/>
+</message>
+<message name="ValoracionesCurso">
+<part name="parameters" element="tns:ValoracionesCurso"/>
+</message>
+<message name="ValoracionesCursoResponse">
+<part name="parameters" element="tns:ValoracionesCursoResponse"/>
+</message>
+<message name="CursosParticipa">
+<part name="parameters" element="tns:CursosParticipa"/>
+</message>
+<message name="CursosParticipaResponse">
+<part name="parameters" element="tns:CursosParticipaResponse"/>
+</message>
 <message name="CrearProgramasDeFormacion">
 <part name="parameters" element="tns:CrearProgramasDeFormacion"/>
 </message>
@@ -443,6 +461,20 @@
 <input wsam:Action="http://webservices.edext/PublicadorWS/ActaDeEstudioRequest" message="tns:ActaDeEstudio"/>
 <output wsam:Action="http://webservices.edext/PublicadorWS/ActaDeEstudioResponse" message="tns:ActaDeEstudioResponse"/>
 <fault message="tns:EdextWSException" name="EdextWSException" wsam:Action="http://webservices.edext/PublicadorWS/ActaDeEstudio/Fault/EdextWSException"/>
+</operation>
+<operation name="ValorarCurso">
+<input wsam:Action="http://webservices.edext/PublicadorWS/ValorarCursoRequest" message="tns:ValorarCurso"/>
+<output wsam:Action="http://webservices.edext/PublicadorWS/ValorarCursoResponse" message="tns:ValorarCursoResponse"/>
+<fault message="tns:EdextWSException" name="EdextWSException" wsam:Action="http://webservices.edext/PublicadorWS/ValorarCurso/Fault/EdextWSException"/>
+</operation>
+<operation name="ValoracionesCurso">
+<input wsam:Action="http://webservices.edext/PublicadorWS/ValoracionesCursoRequest" message="tns:ValoracionesCurso"/>
+<output wsam:Action="http://webservices.edext/PublicadorWS/ValoracionesCursoResponse" message="tns:ValoracionesCursoResponse"/>
+</operation>
+<operation name="CursosParticipa">
+<input wsam:Action="http://webservices.edext/PublicadorWS/CursosParticipaRequest" message="tns:CursosParticipa"/>
+<output wsam:Action="http://webservices.edext/PublicadorWS/CursosParticipaResponse" message="tns:CursosParticipaResponse"/>
+<fault message="tns:EdextWSException" name="EdextWSException" wsam:Action="http://webservices.edext/PublicadorWS/CursosParticipa/Fault/EdextWSException"/>
 </operation>
 <operation name="CrearProgramasDeFormacion">
 <input wsam:Action="http://webservices.edext/PublicadorWS/CrearProgramasDeFormacionRequest" message="tns:CrearProgramasDeFormacion"/>
@@ -831,6 +863,39 @@
 </fault>
 </operation>
 <operation name="ActaDeEstudio">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="EdextWSException">
+<soap:fault name="EdextWSException" use="literal"/>
+</fault>
+</operation>
+<operation name="ValorarCurso">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="EdextWSException">
+<soap:fault name="EdextWSException" use="literal"/>
+</fault>
+</operation>
+<operation name="ValoracionesCurso">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
+<operation name="CursosParticipa">
 <soap:operation soapAction=""/>
 <input>
 <soap:body use="literal"/>

@@ -16,6 +16,7 @@
     <class>Classes.EdicionCurso</class>
     <class>Classes.ProgramaDeFormacion</class>
     <class>Classes.Categoria</class>
+    <class>Classes.ValoracionCurso</class>
 
     <properties>
       <!-- Conexión a Base de Datos -->

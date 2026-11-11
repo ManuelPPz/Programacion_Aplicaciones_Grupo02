@@ -253,6 +253,24 @@ public class PublicadorWSTest {
     }
 
     @Test
+    public void testValorarCurso() throws Exception {
+        ws.ValorarCurso("ana", "Java", 4);
+        verify(ico).ValorarCurso("ana", "Java", 4);
+
+        doThrow(new Exception("Ya valoraste")).when(ico).ValorarCurso("ana", "Java", 5);
+        assertEquals("Ya valoraste", assertThrows(EdextWSException.class, () -> ws.ValorarCurso("ana", "Java", 5)).getMessage());
+
+        DTsClasses.DTValoracionCurso dt = new DTsClasses.DTValoracionCurso("Java", new int[]{0, 0, 0, 1, 0}, 4);
+        when(ico.ValoracionesCurso("Java", "ana")).thenReturn(dt);
+        assertSame(dt, ws.ValoracionesCurso("Java", "ana"));
+
+        when(ico.CursosParticipa("ana")).thenReturn(List.of("Java"));
+        assertEquals(List.of("Java"), ws.CursosParticipa("ana"));
+        when(ico.CursosParticipa("doc")).thenThrow(new Exception("Solo los estudiantes"));
+        assertThrows(EdextWSException.class, () -> ws.CursosParticipa("doc"));
+    }
+
+    @Test
     public void testListarEstadosInscripcion() {
         List<String> estados = ws.ListarEstadosInscripcion();
         assertEquals(Enum_Estado_inscripcion.values().length, estados.size());
