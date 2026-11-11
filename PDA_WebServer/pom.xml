@@ -78,6 +78,13 @@
             <version>4.0.5</version>
         </dependency>
 
+        <!-- iText: genera el PDF del acta de estudio (Requerimiento 7.4) -->
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itextpdf</artifactId>
+            <version>5.5.13.4</version>
+        </dependency>
+
         <!-- Testing: JUnit 5 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

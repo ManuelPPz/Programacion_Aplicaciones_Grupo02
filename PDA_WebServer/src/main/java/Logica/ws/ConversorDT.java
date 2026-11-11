@@ -26,6 +26,10 @@ import Logica.ws.cliente.DtUsuarioBase;
 import Logica.ws.cliente.EnumEstadoEdicion;
 import Logica.ws.cliente.EnumEstadoInscripcion;
 import java.util.ArrayList;
+import Logica.DTsClasses.DTActaEstudio;
+import Logica.DTsClasses.DTFilaActa;
+import Logica.ws.cliente.DtActaEstudio;
+import Logica.ws.cliente.DtFilaActa;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -116,7 +120,25 @@ public final class ConversorDT {
         if (dt instanceof DtCategoria c) {
             return new DTCategoria(c.getNombre());
         }
+        if (dt instanceof DtActaEstudio a) {
+            return acta(a);
+        }
         return new DTMaster();
+    }
+
+    public static DTActaEstudio acta(DtActaEstudio a) {
+        if (a == null) {
+            return null;
+        }
+        List<DTFilaActa> filas = new ArrayList<>();
+        for (DtFilaActa f : a.getFilas()) {
+            if (f != null) {
+                filas.add(new DTFilaActa(f.getCurso(), f.getEdicion(), f.getNota(), f.getResultado(),
+                        f.isAprobado(), fecha(f.getFechaResultado())));
+            }
+        }
+        return new DTActaEstudio(a.getNickname(), a.getNombre(), a.getApellido(), a.getPrograma(),
+                a.getInstituto(), fecha(a.getFechaEmision()), filas);
     }
 
     public static List<DTMaster> lista(List<? extends DtMaster> l) {

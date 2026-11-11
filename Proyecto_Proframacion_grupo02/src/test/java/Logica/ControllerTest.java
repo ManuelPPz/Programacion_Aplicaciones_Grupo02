@@ -471,6 +471,92 @@ public class ControllerTest {
         verify(manEdicion).SeleccionarEstudiantes("ed", lista);
     }
 
+    // ------------------------------------------------------- Acta de estudio
+
+    private Curso curso(String nombre) {
+        return new Curso(null, nombre, "d", 1, 1f, 1, "u", fecha, new ArrayList<>(), null, new ArrayList<>(), null);
+    }
+
+    private EdicionCurso edicion(String nombre, Curso c, boolean finalizada) {
+        EdicionCurso ec = new EdicionCurso(nombre, null, c, fecha, fecha, 10, fecha, new ArrayList<>(), null);
+        if (finalizada) {
+            ec.Finalizar();
+        }
+        return ec;
+    }
+
+    private Edi_Usu inscripcion(Usuario u, EdicionCurso ec, Enum_Estado_inscripcion estado, Integer nota) {
+        Edi_Usu eu = new Edi_Usu(u, ec, fecha);
+        eu.setEstado(estado);
+        eu.setNota(nota);
+        u.AddEdicionCurso(eu);
+        return eu;
+    }
+
+    @Test
+    public void testActaDeEstudio() throws Exception {
+        Usuario u = new Usuario("ana", "Ana", "Paz", "a@x.com", "p", fecha, null);
+        ProgramaDeFormacion pdf = new ProgramaDeFormacion("Prog", "d", null, fecha, null, new Instituto("INCO"));
+        u.AddPrograma(new Classes.Prog_Usu(new Classes.Id_ProgUsu(u, pdf), fecha));
+        Curso java = curso("Java"), web = curso("Web"), bd = curso("BD"), redes = curso("Redes");
+        inscripcion(u, edicion("Java 1", java, true), Enum_Estado_inscripcion.ACEPTADO, 4);
+        inscripcion(u, edicion("Java 2", java, true), Enum_Estado_inscripcion.ACEPTADO, 9);
+        inscripcion(u, edicion("Web 1", web, false), Enum_Estado_inscripcion.ACEPTADO, null);
+        inscripcion(u, edicion("BD 1", bd, true), Enum_Estado_inscripcion.ACEPTADO, 3);
+        when(manUsuario.BuscarUsuario("ana")).thenReturn(u);
+        when(manProgramas.BuscarPrograma("Prog")).thenReturn(pdf);
+        when(manProgramas.getDT(pdf)).thenReturn(new DTProgramaForm("Prog", "d", null,
+                List.of("Java", "Web", "BD", "Redes"), fecha, new ArrayList<>(), null));
+
+        DTsClasses.DTActaEstudio acta = (DTsClasses.DTActaEstudio) instance.ActaDeEstudio("ana", "prog");
+
+        assertEquals("Prog", acta.getPrograma());
+        assertEquals("INCO", acta.getInstituto());
+        assertEquals("Ana", acta.getNombre());
+        List<DTsClasses.DTFilaActa> f = acta.getFilas();
+        assertEquals(4, f.size());
+        // Java: se toma la edición aprobada, no la reprobada
+        assertEquals("Java 2", f.get(0).getEdicion());
+        assertEquals(9, f.get(0).getNota());
+        assertTrue(f.get(0).isAprobado());
+        assertEquals("Aprobado", f.get(0).getResultado());
+        assertNotNull(f.get(0).getFechaResultado());
+        assertEquals("En curso", f.get(1).getResultado());
+        assertNull(f.get(1).getFechaResultado());
+        assertEquals("Reprobado", f.get(2).getResultado());
+        assertFalse(f.get(2).isAprobado());
+        assertEquals("No cursado", f.get(3).getResultado());
+        assertNull(f.get(3).getEdicion());
+    }
+
+    @Test
+    public void testFilaActaEstadosDeInscripcion() {
+        Usuario u = new Usuario("ana", "Ana", "Paz", "a@x.com", "p", fecha, null);
+        Curso c = curso("C");
+        inscripcion(u, edicion("C1", c, false), Enum_Estado_inscripcion.RECHAZADO, null);
+        assertEquals("Inscripción rechazada", Controller.filaActa("C", u.getMisInscripciones()).getResultado());
+        inscripcion(u, edicion("C2", c, false), Enum_Estado_inscripcion.INSCRIPTO, null);
+        assertEquals("Inscripción pendiente", Controller.filaActa("C", u.getMisInscripciones()).getResultado());
+        inscripcion(u, edicion("C3", c, true), Enum_Estado_inscripcion.ACEPTADO, null);
+        assertEquals("Sin calificación", Controller.filaActa("C", u.getMisInscripciones()).getResultado());
+        assertEquals("No cursado", Controller.filaActa("Otro", null).getResultado());
+    }
+
+    @Test
+    public void testActaDeEstudioValidaciones() {
+        when(manUsuario.BuscarUsuario("doc")).thenReturn(mock(Docente.class));
+        assertTrue(assertThrows(Exception.class, () -> instance.ActaDeEstudio("doc", "P")).getMessage().contains("Solo los estudiantes"));
+        assertThrows(Exception.class, () -> instance.ActaDeEstudio(null, "P"));
+
+        Usuario u = new Usuario("ana", "Ana", "Paz", "a@x.com", "p", fecha, null);
+        when(manUsuario.BuscarUsuario("ana")).thenReturn(u);
+        assertTrue(assertThrows(Exception.class, () -> instance.ActaDeEstudio("ana", "P")).getMessage().contains("no está inscripto"));
+
+        ProgramaDeFormacion pdf = new ProgramaDeFormacion("P", "d", null, fecha, null, null);
+        u.AddPrograma(new Classes.Prog_Usu(new Classes.Id_ProgUsu(u, pdf), fecha));
+        assertTrue(assertThrows(Exception.class, () -> instance.ActaDeEstudio("ana", "P")).getMessage().contains("No existe"));
+    }
+
     // --------------------------------------------------------------- Programa
 
     @Test

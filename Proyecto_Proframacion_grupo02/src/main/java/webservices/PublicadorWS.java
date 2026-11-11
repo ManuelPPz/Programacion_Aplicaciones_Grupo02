@@ -1,6 +1,7 @@
 package webservices;
 
 import Classes.Enum_Estado_inscripcion;
+import DTsClasses.DTActaEstudio;
 import DTsClasses.DTCambioEstado;
 import DTsClasses.DTMaster;
 import DTsClasses.DTUsuarioBase;
@@ -288,6 +289,17 @@ public class PublicadorWS {
         }
         try {
             ico.AceptarEstudiantesAEdicionCurso(lista, edicion);
+        } catch (Exception e) {
+            throw error(e);
+        }
+    }
+
+    /** Acta de estudio del estudiante para un programa de formación al que está inscripto. */
+    @WebMethod
+    public DTActaEstudio ActaDeEstudio(@WebParam(name = "nickname") String nickname,
+            @WebParam(name = "programa") String programa) throws EdextWSException {
+        try {
+            return (DTActaEstudio) ico.ActaDeEstudio(nickname, programa);
         } catch (Exception e) {
             throw error(e);
         }

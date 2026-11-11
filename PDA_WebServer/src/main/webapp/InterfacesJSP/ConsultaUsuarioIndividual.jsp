@@ -127,6 +127,9 @@
                     <button class="tab-btn btn btn-primary active" onclick="openTab(event, 'tabInfo')">Informacion General</button>
                     <button class="tab-btn btn btn-outline-primary" onclick="openTab(event, 'tabActividad')">Actividad (Cursos/Programas)</button>
                     <button class="tab-btn btn btn-outline-primary" onclick="openTab(event, 'tabSeguidores')">Seguidores</button>
+                    <% if (esElMismoUsuario && usuarioConsultado instanceof DTUsuario) { %>
+                    <button class="tab-btn btn btn-outline-primary" id="btnTabActa" onclick="openTab(event, 'tabActa')">Acta de Estudio</button>
+                    <% } %>
                 </div>
 
                 <div id="tabInfo" class="tab-content" style="display: block;">
@@ -247,6 +250,37 @@
 
                 </div>
 
+                <% if (esElMismoUsuario && usuarioConsultado instanceof DTUsuario) {
+                       List<String> progsActa = usuarioConsultado.getProgramas();
+                       String errorActa = request.getParameter("errorActa"); %>
+                <div id="tabActa" class="tab-content" style="display: none;">
+                    <h4 class="fw-bold text-dark border-bottom pb-2 mb-3">Generar acta de estudio</h4>
+                    <% if (errorActa != null && !errorActa.isBlank()) { %>
+                        <div class="alert alert-danger text-center"><%= errorActa.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;") %></div>
+                    <% } %>
+                    <% if (progsActa == null || progsActa.isEmpty()) { %>
+                        <div class="alert alert-secondary text-center mb-0">
+                            No est&aacute;s inscripto a ning&uacute;n programa de formaci&oacute;n.
+                        </div>
+                    <% } else { %>
+                        <p class="text-muted">
+                            Eleg&iacute; el programa de formaci&oacute;n y descarg&aacute; el acta en PDF con los cursos del programa,
+                            el resultado de aprobaci&oacute;n y la fecha de resultado de cada edici&oacute;n.
+                        </p>
+                        <form id="formActa" action="${pageContext.request.contextPath}/ActaEstudioServlet" method="GET">
+                            <label for="selProgramaActa" class="form-label fw-bold">Programa de formaci&oacute;n</label>
+                            <select id="selProgramaActa" name="programa" class="form-select border-dark mb-3" required>
+                                <% for (String prog : progsActa) {
+                                       String progHtml = prog.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;"); %>
+                                    <option value="<%= progHtml %>"><%= progHtml %></option>
+                                <% } %>
+                            </select>
+                            <button type="submit" class="btn btn-primary fw-bold">Descargar acta (PDF)</button>
+                        </form>
+                    <% } %>
+                </div>
+                <% } %>
+
                 <div id="tabSeguidores" class="tab-content" style="display: none;">
                     <h4 class="fw-bold mt-2">Usuarios que lo siguen:</h4>
                     <ul class="list-group list-group-flush mt-3">
@@ -289,5 +323,12 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Si se vuelve del acta con un error, se muestra directamente esa pestaña
+    if (new URLSearchParams(location.search).has("errorActa")) {
+        var btnActa = document.getElementById("btnTabActa");
+        if (btnActa) btnActa.click();
+    }
+</script>
 </body>
 </html>

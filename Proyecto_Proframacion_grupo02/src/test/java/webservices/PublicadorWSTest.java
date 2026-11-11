@@ -242,6 +242,17 @@ public class PublicadorWSTest {
     }
 
     @Test
+    public void testActaDeEstudio() throws Exception {
+        DTsClasses.DTActaEstudio acta = new DTsClasses.DTActaEstudio("ana", "Ana", "Paz", "P", null, new Date(), null);
+        when(ico.ActaDeEstudio("ana", "P")).thenReturn(acta);
+        assertSame(acta, ws.ActaDeEstudio("ana", "P"));
+        assertTrue(acta.getFilas().isEmpty());
+
+        when(ico.ActaDeEstudio("doc", "P")).thenThrow(new Exception("Solo los estudiantes"));
+        assertEquals("Solo los estudiantes", assertThrows(EdextWSException.class, () -> ws.ActaDeEstudio("doc", "P")).getMessage());
+    }
+
+    @Test
     public void testListarEstadosInscripcion() {
         List<String> estados = ws.ListarEstadosInscripcion();
         assertEquals(Enum_Estado_inscripcion.values().length, estados.size());

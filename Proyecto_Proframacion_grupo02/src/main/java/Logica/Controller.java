@@ -44,6 +44,8 @@ import DTsClasses.DTInstituto;
 import DTsClasses.DTMaster;
 import DTsClasses.EnumDT;
 import DTsClasses.DTProgramaForm;
+import DTsClasses.DTActaEstudio;
+import DTsClasses.DTFilaActa;
 import java.util.Random;
 import java.util.stream.Stream;
 
@@ -311,6 +313,103 @@ public class Controller implements IController {
     @Override
     public void AceptarEstudiantesAEdicionCurso(List<Object[]> estudiantesYCambios, String nomEdicion) throws Exception {
         manEdicion.SeleccionarEstudiantes(nomEdicion, estudiantesYCambios);
+    }
+
+    /** Nota mínima (escala 1 a 12) para aprobar un curso en el acta de estudio. */
+    static final int NOTA_APROBACION = 6;
+
+    @Override
+    public DTMaster ActaDeEstudio(String nickname, String nomPrograma) throws Exception {
+        UsuarioBase ub = (nickname == null) ? null : manUsuario.BuscarUsuario(nickname);
+        if (!(ub instanceof Usuario u)) {
+            throw new Exception("Solo los estudiantes pueden tramitar el acta de estudio.");
+        }
+        String programaInscripto = null;
+        List<Prog_Usu> programasInscripto = (u.getMisInscripcionesPro() != null) ? u.getMisInscripcionesPro() : List.of();
+        for (Prog_Usu pu : programasInscripto) {
+            ProgramaDeFormacion p = (pu != null && pu.getId() != null) ? pu.getId().getPrograma() : null;
+            if (p != null && p.getNombre() != null && p.getNombre().equalsIgnoreCase(nomPrograma)) {
+                programaInscripto = p.getNombre();
+                break;
+            }
+        }
+        if (programaInscripto == null) {
+            throw new Exception("El estudiante no está inscripto al programa '" + nomPrograma + "'.");
+        }
+        ProgramaDeFormacion pdf = manProgramas.BuscarPrograma(programaInscripto);
+        if (pdf == null) {
+            throw new Exception("No existe el programa '" + programaInscripto + "'.");
+        }
+        DTProgramaForm dtp = manProgramas.getDT(pdf);
+        List<DTFilaActa> filas = new ArrayList<>();
+        if (dtp != null && dtp.getCursos() != null) {
+            for (String curso : dtp.getCursos()) {
+                filas.add(filaActa(curso, u.getMisInscripciones()));
+            }
+        }
+        String instituto = (pdf.getInstituo() != null) ? pdf.getInstituo().getNombre() : null;
+        return new DTActaEstudio(u.getNickname(), u.getNombre(), u.getApellido(), pdf.getNombre(), instituto,
+                new Date(), filas);
+    }
+
+    /**
+     * Resultado del estudiante en un curso: entre sus inscripciones a ediciones del curso
+     * se toma la más relevante (aprobada, luego calificada, en curso, pendiente, rechazada)
+     * y, a igualdad, la de resultado más reciente.
+     */
+    static DTFilaActa filaActa(String curso, List<Edi_Usu> inscripciones) {
+        Edi_Usu mejor = null;
+        int mejorPrioridad = -1;
+        if (inscripciones != null) {
+            for (Edi_Usu eu : inscripciones) {
+                EdicionCurso ec = (eu != null) ? eu.getEdicion() : null;
+                if (ec == null || ec.getCurso() == null || !ec.getCurso().getNombre().equalsIgnoreCase(curso)) {
+                    continue;
+                }
+                int prioridad = prioridadActa(eu);
+                if (prioridad > mejorPrioridad || (prioridad == mejorPrioridad && masReciente(ec, mejor.getEdicion()))) {
+                    mejor = eu;
+                    mejorPrioridad = prioridad;
+                }
+            }
+        }
+        if (mejor == null) {
+            return new DTFilaActa(curso, null, null, "No cursado", false, null);
+        }
+        EdicionCurso ec = mejor.getEdicion();
+        Integer nota = mejor.getNota();
+        if (ec.isFinalizada() && mejor.getMiEstado() == Enum_Estado_inscripcion.ACEPTADO) {
+            if (nota == null) {
+                return new DTFilaActa(curso, ec.getNombre(), null, "Sin calificación", false, ec.getFResultado());
+            }
+            boolean aprobado = nota >= NOTA_APROBACION;
+            return new DTFilaActa(curso, ec.getNombre(), nota, aprobado ? "Aprobado" : "Reprobado", aprobado,
+                    ec.getFResultado());
+        }
+        String resultado = switch (mejor.getMiEstado()) {
+            case ACEPTADO -> "En curso";
+            case RECHAZADO -> "Inscripción rechazada";
+            default -> "Inscripción pendiente";
+        };
+        return new DTFilaActa(curso, ec.getNombre(), null, resultado, false, null);
+    }
+
+    private static int prioridadActa(Edi_Usu eu) {
+        EdicionCurso ec = eu.getEdicion();
+        Enum_Estado_inscripcion estado = eu.getMiEstado();
+        if (estado == Enum_Estado_inscripcion.ACEPTADO && ec.isFinalizada() && eu.getNota() != null) {
+            return eu.getNota() >= NOTA_APROBACION ? 5 : 4;
+        }
+        if (estado == Enum_Estado_inscripcion.ACEPTADO) {
+            return ec.isFinalizada() ? 2 : 3;
+        }
+        return estado == Enum_Estado_inscripcion.RECHAZADO ? 0 : 1;
+    }
+
+    private static boolean masReciente(EdicionCurso a, EdicionCurso b) {
+        Date fa = (a.getFResultado() != null) ? a.getFResultado() : a.getFFin();
+        Date fb = (b.getFResultado() != null) ? b.getFResultado() : b.getFFin();
+        return fa != null && (fb == null || fa.after(fb));
     }
 
     //Crear Programa de Formacion (Versión por parámetros sueltos)

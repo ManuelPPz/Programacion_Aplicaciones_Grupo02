@@ -202,4 +202,17 @@ public class EdicionCursoTest {
         assertEquals(Enum_Estado_Edicion.FINALIZADA, futura.getEstado());
         assertEquals(Enum_Estado_Edicion.NORMAL, new EdicionCurso().getEstado());
     }
+
+    @Test
+    public void testFechaResultadoAlFinalizar() {
+        java.util.Date fin = new java.util.Date(0);
+        EdicionCurso ec = new EdicionCurso("E", null, null, fin, fin, 0, fin, new java.util.ArrayList<>(), null);
+        assertNull(ec.getFResultado());
+        ec.Finalizar();
+        java.util.Date cierre = ec.getFResultado();
+        assertNotNull(cierre);
+        assertTrue(cierre.after(fin));
+        ec.Finalizar(); // finalizar de nuevo no cambia la fecha
+        assertSame(cierre, ec.getFResultado());
+    }
 }

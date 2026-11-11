@@ -65,6 +65,16 @@ public class EdicionCurso implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", length = 20)
     private Enum_Estado_Edicion estado;
+
+    /** Fecha en que el docente cerró la edición (fecha de resultado del acta). */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "F_Resultado")
+    private Date fResultado;
+
+    /** Fecha de resultado: la de cierre; si es una edición cerrada antes de guardarla, su fecha de fin. */
+    public Date getFResultado() {
+        return (fResultado != null || !isFinalizada()) ? fResultado : fFin;
+    }
     
     public String getNombre(){ return nombre; }
     public Instituto getInstituto() { return miInstituto; }
@@ -99,6 +109,9 @@ public class EdicionCurso implements Serializable {
 
     /** Cierra la edición; una vez finalizada no vuelve a cambiar de estado. */
     public void Finalizar() {
+        if (this.estado != Enum_Estado_Edicion.FINALIZADA) {
+            this.fResultado = new Date();
+        }
         this.estado = Enum_Estado_Edicion.FINALIZADA;
     }
     

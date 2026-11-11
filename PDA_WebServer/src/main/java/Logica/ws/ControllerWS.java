@@ -249,6 +249,15 @@ public class ControllerWS implements IController {
         return ConversorDT.lista(ws().listarInscripciones(nicknameEstudiante));
     }
 
+    @Override
+    public DTMaster ActaDeEstudio(String nickname, String nomPrograma) throws Exception {
+        try {
+            return ConversorDT.acta(ws().actaDeEstudio(nickname, nomPrograma));
+        } catch (EdextWSException e) {
+            throw error(e);
+        }
+    }
+
     /** Cada elemento es {nickname (String), nuevo estado (Enum_Estado_inscripcion)}. */
     @Override
     public void AceptarEstudiantesAEdicionCurso(List<Object[]> estudiantesYCambios, String nomEdicion) throws Exception {

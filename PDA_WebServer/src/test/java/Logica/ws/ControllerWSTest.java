@@ -336,6 +336,36 @@ public class ControllerWSTest {
     }
 
     @Test
+    public void testActaDeEstudioConvierteElDT() throws Exception {
+        Logica.ws.cliente.DtFilaActa fila = new Logica.ws.cliente.DtFilaActa();
+        fila.setCurso("Java");
+        fila.setEdicion("J1");
+        fila.setNota(9);
+        fila.setResultado("Aprobado");
+        fila.setAprobado(true);
+        fila.setFechaResultado(ConversorDT.fecha(fecha));
+        Logica.ws.cliente.DtActaEstudio dt = new Logica.ws.cliente.DtActaEstudio();
+        dt.setNickname("ana");
+        dt.setPrograma("P");
+        dt.getFilas().add(fila);
+        dt.getFilas().add(null);
+        when(ws.actaDeEstudio("ana", "P")).thenReturn(dt);
+
+        Logica.DTsClasses.DTActaEstudio acta = (Logica.DTsClasses.DTActaEstudio) ctrl.ActaDeEstudio("ana", "P");
+
+        assertEquals("P", acta.getPrograma());
+        assertEquals(1, acta.getFilas().size());
+        assertEquals(9, acta.getFilas().get(0).getNota());
+        assertTrue(acta.getFilas().get(0).isAprobado());
+        assertEquals(fecha, acta.getFilas().get(0).getFechaResultado());
+        assertSame(Logica.DTsClasses.DTActaEstudio.class, ConversorDT.dt(dt).getClass());
+        assertNull(ConversorDT.acta(null));
+
+        when(ws.actaDeEstudio("doc", "P")).thenThrow(new EdextWSException("Solo los estudiantes", new EdextFault()));
+        assertEquals("Solo los estudiantes", assertThrows(Exception.class, () -> ctrl.ActaDeEstudio("doc", "P")).getMessage());
+    }
+
+    @Test
     public void testAceptarEstudiantesPropagaErrorDelSC() throws Exception {
         doThrow(new EdextWSException("Supera el cupo", new EdextFault())).when(ws).aceptarEstudiantesAEdicionCurso(any(), eq("E"));
         Exception ex = assertThrows(Exception.class, () -> ctrl.AceptarEstudiantesAEdicionCurso(null, "E"));
