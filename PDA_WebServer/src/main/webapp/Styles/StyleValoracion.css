@@ -1,0 +1,25 @@
+/* Sistema interactivo de estrellas (hover y selección) */
+.star-rating {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+
+.star-rating input {
+  display: none;
+}
+
+.star-rating label {
+  color: #e0e0e0;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: color 0.2s ease-in-out;
+}
+
+/* Efecto hover y pintado progresivo al seleccionar */
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+  color: #ffc107; /* Amarillo estándar de Bootstrap */
+}
+

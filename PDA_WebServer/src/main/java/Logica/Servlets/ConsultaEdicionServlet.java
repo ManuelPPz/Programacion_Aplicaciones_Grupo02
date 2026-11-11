@@ -1,6 +1,7 @@
 package Logica.Servlets;
 
 import Logica.Classes.Enum_Estado_inscripcion;
+import Logica.DTsClasses.DTCurso;
 import Logica.DTsClasses.DTEdicionCurso;
 import Logica.DTsClasses.DTMaster;
 import Logica.DTsClasses.DTUsuarioBase;
@@ -62,6 +63,11 @@ public class ConsultaEdicionServlet extends HttpServlet {
 
                 curso = dte.getCurso();
                 request.setAttribute("cursoSeleccionado", curso);
+                
+                if(curso!=null){
+                    request.setAttribute("valoracion", cliente.CantValPorEstrellas(curso));
+                }
+                
 
                 if (usuarioLogueado != null) {
                     try {

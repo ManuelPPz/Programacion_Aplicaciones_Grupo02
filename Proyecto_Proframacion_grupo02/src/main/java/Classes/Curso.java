@@ -68,6 +68,9 @@ public class Curso implements Serializable {
         inverseJoinColumns = @JoinColumn(name="Categoria_Nombre")
     )
     private List<Categoria> misCategorias;
+    
+    @OneToMany(mappedBy = "curso", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<ValoracionCurso> misValoraciones = new ArrayList<>();
 
     public Instituto getInstituto() { return miInstituto; }
     public String getNombre() { return nombre; }
@@ -82,6 +85,7 @@ public class Curso implements Serializable {
     public List<ProgramaDeFormacion> getProgramas(){ return this.misProgramas; }
     public UsuarioBase getDocente(){ return this.miDocente; }
     public List<Categoria> getCategorias(){ return this.misCategorias; }
+    public List<ValoracionCurso> getValoraciones(){return this.misValoraciones;}
     public String getImage(){ return this.image; }
     public void setImage(String image){ this.image = image; }
 
@@ -102,6 +106,7 @@ public class Curso implements Serializable {
         this.misCategorias = categorias;
         this.misProgramas = new ArrayList<>();
         this.misEdiciones = new ArrayList<>();
+        this.misValoraciones = new ArrayList();
         this.image = imgPath;
     }
 
@@ -135,15 +140,24 @@ public class Curso implements Serializable {
             this.misProgramas.add(pdf);
         }
     }
-
+    
     public void RemovePrograma(ProgramaDeFormacion pdf){
         if (this.misProgramas != null) this.misProgramas.remove(pdf);
     }
-
+    
+    public void AddValoracion(ValoracionCurso vc){
+        if (this.misValoraciones == null) this.misValoraciones = new ArrayList<>();
+        this.misValoraciones.add(vc);
+    }
+    
+    public void RemoveValoracion(ValoracionCurso vc){
+        if (this.misValoraciones != null) this.misValoraciones.remove(vc);
+    }
+    
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-
+    
     public void setDuracion(Integer duracion) {
         this.duracion = duracion;
     }

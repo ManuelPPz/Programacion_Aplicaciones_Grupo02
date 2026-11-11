@@ -36,6 +36,7 @@ import Classes.ProgramaDeFormacion;
 import Classes.Categoria;
 import Classes.Enum_Estado_Edicion;
 import Classes.Enum_Estado_inscripcion;
+import Classes.ValoracionCurso;
 //Imports DTs
 import DTsClasses.DTCurso;
 import DTsClasses.DTEdicionCurso;
@@ -155,6 +156,27 @@ public class Controller implements IController{
         return null;        
     }
 
+    @Override
+    public void ValorarCurso(String nomCurso, String nickname, float valoracion){
+        Usuario u = (Usuario) manUsuario.BuscarUsuario(nickname);
+        Curso c = manCursos.BuscarCurso(nomCurso);
+
+        if (u == null || c == null) {
+            System.err.println("Error: Usuario o Edición de Curso no encontrados.");
+            return;
+        }
+
+        ValoracionCurso eu = new ValoracionCurso(u, c, valoracion);
+
+        try {
+            // Guardar la inscripción y sincronizar entidades dentro de la transacción
+            manCursos.AddValoracionUsuario(eu);
+        } catch (Exception e) {
+            System.err.println("Error al agregar usuario inscripto: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
     //Alta Edicion Curso
     @Override
     public void AltaEdicionCurso(String instituto, String nomCurso, String nomEdicion, Date fInicio, Date fFin, int cupo, List<String> docentes, Date fAlta, String imgPath) throws Exception {
@@ -575,6 +597,15 @@ public class Controller implements IController{
         UsuarioBase ub = manUsuario.BusquedaAvanzada(id, password);
         if (ub != null) {
             return manUsuario.getDT(ub);
+        }
+        return null;
+    }
+    
+    @Override
+    public DTMaster CantValPorEstrellas(String curso){
+        Curso c = manCursos.BuscarCurso(curso);
+        if(c!=null){
+            return manCursos.getValoracionCurso(c);
         }
         return null;
     }

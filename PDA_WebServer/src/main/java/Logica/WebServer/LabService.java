@@ -27,6 +27,8 @@ public interface LabService{
    @WebMethod
    DTMaster ConsultaCurso(String nomCurso);
    @WebMethod
+   void ValorarCurso(String nomCurso, String nickname, float valoracion);
+   @WebMethod
    void AltaEdicionCurso(String instituto, String nomCurso, String nomEdicion, Date fInicio, Date fFin, int cupo, List<String> docentes, Date fAlta, String imgPath);
    @WebMethod
    DTMaster ConsultaEdicionCurso(String nomEdicion);
@@ -88,5 +90,6 @@ public interface LabService{
    List<DTMaster> ListarProgramasDeCurso(String nomCurso);
    @WebMethod
    List<DTMaster> ListarCurEdiProg(EnumDT tipoBusqueda, String dato);
-   
+   @WebMethod
+   DTMaster CantValPorEstrellas(String curso);
 }

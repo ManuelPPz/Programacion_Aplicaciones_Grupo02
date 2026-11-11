@@ -60,6 +60,11 @@ public class LabServiceImpl implements LabService{
     public DTMaster ConsultaCurso(String nomCurso) {
         return ico.ConsultaCurso(nomCurso);
     }
+    
+    @Override
+    public void ValorarCurso(String nomCurso, String nickname, float valoracion){
+        ico.ValorarCurso(nomCurso, nickname, valoracion);
+    }
 
     @Override
     public void AltaEdicionCurso(String instituto, String nomCurso, String nomEdicion, Date fInicio, Date fFin, int cupo, List<String> docentes, Date fAlta, String imgPath) {
@@ -211,6 +216,11 @@ public class LabServiceImpl implements LabService{
     @Override
     public List<DTMaster> ListarCurEdiProg(EnumDT tipoBusqueda, String dato) {
         return ico.ListarCurEdiProg(tipoBusqueda, dato);
+    }
+    
+    @Override
+    public DTMaster CantValPorEstrellas(String curso){
+        return ico.CantValPorEstrellas(curso);
     }
     
 }

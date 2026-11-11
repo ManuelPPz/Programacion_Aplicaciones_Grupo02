@@ -43,6 +43,9 @@ public interface IController {
     //Se modificara al crear el tipo de dato curso retornando el tipo de dato "Curso"
     public abstract DTMaster ConsultaCurso(String nomCurso);
     
+    //Valorar Curso
+    public abstract void ValorarCurso(String nomCurso, String nickname, float valoracion);
+    
     //Alta Edicion Curso
     public abstract void AltaEdicionCurso(String instituto, String nomCurso, String nomEdicion,Date fInicio, Date fFin,int cupo, List<String>docentes, Date fAlta, String imgPath)throws Exception;
     
@@ -122,4 +125,6 @@ public interface IController {
     public abstract String GenerateRandPassword();
     
     public abstract void AltaCategoria(String nombre);
+    
+    public abstract DTMaster CantValPorEstrellas(String curso);
 }

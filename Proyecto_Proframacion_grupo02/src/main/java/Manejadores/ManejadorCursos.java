@@ -1,18 +1,24 @@
 package Manejadores;
 
 
+import DTsClasses.DTUnitValoracion;
 import java.util.List;
 import java.util.ArrayList;
 
 import Classes.Categoria;
 import Classes.Curso;
 import Classes.EdicionCurso;
+import Classes.Id_Valoracion;
 import Classes.Instituto;
 import Classes.ProgramaDeFormacion;
+import Classes.Usuario;
 import Classes.UsuarioBase;
+import Classes.ValoracionCurso;
 
 import DTsClasses.DTCurso;
 import DTsClasses.DTMaster;
+import DTsClasses.DTValoracionCurso;
+import DTsClasses.ExtrasDT.DTUnitValoracion;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.Date;
@@ -226,6 +232,19 @@ public class ManejadorCursos {
                 }
             }
         }
+        
+        List<ValoracionCurso> auxValoracion = c.getValoraciones();
+        List<DTValoracionCurso> auxValoracionVal = new ArrayList<>();
+        if(auxValoracion!=null){
+            for(ValoracionCurso val : auxValoracion){
+                if(val!=null){
+                    auxValoracionVal.add((DTValoracionCurso) val.getMyDT());
+                }
+            }
+        }
+        
+        
+        
 
         String docenteNick = (c.getDocente() != null) ? c.getDocente().getNickname() : "";
 
@@ -243,7 +262,8 @@ public class ManejadorCursos {
             auxProgramasStr,
             auxCategoriaStr,
             docenteNick,
-            c.getImage()
+            c.getImage(),
+            auxValoracionVal
         );
     }
 
@@ -296,4 +316,94 @@ public class ManejadorCursos {
         }
         return auxReturnList;
     }
+    
+    public void AddValoracionUsuario(ValoracionCurso vc) throws Exception{
+        if (vc == null || vc.getCurso()== null || vc.getUsuario() == null) {
+            throw new Exception("La inscripción debe contener un usuario y una edición válidos.");
+        }
+
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+
+            // 1. Obtener entidades limpias y gestionadas en la transacción actual
+            Curso cursoManaged = em.find(Curso.class, vc.getCurso().getNombre());
+            Usuario usuarioManaged = em.find(Usuario.class, vc.getUsuario().getNickname());
+
+            if (cursoManaged == null || usuarioManaged == null) {
+                throw new Exception("Usuario o Edición no encontrados en la base de datos.");
+            }
+
+
+            // 3. Verificar si ya existe la inscripción
+            Id_Valoracion idCompuesto = new Id_Valoracion(usuarioManaged.getNickname(), cursoManaged.getNombre());
+            ValoracionCurso euExistente = em.find(ValoracionCurso.class, idCompuesto);
+            if (euExistente != null) {
+                throw new Exception("El usuario ya se encuentra inscripto a esta edición.");
+            }
+
+            // 4. Instanciar la nueva entidad a guardar usando el constructor completo
+            ValoracionCurso nuevaValoracion = new ValoracionCurso(usuarioManaged, cursoManaged, vc.getValoracion());
+
+            // 5. Persistir en la BD
+            em.persist(nuevaValoracion);
+
+            cursoManaged.AddValoracion(nuevaValoracion);
+            usuarioManaged.AddValoracion(nuevaValoracion);
+
+            em.getTransaction().commit();
+            System.out.println(">>> [DEBUG] Inscripción registrada y cupo actualizado con éxito.");
+
+        } catch (Exception e) {
+            if (em.getTransaction() != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            e.printStackTrace();
+            throw new Exception("Error al guardar la inscripción: " + e.getMessage());
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+    
+    
+    public DTUnitValoracion getValoracionCurso(Curso c){
+        List<ValoracionCurso> auxListVal = c.getValoraciones();
+        int[] auxArrayInts = CantValPorEstrellas(auxListVal); 
+        float promedio = calcPromedioValoraciones(auxArrayInts,auxListVal.size());
+        
+        return new DTUnitValoracion(auxListVal.size(),auxArrayInts,promedio);
+    }
+    
+    private int[] CantValPorEstrellas(List<ValoracionCurso> auxList){
+        final int CANT_ESTRELLAS = 5;
+        
+        if(auxList==null){
+            return null;
+        }
+        int[] estrellas = new int[CANT_ESTRELLAS]; 
+        
+        for(ValoracionCurso vc : auxList){
+            if(vc!=null){
+                int estrella = (int)vc.getValoracion();
+                if(estrella>0 && estrella <=estrellas.length  ){
+                    estrellas[estrella-1]++;
+                }
+            }
+            
+        }
+        return estrellas;
+    }
+    
+    float calcPromedioValoraciones(int[] arrayCantEstrellas, int cantTotalVal){
+        float promedio = 0;
+        for(int i = 0;i<arrayCantEstrellas.length;i++){
+            int multiplicador = i; multiplicador++;
+            int multiplicacion = arrayCantEstrellas[i]*multiplicador;
+            promedio+=multiplicacion;
+        }
+        return promedio/cantTotalVal;
+    }
+    
 }

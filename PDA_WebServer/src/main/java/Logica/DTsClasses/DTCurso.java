@@ -25,11 +25,12 @@ public class DTCurso extends DTMaster{
     private List<String> listCategorias;
     private String docente;
     private String imgPath;
+    private List<DTValoracionCurso> listValoraciones;
     
     public DTCurso(){
         super();
     }
-    public DTCurso(String nomInstituto, String nom, String descripcion, int duracion,float cantHoras,int cantCreditos, String URL, Date fecha, List<String> listPrevias, List<String> listEdiCursos, List<String> listProgCursos, List<String> categorias, String docente, String imgPath){
+    public DTCurso(String nomInstituto, String nom, String descripcion, int duracion,float cantHoras,int cantCreditos, String URL, Date fecha, List<String> listPrevias, List<String> listEdiCursos, List<String> listProgCursos, List<String> categorias, String docente, String imgPath, List<DTValoracionCurso> listValoraciones){
         this.instituto = nomInstituto;
         this.nombre = nom;
         this.descripcion = descripcion;
@@ -44,6 +45,7 @@ public class DTCurso extends DTMaster{
         this.listCategorias = categorias;
         this.docente = docente;
         this.imgPath=imgPath;
+        this.listValoraciones=listValoraciones;
     }
     public String getInstituto(){return this.instituto;}
     public String getNombre(){return this.nombre;}
@@ -59,6 +61,7 @@ public class DTCurso extends DTMaster{
     public List<String> getCategorias(){return this.listCategorias;}
     public String getDocente(){return this.docente;}
     public String getImage(){return this.imgPath;}
+    public List<DTValoracionCurso> getValoraciones(){return this.listValoraciones;}
 
     public void setInstituto(String instituto) {
         this.instituto = instituto;

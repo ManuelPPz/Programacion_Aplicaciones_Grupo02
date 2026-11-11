@@ -21,6 +21,10 @@ public class Usuario extends UsuarioBase {
     @Fetch(FetchMode.SUBSELECT) 
     private List<Edi_Usu> misInscripciones;
     
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT) 
+    private List<ValoracionCurso> misValoraciones;
+    
     // Relación con Prog_Usu (Sigue usando la clave compuesta embebida tradicional)
     @OneToMany(mappedBy = "id.miUsuario", fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
@@ -52,13 +56,21 @@ public class Usuario extends UsuarioBase {
         }
         misInscripcionesProg.add(pu);
     }
-
+    
+    public void AddValoracion(ValoracionCurso vc){
+        misValoraciones.add(vc);
+    }
+    
     public List<Edi_Usu> getMisInscripciones() {
         return this.misInscripciones;
     }
 
     public List<Prog_Usu> getMisInscripcionesPro() {
         return this.misInscripcionesProg;
+    }
+    
+    public List<ValoracionCurso> getMisValoraciones(){
+        return this.misValoraciones;
     }
 
     public int getCantMisInscripcionesRechazadas(String nomCurso) {

@@ -9,7 +9,7 @@ import java.util.Objects;
 public class Id_EdiUsu implements Serializable {
 
     @Column(name = "usuario_nickname")
-    private String miUsuarioNickname;
+     String miUsuarioNickname;
 
     @Column(name = "edicion_nombre")
     private String miEdicionNombre;

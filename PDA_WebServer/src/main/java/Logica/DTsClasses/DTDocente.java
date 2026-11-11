@@ -20,7 +20,7 @@ public class DTDocente extends DTUsuarioBase{
         super();
     }
     public DTDocente(String nickname,String nombre,String apellido,String correo, String password,Date fNac, String instituto, String img, List<String> cursos, List<String> ediciones, List<String> programas, List<String> seguidos){
-        super(nickname,nombre,apellido,correo, password,fNac,img, ediciones, programas,seguidos);
+        super(nickname,nombre,apellido,correo, password,fNac,img, ediciones, programas, seguidos);
         this.instituto = instituto;
         this.cursos = cursos;
     }
