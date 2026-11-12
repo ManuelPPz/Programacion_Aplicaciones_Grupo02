@@ -111,7 +111,12 @@ public class BuscadorLiveServlet extends HttpServlet {
             }
 
             if (!nombreItem.isEmpty()) {
-                String itemJson = "{\"tipo\":\"" + tipoItem + "\", \"nombre\":\"" + escapeJson(nombreItem) + "\", \"url\":\"" + urlItem + "\"}";
+                // Requerimiento 7.6: los cursos llevan su puntaje promedio (si tienen valoraciones)
+                String promedio = "";
+                if (m instanceof DTCurso c && c.getValoraciones() != null && c.getValoraciones().getTotal() > 0) {
+                    promedio = ", \"promedio\":\"" + c.getValoraciones().getPromedioTexto() + "\"";
+                }
+                String itemJson = "{\"tipo\":\"" + tipoItem + "\", \"nombre\":\"" + escapeJson(nombreItem) + "\", \"url\":\"" + urlItem + "\"" + promedio + "}";
                 if (!json.toString().contains(itemJson)) {
                     if (!first && json.length() > 2) json.append(",");
                     json.append(itemJson);

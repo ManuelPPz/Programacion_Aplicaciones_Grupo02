@@ -393,6 +393,21 @@
 <xs:element name="docente" type="xs:string" minOccurs="0"/>
 <xs:element name="imgPath" type="xs:string" minOccurs="0"/>
 <xs:element name="visitas" type="xs:int"/>
+<xs:element name="valoraciones" type="tns:dtValoracionCurso" minOccurs="0"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+
+<xs:complexType name="dtValoracionCurso">
+<xs:complexContent>
+<xs:extension base="tns:dtMaster">
+<xs:sequence>
+<xs:element name="curso" type="xs:string" minOccurs="0"/>
+<xs:element name="total" type="xs:int"/>
+<xs:element name="estrellas" type="xs:int" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+<xs:element name="promedio" type="xs:float"/>
+<xs:element name="miPuntaje" type="xs:int"/>
 </xs:sequence>
 </xs:extension>
 </xs:complexContent>
@@ -479,20 +494,6 @@
 <xs:element name="aprobado" type="xs:boolean"/>
 <xs:element name="fechaResultado" type="xs:dateTime" minOccurs="0"/>
 </xs:sequence>
-</xs:complexType>
-
-<xs:complexType name="dtValoracionCurso">
-<xs:complexContent>
-<xs:extension base="tns:dtMaster">
-<xs:sequence>
-<xs:element name="curso" type="xs:string" minOccurs="0"/>
-<xs:element name="total" type="xs:int"/>
-<xs:element name="estrellas" type="xs:int" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
-<xs:element name="promedio" type="xs:float"/>
-<xs:element name="miPuntaje" type="xs:int"/>
-</xs:sequence>
-</xs:extension>
-</xs:complexContent>
 </xs:complexType>
 
 <xs:complexType name="RegistrarVisitaCurso">

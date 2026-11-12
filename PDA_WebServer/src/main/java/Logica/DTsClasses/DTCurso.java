@@ -27,6 +27,8 @@ public class DTCurso extends DTMaster{
     String imgPath;
     /** Cantidad de veces que se consulto el curso (Listado de tendencias). */
     private int visitas;
+    /** Resumen de puntajes del curso (Requerimiento 7.6); null si no se cargó. */
+    private DTValoracionCurso valoraciones;
     
     public DTCurso(String nomInstituto, String nom, String descripcion, int duracion,float cantHoras,int cantCreditos, String URL, Date fecha, List<String> listPrevias, List<String> listEdiCursos, List<String> listProgCursos, List<String> categorias, String docente, String imgPath){
         this.instituto = nomInstituto;
@@ -60,5 +62,7 @@ public class DTCurso extends DTMaster{
     public String getImage(){return this.imgPath;}
     public int getVisitas(){return this.visitas;}
     public void setVisitas(int visitas){this.visitas = visitas;}
+    public DTValoracionCurso getValoraciones(){return this.valoraciones;}
+    public void setValoraciones(DTValoracionCurso valoraciones){this.valoraciones = valoraciones;}
     
 }

@@ -191,6 +191,7 @@ public final class ConversorDT {
                 copia(c.getListEdiCursos()), copia(c.getListProgCursos()), copia(c.getListCategorias()),
                 c.getDocente(), c.getImgPath());
         dt.setVisitas(c.getVisitas());
+        dt.setValoraciones(valoracion(c.getValoraciones()));
         return dt;
     }
 

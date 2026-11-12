@@ -9,6 +9,7 @@
         <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/css/style.css">
         <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/Styles/StylesContainers.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
         <script src="<%= request.getContextPath() %>/js/main.js"></script>
         
         <%-- Estilos para la cajita flotante de autocompletado del buscador --%>
@@ -169,7 +170,8 @@
                                         const link = document.createElement("a");
                                         link.className = "search-item";
                                         link.href = finalUrl;
-                                        link.innerHTML = "<span>" + nombre + "</span> <span class=\"search-badge " + badgeClass + "\">" + tipo + "</span>";
+                                        const estrellas = item.promedio ? " <span class=\"text-warning small text-nowrap\" title=\"Promedio de valoraciones\">&#9733; " + item.promedio + "</span>" : "";
+                                        link.innerHTML = "<span>" + nombre + estrellas + "</span> <span class=\"search-badge " + badgeClass + "\">" + tipo + "</span>";
                                         searchResults.appendChild(link);
                                     });
                                     searchResults.style.display = "block";

@@ -246,6 +246,7 @@ public class ManejadorCursos {
             c.getImage()
         );
         dt.setVisitas(c.getVisitas());
+        dt.setValoraciones(ManejadorValoraciones.GetInstance().Resumen(c.getNombre(), null));
         return dt;
     }
 

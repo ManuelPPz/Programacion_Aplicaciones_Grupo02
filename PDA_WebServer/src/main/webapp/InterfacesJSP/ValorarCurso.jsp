@@ -6,6 +6,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib prefix="edext" tagdir="/WEB-INF/tags" %>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -13,7 +14,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valorar Curso</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/Styles/StyleValoracion.css">
     <style>
         /* css/style.css limita todo <form> a 500px en columna: acá los formularios ocupan todo el ancho */
@@ -63,34 +63,8 @@
                     </form>
 
                     <c:if test="${not empty resumen}">
-                        <!-- 2. Resumen de puntajes (promedio + desglose por estrellas) -->
-                        <div class="row align-items-center g-4 mb-4">
-                            <div class="col-md-4 text-center border-end-md">
-                                <div class="display-4 fw-bold text-dark lh-1">${resumen.promedioTexto}</div>
-                                <div class="estrellas fs-4 my-2" aria-label="Promedio ${resumen.promedioTexto} de 5 estrellas">
-                                    <c:forEach var="ico" items="${resumen.iconos}">
-                                        <i class="bi ${ico == 'full' ? 'bi-star-fill' : (ico == 'half' ? 'bi-star-half' : 'bi-star')}"></i>
-                                    </c:forEach>
-                                </div>
-                                <div class="text-muted small">
-                                    ${resumen.total} ${resumen.total == 1 ? 'valoración' : 'valoraciones'}
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <c:forEach var="f" items="${resumen.filas}">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <span class="small fw-semibold text-secondary text-nowrap" style="width: 4.5rem;">
-                                            ${f[0]} <i class="bi bi-star-fill text-warning"></i>
-                                        </span>
-                                        <div class="progress flex-grow-1 mx-2" style="height: 10px;" role="progressbar"
-                                             aria-label="${f[0]} estrellas" aria-valuenow="${f[2]}" aria-valuemin="0" aria-valuemax="100">
-                                            <div class="progress-bar ${f[0] >= 4 ? 'bg-success' : (f[0] == 3 ? 'bg-warning' : 'bg-danger')}" style="width: ${f[2]}%"></div>
-                                        </div>
-                                        <span class="small text-muted text-end" style="width: 2.5rem;">${f[1]}</span>
-                                    </div>
-                                </c:forEach>
-                            </div>
-                        </div>
+                        <!-- 2. Resumen de puntajes (promedio + desglose por estrellas, Requerimiento 7.6) -->
+                        <div class="mb-4"><edext:resumenValoraciones valoracion="${resumen}"/></div>
 
                         <hr>
 

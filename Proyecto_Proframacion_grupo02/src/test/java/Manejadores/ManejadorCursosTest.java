@@ -52,6 +52,10 @@ public class ManejadorCursosTest {
         when(em.getTransaction()).thenReturn(tx);
         when(tx.isActive()).thenReturn(true);
         when(em.createQuery(anyString(), eq(Curso.class))).thenReturn(query);
+        // getDT agrega el resumen de valoraciones (Requerimiento 7.6): sin valoraciones por defecto
+        TypedQuery<Classes.ValoracionCurso> qVal = mock(TypedQuery.class, RETURNS_SELF);
+        when(qVal.getResultList()).thenReturn(new ArrayList<>());
+        when(em.createQuery(anyString(), eq(Classes.ValoracionCurso.class))).thenReturn(qVal);
 
         jpaUtil = mockStatic(JPAUtil.class);
         jpaUtil.when(JPAUtil::getEntityManager).thenReturn(em);
@@ -552,6 +556,22 @@ public class ManejadorCursosTest {
         assertEquals(0, manejador.getDT(c).getVisitas());
         c.setVisitas(3);
         assertEquals(3, manejador.getDT(c).getVisitas());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testGetDTIncluyeResumenDeValoraciones() {
+        Curso c = new Curso(null, "Java", "d", 1, 1f, 1, "u", new Date(), null, null, new ArrayList<>(), null);
+        Classes.Usuario ana = new Classes.Usuario("ana", "A", "P", "a@x.com", "p", new Date(), null);
+        TypedQuery<Classes.ValoracionCurso> qVal = mock(TypedQuery.class, RETURNS_SELF);
+        when(qVal.getResultList()).thenReturn(List.of(new Classes.ValoracionCurso(ana, c, 4)));
+        when(em.createQuery(anyString(), eq(Classes.ValoracionCurso.class))).thenReturn(qVal);
+
+        DTsClasses.DTValoracionCurso v = manejador.getDT(c).getValoraciones();
+        assertEquals(1, v.getTotal());
+        assertEquals(4f, v.getPromedio());
+        assertEquals(0, v.getMiPuntaje());
+        verify(qVal).setParameter("curso", "Java");
     }
 
 }

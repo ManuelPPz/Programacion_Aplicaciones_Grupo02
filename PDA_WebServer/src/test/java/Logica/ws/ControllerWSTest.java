@@ -388,6 +388,24 @@ public class ControllerWSTest {
     }
 
     @Test
+    public void testCursoTraeElResumenDeValoraciones() {
+        Logica.ws.cliente.DtValoracionCurso val = new Logica.ws.cliente.DtValoracionCurso();
+        val.setTotal(2);
+        val.setPromedio(4.5f);
+        val.getEstrellas().addAll(Arrays.asList(0, 0, 0, 1, 1));
+        DtCurso c = new DtCurso();
+        c.setNombre("Java");
+        c.setValoraciones(val);
+
+        Logica.DTsClasses.DTCurso dt = ConversorDT.curso(c);
+        assertEquals(2, dt.getValoraciones().getTotal());
+        assertEquals("4,5", dt.getValoraciones().getPromedioTexto());
+
+        c.setValoraciones(null);
+        assertNull(ConversorDT.curso(c).getValoraciones());
+    }
+
+    @Test
     public void testValorarCursoYCursosParticipa() throws Exception {
         ctrl.ValorarCurso("ana", "Java", 4);
         verify(ws).valorarCurso("ana", "Java", 4);

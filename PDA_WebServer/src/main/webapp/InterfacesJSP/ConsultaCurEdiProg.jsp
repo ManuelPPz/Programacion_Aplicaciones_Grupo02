@@ -3,6 +3,7 @@
 <%@page import="Logica.DTsClasses.DTCurso"%>
 <%@page import="java.util.List"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="edext" tagdir="/WEB-INF/tags" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -33,6 +34,7 @@
                             <a href="${pageContext.request.contextPath}/ConsultaCursoServlet?nombre=<%= java.net.URLEncoder.encode(dtc.getNombre(), "UTF-8")%>&curso=<%= java.net.URLEncoder.encode(dtc.getNombre(), "UTF-8")%>">
                                 <div class="fw-bold"><%= dtc.getNombre()%></div>
                             </a>
+                            <div class="small mt-1"><edext:estrellas valoracion="<%= dtc.getValoraciones() %>"/></div>
 
                         </div>
 

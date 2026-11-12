@@ -11,6 +11,7 @@
 <%@page import="Logica.DTsClasses.DTUsuarioBase"%>
 <%@page import="Logica.util.ImagenUtil"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="edext" tagdir="/WEB-INF/tags" %>
 
 <%
     // Detección de dispositivo móvil por User-Agent
@@ -38,6 +39,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Consulta de Curso - Móvil</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css">
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/Styles/StylesContainers.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -131,7 +133,8 @@
                                 <% } %>
                             </div>
                             <h3 class="fw-bold mb-1 fs-4"><%= dtc.getNombre() %></h3>
-                            <p class="text-muted mb-2"><%= dtc.getInstituto() %></p>
+                            <p class="text-muted mb-1"><%= dtc.getInstituto() %></p>
+                            <div class="mb-2"><edext:estrellas valoracion="<%= dtc.getValoraciones() %>"/></div>
 
                             <% if (dtc.getURL() != null && !dtc.getURL().isBlank()) { %>
                                 <div class="my-2">
@@ -146,6 +149,12 @@
                             <p class="mb-0 text-break small" style="white-space: pre-line; word-wrap: break-word;">
                                 <%= dtc.getDescripcion() != null ? dtc.getDescripcion() : "Sin descripción disponible." %>
                             </p>
+                        </div>
+
+                        <!-- Valoraciones de los estudiantes (Requerimiento 7.6) -->
+                        <div class="card p-3 border-dark bg-white shadow-sm mb-3">
+                            <h5 class="fw-bold border-bottom pb-2 fs-6">Valoraciones</h5>
+                            <edext:resumenValoraciones valoracion="<%= dtc.getValoraciones() %>"/>
                         </div>
 
                         <!-- Ediciones del Curso -->
@@ -244,7 +253,8 @@
                                                 <img src="<%= imgCurso %>" alt="Curso" width="40" height="40" class="rounded-circle border border-dark flex-shrink-0" style="object-fit: cover;">
                                                 <div class="text-truncate">
                                                     <h6 class="fw-bold text-dark mb-0 text-truncate small"><%= cursoItem.getNombre() %></h6>
-                                                    <small class="text-muted" style="font-size: 0.7rem;">Inst: <%= cursoItem.getInstituto() %></small>
+                                                    <small class="text-muted d-block" style="font-size: 0.7rem;">Inst: <%= cursoItem.getInstituto() %></small>
+                                                    <span style="font-size: 0.75rem;"><edext:estrellas valoracion="<%= cursoItem.getValoraciones() %>"/></span>
                                                 </div>
                                             </div>
                                             <a href="${pageContext.request.contextPath}/ConsultaCursoServlet?nombre=<%= java.net.URLEncoder.encode(cursoItem.getNombre(), "UTF-8") %>" class="btn btn-dark btn-sm fw-bold px-2 py-1 flex-shrink-0" style="font-size: 0.75rem;">
@@ -320,7 +330,8 @@
                                         <% } %>
                                         <div>
                                             <h3 class="fw-bold mb-1"><%= dtc.getNombre() %></h3>
-                                            <p class="text-muted fs-5 mb-2"><%= dtc.getInstituto() %></p>
+                                            <p class="text-muted fs-5 mb-1"><%= dtc.getInstituto() %></p>
+                                            <edext:estrellas valoracion="<%= dtc.getValoraciones() %>" tamano="fs-5"/>
                                         </div>
                                     </div>
 
@@ -335,6 +346,12 @@
                                         <p class="mb-0 text-break" style="white-space: pre-line; word-wrap: break-word;">
                                             <%= dtc.getDescripcion() != null ? dtc.getDescripcion() : "Sin descripcion disponible." %>
                                         </p>
+                                    </div>
+
+                                    <%-- Valoraciones de los estudiantes (Requerimiento 7.6) --%>
+                                    <div class="card p-3 border-dark bg-white shadow-sm mt-3">
+                                        <h5 class="fw-bold border-bottom pb-2">Valoraciones</h5>
+                                        <edext:resumenValoraciones valoracion="<%= dtc.getValoraciones() %>"/>
                                     </div>
                                 </div>
 
@@ -440,7 +457,8 @@
                                                     <img src="<%= imgCurso %>" alt="Curso" width="60" height="60" class="rounded-circle border border-2 border-dark shadow-sm" style="object-fit: cover;">
                                                     <div>
                                                         <h5 class="fw-bold text-dark mb-1"><%= cursoItem.getNombre() %></h5>
-                                                        <p class="text-muted small mb-0">Instituto: <%= cursoItem.getInstituto() %></p>
+                                                        <p class="text-muted small mb-1">Instituto: <%= cursoItem.getInstituto() %></p>
+                                                        <edext:estrellas valoracion="<%= cursoItem.getValoraciones() %>"/>
                                                     </div>
                                                 </div>
                                                 <a href="${pageContext.request.contextPath}/ConsultaCursoServlet?nombre=<%= java.net.URLEncoder.encode(cursoItem.getNombre(), "UTF-8") %>" class="btn btn-dark btn-sm fw-bold px-4">
