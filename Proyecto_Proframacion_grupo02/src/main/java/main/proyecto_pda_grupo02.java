@@ -9,8 +9,10 @@ import webservices.ServidorWS;
 public class proyecto_pda_grupo02 {
 
     public static void main(String[] args) {
-        // 1. Configuración (config.properties): URL del Web Service y carpeta de imágenes
-        ConfigSC config = ConfigSC.cargar();
+        // 1. Configuración (~/.edEXT/config.properties; se crea si no existe):
+        //    URL del Web Service, base de datos y carpeta de imágenes
+        ConfigSC config = ConfigSC.cargarOCrear();
+        ConfigSC.usar(config);
         if (config.encontrado()) {
             config.aplicarImagenesDir();
             System.out.println("Configuración leída de: " + config.getArchivo().getAbsolutePath());
@@ -18,7 +20,7 @@ public class proyecto_pda_grupo02 {
 
         // 2. Verificar/crear las tablas antes de atender pedidos
         try {
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("ControladorPU");
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory("ControladorPU", config.propiedadesJPA());
             emf.close();
             System.out.println("Tablas verificadas/creadas correctamente.");
         } catch (Exception e) {

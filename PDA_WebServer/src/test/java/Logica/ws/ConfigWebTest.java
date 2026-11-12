@@ -17,10 +17,14 @@ public class ConfigWebTest {
 
     private String configAnterior;
     private String catalinaAnterior;
+    private String homeAnterior;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws Exception {
         configAnterior = System.getProperty(ConfigWeb.PROPIEDAD_RUTA);
+        homeAnterior = System.getProperty("user.home");
+        // Aislar del ~/.edEXT real
+        System.setProperty("user.home", Files.createDirectories(tmp.resolve("home")).toString());
         catalinaAnterior = System.getProperty("catalina.base");
         System.clearProperty(ConfigWeb.PROPIEDAD_RUTA);
         System.clearProperty("catalina.base");
@@ -30,6 +34,7 @@ public class ConfigWebTest {
     public void tearDown() {
         restaurar(ConfigWeb.PROPIEDAD_RUTA, configAnterior);
         restaurar("catalina.base", catalinaAnterior);
+        restaurar("user.home", homeAnterior);
     }
 
     private static void restaurar(String k, String v) {
@@ -108,6 +113,17 @@ public class ConfigWebTest {
         String app = appDesplegadaEnRepo("ws.url=http://raiz:1/ws\n");
         Files.createDirectories(Path.of(app, "config.properties")); // carpeta: se ignora
         assertEquals("http://raiz:1/ws", ConfigWeb.resolver(app, null, null).getUrl());
-        assertEquals(new File(app, "config.properties").getAbsoluteFile(), ConfigWeb.candidatos(app, null).get(0));
+        assertEquals(ConfigWeb.archivoEdext(), ConfigWeb.candidatos(app, null).get(0));
+        assertEquals(new File(app, "config.properties").getAbsoluteFile(), ConfigWeb.candidatos(app, null).get(1));
+    }
+
+    @Test
+    public void testElDeEdextTienePrioridadSobreElDelRepo() throws Exception {
+        String app = appDesplegadaEnRepo("ws.url=http://raiz:1/ws\n");
+        Path edext = Files.createDirectories(tmp.resolve("home/.edEXT"));
+        Files.writeString(edext.resolve("config.properties"), "ws.url=http://home:6/ws\n");
+        ConfigWeb.Resultado r = ConfigWeb.resolver(app, null, "http://webxml:1/ws");
+        assertEquals("http://home:6/ws", r.getUrl());
+        assertEquals(edext.resolve("config.properties").toFile().getAbsolutePath(), r.getOrigen());
     }
 }

@@ -11,7 +11,8 @@ public class JPAUtil {
     // La fábrica se crea una sola vez, pero recién cuando se la pide por primera vez
     private static synchronized EntityManagerFactory getEmf() {
         if (emf == null) {
-            emf = Persistence.createEntityManagerFactory("ControladorPU");
+            // Los datos de conexión salen de ~/.edEXT/config.properties (si están)
+            emf = Persistence.createEntityManagerFactory("ControladorPU", ConfigSC.actual().propiedadesJPA());
         }
         return emf;
     }

@@ -21,12 +21,16 @@ public class ConfigSCTest {
     private String configAnterior;
     private String imagenesAnterior;
     private String userDirAnterior;
+    private String userHomeAnterior;
 
     @BeforeEach
     public void setUp() throws Exception {
         configAnterior = System.getProperty(ConfigSC.PROPIEDAD_RUTA);
         imagenesAnterior = System.getProperty(ConfigSC.CLAVE_IMAGENES_DIR);
         userDirAnterior = System.getProperty("user.dir");
+        userHomeAnterior = System.getProperty("user.home");
+        // El home también es una carpeta vacía: no se lee ni se crea el ~/.edEXT real
+        System.setProperty("user.home", Files.createDirectories(tmp.resolve("home")).toString());
         // Aislar de archivos reales: la carpeta de trabajo es una carpeta vacía
         System.setProperty("user.dir", Files.createDirectories(tmp.resolve("otra/a/b/c/d/e")).toString());
         System.clearProperty(ConfigSC.PROPIEDAD_RUTA);
@@ -38,6 +42,8 @@ public class ConfigSCTest {
         restaurar(ConfigSC.PROPIEDAD_RUTA, configAnterior);
         restaurar(ConfigSC.CLAVE_IMAGENES_DIR, imagenesAnterior);
         restaurar("user.dir", userDirAnterior);
+        restaurar("user.home", userHomeAnterior);
+        ConfigSC.usar(null);
     }
 
     private static void restaurar(String clave, String valor) {
@@ -136,7 +142,8 @@ public class ConfigSCTest {
     @Test
     public void testCandidatosYRutasBuscadas() {
         List<File> c = ConfigSC.candidatos(null, tmp.toFile());
-        assertEquals(new File(tmp.toFile(), "config.properties"), c.get(0));
+        assertEquals(tmp.resolve("home/.edEXT/config.properties").toFile(), c.get(0));
+        assertEquals(new File(tmp.toFile(), "config.properties"), c.get(1));
         assertTrue(c.size() > ConfigSC.NIVELES_HACIA_ARRIBA);
         assertTrue(ConfigSC.rutasBuscadas().contains("config.properties"));
         assertNotNull(ConfigSC.ubicacionDelPrograma());
@@ -159,5 +166,58 @@ public class ConfigSCTest {
         System.setProperty(ConfigSC.CLAVE_IMAGENES_DIR, "  ");
         de("edext.imagenes.dir=/c\n").aplicarImagenesDir();
         assertEquals("/c", System.getProperty(ConfigSC.CLAVE_IMAGENES_DIR));
+    }
+
+    // ===================== Requerimiento 7.8: ~/.edEXT =====================
+
+    @Test
+    public void testElDeEdextTienePrioridadSobreElDelRepo() throws Exception {
+        Path target = repoConConfig("ws.url=http://raiz:1/ws\n");
+        Path edext = Files.createDirectories(tmp.resolve("home/.edEXT"));
+        Files.writeString(edext.resolve("config.properties"), "ws.url=http://home:6/ws\n");
+        ConfigSC c = ConfigSC.cargar(null, target.toFile());
+        assertEquals("http://home:6/ws", c.getWsUrl());
+        assertEquals(ConfigSC.archivoEdext().getAbsoluteFile(), c.getArchivo());
+    }
+
+    @Test
+    public void testCargarOCrearCreaLaConfiguracionPorDefecto() throws Exception {
+        File sinNada = Files.createDirectories(tmp.resolve("vacio")).toFile();
+        ConfigSC c = ConfigSC.cargarOCrear(null, sinNada);
+        assertTrue(ConfigSC.archivoEdext().isFile());
+        assertTrue(c.encontrado());
+        assertEquals("http://localhost:9128/edext", c.getWsUrl());
+        assertEquals("UserLab", c.propiedadesJPA().get("jakarta.persistence.jdbc.user"));
+        assertTrue(c.propiedadesJPA().get("jakarta.persistence.jdbc.url").startsWith("jdbc:mysql://"));
+
+        // La segunda vez lo encuentra y no lo pisa
+        Files.writeString(ConfigSC.archivoEdext().toPath(), "ws.url=http://editado:7/ws\n");
+        assertEquals("http://editado:7/ws", ConfigSC.cargarOCrear(null, sinNada).getWsUrl());
+    }
+
+    @Test
+    public void testCargarOCrearSinPoderCrearLaCarpeta() throws Exception {
+        // ~/.edEXT existe pero es un archivo: no se puede crear la configuración
+        Files.writeString(tmp.resolve("home/.edEXT"), "no soy una carpeta");
+        File sinNada = Files.createDirectories(tmp.resolve("vacio")).toFile();
+        assertFalse(ConfigSC.cargarOCrear(null, sinNada).encontrado());
+    }
+
+    @Test
+    public void testPropiedadesJPASoloLasPresentes() throws Exception {
+        assertTrue(de("ws.url=x\ndb.url=  \n").propiedadesJPA().isEmpty());
+        java.util.Map<String, String> m = de("db.url=jdbc:mysql://h/db\ndb.usuario=u\ndb.password=p\n").propiedadesJPA();
+        assertEquals("jdbc:mysql://h/db", m.get("jakarta.persistence.jdbc.url"));
+        assertEquals("u", m.get("jakarta.persistence.jdbc.user"));
+        assertEquals("p", m.get("jakarta.persistence.jdbc.password"));
+    }
+
+    @Test
+    public void testActualYUsar() throws Exception {
+        ConfigSC c = de("ws.url=http://x:1/ws\n");
+        ConfigSC.usar(c);
+        assertSame(c, ConfigSC.actual());
+        ConfigSC.usar(null);
+        assertNotNull(ConfigSC.actual());
     }
 }

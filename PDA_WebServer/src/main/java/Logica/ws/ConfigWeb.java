@@ -18,9 +18,11 @@ import java.util.Set;
  * Dónde se busca (gana el primero que exista):
  *   1. la ruta indicada con -Dedext.config=/ruta/config.properties
  *   2. la ruta de la variable de entorno EDEXT_CONFIG
- *   3. la carpeta donde Tomcat desplegó la aplicación y las de arriba, hasta 4
+ *   3. ~/.edEXT/config.properties del usuario que ejecuta Tomcat (Requerimiento 7.8:
+ *      la ubicación normal; se cambia sin volver a generar web.war)
+ *   4. la carpeta donde Tomcat desplegó la aplicación y las de arriba, hasta 4
  *      niveles (con NetBeans llega a la raíz del repo)
- *   4. la carpeta de Tomcat (catalina.base) y la de arriba
+ *   5. la carpeta de Tomcat (catalina.base) y la de arriba
  * Si no se encuentra, se usa el context-param edext.ws.url del web.xml.
  */
 public final class ConfigWeb {
@@ -29,6 +31,7 @@ public final class ConfigWeb {
     public static final String CLAVE_WS_URL = "ws.url";
     public static final String PROPIEDAD_RUTA = "edext.config";
     public static final String VARIABLE_RUTA = "EDEXT_CONFIG";
+    public static final String CARPETA_EDEXT = ".edEXT";
     static final int NIVELES_HACIA_ARRIBA = 4;
 
     private ConfigWeb() {
@@ -84,6 +87,7 @@ public final class ConfigWeb {
         if (variableEntorno != null && !variableEntorno.isBlank()) {
             lista.add(new File(variableEntorno.trim()));
         }
+        lista.add(archivoEdext());
         if (carpetaApp != null && !carpetaApp.isBlank()) {
             agregarSubiendo(lista, new File(carpetaApp), NIVELES_HACIA_ARRIBA);
         }
@@ -92,6 +96,11 @@ public final class ConfigWeb {
             agregarSubiendo(lista, new File(catalinaBase), 1);
         }
         return new ArrayList<>(lista);
+    }
+
+    /** ~/.edEXT/config.properties */
+    public static File archivoEdext() {
+        return new File(new File(System.getProperty("user.home"), CARPETA_EDEXT), NOMBRE_ARCHIVO);
     }
 
     private static void agregarSubiendo(Set<File> lista, File desde, int niveles) {
